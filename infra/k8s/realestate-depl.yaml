@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realestate-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: realestate
+  template:
+    metadata:
+      labels:
+        app: realestate
+    spec:
+      containers:
+        - name: realestate
+          image: rosengray/sima-realestate
+          env: 
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: 'sima'
+            - name: MONGO_URI
+              value: 'mongodb://realestate-mongo-srv:27017/realestate'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: realestate-srv
+spec:
+  selector:
+    app: realestate
+  ports:
+    - name: realestate
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

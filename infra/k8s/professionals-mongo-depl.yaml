@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: professionals-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: professionals-mongo
+  template:
+    metadata:
+      labels:
+        app: professionals-mongo
+    spec:
+      containers:
+        - name: professionals-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: professionals-mongo-srv
+spec:
+  selector:
+    app: professionals-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
