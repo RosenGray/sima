@@ -1,7 +1,9 @@
 name: tests-professionals
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - 'professionals/**'
   
 jobs:
   build:
