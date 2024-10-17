@@ -5,7 +5,6 @@ import { HouseForRentCreatedListener } from "./events/listeners/HouseForRentCrea
 import { HouseForRentUpdatedListener } from "./events/listeners/HouseForRentUpdatedListener";
 
 const professionalsServiceStart = async () => {
-  console.log('change')
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
