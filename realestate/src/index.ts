@@ -3,6 +3,7 @@ import { app } from "./app";
 import { natsWrapper } from "./NatsWrapper";
 
 const realestateServiceStart = async () => {
+  
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
