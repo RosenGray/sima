@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: www.sima-board.com
+    - host: www.sima-board.com 
       http:
         paths:
           - path: /api/users/?(.*)
