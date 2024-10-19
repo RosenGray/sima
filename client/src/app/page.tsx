@@ -1,7 +1,6 @@
 'use client'
 
 import Header from '@/components/Header/Header'
-import Accessibilik from 'accessibility-react-widget'
 import styles from './page.module.css'
 import { AlertDialog, Avatar, Box, Button, Card, Flex,Text } from '@radix-ui/themes'
 
@@ -44,7 +43,7 @@ dffdsfsdfdsf
 </AlertDialog.Root>
 
       </main>
-      <Accessibilik />
+ 
     </div>
   )
 }
