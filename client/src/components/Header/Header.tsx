@@ -1,50 +1,52 @@
-'use client'
+"use client";
 
-import React, { ReactNode, useEffect, useState } from 'react'
-import { useTheme } from 'next-themes'
-import * as NavigationMenu from '@radix-ui/react-navigation-menu'
-import classNames from 'classnames'
-import { CaretDownIcon } from '@radix-ui/react-icons'
-import simaLightLogo from '@/assets/images/sima.light.logo.png'
-import simaDarkLogo from '@/assets/images/sima.dark.logo.png'
-import styles from './Header.module.scss'
-import Image from 'next/image'
-import realestate from '@/assets/images/realestate.webp'
-import professionals from '@/assets/images/professionals.webp'
-import marketPlace from '@/assets/images/marketPlace.webp'
-import { Spinner } from '@radix-ui/themes'
+import React, { ReactNode, useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import * as NavigationMenu from "@radix-ui/react-navigation-menu";
+import classNames from "classnames";
+import { CaretDownIcon } from "@radix-ui/react-icons";
+import simaLightLogo from "@/assets/images/sima.light.logo.png";
+import simaDarkLogo from "@/assets/images/sima.dark.logo.png";
+import styles from "./Header.module.scss";
+import Image from "next/image";
+import realestate from "@/assets/images/realestate.webp";
+import professionals from "@/assets/images/professionals.webp";
+import marketPlace from "@/assets/images/marketPlace.webp";
+import { Spinner } from "@radix-ui/themes";
 
-console.log('this is a header component')
+console.log("this is a header component");
 
 const NavigationMenuDemo = () => {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
 
-  const [isMounted, setIsMounted] = useState(false)
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
 
-  console.log(theme)
-  console.log('NODE_ENVsadasdsd,',process.env.NODE_ENV)
-  const isDark = theme === 'dark'
+  console.log(theme);
+  console.log("NODE_ENVsadasdsd,", process.env.NODE_ENV);
+  const envtest = process.env.NEXT_PUBLIC_TEST;
+  console.log("API envtest:", envtest);
+  const isDark = theme === "dark";
   // const [isDark, setIsDark] = useState(false);
-  const logoSrc = isDark ? simaDarkLogo : simaLightLogo
+  const logoSrc = isDark ? simaDarkLogo : simaLightLogo;
   // if (!isMounted) return null
   return (
     <Spinner loading={!isMounted}>
       <header className={styles.Header}>
         <button
-        onClick={() => {
-          if (isDark) {
-            setTheme('light')
-          } else {
-            setTheme('dark')
-          }
-        }}
-      >
-        bbbb
-      </button>
+          onClick={() => {
+            if (isDark) {
+              setTheme("light");
+            } else {
+              setTheme("dark");
+            }
+          }}
+        >
+          bbbb
+        </button>
 
         <div className={styles.LogoContainer}>
           <Image src={logoSrc.src} fill alt="Sima" objectFit="contain" />
@@ -60,13 +62,11 @@ const NavigationMenuDemo = () => {
               </NavigationMenu.Trigger>
               <NavigationMenu.Content className={styles.NavigationMenuContent}>
                 <ul className={`${styles.List} ${styles.One}`}>
-                  <li style={{ gridRow: 'span 3' }}>
+                  <li style={{ gridRow: "span 3" }}>
                     <div className={styles.ItemAsImageBlock}>
                       <Image src={realestate.src} fill alt="Real Estate" />
                     </div>
                   </li>
-
-                  
 
                   <ListItem href="https://stitches.dev/" title="">
                     Квартиры в аренду
@@ -88,7 +88,7 @@ const NavigationMenuDemo = () => {
               </NavigationMenu.Trigger>
               <NavigationMenu.Content className={styles.NavigationMenuContent}>
                 <ul className={`${styles.List} ${styles.Two}`}>
-                  <li style={{ gridRow: '1/4', width: 200 }}>
+                  <li style={{ gridRow: "1/4", width: 200 }}>
                     <div className={styles.ItemAsImageBlock}>
                       <Image
                         src={professionals.src}
@@ -146,7 +146,7 @@ const NavigationMenuDemo = () => {
               </NavigationMenu.Trigger>
               <NavigationMenu.Content className={styles.NavigationMenuContent}>
                 <ul className={`${styles.List} ${styles.Two}`}>
-                  <li style={{ gridRow: '1/4', width: 200 }}>
+                  <li style={{ gridRow: "1/4", width: 200 }}>
                     <div className={styles.ItemAsImageBlock}>
                       <Image
                         src={marketPlace.src}
@@ -219,17 +219,22 @@ const NavigationMenuDemo = () => {
             />
           </div>
         </NavigationMenu.Root>
-        <div style={{width:100,height:100,border:'2px solid blue'}} className={styles.Temp}>ddd</div>
+        <div
+          style={{ width: 100, height: 100, border: "2px solid blue" }}
+          className={styles.Temp}
+        >
+          ddd
+        </div>
       </header>
     </Spinner>
-  )
-}
+  );
+};
 
 interface ListItemProps {
-  className: string
-  children: ReactNode
-  title: string
-  [key: string]: any
+  className: string;
+  children: ReactNode;
+  title: string;
+  [key: string]: any;
 }
 
 const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
@@ -247,6 +252,6 @@ const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
       </NavigationMenu.Link>
     </li>
   )
-)
+);
 
-export default NavigationMenuDemo
+export default NavigationMenuDemo;

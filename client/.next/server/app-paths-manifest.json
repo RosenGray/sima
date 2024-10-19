@@ -1,8 +1,8 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/auth/signup/page": "app/auth/signup/page.js",
-  "/realestate/forsale/page": "app/realestate/forsale/page.js",
-  "/realestate/page": "app/realestate/page.js"
+  "/realestate/page": "app/realestate/page.js",
+  "/realestate/forsale/page": "app/realestate/forsale/page.js"
 }

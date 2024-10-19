@@ -27,7 +27,7 @@
       "static/chunks/0e5ce63c-c7624bc37b3be2c6.js",
       "static/chunks/241-d9fc7ed49bc56fa6.js",
       "static/chunks/648-33ea940e3ddf80e9.js",
-      "static/chunks/88-c9adde3de7d76d8b.js",
+      "static/chunks/88-206a704df7b21aa1.js",
       "static/chunks/app/page-b7dac6f719edf402.js"
     ],
     "/auth/signup/page": [
@@ -44,12 +44,12 @@
       "static/chunks/main-app-799a42273ed6bdc7.js",
       "static/chunks/app/auth/layout-66e0856296cffd57.js"
     ],
-    "/realestate/forsale/page": [
+    "/realestate/page": [
       "static/chunks/webpack-58de3c2b30e83606.js",
       "static/chunks/fd9d1056-c8679e8cf0b2409b.js",
       "static/chunks/23-0bc6b0d6b53a036d.js",
       "static/chunks/main-app-799a42273ed6bdc7.js",
-      "static/chunks/app/realestate/forsale/page-a285f50cc6ae0f96.js"
+      "static/chunks/app/realestate/page-fa978e08e15a273a.js"
     ],
     "/realestate/layout": [
       "static/chunks/webpack-58de3c2b30e83606.js",
@@ -60,15 +60,15 @@
       "static/chunks/0e5ce63c-c7624bc37b3be2c6.js",
       "static/chunks/241-d9fc7ed49bc56fa6.js",
       "static/chunks/648-33ea940e3ddf80e9.js",
-      "static/chunks/88-c9adde3de7d76d8b.js",
+      "static/chunks/88-206a704df7b21aa1.js",
       "static/chunks/app/realestate/layout-4300f2bc0a0c980f.js"
     ],
-    "/realestate/page": [
+    "/realestate/forsale/page": [
       "static/chunks/webpack-58de3c2b30e83606.js",
       "static/chunks/fd9d1056-c8679e8cf0b2409b.js",
       "static/chunks/23-0bc6b0d6b53a036d.js",
       "static/chunks/main-app-799a42273ed6bdc7.js",
-      "static/chunks/app/realestate/page-fa978e08e15a273a.js"
+      "static/chunks/app/realestate/forsale/page-a285f50cc6ae0f96.js"
     ]
   }
 }
