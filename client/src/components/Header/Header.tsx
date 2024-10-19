@@ -26,7 +26,7 @@ const NavigationMenuDemo = () => {
   }, [])
 
   console.log(theme)
-  console.log('NODE_ENV,',process.env.NODE_ENV)
+  console.log('NODE_ENVsadasdsd,',process.env.NODE_ENV)
   const isDark = theme === 'dark'
   // const [isDark, setIsDark] = useState(false);
   const logoSrc = isDark ? simaDarkLogo : simaLightLogo
