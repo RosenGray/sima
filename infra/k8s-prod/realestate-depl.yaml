@@ -38,6 +38,7 @@ kind: Service
 metadata:
   name: realestate-srv
 spec:
+  type: LoadBalancer
   selector:
     app: realestate
   ports:
