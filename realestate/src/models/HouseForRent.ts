@@ -31,6 +31,7 @@ hoseForRentSchema.plugin(updateIfCurrentPlugin);
 
 export const HouseForRent = mongoose.model<IHouseForRent>(
   "HouseForRent",
-  hoseForRentSchema
+  hoseForRentSchema,
+  'housesForRent'
 );
 
