@@ -38,6 +38,7 @@ kind: Service
 metadata:
   name: realestate-srv
 spec:
+  type: LoadBalancer
   selector:
     app: realestate
   ports:
@@ -45,5 +46,3 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
-  type: LoadBalancer
-
