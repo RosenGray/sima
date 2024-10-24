@@ -18,10 +18,7 @@ const MONGO_URI = isProd
   : "mongodb://realestate-mongo-srv:27017/realestate";
 
 const realestateServiceStart = async () => {
-  console.log("realstate ");
-  console.log("process.env.DB_USERNAME", DB_USERNAME);
-  console.log("DB_PASSWORD", DB_PASSWORD);
-  console.log("NODE_ENV", NODE_ENV);
+  console.log("starting realstate service...");
   if (!JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
