@@ -4,6 +4,8 @@ import { natsWrapper } from "./NatsWrapper";
 
 const realestateServiceStart = async () => {
   console.log('new realeeestateeee');
+  console.log('process.env.DB_USERNAME',process.env.DB_USERNAME)
+  console.log('process.env.DB_PASSWORD',process.env.DB_PASSWORD)
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
