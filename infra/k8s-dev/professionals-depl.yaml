@@ -24,8 +24,8 @@ spec:
               value: 'http://nats-srv:4222'
             - name: NATS_CLUSTER_ID
               value: 'sima'
-            - name: MONGO_URI
-              value: 'mongodb://professionals-mongo-srv:27017/professionals'
+            - name: NODE_ENV
+              value: 'development'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
