@@ -1,22 +1,13 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 
-const {
-  NATS_CLIENT_ID,
-  NATS_CLUSTER_ID,
-  NATS_URL,
-  JWT_KEY,
-  NODE_ENV,
-  DB_USERNAME,
-  DB_PASSWORD,
-} = process.env;
+const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } = process.env;
 
-console.log("starting auth service...");
 const isProd = NODE_ENV === "production";
 const MONGO_URI = isProd
   ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/auth`
   : "mongodb://auth-mongo-srv:27017/auth";
-  
+
 const authServiceStart = async () => {
   console.log("starting auth service...");
   if (!JWT_KEY) {
