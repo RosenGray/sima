@@ -25,7 +25,7 @@ spec:
             - name: NATS_CLUSTER_ID
               value: 'sima'
             - name: MONGO_URI
-              value: 'mongodb+srv://$(DB_USERNAME):$(DB_PASSWORD)@simacluster.iwsya.mongodb.net/realestate'
+              value: 'mongodb+srv://vladonchik:iZZen13PyLwALnwx@simacluster.iwsya.mongodb.net/realestate'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
