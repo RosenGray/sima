@@ -1,8 +1,9 @@
 "use client";
 
 import React, { ReactNode, useEffect, useState } from "react";
+import Link from "next/link";
 import { useTheme } from "next-themes";
-import * as NavigationMenu from "@radix-ui/react-navigation-menu";
+import * as Navigation from "@radix-ui/react-navigation-menu";
 import classNames from "classnames";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import simaLightLogo from "@/assets/images/sima.light.logo.png";
@@ -16,7 +17,7 @@ import { Spinner } from "@radix-ui/themes";
 
 console.log("this is a header component");
 
-const NavigationMenuDemo = () => {
+const NavigationMenu = () => {
   const { theme, setTheme } = useTheme();
 
   const [isMounted, setIsMounted] = useState(false);
@@ -52,15 +53,15 @@ const NavigationMenuDemo = () => {
           <Image src={logoSrc.src} fill alt="Sima" objectFit="contain" />
         </div>
 
-        <NavigationMenu.Root className={styles.NavigationMenuRoot}>
-          <NavigationMenu.List className={styles.NavigationMenuList}>
+        <Navigation.Root className={styles.NavigationMenuRoot}>
+          <Navigation.List className={styles.NavigationMenuList}>
             {/* Item 1 */}
-            <NavigationMenu.Item>
-              <NavigationMenu.Trigger className={styles.NavigationMenuTrigger}>
+            <Navigation.Item>
+              <Navigation.Trigger className={styles.NavigationMenuTrigger}>
                 Недвижимость
                 <CaretDownIcon className={styles.CaretDown} aria-hidden />
-              </NavigationMenu.Trigger>
-              <NavigationMenu.Content className={styles.NavigationMenuContent}>
+              </Navigation.Trigger>
+              <Navigation.Content className={styles.NavigationMenuContent}>
                 <ul className={`${styles.List} ${styles.One}`}>
                   <li style={{ gridRow: "span 3" }}>
                     <div className={styles.ItemAsImageBlock}>
@@ -71,22 +72,22 @@ const NavigationMenuDemo = () => {
                   <ListItem href="https://stitches.dev/" title="">
                     Квартиры в аренду
                   </ListItem>
-                  <ListItem href="/colors" title="">
+                  <ListItem href="/realestate/forsale" title="">
                     Квартиры на продажу
                   </ListItem>
                   <ListItem href="https://icons.radix-ui.com/" title="">
                     Агентства недвижимости в Израиле
                   </ListItem>
                 </ul>
-              </NavigationMenu.Content>
-            </NavigationMenu.Item>
+              </Navigation.Content>
+            </Navigation.Item>
             {/* Item 2 */}
-            <NavigationMenu.Item>
-              <NavigationMenu.Trigger className={styles.NavigationMenuTrigger}>
+            <Navigation.Item>
+              <Navigation.Trigger className={styles.NavigationMenuTrigger}>
                 Профессионалы
                 <CaretDownIcon className={styles.CaretDown} aria-hidden />
-              </NavigationMenu.Trigger>
-              <NavigationMenu.Content className={styles.NavigationMenuContent}>
+              </Navigation.Trigger>
+              <Navigation.Content className={styles.NavigationMenuContent}>
                 <ul className={`${styles.List} ${styles.Two}`}>
                   <li style={{ gridRow: "1/4", width: 200 }}>
                     <div className={styles.ItemAsImageBlock}>
@@ -98,6 +99,43 @@ const NavigationMenuDemo = () => {
                       />
                     </div>
                   </li>
+                  <ListItem
+                    title="Introduction"
+                    href="/primitives/docs/overview/introduction"
+                  >
+                    Build high-quality, accessible design systems and web apps.
+                  </ListItem>
+                  <ListItem
+                    title="Getting started"
+                    href="/primitives/docs/overview/getting-started"
+                  >
+                    A quick tutorial to get you up and running with Radix
+                    Primitives.
+                  </ListItem>
+                   <ListItem
+                    title="Styling"
+                    href="/primitives/docs/guides/styling"
+                  >
+                    Unstyled and compatible with any styling solution.
+                  </ListItem>
+                  <ListItem
+                    title="Animation"
+                    href="/primitives/docs/guides/animation"
+                  >
+                    Use CSS keyframes or any animation library of your choice.
+                  </ListItem>
+                  <ListItem
+                    title="Accessibility"
+                    href="/primitives/docs/overview/accessibility"
+                  >
+                    Tested in a range of browsers and assistive technologies.
+                  </ListItem>
+                  <ListItem
+                    title="Releases"
+                    href="/primitives/docs/overview/releases"
+                  >
+                    Radix Primitives releases and their changelogs.
+                  </ListItem>
                   <ListItem
                     title="Introduction"
                     href="/primitives/docs/overview/introduction"
@@ -136,15 +174,15 @@ const NavigationMenuDemo = () => {
                     Radix Primitives releases and their changelogs.
                   </ListItem>
                 </ul>
-              </NavigationMenu.Content>
-            </NavigationMenu.Item>
+              </Navigation.Content>
+            </Navigation.Item>
             {/* Item 3 */}
-            <NavigationMenu.Item>
-              <NavigationMenu.Trigger className={styles.NavigationMenuTrigger}>
+            <Navigation.Item>
+              <Navigation.Trigger className={styles.NavigationMenuTrigger}>
                 Куплю-Продам
                 <CaretDownIcon className={styles.CaretDown} aria-hidden />
-              </NavigationMenu.Trigger>
-              <NavigationMenu.Content className={styles.NavigationMenuContent}>
+              </Navigation.Trigger>
+              <Navigation.Content className={styles.NavigationMenuContent}>
                 <ul className={`${styles.List} ${styles.Two}`}>
                   <li style={{ gridRow: "1/4", width: 200 }}>
                     <div className={styles.ItemAsImageBlock}>
@@ -194,8 +232,8 @@ const NavigationMenuDemo = () => {
                     Radix Primitives releases and their changelogs.
                   </ListItem>
                 </ul>
-              </NavigationMenu.Content>
-            </NavigationMenu.Item>
+              </Navigation.Content>
+            </Navigation.Item>
             {/* Item 3 */}
             {/* <NavigationMenu.Item>
             <NavigationMenu.Link
@@ -206,19 +244,19 @@ const NavigationMenuDemo = () => {
             </NavigationMenu.Link>
           </NavigationMenu.Item> */}
 
-            <NavigationMenu.Indicator
+            <Navigation.Indicator
               className={styles.NavigationMenuIndicator}
             >
               <div className={styles.Arrow} />
-            </NavigationMenu.Indicator>
-          </NavigationMenu.List>
+            </Navigation.Indicator>
+          </Navigation.List>
 
           <div className={styles.ViewportPosition}>
-            <NavigationMenu.Viewport
+            <Navigation.Viewport
               className={styles.NavigationMenuViewport}
             />
           </div>
-        </NavigationMenu.Root>
+        </Navigation.Root>
         <div
           style={{ width: 100, height: 100, border: "2px solid blue" }}
           className={styles.Temp}
@@ -238,20 +276,21 @@ interface ListItemProps {
 }
 
 const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
-  ({ className, children, title, ...props }, forwardedRef) => (
+  ({ className, children, title, href, ...props }, forwardedRef) => (
     <li>
-      <NavigationMenu.Link asChild>
-        <a
+      <Navigation.Link asChild>
+        <Link
           className={classNames(styles.ListItemLink, className)}
+          href={href}
           {...props}
           ref={forwardedRef}
         >
           <div className={styles.ListItemHeading}>{title}</div>
           <p className={styles.ListItemText}>{children}</p>
-        </a>
-      </NavigationMenu.Link>
+        </Link>
+      </Navigation.Link>
     </li>
   )
 );
 
-export default NavigationMenuDemo;
+export default NavigationMenu;
