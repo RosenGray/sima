@@ -5,26 +5,44 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import * as Navigation from "@radix-ui/react-navigation-menu";
 import classNames from "classnames";
-import { CaretDownIcon } from "@radix-ui/react-icons";
+import {
+  CaretDownIcon,
+  HamburgerMenuIcon,
+  MoonIcon,
+  CrossCircledIcon,
+  HomeIcon,
+} from "@radix-ui/react-icons";
 import simaLightLogo from "@/assets/images/sima.light.logo.png";
 import simaDarkLogo from "@/assets/images/sima.dark.logo.png";
-import styles from "./Header.module.scss";
 import Image from "next/image";
 import realestate from "@/assets/images/realestate.webp";
 import professionals from "@/assets/images/professionals.webp";
 import marketPlace from "@/assets/images/marketPlace.webp";
-import { Spinner } from "@radix-ui/themes";
+import { IconButton, Spinner } from "@radix-ui/themes";
+import styles from "./Header.module.scss";
 
 console.log("this is a header component");
 
 const NavigationMenu = () => {
   const { theme, setTheme } = useTheme();
-
   const [isMounted, setIsMounted] = useState(false);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const toggleThemeHandler = () => {
+    if (isDark) {
+      setTheme("light");
+    } else {
+      setTheme("dark");
+    }
+  };
+
+  const toggleMenuVisibilityHandler = () => {
+    setMenuIsOpen((p) => !p);
+  };
 
   console.log(theme);
   console.log("NODE_ENVsadasdsd,", process.env.NODE_ENV);
@@ -36,60 +54,78 @@ const NavigationMenu = () => {
   // if (!isMounted) return null
   return (
     <Spinner loading={!isMounted}>
-      <header className={styles.Header}>
-        <button
-          onClick={() => {
-            if (isDark) {
-              setTheme("light");
-            } else {
-              setTheme("dark");
-            }
-          }}
-        >
-          bbbb
-        </button>
+      <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
+        <div className={styles.AppHeader}>
+          <IconButton onClick={toggleThemeHandler} color="yellow">
+            <MoonIcon />
+          </IconButton>
 
-        <div className={styles.LogoContainer}>
-          <Image src={logoSrc.src} fill alt="Sima" objectFit="contain" />
-        </div>
+          <div className={styles.LogoContainer}>
+            <Image src={logoSrc.src} fill alt="Sima" objectFit="contain" />
+          </div>
+          <IconButton className={styles.HamburgerIconButton} color="yellow">
+            {menuIsOpen ? (
+              <CrossCircledIcon onClick={toggleMenuVisibilityHandler} />
+            ) : (
+              <HamburgerMenuIcon  onClick={toggleMenuVisibilityHandler} />
+            )}
+          </IconButton>
+          <header className={styles.Header}>
+            <section className={styles.TopSection}></section>
+            <section className={styles.BottomSection}>
+              <Navigation.Root className={styles.NavigationMenuRoot}>
+                <Navigation.List className={styles.NavigationMenuList}>
+                  {/* Item 1 */}
+                  <Navigation.Item className={styles.NavigationMenuItem}>
+                    <Navigation.Trigger
+                      className={styles.NavigationMenuTrigger}
+                    >
+                      Недвижимость
+                      <HomeIcon
+                        color="yellow"
+                        className={styles.CaretDown}
+                        aria-hidden
+                      />
+                    </Navigation.Trigger>
+                    <Navigation.Content
+                      className={styles.NavigationMenuContent}
+                    >
+                      <ul className={`${styles.List} ${styles.One}`}>
+                        {/* <li style={{ gridRow: "span 3" }}>
+                      <div className={styles.ItemAsImageBlock}>
+                        <Image src={realestate.src} fill alt="Real Estate" />
+                      </div>
+                    </li> */}
 
-        <Navigation.Root className={styles.NavigationMenuRoot}>
-          <Navigation.List className={styles.NavigationMenuList}>
-            {/* Item 1 */}
-            <Navigation.Item>
-              <Navigation.Trigger className={styles.NavigationMenuTrigger}>
-                Недвижимость
-                <CaretDownIcon className={styles.CaretDown} aria-hidden />
-              </Navigation.Trigger>
-              <Navigation.Content className={styles.NavigationMenuContent}>
-                <ul className={`${styles.List} ${styles.One}`}>
-                  <li style={{ gridRow: "span 3" }}>
-                    <div className={styles.ItemAsImageBlock}>
-                      <Image src={realestate.src} fill alt="Real Estate" />
-                    </div>
-                  </li>
-
-                  <ListItem href="https://stitches.dev/" title="">
-                    Квартиры в аренду
-                  </ListItem>
-                  <ListItem href="/realestate/forsale" title="">
-                    Квартиры на продажу
-                  </ListItem>
-                  <ListItem href="https://icons.radix-ui.com/" title="">
-                    Агентства недвижимости в Израиле
-                  </ListItem>
-                </ul>
-              </Navigation.Content>
-            </Navigation.Item>
-            {/* Item 2 */}
-            <Navigation.Item>
-              <Navigation.Trigger className={styles.NavigationMenuTrigger}>
-                Профессионалы
-                <CaretDownIcon className={styles.CaretDown} aria-hidden />
-              </Navigation.Trigger>
-              <Navigation.Content className={styles.NavigationMenuContent}>
-                <ul className={`${styles.List} ${styles.Two}`}>
-                  <li style={{ gridRow: "1/4", width: 200 }}>
+                        <ListItem href="https://stitches.dev/" title="">
+                          Квартиры в аренду
+                        </ListItem>
+                        <ListItem href="/realestate/forsale" title="">
+                          Квартиры на продажу
+                        </ListItem>
+                        <ListItem href="https://icons.radix-ui.com/" title="">
+                          Агентства недвижимости в Израиле
+                        </ListItem>
+                      </ul>
+                    </Navigation.Content>
+                  </Navigation.Item>
+                  {/* Item 2 */}
+                  <Navigation.Item className={styles.NavigationMenuItem}>
+                    <Navigation.Trigger
+                      className={styles.NavigationMenuTrigger}
+                    >
+                      Профессионалы
+                      <HomeIcon
+                        color="yellow"
+                        className={styles.CaretDown}
+                        aria-hidden
+                      />
+                    </Navigation.Trigger>
+                    <Navigation.Content
+                      className={styles.NavigationMenuContent}
+                    >
+                      <ul className={`${styles.List} ${styles.Two}`}>
+                        {/* <li style={{ gridRow: "1/4", width: 200 }}>
                     <div className={styles.ItemAsImageBlock}>
                       <Image
                         src={professionals.src}
@@ -98,93 +134,69 @@ const NavigationMenu = () => {
                         objectFit="cover"
                       />
                     </div>
-                  </li>
-                  <ListItem
-                    title="Introduction"
-                    href="/primitives/docs/overview/introduction"
-                  >
-                    Build high-quality, accessible design systems and web apps.
-                  </ListItem>
-                  <ListItem
-                    title="Getting started"
-                    href="/primitives/docs/overview/getting-started"
-                  >
-                    A quick tutorial to get you up and running with Radix
-                    Primitives.
-                  </ListItem>
-                   <ListItem
-                    title="Styling"
-                    href="/primitives/docs/guides/styling"
-                  >
-                    Unstyled and compatible with any styling solution.
-                  </ListItem>
-                  <ListItem
-                    title="Animation"
-                    href="/primitives/docs/guides/animation"
-                  >
-                    Use CSS keyframes or any animation library of your choice.
-                  </ListItem>
-                  <ListItem
-                    title="Accessibility"
-                    href="/primitives/docs/overview/accessibility"
-                  >
-                    Tested in a range of browsers and assistive technologies.
-                  </ListItem>
-                  <ListItem
-                    title="Releases"
-                    href="/primitives/docs/overview/releases"
-                  >
-                    Radix Primitives releases and their changelogs.
-                  </ListItem>
-                  <ListItem
-                    title="Introduction"
-                    href="/primitives/docs/overview/introduction"
-                  >
-                    Build high-quality, accessible design systems and web apps.
-                  </ListItem>
-                  <ListItem
-                    title="Getting started"
-                    href="/primitives/docs/overview/getting-started"
-                  >
-                    A quick tutorial to get you up and running with Radix
-                    Primitives.
-                  </ListItem>
-                  <ListItem
-                    title="Styling"
-                    href="/primitives/docs/guides/styling"
-                  >
-                    Unstyled and compatible with any styling solution.
-                  </ListItem>
-                  <ListItem
-                    title="Animation"
-                    href="/primitives/docs/guides/animation"
-                  >
-                    Use CSS keyframes or any animation library of your choice.
-                  </ListItem>
-                  <ListItem
-                    title="Accessibility"
-                    href="/primitives/docs/overview/accessibility"
-                  >
-                    Tested in a range of browsers and assistive technologies.
-                  </ListItem>
-                  <ListItem
-                    title="Releases"
-                    href="/primitives/docs/overview/releases"
-                  >
-                    Radix Primitives releases and their changelogs.
-                  </ListItem>
-                </ul>
-              </Navigation.Content>
-            </Navigation.Item>
-            {/* Item 3 */}
-            <Navigation.Item>
-              <Navigation.Trigger className={styles.NavigationMenuTrigger}>
-                Куплю-Продам
-                <CaretDownIcon className={styles.CaretDown} aria-hidden />
-              </Navigation.Trigger>
-              <Navigation.Content className={styles.NavigationMenuContent}>
-                <ul className={`${styles.List} ${styles.Two}`}>
-                  <li style={{ gridRow: "1/4", width: 200 }}>
+                  </li> */}
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                      </ul>
+                    </Navigation.Content>
+                  </Navigation.Item>
+                  {/* Item 3 */}
+                  <Navigation.Item className={styles.NavigationMenuItem}>
+                    <Navigation.Trigger
+                      className={styles.NavigationMenuTrigger}
+                    >
+                      Куплю-Продам
+                      <HomeIcon
+                        color="yellow"
+                        className={styles.CaretDown}
+                        aria-hidden
+                      />
+                    </Navigation.Trigger>
+                    <Navigation.Content
+                      className={styles.NavigationMenuContent}
+                    >
+                      <ul className={`${styles.List} ${styles.Two}`}>
+                        {/* <li style={{ gridRow: "1/4", width: 200 }}>
                     <div className={styles.ItemAsImageBlock}>
                       <Image
                         src={marketPlace.src}
@@ -193,77 +205,47 @@ const NavigationMenu = () => {
                         objectFit="cover"
                       />
                     </div>
-                  </li>
-                  <ListItem
-                    title="Introduction"
-                    href="/primitives/docs/overview/introduction"
-                  >
-                    Build high-quality, accessible design systems and web apps.
-                  </ListItem>
-                  <ListItem
-                    title="Getting started"
-                    href="/primitives/docs/overview/getting-started"
-                  >
-                    A quick tutorial to get you up and running with Radix
-                    Primitives.
-                  </ListItem>
-                  <ListItem
-                    title="Styling"
-                    href="/primitives/docs/guides/styling"
-                  >
-                    Unstyled and compatible with any styling solution.
-                  </ListItem>
-                  <ListItem
-                    title="Animation"
-                    href="/primitives/docs/guides/animation"
-                  >
-                    Use CSS keyframes or any animation library of your choice.
-                  </ListItem>
-                  <ListItem
-                    title="Accessibility"
-                    href="/primitives/docs/overview/accessibility"
-                  >
-                    Tested in a range of browsers and assistive technologies.
-                  </ListItem>
-                  <ListItem
-                    title="Releases"
-                    href="/primitives/docs/overview/releases"
-                  >
-                    Radix Primitives releases and their changelogs.
-                  </ListItem>
-                </ul>
-              </Navigation.Content>
-            </Navigation.Item>
-            {/* Item 3 */}
-            {/* <NavigationMenu.Item>
-            <NavigationMenu.Link
-              className={styles.NavigationMenuLink}
-              href="https://github.com/radix-ui"
-            >
-              Github
-            </NavigationMenu.Link>
-          </NavigationMenu.Item> */}
+                  </li> */}
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                        <ListItem
+                          title=""
+                          href="/primitives/docs/overview/introduction"
+                        >
+                          Build high-quality, accessible design systems and web
+                          apps.
+                        </ListItem>
+                      </ul>
+                    </Navigation.Content>
+                  </Navigation.Item>
 
-            <Navigation.Indicator
-              className={styles.NavigationMenuIndicator}
-            >
-              <div className={styles.Arrow} />
-            </Navigation.Indicator>
-          </Navigation.List>
+                  {/* <Navigation.Indicator className={styles.NavigationMenuIndicator}>
+                <div className={styles.Arrow} />
+              </Navigation.Indicator> */}
+                </Navigation.List>
 
-          <div className={styles.ViewportPosition}>
-            <Navigation.Viewport
-              className={styles.NavigationMenuViewport}
-            />
-          </div>
-        </Navigation.Root>
-        <div
-          style={{ width: 100, height: 100, border: "2px solid blue" }}
-          className={styles.Temp}
-        >
-          ddd
+                <div className={styles.ViewportPosition}>
+                  <Navigation.Viewport
+                    className={styles.NavigationMenuViewport}
+                  />
+                </div>
+              </Navigation.Root>
+            </section>
+          </header>
         </div>
-      </header>
+      </div>
     </Spinner>
   );
 };
@@ -277,18 +259,16 @@ interface ListItemProps {
 
 const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
   ({ className, children, title, href, ...props }, forwardedRef) => (
-    <li>
-      <Navigation.Link asChild>
-        <Link
-          className={classNames(styles.ListItemLink, className)}
-          href={href}
-          {...props}
-          ref={forwardedRef}
-        >
-          <div className={styles.ListItemHeading}>{title}</div>
-          <p className={styles.ListItemText}>{children}</p>
-        </Link>
-      </Navigation.Link>
+    <li className={styles.ListItem}>
+      <Link
+        className={classNames(styles.ListItemLink, className)}
+        href={href}
+        {...props}
+        ref={forwardedRef}
+      >
+        <div className={styles.ListItemHeading}>{title}</div>
+        <p className={styles.ListItemText}>{children}</p>
+      </Link>
     </li>
   )
 );

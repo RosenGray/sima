@@ -20,12 +20,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <Script defer src="https://acc-landing.vercel.app/accessibilik.min.js"/>
+    <html lang="ru">
+
       <body className={inter.className}>
         <StoreProvider>
           <ThemeProvider attribute="class">
-            <Theme>{children}</Theme>
+            <Theme accentColor='indigo'>{children}</Theme>
           </ThemeProvider>
         </StoreProvider>
       </body>
