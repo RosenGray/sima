@@ -1,0 +1,26 @@
+// styles/_media.scss
+
+// Define SCSS variables for mobile-first breakpoints
+// $media-xs-mobile: "(min-width: 320px)"; // Extra small mobile and above
+// $media-mobile: "(min-width: 576px)"; // Mobile and above
+// $media-tablet-portrait: "(min-width: 768px)"; // Tablet portrait and above
+// $media-tablet: "(min-width: 1024px)"; // Tablet and above
+// $media-desktop: "(min-width: 1280px)"; // Desktop and above
+// $media-xl-desktop: "(min-width: 1440px)"; // Extra large desktop and above
+
+
+// Define SCSS variables for min-width and max-width breakpoints
+$media-start-min: "(min-width: 0)";
+$media-xs-mobile-min: "(min-width: 320px)";
+$media-mobile-min: "(min-width: 576px)";
+$media-tablet-portrait-min: "(min-width: 768px)";
+$media-tablet-min: "(min-width: 1024px)";
+$media-desktop-min: "(min-width: 1280px)";
+$media-xl-desktop-min: "(min-width: 1440px)";
+
+$media-xs-mobile-max: "(max-width: 319px)";
+$media-mobile-max: "(max-width: 575px)";
+$media-tablet-portrait-max: "(max-width: 767px)";
+$media-tablet-max: "(max-width: 1023px)";
+$media-desktop-max: "(max-width: 1279px)";
+$media-xl-desktop-max: "(max-width: 1439px)";
