@@ -13,7 +13,7 @@ const getPosts = async () => {
     //   setTimeout(() => {
     //     reject(new Error("this is an error")); // Wrap 
     //   }, 5000)
-    // );
+    // ); 
 
     const res = await fetch("https://jsonplaceholder.typicode.com/todos");
     const posts = await res.json();
