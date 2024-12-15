@@ -1,0 +1,11 @@
+.Page {
+  min-height: inherit;
+  background: var(--background-color);
+  position: relative;
+  z-index: -1;
+  &:before{
+    content:'';
+    display: block;
+    height: var(--header-height);
+  }
+}

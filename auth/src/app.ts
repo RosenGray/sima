@@ -8,13 +8,15 @@ import signupUserRouter from "./routes/signup";
 import signoutUserRouter from "./routes/signout";
 import { errorHandler, NotFoundError } from "@sima-board/common";
 
+console.log('auth process.env.NODE_ENV ',process.env.NODE_ENV )
+
 export const app = express();
 app.set("trust proxy", true);
 app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: false //process.env.NODE_ENV !== "test",
+    secure: process.env.NODE_ENV !== "development",
   })
 );
 app.get("/api/users/healthcheck", (req, res) => {
