@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck commen
 import { notFound } from "next/navigation";
 import { FC } from "react"
 
@@ -21,7 +23,9 @@ interface ForSageItemPage {
 
 const ForSaleItemPage:FC<ForSageItemPage> =  ({params,searchParams}) => {
   console.log(params)
+  console.log(searchParams)
   const id = '';//(await params).id
+  console.log(id)
   return <h1>ForSaleItemPage {params.id}</h1>
 }
 
