@@ -16,8 +16,8 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV !== "development",
-    httpOnly: true
+    secure: process.env.NODE_ENV === "production",
+    // httpOnly: true
   })
 );
 app.get("/api/users/healthcheck", (req, res) => {
