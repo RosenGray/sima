@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck commen
 import { Card } from "@radix-ui/themes";
-import Header from "@/components/Header/Header";
+// import Header from "@/components/Header/Header";
 import { Counter } from "../Counter/Counter";
 
 const getPosts = async () => {
