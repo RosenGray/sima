@@ -1,8 +1,19 @@
 @import "./../../app//global";
 
 .AppHeaderContainer {
-  &:after {
-    content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
+    &[data-menu-is-open="true"] {
+      & .Aside {
+        left: 0;
+      }
+    }
+  }
+}
+.BackDrop {
+  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
     position: fixed;
     left: 0;
     right: 0;
@@ -12,25 +23,17 @@
     overflow: hidden;
     z-index: 105;
   }
-  &[data-menu-is-open="true"] {
-    background-color: red;
-    & .Header {
-      left: 0;
-    }
-  }
 }
 .AppHeader {
   display: flex;
   justify-content: center;
   background-color: var(--gray-2);
-  --header-height: 60px;
   min-height: var(--header-height);
   align-items: center;
   justify-content: space-between;
   padding: 0 1em;
   position: relative;
   z-index: 110;
-  border: 1px solid red;
 }
 
 .HamburgerIconButton {
@@ -40,24 +43,20 @@
 }
 
 .LogoContainer {
-  width: 150px;
-  height: 50px;
-  position: relative;
-  img {
-    object-fit: contain;
-  }
+  line-height: 1;
+
   @media #{$media-tablet-portrait-min} {
-    order:1;
+    order: 1;
     margin-inline-start: auto;
   }
 }
 
-.Header {
+.Aside {
   @media #{$media-start-min} and #{$media-tablet-portrait-max} {
     position: fixed;
     left: -315px;
     bottom: 0;
-    top: var(--header-height);
+    top: 0;
     width: 100%;
     max-width: 315px;
     background-color: var(--gray-2);
@@ -73,21 +72,13 @@
     display: flex;
     align-items: center;
     padding: 0 1em;
-    // height: 80px;
   }
 }
-
-// .TopSection {
-// }
-// .BottomSection {
-//   // flex:1;
-// }
 
 .NavigationMenuRoot {
   @media #{$media-tablet-portrait-min} {
     position: relative;
     display: flex;
-    // width: 100vw;
     z-index: 1;
     height: 100%;
   }
@@ -107,9 +98,9 @@
 
 .NavigationMenuItem {
   &:not(:last-child) {
-    @media #{$media-start-min} and #{$media-tablet-portrait-max} {
-      margin-bottom: 1.5em;
-    }
+    // @media #{$media-start-min} and #{$media-tablet-portrait-max} {
+    //   margin-bottom: 1.5em;
+    // }
   }
   @media #{$media-tablet-portrait-min} {
     margin-inline-end: 1.5em;
@@ -129,33 +120,19 @@
       position: absolute;
       z-index: 200;
       top: 0;
-      color: yellow;
+      color: var(--yellow-12);
+      font-weight: bold;
     }
   }
-  
 }
 
-.NavigationMenuTrigger,
-.NavigationMenuLink {
-  // padding: 8px 12px;
-  // outline: none;
-  // user-select: none;
-  // line-height: 1;
-  // border-radius: 4px;
-  // font-size: 15px;
-  // color: var(--amber-12);
-  // height: 100%;
-  // display: flex;
-  // align-items: center;
-  // box-sizing: border-box;
-}
-.NavigationMenuTrigger:focus,
-.NavigationMenuLink:focus {
-  // box-shadow: 0 0 0 2px var(--violet-7);
-}
-.NavigationMenuTrigger:hover,
-.NavigationMenuLink:hover {
-  // background-color: var(--violet-4);
+.HideOnMobile {
+  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
+    display: none;
+  }
+  @media #{$media-tablet-portrait-min} {
+    display: block;
+  }
 }
 
 .NavigationMenuTrigger {
@@ -168,7 +145,6 @@
 }
 
 .NavigationMenuLink {
-  background-color: red;
   // text-decoration: none;
   // font-size: 15px;
   // line-height: 1;
@@ -260,18 +236,17 @@
 .List {
   @media #{$media-tablet-portrait-min} {
     display: grid;
-    padding: 22px;
+    padding: 1em;
     margin: 0;
     column-gap: 10px;
     list-style: none;
     &.One {
-      // width: 500px;
-      grid-template-columns: 0.75fr 1fr;
+      width: 500px;
+      grid-template-columns: repeat(3, 1fr);
     }
     &.Two {
-      // width: 600px;
-      grid-auto-flow: column;
-      grid-template-rows: repeat(3, 1fr);
+      width: 600px;
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 }
@@ -299,7 +274,7 @@
 }
 .ListItemLink:focus {
   color: yellow;
-  // box-shadow: 0 0 0 2px var(--violet-7);
+  // box-shadow: 0 0 0 2px var(--yellow-7);
 }
 .ListItemLink:hover {
   color: yellow;
@@ -315,8 +290,8 @@
 }
 
 .ItemAsImageBlock {
-  // height: 100%;
-  // position: relative;
+  height: 100%;
+  position: relative;
 }
 
 .ViewportPosition {
@@ -333,6 +308,8 @@
 .CaretDown {
   position: relative;
   transition: transform 250ms ease;
+  color: var(--yellow-12);
+  font-weight: bold;
   @media #{$media-tablet-portrait-min} {
     display: none;
   }
@@ -435,4 +412,38 @@
   to {
     opacity: 0;
   }
+}
+
+$yellow-10: red;
+
+.h1 {
+  font-size: 100px;
+  color: var(--yellow-12);
+}
+
+// $yellow-1: #14120b;
+// $yellow-2: #1b180f;
+// $yellow-3: #2d2305;
+// $yellow-4: #362b00;
+// $yellow-5: #433500;
+// $yellow-6: #524202;
+// $yellow-7: #665417;
+// $yellow-8: #836a21;
+// $yellow-9: #ffe629;
+// $yellow-10: #ffff57;
+// $yellow-11: #f5e147;
+// $yellow-12: #f6eeb4;
+.yellowDark {
+  --yellow-1: #14120b;
+  --yellow-2: #1b180f;
+  --yellow-3: #2d2305;
+  --yellow-4: #362b00;
+  --yellow-5: #433500;
+  --yellow-6: #524202;
+  --yellow-7: #665417;
+  --yellow-8: #836a21;
+  --yellow-9: #ffe629;
+  --yellow-10: #ffff57;
+  --yellow-11: #f5e147;
+  --yellow-12: #f6eeb4;
 }

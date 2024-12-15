@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import * as Navigation from "@radix-ui/react-navigation-menu";
@@ -12,6 +12,8 @@ import {
   CrossCircledIcon,
   HomeIcon,
 } from "@radix-ui/react-icons";
+import { yellow } from '@radix-ui/colors';
+
 import simaLightLogo from "@/assets/images/sima.light.logo.png";
 import simaDarkLogo from "@/assets/images/sima.dark.logo.png";
 import Image from "next/image";
@@ -40,7 +42,7 @@ const NavigationMenu = () => {
     }
   };
 
-  const toggleMenuVisibilityHandler = () => {
+  function toggleMenuVisibilityHandler(){
     setMenuIsOpen((p) => !p);
   };
 
@@ -50,27 +52,30 @@ const NavigationMenu = () => {
   console.log("API envtest:", envtest);
   const isDark = theme === "dark";
   // const [isDark, setIsDark] = useState(false);
-  const logoSrc = isDark ? simaDarkLogo : simaLightLogo;
+  const logoSrc = isMounted ? (isDark ? simaDarkLogo : simaLightLogo) : simaLightLogo;
+
   // if (!isMounted) return null
   return (
     <Spinner loading={!isMounted}>
-      <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
-        <div className={styles.AppHeader}>
+      {/* <h1 className={styles.h1}>ddd</h1> */}
+      <div  className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
+        {menuIsOpen && <div onClick={toggleMenuVisibilityHandler} className={styles.BackDrop}></div>}
+        <header className={styles.AppHeader}>
           <IconButton onClick={toggleThemeHandler} color="yellow">
             <MoonIcon />
           </IconButton>
 
           <div className={styles.LogoContainer}>
-            <Image src={logoSrc.src} fill alt="Sima" objectFit="contain" />
+            <Image  width={150} src={logoSrc}  alt="Sima"  priority/>
           </div>
           <IconButton className={styles.HamburgerIconButton} color="yellow">
             {menuIsOpen ? (
               <CrossCircledIcon onClick={toggleMenuVisibilityHandler} />
             ) : (
-              <HamburgerMenuIcon  onClick={toggleMenuVisibilityHandler} />
+              <HamburgerMenuIcon onClick={toggleMenuVisibilityHandler} />
             )}
           </IconButton>
-          <header className={styles.Header}>
+          <aside className={styles.Aside}>
             <section className={styles.TopSection}></section>
             <section className={styles.BottomSection}>
               <Navigation.Root className={styles.NavigationMenuRoot}>
@@ -82,7 +87,6 @@ const NavigationMenu = () => {
                     >
                       Недвижимость
                       <HomeIcon
-                        color="yellow"
                         className={styles.CaretDown}
                         aria-hidden
                       />
@@ -91,17 +95,28 @@ const NavigationMenu = () => {
                       className={styles.NavigationMenuContent}
                     >
                       <ul className={`${styles.List} ${styles.One}`}>
-                        {/* <li style={{ gridRow: "span 3" }}>
-                      <div className={styles.ItemAsImageBlock}>
-                        <Image src={realestate.src} fill alt="Real Estate" />
-                      </div>
-                    </li> */}
+                        <li className={styles.HideOnMobile} style={{ gridRow: "span 3" }}>
+                          <div className={styles.ItemAsImageBlock}>
+                            <Image
+                              src={realestate}
+                              fill
+                              alt="Real Estate"
+                              style={{ objectFit: "cover" }}
+                            />
+                          </div>
+                        </li>
 
                         <ListItem href="https://stitches.dev/" title="">
                           Квартиры в аренду
                         </ListItem>
                         <ListItem href="/realestate/forsale" title="">
                           Квартиры на продажу
+                        </ListItem>
+                        <ListItem href="https://icons.radix-ui.com/" title="">
+                          Агентства недвижимости в Израиле
+                        </ListItem>
+                        <ListItem href="https://icons.radix-ui.com/" title="">
+                          Агентства недвижимости в Израиле
                         </ListItem>
                         <ListItem href="https://icons.radix-ui.com/" title="">
                           Агентства недвижимости в Израиле
@@ -116,7 +131,6 @@ const NavigationMenu = () => {
                     >
                       Профессионалы
                       <HomeIcon
-                        color="yellow"
                         className={styles.CaretDown}
                         aria-hidden
                       />
@@ -125,16 +139,16 @@ const NavigationMenu = () => {
                       className={styles.NavigationMenuContent}
                     >
                       <ul className={`${styles.List} ${styles.Two}`}>
-                        {/* <li style={{ gridRow: "1/4", width: 200 }}>
-                    <div className={styles.ItemAsImageBlock}>
-                      <Image
-                        src={professionals.src}
-                        fill
-                        alt="Real Estate"
-                        objectFit="cover"
-                      />
-                    </div>
-                  </li> */}
+                        <li className={styles.HideOnMobile}  style={{ gridRow: "1/4" }}>
+                          <div className={styles.ItemAsImageBlock}>
+                            <Image
+                              src={professionals}
+                              fill
+                              alt="Real Estate"
+                              style={{objectFit:'cover'}}
+                            />
+                          </div>
+                        </li>
                         <ListItem
                           title=""
                           href="/primitives/docs/overview/introduction"
@@ -187,7 +201,7 @@ const NavigationMenu = () => {
                     >
                       Куплю-Продам
                       <HomeIcon
-                        color="yellow"
+  
                         className={styles.CaretDown}
                         aria-hidden
                       />
@@ -199,7 +213,7 @@ const NavigationMenu = () => {
                         {/* <li style={{ gridRow: "1/4", width: 200 }}>
                     <div className={styles.ItemAsImageBlock}>
                       <Image
-                        src={marketPlace.src}
+                        src={marketPlace}
                         fill
                         alt="Real Estate"
                         objectFit="cover"
@@ -231,9 +245,9 @@ const NavigationMenu = () => {
                     </Navigation.Content>
                   </Navigation.Item>
 
-                  {/* <Navigation.Indicator className={styles.NavigationMenuIndicator}>
+                  <Navigation.Indicator className={styles.NavigationMenuIndicator}>
                 <div className={styles.Arrow} />
-              </Navigation.Indicator> */}
+              </Navigation.Indicator>
                 </Navigation.List>
 
                 <div className={styles.ViewportPosition}>
@@ -243,8 +257,8 @@ const NavigationMenu = () => {
                 </div>
               </Navigation.Root>
             </section>
-          </header>
-        </div>
+          </aside>
+        </header>
       </div>
     </Spinner>
   );

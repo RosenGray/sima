@@ -1,7 +1,5 @@
-'use client'
-
 const ForSalePage = () => {
-  return <h1>foRESALE</h1>
+  return <h1>realstfffffate</h1>
 }
 
 export default ForSalePage

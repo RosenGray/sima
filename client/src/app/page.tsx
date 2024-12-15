@@ -1,22 +1,59 @@
-'use client'
 
-import Header from '@/components/Header/Header'
-import styles from './page.module.css'
-import { AlertDialog, Avatar, Box, Button, Card, Flex,Text } from '@radix-ui/themes'
+import { Suspense } from 'react'
 
+import Header from "@/components/Header/Header";
+import {
+  AlertDialog,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Flex,
+  Text,
+} from "@radix-ui/themes";
+import { useEffect, useState } from "react";
+import styles from "./page.module.scss";
+import ServerComponetExample from "@/components/ServerComponetExample/ServerComponetExample";
+import Loader from './loading';
+import FormExample from '@/components/FormExample/FormExample';
 export default function Home() {
+  // const [data, setData] = useState<any>([]);
+
+  // useEffect(() => {
+  //   fetch("https://jsonplaceholder.typicode.com/todos")
+  //     .then((response) => response.json())
+  //     .then((json) => setData(json));
+  // }, []);
+
   return (
-    <div className={styles.Page}>
-      <Header />
-      <main>main
+    < main className={styles.Page}>
+      {/* <Header /> */}
+      {/* <main className={styles.Main}> */}
+        main
+        {/* <Card style={{ width: 400, height: 400 }}>
+          {data.map((x) => {
+            return (
+              <div key={x.id}>
+                <p style={{ color: "red" }}>{x.title}</p>
+                <p>{x.userId}</p>
+              </div>
+            );
+          })}
+        </Card> */}
+        <FormExample/>
+        <Suspense fallback={<Loader/>}>
+        <ServerComponetExample/>
+        </Suspense>
 
-      <Card style={{width:400,height:400}}>
-dffdsfsdfdsf
+        {/* <ServerComponetExample/> */}
 
-  </Card>
+        {/* <Suspense fallback={<Loader/>}>
+        <ServerComponetExample/>
+        </Suspense> */}
 
-
-  <AlertDialog.Root>
+        {/* <ServerComponetExample/> */}
+        
+        {/* <AlertDialog.Root>
   <AlertDialog.Trigger>
     <Button color="red">Revoke access</Button>
   </AlertDialog.Trigger>
@@ -40,10 +77,8 @@ dffdsfsdfdsf
       </AlertDialog.Action>
     </Flex>
   </AlertDialog.Content>
-</AlertDialog.Root>
-
-      </main>
- 
-    </div>
-  )
+</AlertDialog.Root> */}
+      {/* </main> */}
+    </main>
+  );
 }
