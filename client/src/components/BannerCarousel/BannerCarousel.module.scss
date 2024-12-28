@@ -1,0 +1,107 @@
+.carouselContainer {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+  
+  .slideContainer {
+    position: relative;
+    height: 400px;
+  }
+  
+  .slidesWrapper {
+    display: flex;
+    height: 100%;
+    transition: transform 500ms ease-in-out;
+  }
+  
+  .slide {
+    width: 100%;
+    flex-shrink: 0;
+  }
+  
+  .slideLink {
+    display: block;
+    height: 100%;
+  }
+  
+  .desktopImage {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  
+    @media (min-width: 768px) {
+      display: block;
+    }
+  }
+  
+  .mobileImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  
+    @media (min-width: 768px) {
+      display: none;
+    }
+  }
+  
+  .navigationDots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  
+  .dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--accent-1);
+    border:2px solid  var(--yellow-9);
+    transition: all 300ms ease;
+    cursor: pointer;
+  
+    &.active {
+      width: 32px;
+      background-color: var(--yellow-9);
+      border:2px solid  var(--accent-1);
+    }
+  
+    // :global(.dark) & {
+    //   background-color: var(--gray-a6);
+      
+    //   &.active {
+    //     background-color: var(--yellow-9);
+    //   }
+    // }
+  }
+  
+  .navigationButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--accent-1);
+    border-radius: 50%;
+    border:2px solid  var(--yellow-9);
+    padding: 8px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  
+    @media (min-width: 768px) {
+      display: flex;
+    }
+  
+    &.prev {
+      left: 16px;
+    }
+  
+    &.next {
+      right: 16px;
+    }
+  }
