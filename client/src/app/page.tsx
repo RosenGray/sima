@@ -8,6 +8,7 @@ import {
   Box,
   Button,
   Card,
+  Container,
   Flex,
   Text,
 } from "@radix-ui/themes";
@@ -16,6 +17,7 @@ import styles from "./page.module.scss";
 import ServerComponetExample from "@/components/ServerComponetExample/ServerComponetExample";
 import Loader from './loading';
 import FormExample from '@/components/FormExample/FormExample';
+import BannerCarousel from '@/components/BannerCarousel/BannerCarousel';
 export default function Home() {
   // const [data, setData] = useState<any>([]);
 
@@ -27,6 +29,11 @@ export default function Home() {
 
   return (
     < main className={styles.Page}>
+      <h1>1</h1>
+      <BannerCarousel/>
+      <Container style={{background:'green'}} >
+        <h1>Container</h1>
+      </Container>
       {/* <Header /> */}
       {/* <main className={styles.Main}> */}
         main
@@ -40,10 +47,10 @@ export default function Home() {
             );
           })}
         </Card> */}
-        <FormExample/>
+        {/* <FormExample/>
         <Suspense fallback={<Loader/>}>
         <ServerComponetExample/>
-        </Suspense>
+        </Suspense> */}
 
         {/* <ServerComponetExample/> */}
 

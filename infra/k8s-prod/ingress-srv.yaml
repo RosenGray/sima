@@ -4,13 +4,12 @@ metadata:
   name: ingress-service
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
     - www.sima-board.com
-    secretName: sima-board-com-tls
+    secretName: namecheap-tls-secret
   rules:
     - host: www.sima-board.com 
       http:

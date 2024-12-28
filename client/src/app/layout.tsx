@@ -6,6 +6,7 @@ import StoreProvider from "./StoreProvider";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
+import Header from "@/components/Header/Header";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,6 +27,7 @@ export default function RootLayout({
         <StoreProvider>
           <ThemeProvider  attribute="class">
             <Theme accentColor="indigo">
+             <Header />
                {children}
             </Theme>
           </ThemeProvider>
