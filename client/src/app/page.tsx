@@ -1,5 +1,4 @@
-
-import { Suspense } from 'react'
+import { Suspense } from "react";
 
 import Header from "@/components/Header/Header";
 import {
@@ -15,9 +14,13 @@ import {
 import { useEffect, useState } from "react";
 import styles from "./page.module.scss";
 import ServerComponetExample from "@/components/ServerComponetExample/ServerComponetExample";
-import Loader from './loading';
-import FormExample from '@/components/FormExample/FormExample';
-import BannerCarousel from '@/components/BannerCarousel/BannerCarousel';
+
+import FormExample from "@/components/FormExample/FormExample";
+import BannerCarousel from "@/components/BannerCarousel/BannerCarousel";
+import Link from "next/link";
+import Loading from "./loading";
+console.log('process.env.JWT_KEY ',process.env.BACKBLAZEB_BASE_URL )
+
 export default function Home() {
   // const [data, setData] = useState<any>([]);
 
@@ -28,14 +31,24 @@ export default function Home() {
   // }, []);
 
   return (
-    < main className={styles.Page}>
-      <h1>1</h1>
-      <BannerCarousel/>
-      <Container style={{background:'green'}} >
-        <h1>Container</h1>
-      </Container>
-      {/* <Header /> */}
-      {/* <main className={styles.Main}> */}
+    <>
+      <Header />
+      <main className={styles.Page}>
+        <img src="https://f003.backblazeb2.com/file/sima-board-public/test.jpg" alt="" />
+        {/* <Link href="/about">about</Link>
+        <br />
+        <Link href="/auth/login">auth</Link>
+        <h1>1</h1>
+        <BannerCarousel />
+        <Container style={{ background: "green" }}>
+          <h1>Container</h1>
+        </Container> */}
+        {/* <ServerComponetExample/> */}
+        {/* <Suspense fallback={<Loading width={350} height={350} />}>
+        <ServerComponetExample/>
+        </Suspense>  */}
+        {/* <Header /> */}
+        {/* <main className={styles.Main}> */}
         main
         {/* <Card style={{ width: 400, height: 400 }}>
           {data.map((x) => {
@@ -51,15 +64,11 @@ export default function Home() {
         <Suspense fallback={<Loader/>}>
         <ServerComponetExample/>
         </Suspense> */}
-
         {/* <ServerComponetExample/> */}
-
         {/* <Suspense fallback={<Loader/>}>
         <ServerComponetExample/>
         </Suspense> */}
-
         {/* <ServerComponetExample/> */}
-        
         {/* <AlertDialog.Root>
   <AlertDialog.Trigger>
     <Button color="red">Revoke access</Button>
@@ -85,7 +94,10 @@ export default function Home() {
     </Flex>
   </AlertDialog.Content>
 </AlertDialog.Root> */}
-      {/* </main> */}
-    </main>
+        {/* </main> */}
+      </main>
+
+      <footer style={{ height: 60, background: "black" }}>placeholder</footer>
+    </>
   );
 }

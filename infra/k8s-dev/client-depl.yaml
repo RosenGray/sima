@@ -21,6 +21,36 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY 
+            - name: BACKBLAZEB_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-base-url
+                  key: BACKBLAZEB_BASE_URL
+            - name: BACKBLAZEB_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-endpoint
+                  key: BACKBLAZEB_ENDPOINT    
+            - name: BACKBLAZEB_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-region
+                  key: BACKBLAZEB_REGION
+            - name: BACKBLAZEB_PUBLIC_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-name
+                  key: BACKBLAZEB_PUBLIC_BUCKET_NAME    
+            - name: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-access-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+            - name: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-secret-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY                                                   
 ---
 apiVersion: v1
 kind: Service
