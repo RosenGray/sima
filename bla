@@ -1,0 +1,39 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  creationTimestamp: "2024-12-28T09:12:50Z"
+  generation: 1
+  name: sima-board-com-tls
+  namespace: default
+  ownerReferences:
+  - apiVersion: networking.k8s.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Ingress
+    name: ingress-service
+    uid: 8a080e4f-d9b5-4f3d-b9cd-043f9c793194
+  resourceVersion: "23391805"
+  uid: 90342e9d-0cf4-4b7c-b300-1e94e99fd8b5
+spec:
+  dnsNames:
+  - www.sima-board.com
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: letsencrypt-production
+  secretName: sima-board-com-tls
+  usages:
+  - digital signature
+  - key encipherment
+status:
+  conditions:
+  - lastTransitionTime: "2024-12-28T09:12:50Z"
+    message: Certificate is up to date and has not expired
+    observedGeneration: 1
+    reason: Ready
+    status: "True"
+    type: Ready
+  notAfter: "2025-03-28T08:14:43Z"
+  notBefore: "2024-12-28T08:14:44Z"
+  renewalTime: "2025-02-26T08:14:43Z"
+  revision: 1

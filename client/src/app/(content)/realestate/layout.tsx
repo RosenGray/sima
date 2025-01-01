@@ -13,7 +13,6 @@ export default function RootLayout({
 }>) {
   return (
     <div lang="vladi">
-      <Header />
       {children}
     </div>
   )

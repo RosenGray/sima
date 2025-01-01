@@ -1,16 +1,23 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 
+const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } = process.env;
+
+const isProd = NODE_ENV === "production";
+const MONGO_URI = isProd
+  ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/auth`
+  : "mongodb://auth-mongo-srv:27017/auth";
+
 const authServiceStart = async () => {
-  console.log('some changes...');
-  if (!process.env.JWT_KEY) {
+  console.log("starting auth service...");
+  if (!JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
-  if (!process.env.MONGO_URI) {
+  if (!MONGO_URI) {
     throw new Error("MONG_URI must be defined");
   }
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(MONGO_URI);
     console.log("connecting to mongodb");
   } catch (error) {
     console.log("mongodb-connection error:", error);

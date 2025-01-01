@@ -2,24 +2,36 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./NatsWrapper";
 
+const {
+  NATS_CLIENT_ID,
+  NATS_CLUSTER_ID,
+  NATS_URL,
+  JWT_KEY,
+  NODE_ENV,
+  DB_USERNAME,
+  DB_PASSWORD,
+} = process.env;
+
+const isProd = NODE_ENV === "production";
+const MONGO_URI = isProd
+  ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/realestate`
+  : "mongodb://realestate-mongo-srv:27017/realestate";
+
 const realestateServiceStart = async () => {
-  console.log('realeeestateeee');
-  if (!process.env.JWT_KEY) {
+  console.log("starting realstate service...");
+  if (!JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
-  if (!process.env.MONGO_URI) {
-    throw new Error("MONG_URI must be defined");
-  }
-  if (!process.env.NATS_CLIENT_ID) {
+  if (!NATS_CLIENT_ID) {
     throw new Error("NATS_CLIENT_ID must be defined");
   }
-  if (!process.env.NATS_URL) {
+  if (!NATS_URL) {
     throw new Error("NATS_URL must be defined");
   }
-  if (!process.env.NATS_CLUSTER_ID) {
+  if (!NATS_CLUSTER_ID) {
     throw new Error("NATS_CLUSTER_ID must be defined");
   }
-  const {MONGO_URI,NATS_CLIENT_ID,NATS_CLUSTER_ID,NATS_URL} = process.env;
+
   try {
     await natsWrapper.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, NATS_URL);
     await mongoose.connect(MONGO_URI);

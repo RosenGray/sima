@@ -6,6 +6,7 @@
     #ecedfe,
     #eddbe6
   );
+  --header-height: 60px;
 }
 
 html:is(.dark) {
@@ -28,12 +29,14 @@ html:is(.dark) {
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
-  height: 100vh;
 }
 
 /* reset */
 button,
 p {
   all: unset;
+}
+
+footer{
+  background-color: var(--gray-2);
 }

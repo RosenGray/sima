@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: rosengray/sima-client
+          env: 
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: BACKBLAZEB_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-base-url
+                  key: BACKBLAZEB_BASE_URL
+            - name: BACKBLAZEB_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-endpoint
+                  key: BACKBLAZEB_ENDPOINT    
+            - name: BACKBLAZEB_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-region
+                  key: BACKBLAZEB_REGION
+            - name: BACKBLAZEB_PUBLIC_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-name
+                  key: BACKBLAZEB_PUBLIC_BUCKET_NAME    
+            - name: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-access-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+            - name: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-secret-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-srv
+spec:
+  selector:
+    app: client
+  ports:
+    - name: client
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

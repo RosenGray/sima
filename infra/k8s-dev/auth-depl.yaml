@@ -16,8 +16,8 @@ spec:
         - name: auth
           image: rosengray/sima-auth
           env: 
-            - name: MONGO_URI
-              value: 'mongodb://realestate-mongo-srv:27017/realestate'
+            - name: NODE_ENV
+              value: 'development'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
