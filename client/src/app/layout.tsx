@@ -3,9 +3,11 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import StoreProvider from "./StoreProvider";
 import { Theme } from "@radix-ui/themes";
+import { config } from "@/utils/config";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import Script from "next/script";
+import { generateBackblazeUrl } from "@/utils/common";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "",
+        url: generateBackblazeUrl('sima','sima.dark.logo.png'),
       },
     ],
   },
@@ -47,7 +49,10 @@ export default function RootLayout({
         ></Script> */}
         <StoreProvider>
           <ThemeProvider attribute="class">
-            <Theme accentColor="indigo">{children}</Theme>
+            <Theme id={config.RADIX_THEME_APP_ID} accentColor="indigo">
+              {children}
+            </Theme>
+            <Theme id={config.RADIX_THEME_PORTAL_ID} style={{height:'auto',minHeight:'auto'}} accentColor="indigo" />
           </ThemeProvider>
         </StoreProvider>
       </body>

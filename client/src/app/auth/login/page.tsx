@@ -1,182 +1,122 @@
 "use client";
-import {
-  useForm,
-  getFormProps,
-  getInputProps,
-  useInputControl,
-} from "@conform-to/react";
+import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { useFormState } from "react-dom";
 import {
-  Container,
   Flex,
-  TextField,
+
   Button,
   Text,
   Heading,
   Card,
+  Box,
+  IconButton,
 } from "@radix-ui/themes";
-import { LockClosedIcon, PersonIcon } from "@radix-ui/react-icons";
-import { createUser, handleImage } from "../-/actions";
-import { loginSchema } from "../-/validations";
+import {
+  EnvelopeClosedIcon,
+  EyeOpenIcon,
+  LockClosedIcon,
 
+} from "@radix-ui/react-icons";
+import classes from "./../layout.module.scss";
+import Link from "next/link";
+import { loginSchema } from "../_lib/validations";
+import { createUser } from "../_lib/actions";
+import AuthTextField from "../_components/AuthTextField/AuthTextField";
+import { useonTogglePasswordView } from "../_lib/hooks";
 
 const LoginPage = () => {
-  // const [lastResult, action] = useFormState(createUser, undefined);
-  // const [form, fields] = useForm({
-  //   defaultValue: {
-  //     firstName: "vladi",
-  //   },
-  //   lastResult,
-  //   onValidate: ({ formData }) => {
-  //     return parseWithZod(formData, { schema: loginSchema });
-  //   },
-  //   shouldRevalidate: "onInput",
-  //   shouldValidate: "onInput",
-  // });
+  const [lastResult, action] = useFormState(createUser, undefined);
 
-  // const { firstName, email } = fields;
-  // const first = useInputControl(fields.firstName);
-  // console.log("form", form);
-  // console.log(
-  //   "inoutprotops",
-  //   getInputProps(fields.firstName, { type: "text" })
-  // );
-  // console.log("lastResult", lastResult);
-  // console.log("fields", fields.firstName.name);
-  // console.log('first',first)
+  const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
+    password: "password",
+  });
 
+  const [form, fields] = useForm({
+    defaultValue: {},
+    lastResult,
+    onValidate: ({ formData }) => {
+      return parseWithZod(formData, { schema: loginSchema });
+    },
+    shouldRevalidate: "onInput",
+    shouldValidate: "onInput",
+  });
+
+  const { email, password } = fields;
 
   return (
+    <Box
+      className={classes.AuthLayout__FormContaier}
+      width="100%"
+      maxWidth="550px"
+    >
+      <form action={action} {...getFormProps(form)} noValidate>
+        <Card size="4">
+          <Flex direction="column" gap="5" p="4">
+            <Heading align="center" size="7" mb="2">
+              Мы рады вас видеть
+            </Heading>
+            <Flex direction="column" gap="2">
+              {/* Email */}
 
-    <div>
-      <form action={handleImage}>
+              <AuthTextField
+                {...getInputProps(fields.email, { type: "email" })}
+                key={email.key}
+                placeholder="@ Адрес электронной почты"
+                size="3"
+                defaultValue={fields.email.initialValue}
+                className={classes.AuthLayout__TextFieldRoot}
+                dataIsValid={email.valid}
+                errors={email.errors}
+              >
+                <EnvelopeClosedIcon height="16" width="16" />
+              </AuthTextField>
 
-         <input type="file" name="image"/>
-         <button>Handle Image</button>
+              {/* Password */}
+              <AuthTextField
+                {...getInputProps(password, {
+                  type: inputPasswordType.password,
+                })}
+                key={password.key}
+                placeholder="Повторите пароль"
+                size="3"
+                defaultValue={password.initialValue}
+                className={classes.AuthLayout__TextFieldRoot}
+                dataIsValid={password.valid}
+                errors={password.errors}
+              >
+                <>
+                  <LockClosedIcon height="16" width="16" />
+                  <IconButton
+                    type="button"
+                    onClick={onTogglePasswordView(password.name)}
+                    size="3"
+                    variant="ghost"
+                    color="yellow"
+                  >
+                    <EyeOpenIcon height="16" width="16" />
+                  </IconButton>
+                </>
+              </AuthTextField>
+
+              <Flex justify="between" align="center" mt="1">
+                <Text size="4" color="gray">
+                  вы еще не зарегистрированы?
+                  <Text ml="10px" color="blue">
+                    <Link href="/auth/register">Зарегистрироваться</Link>
+                  </Text>
+                </Text>
+              </Flex>
+
+              <Button type="submit" size="3" mt="2">
+                Войти
+              </Button>
+            </Flex>
+          </Flex>
+        </Card>
       </form>
-    </div>
-    // <Flex
-    //   justify="center"
-    //   align="center"
-    //   style={{ minHeight: "100vh" }}
-    //   className="bg-gradient-to-r from-blue-50 to-indigo-50"
-    // >
-    //   <Container size="1">
-    //     <form action={action} {...getFormProps(form)}>
-    //       <Card size="4">
-    //         <Flex direction="column" gap="5" p="6">
-    //           <Flex direction="column" gap="3" align="center">
-    //             <Heading size="8" align="center" mb="2">
-    //               Welcome Back
-    //             </Heading>
-    //             <Text size="3" color="gray">
-    //               Sign in to continue to your account
-    //             </Text>
-    //           </Flex>
-
-    //           <Flex direction="column" gap="4">
-    //             <TextField.Root
-    //               {...getInputProps(fields.firstName, { type: "text" })}
-    //               key={firstName.key}
-    //               // onChange={handleInputChange}
-    //               value={first.value}
-    //               onChange={(e) => first.change(e.target.value)}
-    //               placeholder="First Name"
-    //             >
-    //               <TextField.Slot>
-    //                 <PersonIcon height="16" width="16" />
-    //               </TextField.Slot>
-    //             </TextField.Root>
-    //             <p>{firstName.errors}</p>
-    //             <TextField.Root
-    //               name={email.name}
-    //               defaultValue={email.initialValue}
-    //               key={email.key}
-    //               type="text"
-    //               placeholder="Email address"
-    //             >
-    //               <TextField.Slot>
-    //                 <PersonIcon height="16" width="16" />
-    //               </TextField.Slot>
-    //             </TextField.Root>
-
-    //             <TextField.Root
-    //               name="password"
-    //               placeholder="Password"
-    //               type="text"
-    //             >
-    //               <TextField.Slot>
-    //                 <LockClosedIcon height="16" width="16" />
-    //               </TextField.Slot>
-    //               {/* <TextField.Input placeholder="Password" type="password" size="3" /> */}
-    //             </TextField.Root>
-
-    //             <Flex justify="between" mt="1">
-    //               <Text size="2" color="gray">
-    //                 Don't have an account? <Text color="blue">Sign up</Text>
-    //               </Text>
-    //               <Text size="2" color="blue">
-    //                 Forgot password?
-    //               </Text>
-    //             </Flex>
-
-    //             <Button type="submit" size="3" mt="2">
-    //               Sign In
-    //             </Button>
-    //           </Flex>
-    //         </Flex>
-    //       </Card>
-    //     </form>
-    //   </Container>
-    // </Flex>
+    </Box>
   );
-
-  //   const formActionHandler = async (formData: FormData) => {
-  //     "use server";
-
-  //     const response = await fetch("http://sima.dev/api/users/signin", {
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //       },
-  //       method: "POST",
-  //       body: JSON.stringify({
-  //         email: "test3@test.com",
-  //         password: "password",
-  //       }),
-  //     });
-  //     const bla = await response.json();
-  //     console.log(bla);
-  //   };
-  // return (
-  //   <div>
-  //     <h1>Logidddnss</h1>
-  //     <form
-  //       onSubmit={ async (e) => {
-  //         e.preventDefault();
-  //       }}
-  //     >
-  //       <input type="email" name="email" />
-  //       <input type="text" name="password" />
-  //       <button type="button" onClick={async() => {
-  //         const response = await fetch("https://sima.dev/api/users/signin", {
-  //           headers: {
-  //             Accept: "application/json",
-  //             "Content-Type": "application/json",
-  //           },
-  //           method: "POST",
-  //           body: JSON.stringify({
-  //             email: "test3@test.com",
-  //             password: "password",
-  //           }),
-  //         });
-  //         const bla = await response.json();
-  //         console.log(bla);
-  //       }}>dd</button>
-  //     </form>
-  //   </div>
-  // );
 };
 
 export default LoginPage;

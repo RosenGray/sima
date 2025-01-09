@@ -1,107 +1,114 @@
-.carouselContainer {
+@import "./../../app/global";
+
+.BannerCarousel {
+  &__Container {
     position: relative;
     width: 100%;
     overflow: hidden;
     border-radius: 20px;
+    max-width: 90%;
+    margin: 1rem auto;
+    background-color: var(--gray-2);
   }
-  
-  .slideContainer {
+  &__slideContainer {
     position: relative;
-    height: 400px;
+    aspect-ratio: 9/3;
   }
-  
-  .slidesWrapper {
+
+  &__slidesWrapper {
     display: flex;
     height: 100%;
     transition: transform 500ms ease-in-out;
   }
-  
-  .slide {
+
+  &__slide {
     width: 100%;
     flex-shrink: 0;
   }
-  
-  .slideLink {
-    display: block;
-    height: 100%;
-  }
-  
-  .desktopImage {
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  
-    @media (min-width: 768px) {
-      display: block;
-    }
-  }
-  
-  .mobileImage {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  
-    @media (min-width: 768px) {
-      display: none;
-    }
-  }
-  
-  .navigationDots {
+
+  &__heading {
     position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    z-index: 1;
+    text-align: center;
+    top: 10px;
+  }
+
+  &__slideLink {
+    display: block;
+    height: 100%;
+    position: relative;
+  }
+
+  &__slideImage {
+    object-fit: cover;
+    display: none;
+
+    &--desktop {
+      @media #{$media-tablet-portrait-min} {
+        display: block;
+      }
+    }
+
+    &--mobile {
+      @media #{$media-start-min} and #{$media-tablet-portrait-max} {
+        display: block;
+      }
+    }
+  }
+
+  &__navigationDots {
+    // position: absolute;
+    // bottom: 16px;
+    padding: 0.5em;
+    // left: 50%;
+    // transform: translateX(-50%);
     display: flex;
     gap: 8px;
+    position: relative;
+    justify-content: center;
+
+    flex: 1;
   }
-  
-  .dot {
+
+  &__navigationDot {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: var(--accent-1);
-    border:2px solid  var(--yellow-9);
+    background-color: var(--accent-7);
+    // border: 2px solid var(--yellow-9);
     transition: all 300ms ease;
     cursor: pointer;
-  
-    &.active {
+
+    &--active {
       width: 32px;
-      background-color: var(--yellow-9);
-      border:2px solid  var(--accent-1);
+      background-color: var(--red-10);
+      border: 2px solid var(--accent-1);
     }
-  
-    // :global(.dark) & {
-    //   background-color: var(--gray-a6);
-      
-    //   &.active {
-    //     background-color: var(--yellow-9);
-    //   }
-    // }
   }
-  
-  .navigationButton {
+
+  &__navigationButton {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     background-color: var(--accent-1);
     border-radius: 50%;
-    border:2px solid  var(--yellow-9);
     padding: 8px;
     display: none;
     align-items: center;
     justify-content: center;
-  
+
     @media (min-width: 768px) {
       display: flex;
     }
-  
-    &.prev {
+
+    &--prev {
       left: 16px;
     }
-  
-    &.next {
+
+    &--next {
       right: 16px;
     }
   }
+}

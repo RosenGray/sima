@@ -40,3 +40,8 @@ p {
 footer{
   background-color: var(--gray-2);
 }
+
+a{
+  text-decoration: none;
+  cursor: pointer;
+}
