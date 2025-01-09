@@ -1,0 +1,16 @@
+.AuthLayout {
+  background: var(--background-color);
+  &__Flex {
+    min-height: 100vh;
+  }
+  &__FormContaier {
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.1);
+  }
+  &__TextFieldRoot {
+    &:has(input[data-isvalid="false"]) {
+      --text-field-focus-color: red;
+      --text-field-selection-color: red;
+      box-shadow: inset 0 0 0 var(--text-field-border-width) var(--red-9);
+    }
+  }
+}

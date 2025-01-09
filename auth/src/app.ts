@@ -1,3 +1,7 @@
+process.on('SIGUSR1', () => {
+  console.log('Enabling inspector...');
+});
+
 import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
@@ -22,7 +26,10 @@ app.use(
   })
 );
 app.get("/api/users/healthcheck", (req, res) => {
-  res.status(200).send(true);
+  const bla = 3;
+
+  console.log(bla)
+  res.status(200).send({nmW:'CLs'});
 });
 
 app.use(currentUserRouter);

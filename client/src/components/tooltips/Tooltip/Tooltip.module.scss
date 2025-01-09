@@ -1,0 +1,64 @@
+// Tooltip.module.scss
+
+.tooltipContent {
+  background-color: var(--gray-12);
+  border-radius: 6px;
+  font-size: var(--space-1);
+  line-height: 1.4;
+  color:var(--gray-1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  animation: slideUpAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  // Add a very subtle border for depth
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tooltipArrow {
+  fill: var(--gray-12);
+  width: 10px;
+  height: 5px;
+}
+
+// Side-specific margins for the arrow
+.tooltipContent[data-side="top"] .tooltipArrow {
+  bottom: -4px;
+}
+
+.tooltipContent[data-side="bottom"] .tooltipArrow {
+  top: -4px;
+}
+
+.tooltipContent[data-side="left"] .tooltipArrow {
+  right: -4px;
+}
+
+.tooltipContent[data-side="right"] .tooltipArrow {
+  left: -4px;
+}
+
+// Animation keyframes
+@keyframes slideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// State-based animations
+.tooltipContent[data-state="delayed-open"] {
+  animation: slideUpAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+// Add custom focus styles for accessibility
+.tooltipTrigger {
+  &:focus-visible {
+    outline: 2px solid #4d90fe;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
