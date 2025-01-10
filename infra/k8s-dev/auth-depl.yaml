@@ -15,6 +15,7 @@ spec:
       containers:
         - name: auth
           image: rosengray/sima-auth
+          ports:       
           env: 
             - name: NODE_ENV
               value: 'development'

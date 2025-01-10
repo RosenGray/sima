@@ -1,7 +1,3 @@
-process.on('SIGUSR1', () => {
-  console.log('Enabling inspector...');
-});
-
 import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
@@ -13,6 +9,7 @@ import signoutUserRouter from "./routes/signout";
 import { errorHandler, NotFoundError } from "@sima-board/common";
 
 console.log('auth process.env.NODE_ENV v4 ',process.env.NODE_ENV )
+console.log('Debug test point');
 
 export const app = express();
 app.set("trust proxy", true);
