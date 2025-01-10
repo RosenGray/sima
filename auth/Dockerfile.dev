@@ -1,7 +1,12 @@
-# Dockerfile.dev
 FROM node:alpine
+
 WORKDIR /app
 COPY package*.json .
 RUN npm install
 COPY . .
-CMD ["npm", "start"]
+
+# Expose debugging port
+EXPOSE 3000
+EXPOSE 9229
+
+CMD ["npm", "run", "start:debug"]

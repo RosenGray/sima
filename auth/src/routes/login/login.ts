@@ -1,15 +1,18 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import jwt from "jsonwebtoken";
-import { PasswordManager } from "../services/PasswordManager";
-import { User } from "../models/User";
+import multer from "multer";
+import { PasswordManager } from "../../services/PasswordManager";
+import { User } from "../../models/User";
 
 import { BadRequestError, validateRequest } from "@sima-board/common";
 
 const router = express.Router();
+const upload = multer();
 
 router.post(
-  "/api/users/signin",
+  "/api/users/login",
+  upload.none(),
   [
     body("email")
       .isEmail()

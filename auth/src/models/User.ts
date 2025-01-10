@@ -2,11 +2,21 @@ import mongoose, { Document } from "mongoose";
 import {PasswordManager} from '../services/PasswordManager';
 
 interface IUser {
+  firstName:string;
+  lastName:string;
   email: string;
   password: string;
 }
 
 const userSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    lastName: true,
+  },
   email: {
     type: String,
     required: true,
