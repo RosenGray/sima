@@ -3,8 +3,8 @@
   &__Flex {
     min-height: 100vh;
   }
-  &__FormContaier {
-    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.1);
+  &__Card {
+     box-shadow: inset var(--shadow-3)
   }
   &__TextFieldRoot {
     &:has(input[data-isvalid="false"]) {

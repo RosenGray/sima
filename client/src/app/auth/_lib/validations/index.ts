@@ -14,9 +14,11 @@ export const registerSchema = z
       })
       .min(1)
       .refine((val) => !/\d/.test(val), "Фамилия не должна содержать цифры"),
-    email: z.string({
-      required_error: "электронное почта обязательная",
-    }).email("Введите корректный адрес электронной почты"),
+    email: z
+      .string({
+        required_error: "электронное почта обязательная",
+      })
+      .email("Введите корректный адрес электронной почты"),
     password: z
       .string({
         required_error: "пароль обязательный",
@@ -42,8 +44,16 @@ export const registerSchema = z
   );
 
 export const loginSchema = z.object({
-  email: z.string().email("Введите корректный адрес электронной почты"),
+  email: z
+    .string({
+      required_error: "электронное почта обязательная",
+    })
+    .email("Введите корректный адрес электронной почты"),
   password: z.string({
     required_error: "пароль обязательный",
   }),
+});
+
+export const resetPasswordSchema = z.object({
+  email: z.string().email("Введите корректный адрес электронной почты"),
 });

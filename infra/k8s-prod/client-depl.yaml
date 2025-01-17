@@ -16,6 +16,8 @@ spec:
         - name: client
           image: rosengray/sima-client
           env: 
+            - name: NEXT_PUBLIC_API_URL
+              value: ""
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

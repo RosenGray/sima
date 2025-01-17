@@ -4,7 +4,6 @@ import { parseWithZod } from "@conform-to/zod";
 import { useFormState } from "react-dom";
 import {
   Flex,
-
   Button,
   Text,
   Heading,
@@ -16,25 +15,31 @@ import {
   EnvelopeClosedIcon,
   EyeOpenIcon,
   LockClosedIcon,
-
 } from "@radix-ui/react-icons";
-import classes from "./../layout.module.scss";
 import Link from "next/link";
 import { loginSchema } from "../_lib/validations";
 import { createUser } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 import { useonTogglePasswordView } from "../_lib/hooks";
+import Form from "@/components/Form/Form";
+import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import { useEffect, useState } from "react";
+import Loader from "@/components/Loader/Loader";
+import { SubmissionResultWithErrorsState } from "@/types/form.types";
+import classes from "./../layout.module.scss";
 
 const LoginPage = () => {
-  const [lastResult, action] = useFormState(createUser, undefined);
-
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [formState, formAction] = useFormState(createUser, {
+    isErrorFromTheServer: false,
+  } as SubmissionResultWithErrorsState);
   const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
     password: "password",
   });
 
   const [form, fields] = useForm({
     defaultValue: {},
-    lastResult,
+    lastResult: formState,
     onValidate: ({ formData }) => {
       return parseWithZod(formData, { schema: loginSchema });
     },
@@ -44,77 +49,107 @@ const LoginPage = () => {
 
   const { email, password } = fields;
 
+  const handleModalClose = () => {
+    setErrorModalOpen(false);
+    const formData = new FormData();
+    formData.append("_action", "reset_server_error");
+    formAction(formData);
+  };
+
+  useEffect(() => {
+    if (formState?.isErrorFromTheServer) {
+      setErrorModalOpen(true);
+    }
+  }, [formState?.isErrorFromTheServer]);
+
   return (
-    <Box
-      className={classes.AuthLayout__FormContaier}
-      width="100%"
-      maxWidth="550px"
-    >
-      <form action={action} {...getFormProps(form)} noValidate>
-        <Card size="4">
-          <Flex direction="column" gap="5" p="4">
-            <Heading align="center" size="7" mb="2">
-              Мы рады вас видеть
-            </Heading>
-            <Flex direction="column" gap="2">
-              {/* Email */}
+    <Box width="100%" maxWidth="550px">
+      <Form action={formAction} {...getFormProps(form)} noValidate>
+        {({ pending }) => (
+          <Card className={classes.AuthLayout__Card} variant="classic" size="4">
+            <Flex direction="column" gap="5" p="4">
+              <Heading align="center" size="7" mb="2">
+                Мы рады вас видеть
+              </Heading>
+              <Flex direction="column" gap="3">
+                {/* Email */}
 
-              <AuthTextField
-                {...getInputProps(fields.email, { type: "email" })}
-                key={email.key}
-                placeholder="@ Адрес электронной почты"
-                size="3"
-                defaultValue={fields.email.initialValue}
-                className={classes.AuthLayout__TextFieldRoot}
-                dataIsValid={email.valid}
-                errors={email.errors}
-              >
-                <EnvelopeClosedIcon height="16" width="16" />
-              </AuthTextField>
+                <AuthTextField
+                  {...getInputProps(fields.email, { type: "email" })}
+                  key={email.key}
+                  placeholder="@ Адрес электронной почты"
+                  size="3"
+                  defaultValue={fields.email.initialValue}
+                  className={classes.AuthLayout__TextFieldRoot}
+                  dataIsValid={email.valid}
+                  errors={email.errors}
+                  disabled={pending}
+                >
+                  <EnvelopeClosedIcon height="16" width="16" />
+                </AuthTextField>
 
-              {/* Password */}
-              <AuthTextField
-                {...getInputProps(password, {
-                  type: inputPasswordType.password,
-                })}
-                key={password.key}
-                placeholder="Повторите пароль"
-                size="3"
-                defaultValue={password.initialValue}
-                className={classes.AuthLayout__TextFieldRoot}
-                dataIsValid={password.valid}
-                errors={password.errors}
-              >
-                <>
-                  <LockClosedIcon height="16" width="16" />
-                  <IconButton
-                    type="button"
-                    onClick={onTogglePasswordView(password.name)}
-                    size="3"
-                    variant="ghost"
-                    color="yellow"
-                  >
-                    <EyeOpenIcon height="16" width="16" />
-                  </IconButton>
-                </>
-              </AuthTextField>
+                {/* Password */}
+                <AuthTextField
+                  {...getInputProps(password, {
+                    type: inputPasswordType.password,
+                  })}
+                  key={password.key}
+                  placeholder="Повторите пароль"
+                  size="3"
+                  defaultValue={password.initialValue}
+                  className={classes.AuthLayout__TextFieldRoot}
+                  dataIsValid={password.valid}
+                  errors={password.errors}
+                  disabled={pending}
+                >
+                  <>
+                    <LockClosedIcon height="16" width="16" />
+                    <IconButton
+                      type="button"
+                      onClick={onTogglePasswordView(password.name)}
+                      size="3"
+                      variant="ghost"
+                      color="yellow"
+                    >
+                      <EyeOpenIcon height="16" width="16" />
+                    </IconButton>
+                  </>
+                </AuthTextField>
 
-              <Flex justify="between" align="center" mt="1">
-                <Text size="4" color="gray">
-                  вы еще не зарегистрированы?
-                  <Text ml="10px" color="blue">
-                    <Link href="/auth/register">Зарегистрироваться</Link>
+                <Flex justify="between" align="center" mt="1">
+                  <Text size="4" color="gray">
+                    вы еще не зарегистрированы?
+                    <Text weight="bold" ml="10px" color="yellow">
+                      <Link href="/auth/register">Зарегистрироваться</Link>
+                    </Text>
                   </Text>
+                </Flex>
+                <Button
+                  disabled={pending}
+                  variant={pending ? "surface" : "solid"}
+                  type="submit"
+                  size="3"
+                  mt="2"
+                >
+                  {pending ? (
+                    <Loader isSpin width={500} height={500} />
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+                <Text weight="bold" mt="3" color="yellow">
+                  <Link href="/auth/reset-password">Забыли пароль?</Link>
                 </Text>
               </Flex>
-
-              <Button type="submit" size="3" mt="2">
-                Войти
-              </Button>
             </Flex>
-          </Flex>
-        </Card>
-      </form>
+          </Card>
+        )}
+      </Form>
+      <ErrorModal
+        open={errorModalOpen}
+        onOpenChange={handleModalClose}
+        errorMessage={formState?.serverError?.errors}
+      />
     </Box>
   );
 };

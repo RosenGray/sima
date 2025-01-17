@@ -1,7 +1,4 @@
 import { jwtVerify } from "jose";
-import { cookies } from 'next/headers';
-import { redirect } from "next/navigation";
-import { useState } from "react";
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_KEY || "");
 
 export async function validateSession(encodedToken: string): Promise<boolean> {
