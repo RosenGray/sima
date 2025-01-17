@@ -17,7 +17,7 @@ spec:
           image: rosengray/sima-client
           env: 
             - name: NEXT_PUBLIC_API_URL
-              value: ""
+              value: "https://www.sima-board.com"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
