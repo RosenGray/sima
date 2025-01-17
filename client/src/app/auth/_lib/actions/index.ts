@@ -4,7 +4,7 @@ import { cookies as nextCookies } from "next/headers";
 import { parseWithZod } from "@conform-to/zod";
 import { loginSchema } from "../validations";
 import { parse } from "set-cookie-parser";
-import { SubmissionResultWithErrorsState } from "@/types/form.types";
+import { ServerErrorType, SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
 import { customFetch } from "@/fetch";
 
 export const createUser = async (
@@ -37,7 +37,7 @@ export const createUser = async (
         ...submissionResult,
         isErrorFromTheServer: true,
         serverError: errorResponse?.errors || "An error occurred",
-        errorType: errorResponse?.errorType || 0,
+        errorType: errorResponse?.errorType || ServerErrorType.BadRequest,
       };
     }
 
@@ -64,8 +64,9 @@ export const createUser = async (
       isErrorFromTheServer: true,
       serverError: {
         errors: [{ message: (error as Error).message }],
-        errorType: 0,
+        errorType: ServerErrorType.BadRequest,
       },
+      errorType: ServerErrorType.BadRequest,
     };
   }
 };

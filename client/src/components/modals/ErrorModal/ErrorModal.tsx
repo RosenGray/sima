@@ -2,13 +2,18 @@ import { FC } from "react";
 import { Button, Dialog, Flex } from "@radix-ui/themes";
 import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
 import classes from "./ErrorModal.module.scss";
-import { ErrorsFromServer } from "@/types/form.types";
+import { ErrorsFromServer, ServerErrorType } from "@/fetch/fetch.types";
 
 interface ErrorModalProps extends Dialog.RootProps {
-  errorMessage?: string | ErrorsFromServer[]
+  errorMessage?: string | ErrorsFromServer[];
+  errorType?: ServerErrorType;
 }
 
-const ErrorModal: FC<ErrorModalProps> = ({ open, onOpenChange }) => {
+const ErrorModal: FC<ErrorModalProps> = ({ open, onOpenChange, errorType }) => {
+  const errorMessage =
+    errorType === ServerErrorType.NotAuthorized
+      ? "Неверный логин или пароль"
+      : "Мы столкнулись с непредвиденной ошибкой. Пожалуйста, попробуйте еще раз";
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content className={classes.ErrorModal__Content}>
@@ -30,8 +35,7 @@ const ErrorModal: FC<ErrorModalProps> = ({ open, onOpenChange }) => {
             Упс! Что-то пошло не так
           </Dialog.Title>
           <Dialog.Description size="3">
-            Мы столкнулись с непредвиденной ошибкой. Пожалуйста, попробуйте еще
-            раз
+            {errorMessage}
           </Dialog.Description>
         </Flex>
 

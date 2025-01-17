@@ -25,7 +25,7 @@ import Form from "@/components/Form/Form";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { useEffect, useState } from "react";
 import Loader from "@/components/Loader/Loader";
-import { SubmissionResultWithErrorsState } from "@/types/form.types";
+import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
 import classes from "./../layout.module.scss";
 
 const LoginPage = () => {
@@ -149,6 +149,7 @@ const LoginPage = () => {
         open={errorModalOpen}
         onOpenChange={handleModalClose}
         errorMessage={formState?.serverError?.errors}
+        errorType={formState?.errorType}
       />
     </Box>
   );
