@@ -3,7 +3,8 @@ import { currentUser, requireAuth } from "@sima-board/common";
 
 const router = express.Router();
 
-router.get("/api/users/currentuser", currentUser, requireAuth, (req, res) => {
+router.get("/api/users/currentuser", currentUser, requireAuth, async (req, res) => {
+  
   res.send({ currentUser: req.currentUser || null });
 });
 

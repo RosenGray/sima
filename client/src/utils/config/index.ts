@@ -7,6 +7,7 @@ interface Config {
   BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY: string;
   RADIX_THEME_APP_ID:string;
   RADIX_THEME_PORTAL_ID:string;
+  API_URL:string;
 }
 
 const getConfig = (
@@ -40,7 +41,8 @@ export const config: Config = {
     process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
   ),
   RADIX_THEME_APP_ID : "radix-themes-app",
-  RADIX_THEME_PORTAL_ID : "radix-themes-portal"
+  RADIX_THEME_PORTAL_ID : "radix-themes-portal",
+  API_URL: getConfig("API_URL", process.env.NEXT_PUBLIC_API_URL)
 };
 
 

@@ -18,7 +18,7 @@ it("can only be accessed if the user is signed in", async () => {
 it("returs a status other than 401 if the user is signed in", async () => {
   const response = await request(app)
     .post("/api/realestate/forrent")
-    .set("Cookie", global.signin())
+    .set("Cookie", global.login())
     .send({});
 
   expect(response.status).not.toEqual(401);
@@ -40,7 +40,7 @@ it("creates a ticket with valid inputs", async () => {
 
   await request(app)
     .post("/api/realestate/forrent")
-    .set("Cookie", global.signin())
+    .set("Cookie", global.login())
     .send({
       title: "sometitle",
     })
@@ -52,7 +52,7 @@ it("creates a ticket with valid inputs", async () => {
 it("publishes an event", async () => {
   await request(app)
     .post("/api/realestate/forrent")
-    .set("Cookie", global.signin())
+    .set("Cookie", global.login())
     .send({
       title: "sometitle",
     })

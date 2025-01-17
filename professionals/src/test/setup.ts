@@ -5,10 +5,10 @@ import jwt from "jsonwebtoken";
 let mongo: any;
 
 declare global {
-  var signin: () => string[];
+  var login: () => string[];
 }
 
-global.signin = () => {
+global.login = () => {
   const payload = {
     id: new mongoose.Types.ObjectId().toHexString(),
     email: "test@test.com",

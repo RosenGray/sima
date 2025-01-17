@@ -1,33 +1,30 @@
 import express, { Request, Response } from "express";
-import { body } from "express-validator";
+import multer from "multer";
 import jwt from "jsonwebtoken";
 
-import { validateRequest, BadRequestError } from "@sima-board/common";
-import { User } from "../models/User";
+import {  BadRequestError, validateRequest } from "@sima-board/common";
+import { User } from "../../models/User";
+import { registerSchema } from "./register.schema";
 
 const router = express.Router();
 
+// Configure multer for handling FormData
+const upload = multer();
+
 router.post(
-  "/api/users/signup",
-  [
-    body("email")
-      .isEmail()
-      .withMessage("Электронная почта должна быть действующей"),
-    body("password")
-      .trim()
-      .isLength({ min: 4, max: 20 })
-      .withMessage("Пароль должен содержать от 4 до 20 символов."),
-  ],
+  "/api/users/register",
+  upload.none(),
+  registerSchema,
   validateRequest,
   async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { firstName,lastName, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       throw new BadRequestError("Электронная почта уже используется");
     }
-    const user = new User({ email, password });
+    const user = new User({firstName,lastName, email, password });
     await user.save();
 
     // Generate JWT

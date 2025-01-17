@@ -58,12 +58,11 @@ const RegisterPage = () => {
 
   return (
     <Box
-      className={classes.AuthLayout__FormContaier}
       width="100%"
       maxWidth="500px"
     >
       <form action={action} {...getFormProps(form)} noValidate>
-        <Card size="4">
+        <Card className={classes.AuthLayout__Card} size="4">
           <Flex direction="column" gap="5" p="4">
             <Heading align="center" size="7" mb="2">
               Приятно познакомиться

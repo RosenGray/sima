@@ -1,15 +1,17 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import jwt from "jsonwebtoken";
-import { PasswordManager } from "../services/PasswordManager";
-import { User } from "../models/User";
-
-import { BadRequestError, validateRequest } from "@sima-board/common";
+import multer from "multer";
+import { PasswordManager } from "../../services/PasswordManager";
+import { User } from "../../models/User";
+import { NotAuthorizedError, validateRequest } from "@sima-board/common";
 
 const router = express.Router();
+const upload = multer();
 
 router.post(
-  "/api/users/signin",
+  "/api/users/login",
+  upload.none(),
   [
     body("email")
       .isEmail()
@@ -22,7 +24,7 @@ router.post(
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
-      throw new BadRequestError("Неверные данные");
+      throw new NotAuthorizedError();
     }
 
     const passwordsMatch = await PasswordManager.compare(
@@ -30,7 +32,7 @@ router.post(
       password
     );
     if (!passwordsMatch) {
-      throw new BadRequestError("Неверные данные");
+      throw new NotAuthorizedError();
     }
 
     // Generate JWT

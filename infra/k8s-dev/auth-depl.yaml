@@ -15,6 +15,9 @@ spec:
       containers:
         - name: auth
           image: rosengray/sima-auth
+          ports:       
+            - containerPort: 3000
+            - containerPort: 9229  # Debug port
           env: 
             - name: NODE_ENV
               value: 'development'
@@ -37,3 +40,7 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
+    - name: debug
+      protocol: TCP
+      port: 9229
+      targetPort: 9229  # Add

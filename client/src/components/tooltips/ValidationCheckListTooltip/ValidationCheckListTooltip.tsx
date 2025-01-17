@@ -1,7 +1,5 @@
 import { Heading, Box, Flex, Text, Checkbox } from "@radix-ui/themes";
-
 import * as RadixUiTooltip from "@radix-ui/react-tooltip";
-import styles from "./ValidationCheckListTooltip.module.scss";
 import Tooltip from "../Tooltip/Tooltip";
 import { ReactNode } from "react";
 import { ToolTipValidationItem } from "./validationCheckListTooltip.types";
@@ -34,7 +32,7 @@ const ValidationCheckListTooltip = ({
           <Heading as="h1" size="6" mb="10px">
             {title}
           </Heading>
-          <Box className={styles.listWrapper}>
+          <Box>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {placeHolderItems.map((item) => {
                 const { id, label, isHidden } = item;
