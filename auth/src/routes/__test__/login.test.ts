@@ -6,7 +6,7 @@ it('fails when an email that does not exist is supplied', async () => {
     .post('/api/users/login')
     .field('email', 'test@test.com')
     .field('password', 'Password123')
-    .expect(400);
+    .expect(401);
 });
 
 it('fails when an incorrect password is supplied', async () => {
@@ -25,7 +25,7 @@ it('fails when an incorrect password is supplied', async () => {
     .post('/api/users/login')
     .field('email', 'test@test.com')
     .field('password', 'WrongPassword123')
-    .expect(400);
+    .expect(401);
 });
 
 it('responds with a cookie when given valid credentials', async () => {
