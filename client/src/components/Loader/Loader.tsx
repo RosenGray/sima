@@ -31,6 +31,7 @@ interface LoaderProps {
   className?: string;
   background?: string;
   isSpin?: boolean;
+  isSuccess?: boolean;
   backgroundGradient?: {
     colors: string[];
     angle?: number;
@@ -44,6 +45,7 @@ const Loader: React.FC<LoaderProps> = ({
   background = "transparent",
   backgroundGradient,
   isSpin,
+  isSuccess = false,
 }) => {
   const getBackground = () => {
     return backgroundGradient ? `url(#backgroundGradient)` : background;
@@ -198,60 +200,46 @@ const Loader: React.FC<LoaderProps> = ({
               dur="8s"
               repeatCount="indefinite"
             />
-            <text
-              x="0"
-              y="0"
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize="250"
-              fontFamily="Arial, sans-serif"
-              fill="url(#letterGradient)"
-              stroke="url(#letterGradient)"
-              strokeWidth="2"
-              fontStretch="extra-expanded" /* Make it wider (optional) */
-            >
-              S
-              <animate
-                attributeName="stroke-width"
-                values="2;4;2"
-                dur="3s"
-                repeatCount="indefinite"
-              />
-            </text>
+            {isSuccess ? (
+              <path
+                d="M-70 0 L-20 50 L70 -40"
+                fill="none"
+                stroke="#00FF00"
+                strokeWidth="30"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <animate
+                  attributeName="stroke-width"
+                  values="30;35;30"
+                  dur="3s"
+                  repeatCount="indefinite"
+                />
+              </path>
+            ) : (
+              <text
+                x="0"
+                y="0"
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize="250"
+                fontFamily="Arial, sans-serif"
+                fill="url(#letterGradient)"
+                stroke="url(#letterGradient)"
+                strokeWidth="2"
+                fontStretch="extra-expanded"
+              >
+                S
+                <animate
+                  attributeName="stroke-width"
+                  values="2;4;2"
+                  dur="3s"
+                  repeatCount="indefinite"
+                />
+              </text>
+            )}
           </g>
         </g>
-
-        {/* Letter S */}
-        {/* <g  style={{transform:"translate(50%,45%"}} filter="url(#glow)">
-        <g>
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            from="0"
-            to="360"
-            dur="8s"
-            repeatCount="indefinite"
-          />
-          <path
-            d="M30,-60 
-               C-30,-60 -70,-30 -70,0
-               C-70,30 -30,60 30,60
-               C70,60 70,90 70,100
-               C70,130 10,130 -50,100"
-            fill="none"
-            stroke="url(#letterGradient)"
-            strokeWidth="20"
-            strokeLinecap="round"
-          >
-            <animate
-              attributeName="stroke-width"
-              values="20;24;20"
-              dur="3s"
-              repeatCount="indefinite"
-            />
-          </path>
-        </g>
-      </g> */}
 
         {/* Sparkles */}
         <g transform="translate(400, 300)">

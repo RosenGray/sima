@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { app } from "./app";
+import { DatabaseConnectionError, ServerErrorType } from "@sima-board/common";
 
 const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } = process.env;
 
@@ -21,6 +22,7 @@ const authServiceStart = async () => {
     console.log("connecting to mongodb");
   } catch (error) {
     console.log("mongodb-connection error:", error);
+    throw new DatabaseConnectionError("Error connecting to db", ServerErrorType.DatabaseConnection);
   }
   app.listen(3000, () => {
     console.log("listening on port 3000");

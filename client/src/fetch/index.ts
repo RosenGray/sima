@@ -1,3 +1,4 @@
+"use server";
 import { config } from "@/utils/config";
 
 const { API_URL } = config;
@@ -7,7 +8,7 @@ export const customFetch = async (
   options: RequestInit = {}
 ) => {
   const url = `${API_URL}${endpoint}`;
-  console.log('url',url)
+  console.log("url", url);
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -17,6 +18,3 @@ export const customFetch = async (
 
   return response;
 };
-
-// Usage
-customFetch("/users").then((data) => console.log(data));

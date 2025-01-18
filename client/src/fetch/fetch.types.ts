@@ -1,13 +1,5 @@
 import { SubmissionResult } from "@conform-to/react";
-
-export enum ServerErrorType {
-  RequestValidation = 1,
-  BadRequest = 2,
-  DatabaseConnection = 3,
-  NotAuthorized = 4,
-  NotFound = 5
-}
-
+import { ServerErrorType } from "@sima-board/common";
 
 export type ErrorsFromServer = {
   message: string;
@@ -24,4 +16,5 @@ export interface SubmissionResultWithErrorsState
   isErrorFromTheServer?: boolean;
   serverError?: ServerError;
   errorType?: ServerErrorType;
+  isSuccess?: boolean;
 }

@@ -2,17 +2,46 @@
 import { redirect } from "next/navigation";
 import { cookies as nextCookies } from "next/headers";
 import { parseWithZod } from "@conform-to/zod";
-import { loginSchema } from "../validations";
+import { loginSchema, registerSchema } from "../validations";
 import { parse } from "set-cookie-parser";
-import { ServerErrorType, SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
+import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
 import { customFetch } from "@/fetch";
+import { z } from "zod";
+import { ServerErrorType } from "@sima-board/common";
 
-export const createUser = async (
+export const registerActionWrapper = async (
   prevState: unknown,
   formData: FormData
+) => {
+  return authUser(prevState, formData, {
+    url: "/api/users/register",
+    schema: registerSchema,
+  });
+};
+
+export const loginActionWrapper = async (
+  prevState: unknown,
+  formData: FormData
+) => {
+  return authUser(prevState, formData, {
+    url: "/api/users/login",
+    schema: loginSchema,
+  });
+};
+
+export const authUser = async (
+  prevState: unknown,
+  formData: FormData,
+  {
+    url,
+    schema,
+  }: {
+    url: string;
+    schema: z.ZodType<Record<string, unknown>>;
+  }
 ): Promise<SubmissionResultWithErrorsState> => {
   const submissionResult = parseWithZod(formData, {
-    schema: loginSchema,
+    schema,
   }).reply();
 
   if (submissionResult.status !== "success") {
@@ -22,7 +51,7 @@ export const createUser = async (
   }
 
   try {
-    const response = await customFetch("/api/users/login", {
+    const response = await customFetch(url, {
       headers: {
         Accept: "application/json",
       },
@@ -37,7 +66,8 @@ export const createUser = async (
         ...submissionResult,
         isErrorFromTheServer: true,
         serverError: errorResponse?.errors || "An error occurred",
-        errorType: errorResponse?.errorType || ServerErrorType.BadRequest,
+        errorType:
+          errorResponse?.errorType || ServerErrorType.AuthWrongPasswordOrEmail,
       };
     }
 
@@ -57,7 +87,10 @@ export const createUser = async (
         });
       }
     }
-    redirect("/");
+    return {
+      ...submissionResult,
+      isSuccess: true,
+    };
   } catch (error) {
     return {
       ...submissionResult,
