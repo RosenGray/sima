@@ -7,11 +7,11 @@ import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import classes from "./../layout.module.scss";
 import Link from "next/link";
 import { resetPasswordSchema } from "../_lib/validations";
-import { authUser } from "../_lib/actions";
+import { registerActionWrapper } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 
 const LoginPage = () => {
-  const [lastResult, action] = useFormState(authUser, undefined);
+  const [lastResult, action] = useFormState(registerActionWrapper, undefined);
 
   const [form, fields] = useForm({
     defaultValue: {},
@@ -26,10 +26,7 @@ const LoginPage = () => {
   const { email } = fields;
 
   return (
-    <Box
-      width="100%"
-      maxWidth="600px"
-    >
+    <Box width="100%" maxWidth="600px">
       <form action={action} {...getFormProps(form)} noValidate>
         <Card className={classes.AuthLayout__Card} size="5">
           <Flex direction="column" gap="5" p="4">
