@@ -7,11 +7,11 @@ import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import classes from "./../layout.module.scss";
 import Link from "next/link";
 import { resetPasswordSchema } from "../_lib/validations";
-import { createUser } from "../_lib/actions";
+import { authUser } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 
 const LoginPage = () => {
-  const [lastResult, action] = useFormState(createUser, undefined);
+  const [lastResult, action] = useFormState(authUser, undefined);
 
   const [form, fields] = useForm({
     defaultValue: {},

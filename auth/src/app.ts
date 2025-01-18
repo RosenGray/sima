@@ -37,7 +37,7 @@ app.use(loginUserRouter);
 app.use(registerUserRouter);
 app.use(signoutUserRouter);
 app.use(resetPassword);
-app.get("*", async () => {
-  throw new NotFoundError();
+app.get("*", async (req, res) => {
+  throw new NotFoundError(`Route ${req.method} ${req.url} not found`);
 });
 app.use(errorHandler);

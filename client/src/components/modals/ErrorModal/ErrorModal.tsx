@@ -1,19 +1,41 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Button, Dialog, Flex } from "@radix-ui/themes";
 import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
 import classes from "./ErrorModal.module.scss";
-import { ErrorsFromServer, ServerErrorType } from "@/fetch/fetch.types";
+import { ErrorsFromServer } from "@/fetch/fetch.types";
 
 interface ErrorModalProps extends Dialog.RootProps {
   errorMessage?: string | ErrorsFromServer[];
-  errorType?: ServerErrorType;
 }
 
-const ErrorModal: FC<ErrorModalProps> = ({ open, onOpenChange, errorType }) => {
-  const errorMessage =
-    errorType === ServerErrorType.NotAuthorized
-      ? "Неверный логин или пароль"
-      : "Мы столкнулись с непредвиденной ошибкой. Пожалуйста, попробуйте еще раз";
+const parseErrorMessage = (
+  errorMessage?: string | ErrorsFromServer[]
+): string | ReactNode => {
+  let errorMessageToShow: string | ReactNode =
+    "Мы столкнулись с непредвиденной ошибкой. Пожалуйста, попробуйте еще раз";
+  if (!errorMessage) return errorMessageToShow;
+
+  if (typeof errorMessage === "string") {
+    errorMessageToShow = errorMessage;
+  } else if (Array.isArray(errorMessage)) {
+    errorMessageToShow = (
+      <ul>
+        {errorMessage.map((error) => (
+          <li key={error.message}>{error.message}</li>
+        ))}
+      </ul>
+    );
+  }
+  return errorMessageToShow;
+};
+//Неверный логин или пароль
+const ErrorModal: FC<ErrorModalProps> = ({
+  open,
+  onOpenChange,
+  errorMessage,
+}) => {
+  const errorMessageToShow = parseErrorMessage(errorMessage);
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content className={classes.ErrorModal__Content}>
@@ -34,9 +56,7 @@ const ErrorModal: FC<ErrorModalProps> = ({ open, onOpenChange, errorType }) => {
           >
             Упс! Что-то пошло не так
           </Dialog.Title>
-          <Dialog.Description size="3">
-            {errorMessage}
-          </Dialog.Description>
+          <Dialog.Description size="3">{errorMessageToShow}</Dialog.Description>
         </Flex>
 
         <Flex gap="3" mt="4" justify="end">

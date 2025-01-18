@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import multer from "multer";
 import jwt from "jsonwebtoken";
 
-import {  BadRequestError, validateRequest } from "@sima-board/common";
+import {  BadRequestError, validateRequest, ServerErrorType } from "@sima-board/common";
 import { User } from "../../models/User";
 import { registerSchema } from "./register.schema";
 
@@ -22,7 +22,7 @@ router.post(
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      throw new BadRequestError("Электронная почта уже используется");
+      throw new BadRequestError("Электронная почта уже используется", ServerErrorType.AuthUserAlreadyExists);
     }
     const user = new User({firstName,lastName, email, password });
     await user.save();
