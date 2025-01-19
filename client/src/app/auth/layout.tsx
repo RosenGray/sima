@@ -1,13 +1,14 @@
 import { FC, ReactNode } from "react";
-
 import { Container, Flex } from "@radix-ui/themes";
 import classes from "./layout.module.scss";
+
 
 interface AuthLayoutProps {
   children: ReactNode;
 }
 
 const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
+
   return (
     <Container px="10px" className={classes.AuthLayout}>
       <Flex
