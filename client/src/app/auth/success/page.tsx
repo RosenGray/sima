@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 
+
 const SuccessPage = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  await new Promise((resolve) => setTimeout(resolve, 4000));
   return redirect("/");
 };
 
