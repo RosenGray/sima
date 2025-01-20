@@ -1,6 +1,11 @@
-import express from "express";
+import express, { Request, Response } from "express";
+import multer from "multer";
 import nodemailer from "nodemailer";
+import { body } from "express-validator";
+import { User } from "../models/User";
+import { NotAuthorizedError, ServerErrorType, validateRequest } from "@sima-board/common";
 const router = express.Router();
+const upload = multer();
 
 // Create a function to get the transporter instead of creating it at module level
 const getTransporter = () => {
@@ -45,19 +50,34 @@ export const emailService = {
   },
 };
 
-router.post("/api/users/reset-password", async (req, res) => {
-  const { email } = req.body;
-  // This works because route handlers execute after env vars are loaded
-  try {
-    const result = await emailService.sendVerificationEmail(email, 'some-token')
-    if (!result.success) {
-      return res.status(500).json({ message: result.error })
-    }
-    res.status(200).json({ message: 'Verification email sent' })
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to send email' })
-  }
+router.post(
+  "/api/users/reset-password",
+  upload.none(),
+  [
+    body("email")
+      .isEmail()
+      .withMessage("Электронная почта должна быть действующей"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+    
+      const existingUser = await User.findOne({ email });
+      if (!existingUser) {
+        throw new NotAuthorizedError(ServerErrorType.AuthWrongPasswordOrEmail);
+      }
+      // const result = await emailService.sendVerificationEmail(
+      //   email,
+      //   "some-token"
+      // );
+      // if (!result.success) {
+      //   return res.status(500).json({ message: result.error });
+      // }
+      res.status(200).json({ message: "Verification email sensssst",existingUser });
 
-});
+      // res.status(500).json({ message: "Failed to send email" });
+    
+  }
+);
 
 export default router;

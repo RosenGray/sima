@@ -1,6 +1,5 @@
 import { FC, LegacyRef, ReactNode } from "react";
 import { TextField, Text } from "@radix-ui/themes";
-import { useFormStatus } from "react-dom";
 
 interface AuthTextFieldProps extends TextField.RootProps {
   dataIsValid: boolean;
@@ -21,10 +20,18 @@ const AuthTextField: FC<AuthTextFieldProps> = ({
   ref,
   ...rest
 }) => {
-  const bla = useFormStatus();
-  // console.log('bla',bla)
   return (
     <>
+      <Text
+        htmlFor={rest.id}
+        as="label"
+        size="2"
+        mb="1"
+        weight="medium"
+        className={className}
+      >
+        {placeholder}
+      </Text>
       <TextField.Root
         {...rest}
         key={key}

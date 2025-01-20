@@ -6,6 +6,8 @@ interface IUser {
   lastName:string;
   email: string;
   password: string;
+  resetToken?: string;
+  resetTokenExpiresAt?: Date;
 }
 
 const userSchema = new mongoose.Schema({
@@ -25,6 +27,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resetToken: {
+    type: String,
+    required: false,
+  },
+  resetTokenExpiresAt: {
+    type: Date,
+    required: false,
+  }
 },{
   toJSON:{
     transform:(doc, ret) => {

@@ -1,8 +1,11 @@
 "use server";
-import { redirect } from "next/navigation";
 import { cookies as nextCookies } from "next/headers";
 import { parseWithZod } from "@conform-to/zod";
-import { loginSchema, registerSchema } from "../validations";
+import {
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+} from "../validations";
 import { parse } from "set-cookie-parser";
 import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
 import { customFetch } from "@/fetch";
@@ -26,6 +29,16 @@ export const loginActionWrapper = async (
   return authUser(prevState, formData, {
     url: "/api/users/login",
     schema: loginSchema,
+  });
+};
+
+export const resetPasswordActionWrapper = async (
+  prevState: unknown,
+  formData: FormData
+) => {
+  return authUser(prevState, formData, {
+    url: "/api/users/reset-password",
+    schema: resetPasswordSchema,
   });
 };
 
@@ -70,7 +83,8 @@ export const authUser = async (
           errorResponse?.errorType || ServerErrorType.AuthWrongPasswordOrEmail,
       };
     }
-
+    const user = await response.json();
+    console.log('user',user)
     const setCookieHeader = response.headers.get("set-cookie");
     if (setCookieHeader) {
       const cookies = parse(setCookieHeader, {

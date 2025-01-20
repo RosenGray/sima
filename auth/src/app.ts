@@ -8,6 +8,7 @@ import loginUserRouter from "./routes/login/login";
 import registerUserRouter from "./routes/register/register";
 import signoutUserRouter from "./routes/signout";
 import resetPassword from "./routes/reset-password";
+import verifyResetToken from "./routes/verify-reset-token";
 import { errorHandler, NotFoundError } from "@sima-board/common";
 
 require('dotenv').config()
@@ -37,7 +38,9 @@ app.use(loginUserRouter);
 app.use(registerUserRouter);
 app.use(signoutUserRouter);
 app.use(resetPassword);
+app.use(verifyResetToken);
 app.get("*", async (req, res) => {
   throw new NotFoundError(`Route ${req.method} ${req.url} not found`);
 });
 app.use(errorHandler);
+

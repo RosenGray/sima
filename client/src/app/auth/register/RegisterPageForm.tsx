@@ -139,32 +139,43 @@ const RegisterPageForm = () => {
                 isDirty={password.dirty}
                 open={openPasswordValidationToolTip}
               >
-                <TextField.Root
-                  {...getInputProps(password, {
-                    type: inputPasswordType.password,
-                  })}
-                  ref={passwordInputRef}
-                  size="3"
-                  key={password.key}
-                  placeholder="пароль"
-                  defaultValue={password.initialValue}
-                  onClick={() => {
-                    setOpenPasswordValidationToolTip(true);
-                  }}
-                >
-                  <TextField.Slot>
-                    <LockClosedIcon height="16" width="16" />
-                    <IconButton
-                      type="button"
-                      onClick={onTogglePasswordView(password.name)}
-                      size="3"
-                      variant="ghost"
-                      color="yellow"
-                    >
-                      <EyeOpenIcon height="16" width="16" />
-                    </IconButton>
-                  </TextField.Slot>
-                </TextField.Root>
+                <>
+                  <Text
+                    htmlFor={password.id}
+                    as="label"
+                    size="2"
+                    mb="1"
+                    weight="medium"
+                  >
+                    пароль
+                  </Text>
+                  <TextField.Root
+                    {...getInputProps(password, {
+                      type: inputPasswordType.password,
+                    })}
+                    ref={passwordInputRef}
+                    size="3"
+                    key={password.key}
+                    placeholder="пароль"
+                    defaultValue={password.initialValue}
+                    onClick={() => {
+                      setOpenPasswordValidationToolTip(true);
+                    }}
+                  >
+                    <TextField.Slot>
+                      <LockClosedIcon height="16" width="16" />
+                      <IconButton
+                        type="button"
+                        onClick={onTogglePasswordView(password.name)}
+                        size="3"
+                        variant="ghost"
+                        color="yellow"
+                      >
+                        <EyeOpenIcon height="16" width="16" />
+                      </IconButton>
+                    </TextField.Slot>
+                  </TextField.Root>
+                </>
               </ValidationCheckListTooltip>
 
               {/* confirmPassword Password */}
@@ -214,7 +225,11 @@ const RegisterPageForm = () => {
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={formState?.errorType === ServerErrorType.AuthUserAlreadyExists ? "Электронная почта уже используется" : undefined}
+        errorMessage={
+          formState?.errorType === ServerErrorType.AuthUserAlreadyExists
+            ? "Электронная почта уже используется"
+            : undefined
+        }
       />
     </Box>
   );

@@ -2,53 +2,39 @@
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { useFormState } from "react-dom";
-import {
-  Flex,
-  Text,
-  Heading,
-  Card,
-  Box,
-  IconButton,
-} from "@radix-ui/themes";
-import {
-  EnvelopeClosedIcon,
-  EyeOpenIcon,
-  LockClosedIcon,
-} from "@radix-ui/react-icons";
-import Link from "next/link";
-import { loginSchema } from "../_lib/validations";
-import { loginActionWrapper } from "../_lib/actions";
-import AuthTextField from "../_components/AuthTextField/AuthTextField";
-import { useonTogglePasswordView } from "../_lib/hooks";
-import Form from "@/components/Form/Form";
-import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
-import { useEffect, useState } from "react";
-import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
-import { ServerErrorType } from "@sima-board/common";
-import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import { Flex, Text, Heading, Card, Box } from "@radix-ui/themes";
+import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import classes from "./../layout.module.scss";
+import Link from "next/link";
+import { resetPasswordSchema } from "../_lib/validations";
+import { resetPasswordActionWrapper } from "../_lib/actions";
+import AuthTextField from "../_components/AuthTextField/AuthTextField";
+import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
+import { useEffect, useState } from "react";
+import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import { ServerErrorType } from "@sima-board/common/build/errors/types";
+import Form from "@/components/Form/Form";
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 
-const LoginFormPage = () => {
+const ResetPasswordForm = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [formState, formAction] = useFormState(loginActionWrapper, {
+
+  const [formState, formAction] = useFormState(resetPasswordActionWrapper, {
     isErrorFromTheServer: false,
     isSuccess: false,
   } as SubmissionResultWithErrorsState);
-  const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
-    password: "password",
-  });
 
   const [form, fields] = useForm({
     defaultValue: {},
     lastResult: formState,
     onValidate: ({ formData }) => {
-      return parseWithZod(formData, { schema: loginSchema });
+      return parseWithZod(formData, { schema: resetPasswordSchema });
     },
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-
-  const { email, password } = fields;
+  console.log(formState);
+  const { email } = fields;
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
@@ -64,21 +50,24 @@ const LoginFormPage = () => {
   }, [formState?.isErrorFromTheServer]);
 
   return (
-    <Box width="100%" maxWidth="550px">
+    <Box width="100%" maxWidth="600px">
       <Form action={formAction} {...getFormProps(form)} noValidate>
         {({ pending }) => (
-          <Card className={classes.AuthLayout__Card} variant="classic" size="4">
+          <Card className={classes.AuthLayout__Card} size="5">
             <Flex direction="column" gap="5" p="4">
               <Heading align="center" size="7" mb="2">
-                Мы рады вас видеть
+                Забыли пароль?
               </Heading>
-              <Flex direction="column" gap="3">
+              <Text align="center" size="4" color="gray">
+                Мы отправим вам ссылку для восстановления пароля на ваш email
+              </Text>
+              <Flex direction="column" gap="2">
                 {/* Email */}
 
                 <AuthTextField
                   {...getInputProps(fields.email, { type: "email" })}
                   key={email.key}
-                  placeholder="@ Адрес электронной почты"
+                  placeholder="Email"
                   size="3"
                   defaultValue={fields.email.initialValue}
                   className={classes.AuthLayout__TextFieldRoot}
@@ -89,51 +78,22 @@ const LoginFormPage = () => {
                   <EnvelopeClosedIcon height="16" width="16" />
                 </AuthTextField>
 
-                {/* Password */}
-                <AuthTextField
-                  {...getInputProps(password, {
-                    type: inputPasswordType.password,
-                  })}
-                  key={password.key}
-                  placeholder="Повторите пароль"
-                  size="3"
-                  defaultValue={password.initialValue}
-                  className={classes.AuthLayout__TextFieldRoot}
-                  dataIsValid={password.valid}
-                  errors={password.errors}
-                  disabled={pending}
-                >
-                  <>
-                    <LockClosedIcon height="16" width="16" />
-                    <IconButton
-                      type="button"
-                      onClick={onTogglePasswordView(password.name)}
-                      size="3"
-                      variant="ghost"
-                      color="yellow"
-                    >
-                      <EyeOpenIcon height="16" width="16" />
-                    </IconButton>
-                  </>
-                </AuthTextField>
-
                 <Flex justify="between" align="center" mt="1">
                   <Text size="4" color="gray">
                     вы еще не зарегистрированы?
-                    <Text weight="bold" ml="10px" color="yellow">
+                    <Text ml="10px" color="yellow">
                       <Link href="/auth/register">Зарегистрироваться</Link>
                     </Text>
                   </Text>
                 </Flex>
-                <SubmitButton pending={pending} />
-                <Text weight="bold" mt="3" color="yellow">
-                  <Link href="/auth/reset-password">Забыли пароль?</Link>
-                </Text>
+
+                <SubmitButton pending={pending} text="Войти" />
               </Flex>
             </Flex>
           </Card>
         )}
       </Form>
+
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
@@ -147,4 +107,4 @@ const LoginFormPage = () => {
   );
 };
 
-export default LoginFormPage;
+export default ResetPasswordForm;
