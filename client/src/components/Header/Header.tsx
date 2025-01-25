@@ -25,6 +25,7 @@ import styles from "./Header.module.scss";
 import { IconButton, Button } from "@radix-ui/themes";
 import Link from "next/link";
 import { config } from "@/utils/config";
+import { generateBackblazeUrl } from "@/utils/common";
 // import { logout } from "@/app/auth/_lib/actions";
 {
   /* <form action={logout}>
@@ -71,6 +72,7 @@ const Header = () => {
     <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
       <h1>{config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
       <h1>{config.BACKBLAZEB_BASE_URL}</h1>
+      <img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" />
       {menuIsOpen && (
         <div
           onClick={toggleMenuVisibilityHandler}
