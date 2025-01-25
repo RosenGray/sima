@@ -45,6 +45,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className={inter.className}>
         <img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" />
+        <img src={bla} alt="" />
         {/* <Script
           defer
           src="https://acc-landing.vercel.app/accessibilik.min.js"
