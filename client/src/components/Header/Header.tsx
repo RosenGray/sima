@@ -38,7 +38,7 @@ const Header = () => {
   const { theme, setTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-
+  const bucketName = process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME;
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -72,6 +72,7 @@ const Header = () => {
     <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
       <h1>{config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
       <h1>{config.BACKBLAZEB_BASE_URL}</h1>
+      <h1>bucketame:{bucketName}</h1>
       <img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" />
       {menuIsOpen && (
         <div
