@@ -69,7 +69,7 @@ const Header = () => {
     );
   return (
     <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
-      <h1>{process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL}</h1>
+      <h1>{config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
       <h1>{config.BACKBLAZEB_BASE_URL}</h1>
       {menuIsOpen && (
         <div
