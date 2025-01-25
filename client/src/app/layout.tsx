@@ -10,7 +10,8 @@ import Script from "next/script";
 import { generateBackblazeUrl } from "@/utils/common";
 
 const inter = Inter({ subsets: ["latin"] });
-
+const bla = generateBackblazeUrl('sima','sima.dark.logo.png')
+console.log('bla',bla)
 export const metadata: Metadata = {
   title:
     "Русская Доска объявлений Sima - Аренда квартир, Продажа, Автомобили, Вакансии, б/у товары",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: generateBackblazeUrl('sima','sima.dark.logo.png'),
+        url: generateBackblazeUrl('sima','sima.dark.logo.png?v=1'),
       },
     ],
   },
