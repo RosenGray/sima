@@ -1,5 +1,8 @@
 import { jwtVerify } from "jose";
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_KEY || "");
+
+const SECRET_KEY = new TextEncoder().encode(
+  process.env.JWT_KEY || process.env.NEXT_PUBLIC_JWT_KEY || ""
+);
 
 export async function validateSession(encodedToken: string): Promise<boolean> {
   try {
@@ -16,5 +19,3 @@ export async function validateSession(encodedToken: string): Promise<boolean> {
     return false;
   }
 }
-
-

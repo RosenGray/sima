@@ -18,16 +18,18 @@ const getConfig = (
   return value || defaultValue || "";
 };
 
+
+
 export const config: Config = {
   BACKBLAZEB_BASE_URL: getConfig(
-    "BACKBLAZEB_BASE_URL",
+    "NEXT_PUBLIC_BACKBLAZEB_BASE_URL",
     "https://f003.backblazeb2.com/file"
   ),
   BACKBLAZEB_ENDPOINT: getConfig(
-    "BACKBLAZEB_ENDPOINT",
+    "NEXT_PUBLIC_BACKBLAZEB_ENDPOINT",
     "https://s3.eu-central-003.backblazeb2.com"
   ),
-  BACKBLAZEB_REGION: getConfig("BACKBLAZEB_REGION", "eu-central-003"),
+  BACKBLAZEB_REGION: getConfig("NEXT_PUBLIC_BACKBLAZEB_REGION", "eu-central-003"),
   BACKBLAZEB_PUBLIC_BUCKET_NAME: getConfig(
     "BACKBLAZEB_PUBLIC_BUCKET_NAME",
     "sima-board-public-dev"
@@ -45,4 +47,5 @@ export const config: Config = {
   API_URL: getConfig("API_URL", process.env.NEXT_PUBLIC_API_URL)
 };
 
-
+console.log(111111)
+console.log('NEXT_PUBLIC_BACKBLAZEB_BASE_URL',process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL)

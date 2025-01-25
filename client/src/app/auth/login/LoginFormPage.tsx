@@ -23,7 +23,6 @@ import { useonTogglePasswordView } from "../_lib/hooks";
 import Form from "@/components/Form/Form";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { useEffect, useState } from "react";
-import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
 import { ServerErrorType } from "@sima-board/common";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import classes from "./../layout.module.scss";
@@ -33,7 +32,7 @@ const LoginFormPage = () => {
   const [formState, formAction] = useFormState(loginActionWrapper, {
     isErrorFromTheServer: false,
     isSuccess: false,
-  } as SubmissionResultWithErrorsState);
+  });
   const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
     password: "password",
   });

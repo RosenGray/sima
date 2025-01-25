@@ -14,7 +14,7 @@ export interface ServerError {
 export interface SubmissionResultWithErrorsState
   extends SubmissionResult<string[]> {
   isErrorFromTheServer?: boolean;
-  serverError?: ServerError;
+  serverError?: ServerError['errors'];
   errorType?: ServerErrorType;
   isSuccess?: boolean;
 }

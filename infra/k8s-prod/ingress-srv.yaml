@@ -14,7 +14,7 @@ spec:
     - host: www.sima-board.com 
       http:
         paths:
-          - path: /api/users/?(.*)
+          - path: /api/auth/?(.*)
             pathType: ImplementationSpecific
             backend:
               service:

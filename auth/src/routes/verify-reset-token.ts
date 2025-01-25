@@ -1,18 +1,29 @@
+import { BadRequestError, ServerErrorType } from "@sima-board/common";
+import { TokenValidationReason, validateToken } from "../services/TokenManager";
 import express, { Request, Response } from "express";
 const router = express.Router();
 
 router.get(
-  "/api/users/verify-reset-token",
+  "/api/auth/verify-reset-token",
 
   async (req: Request, res: Response) => {
     const { token } = req.query;
     if (!token) {
-      return res.status(400).json({ message: "Token is required" });
+      throw new BadRequestError("Token is required");
+    }
+    const { reason, isValid, email } = await validateToken(token as string);
+    if (!isValid) {
+      switch (reason) {
+        case TokenValidationReason.TokenNotFound:
+          throw new BadRequestError("Token not found", ServerErrorType.AuthTokenNotFound);
+        case TokenValidationReason.TokenExpired:
+          throw new BadRequestError("Token expired", ServerErrorType.AuthTokenExpired);
+        default:
+          throw new BadRequestError("Invalid token", ServerErrorType.AuthInvalidToken);
+      }
     }
 
-    // const isValid = await validateToken(token);
-
-    return res.status(200).json({ message: "Verification email sensssst",token });
+    return res.status(200).json({ isValid, email });
   }
 );
 

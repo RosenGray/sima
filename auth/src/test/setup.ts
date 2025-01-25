@@ -16,7 +16,7 @@ global.login = async () => {
   const password = "Password123";
   const confirmPassword = "Password123";
   const response = await request(app)
-    .post("/api/users/register")
+    .post("/api/auth/register")
     .field("firstName", firstName)
     .field("lastName", lastName)
     .field("email", email)

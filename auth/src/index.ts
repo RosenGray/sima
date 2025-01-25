@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { DatabaseConnectionError, ServerErrorType } from "@sima-board/common";
 
+
+
 const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } = process.env;
+
 
 const isProd = NODE_ENV === "production";
 const MONGO_URI = isProd
