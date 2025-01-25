@@ -12,7 +12,7 @@ const router = express.Router();
 const upload = multer();
 
 router.post(
-  "/api/users/register",
+  "/api/auth/register",
   upload.none(),
   registerSchema,
   validateRequest,

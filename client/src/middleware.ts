@@ -15,6 +15,8 @@ export async function middleware(request: NextRequest) {
     // Add custom header to indicate session status
     const response = NextResponse.next();
     response.headers.set("X-Session-Status", "valid");
+    response.headers.set("Cookie", `sima-auth-session=${sessionCookie.value}`);
+
     return response;
   } catch (err) {
     console.error("Middleware error:", err);

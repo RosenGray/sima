@@ -4,7 +4,6 @@ import { parseWithZod } from "@conform-to/zod";
 import { useFormState } from "react-dom";
 import {
   Flex,
-  Button,
   Text,
   Heading,
   Card,
@@ -24,17 +23,16 @@ import { useonTogglePasswordView } from "../_lib/hooks";
 import Form from "@/components/Form/Form";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { useEffect, useState } from "react";
-import Loader from "@/components/Loader/Loader";
-import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
-import classes from "./../layout.module.scss";
 import { ServerErrorType } from "@sima-board/common";
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import classes from "./../layout.module.scss";
 
 const LoginFormPage = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [formState, formAction] = useFormState(loginActionWrapper, {
     isErrorFromTheServer: false,
     isSuccess: false,
-  } as SubmissionResultWithErrorsState);
+  });
   const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
     password: "password",
   });
@@ -126,19 +124,7 @@ const LoginFormPage = () => {
                     </Text>
                   </Text>
                 </Flex>
-                <Button
-                  disabled={pending}
-                  variant={pending ? "surface" : "solid"}
-                  type="submit"
-                  size="3"
-                  mt="2"
-                >
-                  {pending ? (
-                    <Loader isSpin width={500} height={500} />
-                  ) : (
-                    "Submit"
-                  )}
-                </Button>
+                <SubmitButton pending={pending} />
                 <Text weight="bold" mt="3" color="yellow">
                   <Link href="/auth/reset-password">Забыли пароль?</Link>
                 </Text>

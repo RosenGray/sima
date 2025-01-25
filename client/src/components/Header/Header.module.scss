@@ -27,14 +27,25 @@
 }
 .AppHeader {
   display: flex;
-  justify-content: center;
   background-color: var(--gray-2);
   min-height: var(--header-height);
   align-items: center;
-  justify-content: space-between;
   padding: 0 1em;
   position: relative;
   z-index: 110;
+}
+
+.Left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.Right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
 }
 
 .HamburgerIconButton {
@@ -45,10 +56,13 @@
 
 .LogoContainer {
   line-height: 1;
-
-  @media #{$media-tablet-portrait-min} {
-    order: 1;
-    margin-inline-start: auto;
+  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
+    position: fixed;
+    width: 155px;
+    height: 55px;
+    left: 0;
+    right: 0;
+    margin: auto;
   }
 }
 
@@ -72,7 +86,7 @@
   @media #{$media-tablet-portrait-min} {
     display: flex;
     align-items: center;
-    padding: 0 1em;
+    padding: 0;
   }
 }
 
@@ -94,6 +108,7 @@
     border-radius: 6px;
     list-style: none;
     margin: 0;
+    gap: 10px;
   }
 }
 

@@ -5,7 +5,7 @@ it("respons with details about the cuurent user", async () => {
   const cookie = await global.login();
 
   const response = await request(app)
-    .get("/api/users/currentuser")
+    .get("/api/auth/currentuser")
     .set("Cookie", cookie!)
     .send()
     .expect(200);

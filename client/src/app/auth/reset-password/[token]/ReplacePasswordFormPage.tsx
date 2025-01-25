@@ -1,41 +1,33 @@
 "use client";
-import { useForm, getFormProps, getInputProps } from "@conform-to/react";
-import { parseWithZod } from "@conform-to/zod";
-import { useFormState } from "react-dom";
-import {
-  Flex,
-  TextField,
-  Text,
-  Heading,
-  Card,
-  Box,
-  IconButton,
-} from "@radix-ui/themes";
-import {
-  LockClosedIcon,
-  PersonIcon,
-  EyeOpenIcon,
-  EnvelopeClosedIcon,
-} from "@radix-ui/react-icons";
-
-import { registerSchema } from "../_lib/validations";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";
 import { useOutsideElement } from "@/hooks/useOutsideAlerter";
-import AuthTextField from "../_components/AuthTextField/AuthTextField";
-import { passwordValidationPlaceHolderItems } from "../_lib/config";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import {
+  Box,
+  Card,
+  Flex,
+  Heading,
+  IconButton,
+  Text,
+  TextField,
+} from "@radix-ui/themes";
+import Form from "@/components/Form/Form";
+import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";
+import { EyeOpenIcon, LockClosedIcon } from "@radix-ui/react-icons";
+import AuthTextField from "../../_components/AuthTextField/AuthTextField";
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import classes from "../../layout.module.scss";
+import { passwordValidationPlaceHolderItems } from "../../_lib/config";
 import { mapZodErrorsToValidationItems } from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
-import { registerActionWrapper } from "../_lib/actions";
-import { useonTogglePasswordView } from "../_lib/hooks";
-import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
-import classes from "./../layout.module.scss";
+import { resetPasswordConfirmActionWrapper } from "../../_lib/actions";
+import { useFormState } from "react-dom";
+import { useonTogglePasswordView } from "../../_lib/hooks";
+import { parseWithZod } from "@conform-to/zod";
+import { resetPasswordConfirmSchema } from "../../_lib/validations";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { ServerErrorType } from "@sima-board/common";
-import Form from "@/components/Form/Form";
-import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 
-const RegisterPageForm = () => {
+const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const passwordInputRef = useRef<null | HTMLInputElement>(null);
   const [openPasswordValidationToolTip, setOpenPasswordValidationToolTip] =
@@ -43,27 +35,28 @@ const RegisterPageForm = () => {
   useOutsideElement(passwordInputRef.current, () => {
     setOpenPasswordValidationToolTip(false);
   });
-  const [formState, formAction] = useFormState(registerActionWrapper, {
-    isErrorFromTheServer: false,
-  } as SubmissionResultWithErrorsState);
-
+  const [formState, formAction] = useFormState(
+    resetPasswordConfirmActionWrapper,
+    {
+      isErrorFromTheServer: false,
+    }
+  );
+  console.log(formState);
   const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
     password: "password",
     confirmPassword: "password",
   });
   const [form, fields] = useForm({
-    defaultValue: {},
+    defaultValue: {
+      token: _token,
+    },
     lastResult: formState,
     onValidate: ({ formData }) => {
-      return parseWithZod(formData, { schema: registerSchema });
+      return parseWithZod(formData, { schema: resetPasswordConfirmSchema });
     },
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-
-  const { firstName, lastName, email, password, confirmPassword } = fields;
-
-
   const handleModalClose = () => {
     setErrorModalOpen(false);
     const formData = new FormData();
@@ -76,6 +69,8 @@ const RegisterPageForm = () => {
     }
   }, [formState?.isErrorFromTheServer]);
 
+  const { password, confirmPassword, token } = fields;
+
   return (
     <Box width="100%" maxWidth="500px">
       <Form action={formAction} {...getFormProps(form)} noValidate>
@@ -83,55 +78,18 @@ const RegisterPageForm = () => {
           <Card className={classes.AuthLayout__Card} size="4">
             <Flex direction="column" gap="5" p="4">
               <Heading align="center" size="7" mb="2">
-                Приятно познакомиться
+                Новый пароль
               </Heading>
               <Flex direction="column" gap="2">
-                {/* First Name */}
-                <AuthTextField
-                  {...getInputProps(firstName, { type: "text" })}
-                  key={firstName.key}
-                  placeholder="Имя"
-                  size="3"
-                  defaultValue={firstName.initialValue}
-                  className={classes.AuthLayout__TextFieldRoot}
-                  dataIsValid={firstName.valid}
-                  errors={firstName.errors}
-                  disabled={pending}
-                >
-                  <PersonIcon height="16" width="16" />
-                </AuthTextField>
+                {/* Token */}
 
-                {/* Last Name */}
-
-                <AuthTextField
-                  {...getInputProps(fields.lastName, { type: "text" })}
-                  key={lastName.key}
-                  placeholder="фамилия"
-                  size="3"
-                  defaultValue={fields.lastName.initialValue}
-                  className={classes.AuthLayout__TextFieldRoot}
-                  dataIsValid={lastName.valid}
-                  errors={lastName.errors}
-                  disabled={pending}
-                >
-                  <PersonIcon height="16" width="16" />
-                </AuthTextField>
-
-                {/* Email */}
-
-                <AuthTextField
-                  {...getInputProps(fields.email, { type: "email" })}
-                  key={email.key}
-                  placeholder="@ Адрес электронной почты"
-                  size="3"
-                  defaultValue={fields.email.initialValue}
-                  className={classes.AuthLayout__TextFieldRoot}
-                  dataIsValid={email.valid}
-                  errors={email.errors}
-                  disabled={pending}
-                >
-                  <EnvelopeClosedIcon height="16" width="16" />
-                </AuthTextField>
+                <input
+                  {...getInputProps(token, {
+                    type: "hidden",
+                  })}
+                  key={token.key}
+                  defaultValue={token.initialValue}
+                />
 
                 {/* Password */}
 
@@ -213,28 +171,18 @@ const RegisterPageForm = () => {
                     </IconButton>
                   </>
                 </AuthTextField>
-
-                <Flex justify="between" align="center" mt="1">
-                  <Text size="4" color="gray">
-                    Уже есть аккаунт?
-                    <Text ml="10px" color="blue">
-                      <Link href="/auth/login">Войти</Link>
-                    </Text>
-                  </Text>
-                </Flex>
                 <SubmitButton pending={pending} />
               </Flex>
             </Flex>
           </Card>
         )}
       </Form>
-
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
         errorMessage={
-          formState?.errorType === ServerErrorType.AuthUserAlreadyExists
-            ? "Электронная почта уже используется"
+          formState?.errorType === ServerErrorType.TooManyRequests
+            ? "Слишком много попыток сброса пароля. Пожалуйста, попробуйте снова через час."
             : undefined
         }
       />
@@ -242,4 +190,4 @@ const RegisterPageForm = () => {
   );
 };
 
-export default RegisterPageForm;
+export default ReplacePasswordFormPage;

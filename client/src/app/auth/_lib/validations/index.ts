@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+const passwordValidationSchema = z
+  .string({
+    required_error: "пароль обязательный",
+  })
+  .min(8, "8-20 символов")
+  .max(20, "8-20 символов")
+  .refine(
+    (val) => /[a-zA-Z]/.test(val) && /\d/.test(val),
+    "одну букву (на английском) и одну цифру"
+  );
+
 export const registerSchema = z
   .object({
     firstName: z
@@ -19,16 +30,7 @@ export const registerSchema = z
         required_error: "электронное почта обязательная",
       })
       .email("Введите корректный адрес электронной почты"),
-    password: z
-      .string({
-        required_error: "пароль обязательный",
-      })
-      .min(8, "8-20 символов")
-      .max(20, "8-20 символов")
-      .refine(
-        (val) => /[a-zA-Z]/.test(val) && /\d/.test(val),
-        "одну букву (на английском) и одну цифру"
-      ),
+    password: passwordValidationSchema,
     confirmPassword: z.string({
       required_error: "Пожалуйста, подтвердите свой пароль",
     }),
@@ -55,5 +57,27 @@ export const loginSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
-  email: z.string().email("Введите корректный адрес электронной почты"),
+  email: z
+    .string({
+      required_error: "электронное почта обязательная",
+    })
+    .email("Введите корректный адрес электронной почты"),
 });
+
+export const resetPasswordConfirmSchema = z.object({
+  token: z.string({
+    required_error: "токен обязательный",
+  }),
+  password: passwordValidationSchema,
+  confirmPassword: z.string({
+    required_error: "Пожалуйста, подтвердите свой пароль",
+  }),
+}).refine(
+  (data) => {
+    return data.password === data.confirmPassword;
+  },
+  {
+    message: "Пароли не совпадают",
+    path: ["confirmPassword"],
+  }
+);

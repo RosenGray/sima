@@ -5,8 +5,7 @@ import { bannerslides } from "@/components/BannerCarousel/config";
 import Image from 'next/image'
 import bla from './../assets/images/1.png';
 import { config } from "@/utils/config";
-console.log(111)
-console.log("config", config);  
+
 export default function Home() {
   return (
     <>

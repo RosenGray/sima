@@ -4,7 +4,7 @@ import { app } from '../../app';
 it('clears the cookie after signing out', async () => {
   // First register a user with all required fields
   await request(app)
-    .post('/api/users/register')
+    .post('/api/auth/register')
     .field('firstName', 'Test')
     .field('lastName', 'User')
     .field('email', 'test@test.com')
@@ -13,7 +13,7 @@ it('clears the cookie after signing out', async () => {
     .expect(201);
 
   const response = await request(app)
-    .post('/api/users/signout')
+    .post('/api/auth/signout')
     .send({})  // No need for FormData here since we're not sending any data
     .expect(200);
 

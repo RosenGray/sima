@@ -4,13 +4,17 @@ import jwt from "jsonwebtoken";
 import multer from "multer";
 import { PasswordManager } from "../../services/PasswordManager";
 import { User } from "../../models/User";
-import { ServerErrorType, NotAuthorizedError, validateRequest } from "@sima-board/common";
+import {
+  ServerErrorType,
+  NotAuthorizedError,
+  validateRequest,
+} from "@sima-board/common";
 
 const router = express.Router();
 const upload = multer();
 
 router.post(
-  "/api/users/login",
+  "/api/auth/login",
   upload.none(),
   [
     body("email")

@@ -1,5 +1,17 @@
-
 import { body } from "express-validator";
+
+export const passwordValidationChain = body("password")
+  .trim()
+  .notEmpty()
+  .withMessage("пароль обязательный")
+  .isLength({ min: 8, max: 20 })
+  .withMessage("8-20 символов")
+  .custom((value) => {
+    if (!(/[a-zA-Z]/.test(value) && /\d/.test(value))) {
+      throw new Error("одну букву (на английском) и одну цифру");
+    }
+    return true;
+  });
 
 export const registerSchema = [
   body("firstName")
@@ -26,18 +38,7 @@ export const registerSchema = [
     .isEmail()
     .withMessage("Введите корректный адрес электронной почты")
     .normalizeEmail(),
-  body("password")
-    .trim()
-    .notEmpty()
-    .withMessage("пароль обязательный")
-    .isLength({ min: 8, max: 20 })
-    .withMessage("8-20 символов")
-    .custom((value) => {
-      if (!(/[a-zA-Z]/.test(value) && /\d/.test(value))) {
-        throw new Error("одну букву (на английском) и одну цифру");
-      }
-      return true;
-    }),
+  passwordValidationChain,
   body("confirmPassword")
     .trim()
     .notEmpty()
