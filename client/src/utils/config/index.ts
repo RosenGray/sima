@@ -31,7 +31,7 @@ export const config: Config = {
   ),
   BACKBLAZEB_REGION: getConfig("NEXT_PUBLIC_BACKBLAZEB_REGION", "eu-central-003"),
   BACKBLAZEB_PUBLIC_BUCKET_NAME: getConfig(
-    "BACKBLAZEB_PUBLIC_BUCKET_NAME",
+    "NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME",
     "sima-board-public-dev"
   ),
   BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY: getConfig(

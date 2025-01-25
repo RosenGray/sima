@@ -24,6 +24,7 @@ import Loader from "../Loader/Loader";
 import styles from "./Header.module.scss";
 import { IconButton, Button } from "@radix-ui/themes";
 import Link from "next/link";
+import { config } from "@/utils/config";
 // import { logout } from "@/app/auth/_lib/actions";
 {
   /* <form action={logout}>
@@ -68,6 +69,8 @@ const Header = () => {
     );
   return (
     <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
+      <h1>{process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL}</h1>
+      <h1>{config.BACKBLAZEB_BASE_URL}</h1>
       {menuIsOpen && (
         <div
           onClick={toggleMenuVisibilityHandler}
