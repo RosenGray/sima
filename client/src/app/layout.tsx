@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: generateBackblazeUrl('sima','sima.dark.logo.png?v=1'),
+        url: generateBackblazeUrl('sima','sima.dark.logo.png'),
       },
     ],
   },
@@ -44,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={inter.className}>
+        <img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" />
         {/* <Script
           defer
           src="https://acc-landing.vercel.app/accessibilik.min.js"
