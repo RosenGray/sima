@@ -66,7 +66,7 @@ const LoginFormPage = () => {
     <Box width="100%" maxWidth="550px">
       <Form action={formAction} {...getFormProps(form)} noValidate>
         {({ pending }) => (
-          <Card className={classes.AuthLayout__Card} variant="classic" size="4">
+          <Card className={classes.AuthLayout__Card}  size="4">
             <Flex direction="column" gap="5" p="4">
               <Heading align="center" size="7" mb="2">
                 Мы рады вас видеть

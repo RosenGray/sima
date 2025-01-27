@@ -8,6 +8,8 @@ import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import Script from "next/script";
 import { generateBackblazeUrl } from "@/utils/common";
+import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
+
 
 const inter = Inter({ subsets: ["latin"] });
 const bla = generateBackblazeUrl('sima','sima.dark.logo.png')
@@ -44,6 +46,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={inter.className}>
+        <h1>{process.env.NEXT_PUBLIC_FOO}</h1>
         <img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" />
         <img src={bla} alt="" />
         <h1>{process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
@@ -53,8 +56,9 @@ export default function RootLayout({
         ></Script> */}
         <StoreProvider>
           <ThemeProvider attribute="class">
-            <Theme id={config.RADIX_THEME_APP_ID} accentColor="indigo">
+            <Theme id={config.RADIX_THEME_APP_ID} accentColor="red">
               {children}
+              <LayoutBackground/>
             </Theme>
             <Theme id={config.RADIX_THEME_PORTAL_ID} style={{height:'auto',minHeight:'auto'}} accentColor="indigo" />
           </ThemeProvider>

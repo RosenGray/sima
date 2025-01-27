@@ -1,10 +1,10 @@
 .AuthLayout {
-  background: var(--background-color);
   &__Flex {
     min-height: 100vh;
   }
   &__Card {
      box-shadow: inset var(--shadow-3)
+
   }
   &__TextFieldRoot {
     &:has(input[data-isvalid="false"]) {
