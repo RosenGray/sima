@@ -1,13 +1,37 @@
-"use client"
+"use client";
+import { useEffect, useState } from "react";
 import styles from "./LayoutBackground.module.scss";
 
 const LayoutBackground = () => {
+  const [dimensions, setDimensions] = useState({
+    width: 1920, // Default fallback width
+    height: 1080, // Default fallback height
+  });
+  useEffect(() => {
+    // Update dimensions on mount
+    setDimensions({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className={styles.LayoutBackground}>
       <svg
-        width={window.innerWidth}
-        height={window.innerHeight}
-        viewBox={`0 0 ${window.innerWidth} ${window.innerHeight}`}
+        width={dimensions.width}
+        height={dimensions.height}
+        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         style={
