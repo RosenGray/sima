@@ -45,7 +45,7 @@ const ValidationCheckListTooltip = ({
                   <li key={id}>
                     <Text as="label" size="2">
                       <Flex gap="2">
-                        <Checkbox checked={isChecked} />
+                        <Checkbox color="green" checked={isChecked} />
                         {label}
                       </Flex>
                     </Text>
