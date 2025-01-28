@@ -2,9 +2,13 @@ import { config } from "../config";
 
 const { BACKBLAZEB_BASE_URL, BACKBLAZEB_PUBLIC_BUCKET_NAME } = config;
 
-console.log('config inside utils outside/common/index.ts',BACKBLAZEB_PUBLIC_BUCKET_NAME)
- 
 export const generateBackblazeUrl = (folder: string, fileName: string) => {
-  console.log('config inside utils inside/common/index.ts',BACKBLAZEB_PUBLIC_BUCKET_NAME)
   return `${BACKBLAZEB_BASE_URL}/${BACKBLAZEB_PUBLIC_BUCKET_NAME}/${folder}/${fileName}`;
 };
+
+// const bucketName = process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME;
+// const baseUrl = process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL;
+
+// export const generateBackblazeUrl = (folder: string, fileName: string) => {
+//   return `${baseUrl}/${bucketName}/${folder}/${fileName}`;
+// };
