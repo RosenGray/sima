@@ -23,26 +23,6 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
-            - name: NEXT_PUBLIC_BACKBLAZEB_BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backblazeb-base-url
-                  key: BACKBLAZEB_BASE_URL
-            - name: NEXT_PUBLIC_BACKBLAZEB_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  name: backblazeb-endpoint
-                  key: BACKBLAZEB_ENDPOINT    
-            - name: NEXT_PUBLIC_BACKBLAZEB_REGION
-              valueFrom:
-                secretKeyRef:
-                  name: backblazeb-region
-                  key: BACKBLAZEB_REGION
-            - name: NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: backblazeb-public-bucket-name
-                  key: BACKBLAZEB_PUBLIC_BUCKET_NAME    
             - name: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
