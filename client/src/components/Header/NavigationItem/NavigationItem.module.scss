@@ -1,6 +1,4 @@
-@import "./../../../app/global";
-
-
+@import "./../../../common//styles//mixins";
 
 .NavigationMenuTrigger {
   @media #{$media-start-min} and #{$media-tablet-portrait-max} {
@@ -12,12 +10,18 @@
     align-items: center;
     cursor: pointer;
 
+
+
     &[data-state="open"] {
-      position: absolute;
+
+      max-width: 315px;
+      position: fixed;
       z-index: 200;
       top: 0;
       color: var(--yellow-12);
       font-weight: bold;
+      text-align: center;
+
     }
   }
 }
@@ -96,12 +100,7 @@
 }
 
 .HideOnMobile {
-  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
-    display: none;
-  }
-  @media #{$media-tablet-portrait-min} {
-    display: block;
-  }
+  @include hide-on-mobile;
 }
 
 .ItemAsImageBlock {

@@ -46,3 +46,7 @@ a{
   cursor: pointer;
   color:var(--current-color);
 }
+
+ul{
+  list-style: none;
+}

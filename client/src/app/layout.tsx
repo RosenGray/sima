@@ -9,6 +9,7 @@ import "./globals.css";
 import Script from "next/script";
 import { generateBackblazeUrl } from "@/utils/common";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
+import { getUserData } from "@/utils/auth";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -38,11 +39,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const userData = await getUserData();
+  console.log('userData', userData)
   return (
     <html lang="ru">
       <body className={inter.className}>
