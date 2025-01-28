@@ -47,8 +47,8 @@ export default function RootLayout({
     <html lang="ru">
       <body className={inter.className}>
         <h1>{process.env.NEXT_PUBLIC_FOO}</h1>
-        <h1>config {config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
-        <h1>process {process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
+        <h1>layout config {config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
+        <h1>layout process {process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
 
         {/* <Script
           defer

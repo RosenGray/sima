@@ -70,10 +70,9 @@ const Header = () => {
     );
   return (
     <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
-      <h1>{config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
-      <h1>{config.BACKBLAZEB_BASE_URL}</h1>
-      <h1>bucketame:{bucketName}</h1>
-      <img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" />
+     <h1>header config {config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
+     <h1>header process {process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
+
       {menuIsOpen && (
         <div
           onClick={toggleMenuVisibilityHandler}
