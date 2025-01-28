@@ -9,6 +9,7 @@ import {
   MoonIcon,
   CrossCircledIcon,
   PersonIcon,
+  PlusIcon,
 } from "@radix-ui/react-icons";
 
 import simaLightLogo from "@/assets/images/sima.light.logo.png";
@@ -21,11 +22,10 @@ import realestate from "@/assets/images/realestate.webp";
 import NavigationItem from "./NavigationItem/NavigationItem";
 import { realEstatenavigationItems } from "./config";
 import Loader from "../Loader/Loader";
-import styles from "./Header.module.scss";
-import { IconButton, Button } from "@radix-ui/themes";
+
+import { Box, Button, IconButton, Text } from "@radix-ui/themes";
 import Link from "next/link";
-import { config } from "@/utils/config";
-import { generateBackblazeUrl } from "@/utils/common";
+import styles from "./Header.module.scss";
 // import { logout } from "@/app/auth/_lib/actions";
 {
   /* <form action={logout}>
@@ -33,12 +33,12 @@ import { generateBackblazeUrl } from "@/utils/common";
 </form>
  */
 }
-console.log(process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL)
+console.log(process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL);
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const bucketName = process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME;
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -70,9 +70,6 @@ const Header = () => {
     );
   return (
     <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
-     <h1>header2 config {config.BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
-     <h1>header2 process {process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME}</h1>
-header image<img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" />
       {menuIsOpen && (
         <div
           onClick={toggleMenuVisibilityHandler}
@@ -84,14 +81,30 @@ header image<img src={generateBackblazeUrl('sima','sima.dark.logo.png')} alt="" 
           <IconButton onClick={toggleThemeHandler} color="yellow">
             <MoonIcon />
           </IconButton>
-          <IconButton  color="green">
+          <IconButton className={styles.PersonIconButton} color="green">
             <Link href="/auth/login">
               <PersonIcon width="16" height="16" />
             </Link>
           </IconButton>
-  
+
           <aside className={styles.Aside}>
-            <section className={styles.TopSection}></section>
+            <section className={styles.TopSection}>
+              <Box className={styles.MobileMenuTop} height="100px">
+                <IconButton
+                  size="3"
+                  className={styles.PersonIconButton}
+                  color="green"
+                >
+                  <Link href="/auth/login">
+                    <PersonIcon width="26" height="26" />
+                  </Link>
+                </IconButton>
+                <Button size="3">
+                  <PlusIcon width="26" height="26" />
+                  <Text as="span">Добавить объявление</Text>
+                </Button>
+              </Box>
+            </section>
             <section className={styles.BottomSection}>
               <Navigation.Root className={styles.NavigationMenuRoot}>
                 <Navigation.List className={styles.NavigationMenuList}>

@@ -1,0 +1,19 @@
+@import "./../../app/global";
+
+@mixin hide-on-mobile {
+  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
+    display: none;
+  }
+  @media #{$media-tablet-portrait-min} {
+    display: block;
+  }
+}
+
+@mixin show-on-mobile {
+  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
+    display: block;
+  }
+  @media #{$media-tablet-portrait-min} {
+    display: none;
+  }
+}

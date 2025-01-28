@@ -7,6 +7,7 @@ import bla from './../assets/images/1.png';
 import { config } from "@/utils/config";
 
 export default function Home() {
+  
   return (
     <>
       <Header />
