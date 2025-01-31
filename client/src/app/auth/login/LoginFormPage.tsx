@@ -10,12 +10,7 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { loginSchema } from "../_lib/validations";
-import {
-  loginActionWrapper,
-  setCookieAction,
-  testServerAction,
-  TestServerAction,
-} from "../_lib/actions";
+import { loginActionWrapper, setCookieAction } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 import { useonTogglePasswordView } from "../_lib/hooks";
 import Form from "@/components/Form/Form";
@@ -61,14 +56,13 @@ const LoginFormPage = () => {
       setErrorModalOpen(true);
     }
     if (formState?.isSuccess) {
-      console.log(11111)
+      console.log(11111);
       setLoading(true);
       const data = formState.data;
       if (data && data.cookieData) {
         const { cookieData, user } = data;
         setUser(user);
         setCookieAction(cookieData);
-   
       }
     }
   }, [formState?.isErrorFromTheServer, formState?.isSuccess, formState?.data]);
