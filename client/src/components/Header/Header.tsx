@@ -27,7 +27,7 @@ import Link from "next/link";
 import styles from "./Header.module.scss";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import UserLoginIndicator from "./UserLoginIndicator/UserLoginIndicator";
-// import { logout } from "@/app/auth/_lib/actions";
+
 {
   /* <form action={logout}>
 <button type="submit">Logout</button>
