@@ -12,43 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
-      # Build both SHA and latest tags
-      - name: Build Docker images
-        run: |
-          cd client
-          echo "Building for SHA: ${{ github.sha }}"
-          docker build -f Dockerfile.prod \
-            -t rosengray/sima-client:${{ github.sha }} \
-            -t rosengray/sima-client:latest .
-          
-      - name: Login to Docker Hub
-        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: cd client && docker build -f Dockerfile.prod -t rosengray/sima-client:${{ github.sha }} -t rosengray/sima-client:latest .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          
-      # Push both tags
-      - name: Push Docker images
-        run: |
-          docker push rosengray/sima-client:${{ github.sha }}
-          docker push rosengray/sima-client:latest
-          
+      - run: docker push rosengray/sima-client:${{ github.sha }} && docker push rosengray/sima-client:latest
       - uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-          
       - run: doctl kubernetes cluster kubeconfig save sima
-      
-      # Update deployment and verify
-      - name: Update deployment
-        run: |
-          # Update the image with specific SHA
-          kubectl set image deployment/client-depl client=rosengray/sima-client:${{ github.sha }}
-          
-          # Wait for rollout to complete
-          kubectl rollout status deployment/client-depl
-          
-          # Verify the update
-          echo "Verifying deployment image..."
-          kubectl get deployment client-depl -o=jsonpath='{.spec.template.spec.containers[0].image}'
+      - run: kubectl set image deployment/client-depl client=rosengray/sima-client:${{ github.sha }}
