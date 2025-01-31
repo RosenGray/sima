@@ -16,7 +16,6 @@ import simaDarkLogo from "@/assets/images/sima.dark.logo.png";
 import Image from "next/image";
 import realestate from "@/assets/images/realestate.webp";
 // import professionals from "@/assets/images/professionals.webp";
-// import marketPlace from "@/assets/images/marketPlace.webp";
 
 import NavigationItem from "./NavigationItem/NavigationItem";
 import { realEstatenavigationItems } from "./config";
