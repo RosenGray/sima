@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd client && docker build -f Dockerfile.prod -t rosengray/sima-client:${{ github.sha }} -t rosengray/sima-client:latest .
+      - run: cd client && docker build -f Dockerfile.prod -t rosengray/sima-client .
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker push rosengray/sima-client:${{ github.sha }} && docker push rosengray/sima-client:latest
+      - run: docker push rosengray/sima-client
       - uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl kubernetes cluster kubeconfig save sima
-      - run: kubectl set image deployment/client-depl client=rosengray/sima-client:${{ github.sha }}
+      - run: kubectl rollout restart deployment client-depl
