@@ -1,0 +1,43 @@
+@import "./../../../common/styles/mixins";
+
+.UserDropdown {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--red-9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  & > span {
+    letter-spacing: 0.1em;
+  }
+  &__HideOnMobile {
+    @include hide-on-mobile(none, flex);
+  }
+  &__Item {
+    padding: 10px 15px;
+    line-height: 40px;
+    &:not(:last-child) {
+      border-bottom: 0.1px solid var(--gray-12);
+      //   margin-bottom: 10px;
+    }
+    &:hover {
+      background-color: var(--gray-5);
+    }
+  }
+  &__Content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  &__Button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+    & > svg {
+      color: var(--yellow-12);
+    }
+  }
+}

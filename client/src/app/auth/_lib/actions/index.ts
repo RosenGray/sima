@@ -17,6 +17,7 @@ import { z } from "zod";
 import { ServerErrorType } from "@sima-board/common";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { customFetch } from "@/fetch/server";
+import { User } from "@/types/auth/auth.types";
 
 export const registerActionWrapper = async (
   prevState: unknown,
@@ -68,7 +69,9 @@ export const authUser = async (
     url: string;
     schema: z.ZodType<Record<string, unknown>>;
   }
-): Promise<SubmissionResultWithErrorsState> => {
+): Promise<
+  SubmissionResultWithErrorsState<{ user: User; cookieData: ResponseCookie }>
+> => {
   const submissionResult = parseWithZod(formData, {
     schema,
   }).reply();
@@ -80,7 +83,7 @@ export const authUser = async (
   }
 
   try {
-    const response = await customFetch<{ name: string }, ServerError>(url, {
+    const response = await customFetch<User, ServerError>(url, {
       headers: {
         Accept: "application/json",
       },
@@ -109,7 +112,16 @@ export const authUser = async (
         (cookie) => cookie.name === "sima-auth-session"
       );
       if (simaAuthSession) {
-        nextCookies().set(simaAuthSession as ResponseCookie);
+        const user = await response.json();
+        const successResponse = {
+          ...submissionResult,
+          isSuccess: true,
+          data: {
+            user,
+            cookieData: simaAuthSession as ResponseCookie,
+          }
+        };
+        return successResponse;
       }
     }
     return {
@@ -136,7 +148,7 @@ const resetPassword = async (
     url: string;
     schema: z.ZodType<Record<string, unknown>>;
   }
-): Promise<SubmissionResultWithErrorsState> => {
+): Promise<SubmissionResultWithErrorsState<{message:string}>> => {
   const submissionResult = parseWithZod(formData, {
     schema,
   }).reply();
@@ -195,7 +207,7 @@ export const verifyResetToken = async (token: string) => {
 };
 
 export const logout = async () => {
- await customFetch("/api/auth/signout", {
+  await customFetch("/api/auth/signout", {
     credentials: "include",
     method: "POST",
     headers: {
@@ -204,3 +216,8 @@ export const logout = async () => {
   });
   nextCookies().delete("sima-auth-session");
 };
+
+export async function setCookieAction(cookieData: ResponseCookie) {
+  "use server";
+  nextCookies().set(cookieData);
+}

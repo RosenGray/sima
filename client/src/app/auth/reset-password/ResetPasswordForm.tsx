@@ -9,7 +9,6 @@ import Link from "next/link";
 import { resetPasswordSchema } from "../_lib/validations";
 import { resetPasswordActionWrapper } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
-import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
 
 import Form from "@/components/Form/Form";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
@@ -18,7 +17,7 @@ const ResetPasswordForm = () => {
   const [formState, formAction] = useFormState(resetPasswordActionWrapper, {
     isErrorFromTheServer: false,
     isSuccess: false,
-  } as SubmissionResultWithErrorsState);
+  });
 
   const [form, fields] = useForm({
     defaultValue: {},

@@ -1,11 +1,11 @@
 @import "./../../app/global";
 
-@mixin hide-on-mobile {
+@mixin hide-on-mobile($display-mobile: none, $display-desktop: block) {
   @media #{$media-start-min} and #{$media-tablet-portrait-max} {
-    display: none;
+    display: $display-mobile;
   }
   @media #{$media-tablet-portrait-min} {
-    display: block;
+    display: $display-desktop;
   }
 }
 
@@ -17,3 +17,4 @@
     display: none;
   }
 }
+
