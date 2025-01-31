@@ -8,7 +8,6 @@ import {
   HamburgerMenuIcon,
   MoonIcon,
   CrossCircledIcon,
-  PersonIcon,
   PlusIcon,
 } from "@radix-ui/react-icons";
 
