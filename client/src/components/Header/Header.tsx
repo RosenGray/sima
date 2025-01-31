@@ -26,6 +26,8 @@ import Loader from "../Loader/Loader";
 import { Box, Button, IconButton, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import styles from "./Header.module.scss";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import UserLoginIndicator from "./UserLoginIndicator/UserLoginIndicator";
 // import { logout } from "@/app/auth/_lib/actions";
 {
   /* <form action={logout}>
@@ -35,6 +37,8 @@ import styles from "./Header.module.scss";
 }
 console.log(process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL);
 const Header = () => {
+  const { user } = useAuth();
+  console.log("header user", user);
   const { theme, setTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -78,27 +82,20 @@ const Header = () => {
       )}
       <header className={styles.AppHeader}>
         <div className={styles.Left}>
-          <IconButton onClick={toggleThemeHandler} color="yellow">
+          <IconButton onClick={toggleThemeHandler} size="3" color="yellow">
             <MoonIcon />
           </IconButton>
-          <IconButton className={styles.PersonIconButton} color="green">
-            <Link href="/auth/login">
-              <PersonIcon width="16" height="16" />
-            </Link>
-          </IconButton>
+          <UserLoginIndicator
+            hideOnMobile={true}
+            buttonSize="3"
+            user={user}
+          />
 
           <aside className={styles.Aside}>
             <section className={styles.TopSection}>
               <Box className={styles.MobileMenuTop} height="100px">
-                <IconButton
-                  size="3"
-                  className={styles.PersonIconButton}
-                  color="green"
-                >
-                  <Link href="/auth/login">
-                    <PersonIcon width="26" height="26" />
-                  </Link>
-                </IconButton>
+                <UserLoginIndicator user={user} buttonSize="3" />
+
                 <Button size="3">
                   <PlusIcon width="26" height="26" />
                   <Text as="span">Добавить объявление</Text>
@@ -109,7 +106,7 @@ const Header = () => {
               <Navigation.Root className={styles.NavigationMenuRoot}>
                 <Navigation.List className={styles.NavigationMenuList}>
                   <NavigationItem
-                    title="Недвижимость"
+                    title="Услуги специалистов"
                     icon={
                       <CaretDownIcon className={styles.CaretDown} aria-hidden />
                     }
@@ -136,7 +133,7 @@ const Header = () => {
           </aside>
         </div>
         <div className={styles.Right}>
-          <IconButton className={styles.HamburgerIconButton} color="yellow">
+          <IconButton size="3" className={styles.HamburgerIconButton} color="yellow">
             {menuIsOpen ? (
               <CrossCircledIcon onClick={toggleMenuVisibilityHandler} />
             ) : (

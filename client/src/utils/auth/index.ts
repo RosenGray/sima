@@ -1,3 +1,4 @@
+import { User } from "@/types/auth/auth.types";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
@@ -27,7 +28,7 @@ export async function isAuthenticated() {
   return !!authCookie;
 }
 
-export async function getUserData() {
+export async function getUserData(): Promise<User | null> {
   const cookieStore = cookies();
   const authCookie = cookieStore.get("sima-auth-session");
 
@@ -38,9 +39,9 @@ export async function getUserData() {
       "utf-8"
     );
     const { jwt } = JSON.parse(decodedString);
-    const { payload } = await jwtVerify(jwt, SECRET_KEY);
+    const { payload } = await jwtVerify<User>(jwt, SECRET_KEY);
     if (!payload || !payload.id || !payload.email) {
-      return false;
+      return null;
     }
 
     return payload;

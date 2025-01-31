@@ -2,14 +2,7 @@
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { useFormState } from "react-dom";
-import {
-  Flex,
-  Text,
-  Heading,
-  Card,
-  Box,
-  IconButton,
-} from "@radix-ui/themes";
+import { Flex, Text, Heading, Card, Box, IconButton } from "@radix-ui/themes";
 import {
   EnvelopeClosedIcon,
   EyeOpenIcon,
@@ -17,7 +10,12 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { loginSchema } from "../_lib/validations";
-import { loginActionWrapper } from "../_lib/actions";
+import {
+  loginActionWrapper,
+  setCookieAction,
+  testServerAction,
+  TestServerAction,
+} from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 import { useonTogglePasswordView } from "../_lib/hooks";
 import Form from "@/components/Form/Form";
@@ -25,9 +23,12 @@ import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { useEffect, useState } from "react";
 import { ServerErrorType } from "@sima-board/common";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import classes from "./../layout.module.scss";
 
 const LoginFormPage = () => {
+  const { setUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [formState, formAction] = useFormState(loginActionWrapper, {
     isErrorFromTheServer: false,
@@ -36,7 +37,6 @@ const LoginFormPage = () => {
   const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
     password: "password",
   });
-
   const [form, fields] = useForm({
     defaultValue: {},
     lastResult: formState,
@@ -46,7 +46,7 @@ const LoginFormPage = () => {
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-
+  console.log("isLoading", loading);
   const { email, password } = fields;
 
   const handleModalClose = () => {
@@ -60,13 +60,24 @@ const LoginFormPage = () => {
     if (formState?.isErrorFromTheServer) {
       setErrorModalOpen(true);
     }
-  }, [formState?.isErrorFromTheServer]);
+    if (formState?.isSuccess) {
+      console.log(11111)
+      setLoading(true);
+      const data = formState.data;
+      if (data && data.cookieData) {
+        const { cookieData, user } = data;
+        setUser(user);
+        setCookieAction(cookieData);
+   
+      }
+    }
+  }, [formState?.isErrorFromTheServer, formState?.isSuccess, formState?.data]);
 
   return (
     <Box width="100%" maxWidth="550px">
       <Form action={formAction} {...getFormProps(form)} noValidate>
         {({ pending }) => (
-          <Card className={classes.AuthLayout__Card}  size="4">
+          <Card className={classes.AuthLayout__Card} size="4">
             <Flex direction="column" gap="5" p="4">
               <Heading align="center" size="7" mb="2">
                 Мы рады вас видеть
@@ -83,7 +94,7 @@ const LoginFormPage = () => {
                   className={classes.AuthLayout__TextFieldRoot}
                   dataIsValid={email.valid}
                   errors={email.errors}
-                  disabled={pending}
+                  disabled={pending || loading}
                 >
                   <EnvelopeClosedIcon height="16" width="16" />
                 </AuthTextField>
@@ -100,7 +111,7 @@ const LoginFormPage = () => {
                   className={classes.AuthLayout__TextFieldRoot}
                   dataIsValid={password.valid}
                   errors={password.errors}
-                  disabled={pending}
+                  disabled={pending || loading}
                 >
                   <>
                     <LockClosedIcon height="16" width="16" />
@@ -124,7 +135,7 @@ const LoginFormPage = () => {
                     </Text>
                   </Text>
                 </Flex>
-                <SubmitButton pending={pending} />
+                <SubmitButton pending={pending || loading} />
                 <Text weight="bold" mt="3" color="yellow">
                   <Link href="/auth/reset-password">Забыли пароль?</Link>
                 </Text>

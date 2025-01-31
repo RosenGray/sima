@@ -28,7 +28,6 @@ import { passwordValidationPlaceHolderItems } from "../_lib/config";
 import { mapZodErrorsToValidationItems } from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
 import { registerActionWrapper } from "../_lib/actions";
 import { useonTogglePasswordView } from "../_lib/hooks";
-import { SubmissionResultWithErrorsState } from "@/fetch/fetch.types";
 import classes from "./../layout.module.scss";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { ServerErrorType } from "@sima-board/common";
@@ -45,7 +44,7 @@ const RegisterPageForm = () => {
   });
   const [formState, formAction] = useFormState(registerActionWrapper, {
     isErrorFromTheServer: false,
-  } as SubmissionResultWithErrorsState);
+  });
 
   const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
     password: "password",

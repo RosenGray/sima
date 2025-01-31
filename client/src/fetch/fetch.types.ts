@@ -11,10 +11,11 @@ export interface ServerError {
   errorType: ServerErrorType;
 }
 
-export interface SubmissionResultWithErrorsState
+export interface SubmissionResultWithErrorsState<T>
   extends SubmissionResult<string[]> {
   isErrorFromTheServer?: boolean;
   serverError?: ServerError['errors'];
   errorType?: ServerErrorType;
   isSuccess?: boolean;
+  data?: T;
 }

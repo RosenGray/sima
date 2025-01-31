@@ -10,6 +10,7 @@ import Script from "next/script";
 import { generateBackblazeUrl } from "@/utils/common";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { getUserData } from "@/utils/auth";
+import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -54,6 +55,7 @@ export default async function RootLayout({
           src="https://acc-landing.vercel.app/accessibilik.min.js"
         ></Script> */}
         <StoreProvider>
+          <AuthProvider initialUser={userData}>
           <ThemeProvider attribute="class">
             <Theme id={config.RADIX_THEME_APP_ID} accentColor="red">
               {children}
@@ -61,6 +63,7 @@ export default async function RootLayout({
             </Theme>
             <Theme id={config.RADIX_THEME_PORTAL_ID} style={{height:'auto',minHeight:'auto'}} accentColor="indigo" />
           </ThemeProvider>
+          </AuthProvider>
         </StoreProvider>
       </body>
     </html>

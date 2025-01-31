@@ -5,6 +5,7 @@ import { bannerslides } from "@/components/BannerCarousel/config";
 import Image from 'next/image'
 import bla from './../assets/images/1.png';
 import { config } from "@/utils/config";
+import Dummy from "@/components/Dummy/Dummy";
 
 export default function Home() {
   
@@ -12,7 +13,8 @@ export default function Home() {
     <>
       <Header />
       <main className={styles.Page}>
-        
+        {/* <Dummy/> */}
+
       {/* <BannerCarousel slides={bannerslides}/> */}
 
       {/* <Image

@@ -46,6 +46,11 @@ a{
   cursor: pointer;
   color:var(--current-color);
 }
+a:hover{
+  text-decoration: none;
+  cursor: pointer;
+
+}
 
 ul{
   list-style: none;
