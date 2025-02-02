@@ -1,0 +1,7 @@
+.PublishAdLayout {
+  &:before {
+    content: "";
+    display: block;
+    height: var(--header-height);
+  }
+}

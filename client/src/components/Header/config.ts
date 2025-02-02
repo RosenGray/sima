@@ -28,6 +28,63 @@ export const realEstatenavigationItems: ListItemProps[] = [
     }
   ];
 
+export const professionalServicesItems: ListItemProps[] = [
+  {
+    subTitle: 'Ремонтно-строительные услуги',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Ремонт бытовой техники',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Юридические услуги',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Медицинские услуги',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Транспортные услуги',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Безопасность и установка',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'IT и реклама',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Образовательные услуги',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Бизнес-услуги',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Бытовые услуги',
+    title: '',
+    href: ''
+  },
+  {
+    subTitle: 'Другие',
+    title: '',
+    href: ''
+  }
+];
 
 
 export const additionalRealEstateItems: ListItemProps[] = [

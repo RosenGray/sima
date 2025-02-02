@@ -1,0 +1,14 @@
+.ProfessionalsPublishForm {
+    &__Form {
+      width: 100%;
+    }
+  
+    &__Textarea {
+      min-height: 150px;
+      width: 100%;
+    }
+  
+    &__PhoneInput {
+      flex: 1;
+    }
+  }

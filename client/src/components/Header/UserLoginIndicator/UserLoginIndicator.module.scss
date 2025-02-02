@@ -1,10 +1,10 @@
 @import "./../../../common/styles/mixins";
 
 .UserDropdown {
-  width: 40px;
-  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 50%;
-  background-color: var(--red-9);
+  background-color: var(--green-9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,11 +16,10 @@
     @include hide-on-mobile(none, flex);
   }
   &__Item {
-    padding: 10px 15px;
+    padding: 5px 10px;
     line-height: 40px;
     &:not(:last-child) {
       border-bottom: 0.1px solid var(--gray-12);
-      //   margin-bottom: 10px;
     }
     &:hover {
       background-color: var(--gray-5);

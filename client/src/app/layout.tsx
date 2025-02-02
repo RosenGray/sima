@@ -12,10 +12,9 @@ import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { getUserData } from "@/utils/auth";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 
-
 const inter = Inter({ subsets: ["latin"] });
-const bla = generateBackblazeUrl('sima','sima.dark.logo.png')
-console.log('bla',bla)
+const bla = generateBackblazeUrl("sima", "sima.dark.logo.png");
+console.log("bla", bla);
 export const metadata: Metadata = {
   title:
     "Русская Доска объявлений Sima - Аренда квартир, Продажа, Автомобили, Вакансии, б/у товары",
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: generateBackblazeUrl('sima','sima.dark.logo.png'),
+        url: generateBackblazeUrl("sima", "sima.dark.logo.png"),
       },
     ],
   },
@@ -46,7 +45,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const userData = await getUserData();
-  console.log('userData', userData)
+  console.log("userData", userData);
   return (
     <html lang="ru">
       <body className={inter.className}>
@@ -56,13 +55,28 @@ export default async function RootLayout({
         ></Script> */}
         <StoreProvider>
           <AuthProvider initialUser={userData}>
-          <ThemeProvider attribute="class">
-            <Theme id={config.RADIX_THEME_APP_ID} accentColor="red">
-              {children}
-              <LayoutBackground/>
-            </Theme>
-            <Theme id={config.RADIX_THEME_PORTAL_ID} style={{height:'auto',minHeight:'auto'}} accentColor="indigo" />
-          </ThemeProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem={true}
+              storageKey="sima-theme"
+              enableColorScheme
+              disableTransitionOnChange
+            >
+              <Theme
+                className="globalContentOverflowWrapper"
+                id={config.RADIX_THEME_APP_ID}
+                accentColor="red"
+              >
+                <div className="SimaApp">{children}</div>
+                <LayoutBackground />
+              </Theme>
+              <Theme
+                id={config.RADIX_THEME_PORTAL_ID}
+                style={{ height: "auto", minHeight: "auto" }}
+                accentColor="indigo"
+              />
+            </ThemeProvider>
           </AuthProvider>
         </StoreProvider>
       </body>

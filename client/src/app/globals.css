@@ -6,7 +6,8 @@
     #ecedfe,
     #eddbe6
   );
-  --header-height: 60px;
+  --header-height: 70px;
+  --hero-card-background-color: #fffc;
 }
 
 html:is(.dark) {
@@ -18,6 +19,7 @@ html:is(.dark) {
     #3a2b3d,
     #111216
   );
+  --hero-card-background-color: #1b1d1eb3;
 }
 
 * {
@@ -54,4 +56,13 @@ a:hover{
 
 ul{
   list-style: none;
+}
+
+.globalContentOverflowWrapper{
+  height: 100dvh;
+  overflow: hidden;
+}
+.SimaApp{
+  height: 100%;
+  overflow-y: auto;
 }

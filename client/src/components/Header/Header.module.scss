@@ -54,18 +54,6 @@
   }
 }
 
-.LogoContainer {
-  line-height: 1;
-  @media #{$media-start-min} and #{$media-tablet-portrait-max} {
-    position: fixed;
-    width: 155px;
-    height: 55px;
-    left: 0;
-    right: 0;
-    margin: auto;
-  }
-}
-
 .Aside {
   @media #{$media-start-min} and #{$media-tablet-portrait-max} {
     position: fixed;
@@ -114,19 +102,19 @@
 
 .List {
   @media #{$media-tablet-portrait-min} {
-    display: grid;
-    padding: 1em;
+    display: flex;
     margin: 0;
-    column-gap: 10px;
+    gap: 10px;
     list-style: none;
-    &__One {
-      width: 500px;
-      grid-template-columns: repeat(3, 1fr);
-    }
-    &__Two {
-      width: 600px;
-      grid-template-columns: repeat(3, 1fr);
-    }
+    // &__One {
+    //   width: 600px;
+    //   // grid-template-columns: auto 1fr;
+    //   // grid-template-columns: repeat(2, 1fr);
+    // }
+    // &__Two {
+    //   width: 600px;
+    //   grid-template-columns: repeat(3, 1fr);
+    // }
   }
 }
 
@@ -244,7 +232,20 @@
   flex-direction: column;
   align-items: center;
   gap: 1em;
+}
 
+.AddAdButton {
+  background-color: var(--red-9);
+  border-radius: 6px;
+  padding: 0.5em;
+  align-items: center;
+  gap: 0.5em;
+  text-wrap: nowrap;
+  display: flex;
+
+  &:is(.AddAdButton__HideOnMobile) {
+    @include hide-on-mobile(none, flex);
+  }
 }
 
 @keyframes scaleIn {
