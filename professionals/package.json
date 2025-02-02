@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node-dev --poll src/index.ts",
+    "start:debug": "ts-node-dev --inspect=0.0.0.0:9229 --poll src/index.ts",
     "test": "jest --watchAll --no-cache",
+    "build": "tsc",
+    "start:prod": "node dist/index.js",
     "test:ci": "jest"
   },
   "jest": {

@@ -53,6 +53,6 @@ hoseForRentSchema.statics.findByEvent = async (
 hoseForRentSchema.set("versionKey", "version");
 hoseForRentSchema.plugin(updateIfCurrentPlugin);
 export const HouseForRent = mongoose.model<HouseForRentDoc, HouseForRenModel>(
-  "HouseForRent",
+  "sadsadsa",
   hoseForRentSchema
 );
