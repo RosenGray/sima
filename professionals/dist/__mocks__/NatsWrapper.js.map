@@ -1,1 +1,0 @@
-{"version":3,"file":"NatsWrapper.js","sourceRoot":"/","sources":["__mocks__/NatsWrapper.ts"],"names":[],"mappings":";;;AAAa,QAAA,WAAW,GAAG;IACvB,MAAM,EAAC;QACH,OAAO,EAAC,IAAI,CAAC,EAAE,EAAE,CAAC,kBAAkB,CAAC,CAAC,OAAc,EAAC,IAAW,EAAC,QAAmB,EAAE,EAAE;YACpF,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,CAAA;YAC1B,QAAQ,EAAE,CAAC;QACf,CAAC,CAAC;KACL;CACJ,CAAC"}
