@@ -2,20 +2,11 @@
 import { FC } from "react";
 import { User } from "@/types/auth/auth.types";
 import { ExitIcon, PersonIcon } from "@radix-ui/react-icons";
-import {
-  DropdownMenu,
-  IconButton,
-  Link,
-  Text,
-  HoverCard,
-  Card,
-  Box,
-} from "@radix-ui/themes";
+import { IconButton, Link, Text, HoverCard, Box } from "@radix-ui/themes";
 import classNames from "classnames";
-import styles from "./UserLoginIndicator.module.scss";
-import { Icon } from "@radix-ui/themes/src/components/callout.jsx";
 import { logout } from "@/app/auth/_lib/actions";
-console.log(styles);
+import styles from "./UserLoginIndicator.module.scss";
+
 interface UserLoginIndicatorProps {
   user: User | null;
   buttonSize?: "1" | "2" | "3" | "4";
@@ -40,19 +31,31 @@ const UserLoginIndicator: FC<UserLoginIndicatorProps> = ({
         </Link>
       </IconButton>
     );
-
-  const userInitials = user.firstName[0] + user.lastName[0];
+  const firstName = user?.firstName || "";
+  const lastName = user?.lastName || "";
+  const userInitials = firstName[0] + lastName[0];
 
   return (
     <HoverCard.Root>
-      <HoverCard.Trigger>
+      <HoverCard.Trigger
+        className={classNames({
+          [styles.UserDropdown__HideOnMobile]: hideOnMobile,
+        })}
+      >
         <div className={styles.UserDropdown}>
           <Text as="span" size="3" weight="bold">
             {userInitials}
           </Text>
         </div>
       </HoverCard.Trigger>
-      <HoverCard.Content style={{ padding: 0 }}>
+      <HoverCard.Content
+        style={{
+          padding: 0,
+          borderRadius: 4,
+          boxShadow: "0 3px 10px 0 rgba(0,0,0,0.15)",
+          border: "1px solid var(--gray-6)",
+        }}
+      >
         <ul>
           <li className={styles.UserDropdown__Item}>
             <Box height="40px" className={styles.UserDropdown__Content}>

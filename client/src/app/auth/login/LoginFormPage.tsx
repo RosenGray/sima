@@ -41,7 +41,7 @@ const LoginFormPage = () => {
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-  console.log("isLoading", loading);
+
   const { email, password } = fields;
 
   const handleModalClose = () => {
@@ -56,7 +56,6 @@ const LoginFormPage = () => {
       setErrorModalOpen(true);
     }
     if (formState?.isSuccess) {
-      console.log(11111);
       setLoading(true);
       const data = formState.data;
       if (data && data.cookieData) {

@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import * as Navigation from "@radix-ui/react-navigation-menu";
 import classNames from "classnames";
@@ -8,19 +7,13 @@ import styles from "./NavigationItem.module.scss";
 interface NavigationItemProps {
   title: string;
   icon: JSX.Element;
-  imageSrc: string;
-  innerListClassNames: string;
   menuItems: ListItemProps[];
-  hideImageOnMobile: boolean;
 }
 
 const NavigationItem: FC<NavigationItemProps> = ({
   title,
-  innerListClassNames,
   icon,
-  imageSrc,
   menuItems = [],
-  hideImageOnMobile = true,
 }) => {
   return (
     <Navigation.Item className={styles.NavigationMenuItem}>
@@ -30,23 +23,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
       </Navigation.Trigger>
 
       <Navigation.Content className={styles.NavigationMenuContent}>
-        <ul className={`${innerListClassNames}`}>
-          {imageSrc && (
-            <li
-              className={`${hideImageOnMobile ? styles.HideOnMobile : ""}`}
-              style={{ gridRow: "span 3" }}
-            >
-              <div className={styles.ItemAsImageBlock}>
-                <Image
-                  src={imageSrc}
-                  fill
-                  alt={title}
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-            </li>
-          )}
-
+        <ul className={styles.NavigationMenuContent__Inner}>
           {menuItems.map((item, index) => (
             <ListItem
               key={index}

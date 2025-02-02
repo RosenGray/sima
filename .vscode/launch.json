@@ -1,6 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
+      
       {
         "type": "node",
         "request": "attach",
@@ -8,6 +9,19 @@
         "address": "localhost",
         "port": 9229,
         "localRoot": "${workspaceFolder}/auth",
+        "remoteRoot": "/app",
+        "restart": true,
+        "skipFiles": [
+          "<node_internals>/**"
+        ]
+      },
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "Debug Professionals Service",
+        "address": "localhost",
+        "port": 9229,
+        "localRoot": "${workspaceFolder}/professionals",
         "remoteRoot": "/app",
         "restart": true,
         "skipFiles": [

@@ -15,7 +15,10 @@ spec:
       containers:
         - name: professionals
           image: rosengray/sima-professionals
-          env: 
+          ports:
+            - containerPort: 3000
+            - containerPort: 9229  # Debug port
+          env:
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
@@ -31,7 +34,6 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
-
 ---
 apiVersion: v1
 kind: Service
@@ -45,3 +47,7 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
+    - name: debug
+      protocol: TCP
+      port: 9229
+      targetPort: 9229
