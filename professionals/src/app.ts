@@ -3,6 +3,7 @@ import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
 import { errorHandler, NotFoundError,currentUser } from "@sima-board/common";
+import { HouseForRent } from "./models/HouseForRent";
 
 
 export const app = express();
@@ -14,7 +15,13 @@ app.use(
     secure: process.env.NODE_ENV !== "test",
   })
 );
-app.get("/api/professionals/healthcheck", (req, res) => {
+app.get("/api/professionals/healthcheck", async (req, res) => {
+  const house = new HouseForRent({
+    title: "Beach House",
+    userId: "123",
+    version: 1
+  });
+  await house.save();
   res.status(200).send({health:true});
 });
 
