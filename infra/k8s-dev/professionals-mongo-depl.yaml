@@ -56,6 +56,7 @@ kind: Service
 metadata:
   name: professionals-mongo-srv
 spec:
+  type: NodePort
   selector:
     app: professionals-mongo
   ports:
@@ -63,3 +64,12 @@ spec:
       protocol: TCP
       port: 27017
       targetPort: 27017
+      nodePort: 30018
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: manual
+provisioner: k8s.io/minikube-hostpath
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
