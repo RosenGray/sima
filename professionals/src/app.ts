@@ -28,7 +28,7 @@ app.get("/api/professionals/healthcheck", async (req, res) => {
 app.use(currentUser);
 
 
-app.get("*", async () => {
-  throw new NotFoundError();
+app.get("*", async (req, res) => {
+  throw new NotFoundError(`Route ${req.method} ${req.url} not found`);
 });
 app.use(errorHandler);
