@@ -11,7 +11,7 @@ import {
   Text,
   TextField,
 } from "@radix-ui/themes";
-import Form from "@/components/Form/Form";
+import Form from "@/components/formManager/Form/Form";
 import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";
 import { EyeOpenIcon, LockClosedIcon } from "@radix-ui/react-icons";
 import AuthTextField from "../../_components/AuthTextField/AuthTextField";

@@ -14,6 +14,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "f003.backblazeb2.com",
+
       },
     ],
   },

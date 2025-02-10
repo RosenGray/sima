@@ -36,7 +36,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: backblazeb-public-bucket-secret-key
-                  key: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY                                                   
+                  key: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY              
+            - name: RECAPTCHA_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: recaptcha-secret-key
+                  key: RECAPTCHA_SECRET_KEY                                        
 ---
 apiVersion: v1
 kind: Service

@@ -33,9 +33,11 @@ export const styles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
     ...base,
     backgroundColor: state.isFocused ? 'var(--red-9)' : 'var(--mauve)', 
     cursor: 'pointer', 
+    color: 'var(--gray-12)',
     "&:hover": {
         backgroundColor: "var(--red-9)",
-        borderRadius: '4px'
+        borderRadius: '4px',
+        color: 'var(--gray-12)',
       }
   }),
 //   valueContainer: (base) => ({
@@ -45,18 +47,18 @@ export const styles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
 //   }),
   placeholder: (base) => ({
     ...base,
-    color: "var(--red-11)",
+    color: "var(--gray-12);",
   }),
   singleValue: (base) => ({
     ...base,
-    color: "var(--red-11)",
+    color: "var(--gray-12);",
   }),
   input: (base) => ({
     ...base,
-    color: "var(--red-11)",
+    color: "var(--gray-12);",
   }),
   noOptionsMessage: (base) => ({
     ...base,
-    color: "var(--red-11)",
+    color: "var(--gray-12);",
   }),
 };

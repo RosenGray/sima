@@ -1,22 +1,21 @@
 "use client";
 import { FC } from "react";
-import { User } from "@/types/auth/auth.types";
 import { ExitIcon, PersonIcon } from "@radix-ui/react-icons";
 import { IconButton, Link, Text, HoverCard, Box } from "@radix-ui/themes";
 import classNames from "classnames";
 import { logout } from "@/app/auth/_lib/actions";
 import styles from "./UserLoginIndicator.module.scss";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 interface UserLoginIndicatorProps {
-  user: User | null;
   buttonSize?: "1" | "2" | "3" | "4";
   hideOnMobile?: boolean;
 }
 const UserLoginIndicator: FC<UserLoginIndicatorProps> = ({
-  user,
   buttonSize,
   hideOnMobile,
 }) => {
+  const { user, setUser } = useAuth();
   if (!user)
     return (
       <IconButton
@@ -69,7 +68,15 @@ const UserLoginIndicator: FC<UserLoginIndicatorProps> = ({
           </li>
           <li className={styles.UserDropdown__Item}>
             <Box height="40px" className={styles.UserDropdown__Content}>
-              <form action={logout}>
+              <form
+                action={() => {
+                  logout().then((isSuccess) => {
+                    if (isSuccess) {
+                      setUser(null);
+                    }
+                  });
+                }}
+              >
                 <button className={styles.UserDropdown__Button} type="submit">
                   <ExitIcon width="18" height="18" />
                   <Text size="2" weight="bold" color="gray" as="span">

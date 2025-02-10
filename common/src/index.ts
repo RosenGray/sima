@@ -1,4 +1,5 @@
 export * from './errors/BadRequestError';
+export * from './errors/InternalServerError';
 export * from './errors/CustomError';
 export * from './errors/DatabaseConnectionError';
 export * from './errors/NotAuthorizedError';

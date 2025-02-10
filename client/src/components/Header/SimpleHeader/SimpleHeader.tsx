@@ -10,10 +10,8 @@ import Link from "next/link";
 import styles from "./SimpleHeader.module.scss";
 
 const SimpleHeader: FC = () => {
-  const { user } = useAuth();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  console.log("resolvedTheme", resolvedTheme);
 
   useEffect(() => {
     setMounted(true);
@@ -27,7 +25,7 @@ const SimpleHeader: FC = () => {
         <Link className={styles.Header__exitButton} href="/publish-ad">
           Выйти
         </Link>
-        <UserLoginIndicator user={user} />
+        <UserLoginIndicator buttonSize="3" />
       </div>
 
       <div className={styles.Header__rightSection}>

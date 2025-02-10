@@ -10,7 +10,7 @@ import { resetPasswordSchema } from "../_lib/validations";
 import { resetPasswordActionWrapper } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 
-import Form from "@/components/Form/Form";
+import Form from "@/components/formManager/Form/Form";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 
 const ResetPasswordForm = () => {

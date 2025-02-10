@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./NatsWrapper";
-import { HouseForRentCreatedListener } from "./events/listeners/HouseForRentCreatedListener";
-import { HouseForRentUpdatedListener } from "./events/listeners/HouseForRentUpdatedListener";
+// import { HouseForRentCreatedListener } from "./events/listeners/HouseForRentCreatedListener";
+// import { HouseForRentUpdatedListener } from "./events/listeners/HouseForRentUpdatedListener";
 
 const {
   NATS_CLIENT_ID,
@@ -42,8 +42,8 @@ const professionalsServiceStart = async () => {
     });
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
-    new HouseForRentCreatedListener(natsWrapper.client).listen();
-    new HouseForRentUpdatedListener(natsWrapper.client).listen();
+    // new HouseForRentCreatedListener(natsWrapper.client).listen();
+    // new HouseForRentUpdatedListener(natsWrapper.client).listen();
     console.log("connecting to mongodb");
   } catch (error) {
     console.log("mongodb-connection error:", error);
