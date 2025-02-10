@@ -93,7 +93,7 @@ const Header = () => {
           <aside className={styles.Aside}>
             <section className={styles.TopSection}>
               <Box className={styles.MobileMenuTop} height="100px">
-                <UserLoginIndicator user={user} buttonSize="3" />
+                <UserLoginIndicator buttonSize="3" />
 
                 <AddAdButton isLoggedIn={!!user} />
               </Box>
