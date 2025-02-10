@@ -38,7 +38,7 @@ const GoogleReCAPTCHA = () => {
     <Box>
       <ReCAPTCHA
         ref={recaptchaRef}
-        sitekey={''}
+        sitekey={config.RECAPTCHA_FRONTNED_SITE_KEY}
         onChange={handleChange}
         onExpired={handleExpired}
       />
