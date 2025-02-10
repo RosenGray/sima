@@ -11,4 +11,5 @@ export enum ServerErrorType {
   AuthTokenExpired = 9,
   AuthInvalidToken = 10,
   TooManyRequests = 11,
+  InternalServerError = 12,
 }

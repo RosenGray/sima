@@ -31,7 +31,7 @@ import { useonTogglePasswordView } from "../_lib/hooks";
 import classes from "./../layout.module.scss";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { ServerErrorType } from "@sima-board/common";
-import Form from "@/components/Form/Form";
+import Form from "@/components/formManager/Form/Form";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 
 const RegisterPageForm = () => {

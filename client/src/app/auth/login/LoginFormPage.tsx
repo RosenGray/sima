@@ -13,7 +13,7 @@ import { loginSchema } from "../_lib/validations";
 import { loginActionWrapper, setCookieAction } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 import { useonTogglePasswordView } from "../_lib/hooks";
-import Form from "@/components/Form/Form";
+import Form from "@/components/formManager/Form/Form";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { useEffect, useState } from "react";
 import { ServerErrorType } from "@sima-board/common";

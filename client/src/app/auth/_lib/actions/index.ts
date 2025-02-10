@@ -119,7 +119,7 @@ export const authUser = async (
           data: {
             user,
             cookieData: simaAuthSession as ResponseCookie,
-          }
+          },
         };
         return successResponse;
       }
@@ -148,7 +148,7 @@ const resetPassword = async (
     url: string;
     schema: z.ZodType<Record<string, unknown>>;
   }
-): Promise<SubmissionResultWithErrorsState<{message:string}>> => {
+): Promise<SubmissionResultWithErrorsState<{ message: string }>> => {
   const submissionResult = parseWithZod(formData, {
     schema,
   }).reply();
@@ -215,6 +215,7 @@ export const logout = async () => {
     },
   });
   nextCookies().delete("sima-auth-session");
+  return true;
 };
 
 export async function setCookieAction(cookieData: ResponseCookie) {

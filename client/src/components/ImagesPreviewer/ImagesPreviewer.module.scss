@@ -1,0 +1,15 @@
+.ImagesPreviewer {
+  border: 2px dashed #7c8ba1;
+  padding: 5px;
+
+  &__GridItem {
+    position: relative;
+    & > img {
+      object-fit: cover;
+    }
+  }
+  // &__GridFirstItem{
+  //     border: 2px solid blue;
+  //     height: 100%;
+  // }
+}

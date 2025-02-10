@@ -8,6 +8,7 @@ interface Config {
   RADIX_THEME_APP_ID: string;
   RADIX_THEME_PORTAL_ID: string;
   API_URL: string;
+  RECAPTCHA_FRONTNED_SITE_KEY: string;
 }
 
 export const config: Config = {
@@ -22,6 +23,8 @@ export const config: Config = {
   BACKBLAZEB_PUBLIC_BUCKET_NAME:
     process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME ||
     "sima-board-public-dev",
+  RECAPTCHA_FRONTNED_SITE_KEY:
+    process.env.NEXT_PUBLIC_RECAPTCHA_FRONTNED_SITE_KEY || "",
   // Keep these as is since they're server-side only
   BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY:
     process.env.BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY || "",

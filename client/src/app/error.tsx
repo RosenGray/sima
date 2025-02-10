@@ -9,7 +9,7 @@ interface ErrorProps {
   reset: () => void;
 }
 
-export default function Error({ reset, error }: ErrorProps) {
+export default function ErrorPage({ reset, error }: ErrorProps) {
   return (
     <Container size="3" className={styles.errorPage}>
       <Flex direction="column" align="center" gap="4">

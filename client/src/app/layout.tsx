@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import StoreProvider from "./StoreProvider";
+import Providers from './providers'
 import { Theme } from "@radix-ui/themes";
 import { config } from "@/utils/config";
 import "@radix-ui/themes/styles.css";
@@ -11,6 +11,7 @@ import { generateBackblazeUrl } from "@/utils/common";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { getUserData } from "@/utils/auth";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
+
 
 const inter = Inter({ subsets: ["latin"] });
 const bla = generateBackblazeUrl("sima", "sima.dark.logo.png");
@@ -45,7 +46,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const userData = await getUserData();
-  console.log("userData", userData);
   return (
     <html lang="ru">
       <body className={inter.className}>
@@ -53,8 +53,9 @@ export default async function RootLayout({
           defer
           src="https://acc-landing.vercel.app/accessibilik.min.js"
         ></Script> */}
-        <StoreProvider>
+        {/* <StoreProvider> */}
           <AuthProvider initialUser={userData}>
+            <Providers>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -77,8 +78,9 @@ export default async function RootLayout({
                 accentColor="indigo"
               />
             </ThemeProvider>
+          </Providers>
           </AuthProvider>
-        </StoreProvider>
+        {/* </StoreProvider> */}
       </body>
     </html>
   );

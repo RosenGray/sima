@@ -15,12 +15,10 @@ import {
 import NavigationItem from "./NavigationItem/NavigationItem";
 import { professionalServicesItems } from "./config";
 import Loader from "../Loader/Loader";
-
 import { Box, IconButton, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import UserLoginIndicator from "./UserLoginIndicator/UserLoginIndicator";
-import { generateBackblazeUrl } from "@/utils/common";
 import { Logo } from "../Logo/Logo";
 import classNames from "classnames";
 import styles from "./Header.module.scss";
@@ -68,7 +66,6 @@ const Header = () => {
   }
 
   const isDark = theme === "dark";
-  console.log("isDark", isDark);
 
   return (
     <div className={styles.AppHeaderContainer} data-menu-is-open={menuIsOpen}>
@@ -80,7 +77,7 @@ const Header = () => {
       )}
       <header className={styles.AppHeader}>
         <div className={styles.Left}>
-          <UserLoginIndicator hideOnMobile={true} buttonSize="3" user={user} />
+          <UserLoginIndicator hideOnMobile={true} buttonSize="3" />
           <IconButton onClick={toggleThemeHandler} size="3" color="yellow">
             {!isMounted ? (
               <Loader isSpin width={150} height={55} />
