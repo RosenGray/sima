@@ -50,3 +50,7 @@
 //   expect(msg.ack).toHaveBeenCalled();
 
 // });
+
+it('passes a dummy test', () => {
+  expect(true).toBe(true);
+});

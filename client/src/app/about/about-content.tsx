@@ -1,25 +1,22 @@
 // app/about/about-content.tsx
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { getPosts } from '../posts/_lib/actions'
+// import { useQuery } from '@tanstack/react-query'
+// import { getPosts } from '../posts/_lib/actions'
 import ReCAPTCHA from '@/components/ReCAPTCHA/ReCAPTCHA'
 
 export default function AboutContent() {
-  const { data: posts } = useQuery({ 
-    queryKey: ['posts'], 
-    queryFn: () => getPosts(),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  })
+  // const { data: posts } = useQuery({ 
+  //   queryKey: ['posts'], 
+  //   queryFn: () => getPosts(),
+  //   staleTime: 1000 * 60 * 5, // 5 minutes
+  // })
   
   return (
     <div>
       <h1>About Page</h1>
       <div>
         <ReCAPTCHA/>
-        {posts?.map(post => (
-          <div key={post.id}>{post.title}</div>
-        ))}
       </div>
     </div>
   )
