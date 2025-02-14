@@ -34,14 +34,14 @@ const professionalsServiceStart = async () => {
     throw new Error("NATS_CLUSTER_ID must be defined");
   }
   try {
-    await natsWrapper.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, NATS_URL);
+    // await natsWrapper.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, NATS_URL);
     await mongoose.connect(MONGO_URI);
-    natsWrapper.client.on("close", () => {
-      console.log("NATS connection closed!");
-      process.exit();
-    });
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM", () => natsWrapper.client.close());
+    // natsWrapper.client.on("close", () => {
+    //   console.log("NATS connection closed!");
+    //   process.exit();
+    // });
+    // process.on("SIGINT", () => natsWrapper.client.close());
+    // process.on("SIGTERM", () => natsWrapper.client.close());
     // new HouseForRentCreatedListener(natsWrapper.client).listen();
     // new HouseForRentUpdatedListener(natsWrapper.client).listen();
     console.log("connecting to mongodb");
