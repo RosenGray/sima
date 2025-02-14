@@ -41,6 +41,16 @@ spec:
                 secretKeyRef:
                   name: db-password
                   key: DB_PASSWORD
+            - name: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-access-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+            - name: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-secret-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
 
 ---
 apiVersion: v1

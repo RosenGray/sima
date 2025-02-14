@@ -8,6 +8,7 @@ interface BasicFormFieldrops extends TextField.RootProps {
   ref?: LegacyRef<HTMLInputElement>;
   children?: ReactNode;
   label?: string;
+  anotherLabel?: string;
   showEmailDisclaimer?: boolean;
 }
 
@@ -22,6 +23,7 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
   errors,
   ref,
   label,
+  anotherLabel,
   showEmailDisclaimer,
   ...rest
 }) => {
@@ -37,7 +39,7 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
           style={{ lineHeight: "2" }}
           className={className}
         >
-          {label}
+          <Text as="span">{label}</Text>
         </Text>
       )}
       <TextField.Root
@@ -52,6 +54,10 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
       >
         <TextField.Slot>{children}</TextField.Slot>
       </TextField.Root>
+      <Text style={{ fontSize: 10 }} weight="bold" as="span" size="1">
+        {anotherLabel}
+      </Text>
+      <br />
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}
       </Text>

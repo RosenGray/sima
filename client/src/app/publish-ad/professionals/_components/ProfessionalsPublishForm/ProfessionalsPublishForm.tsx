@@ -1,16 +1,5 @@
 "use client";
-import {
-  Heading,
-  Box,
-  Text,
-  Select,
-  TextField,
-  Button,
-  Flex,
-  Grid,
-  Skeleton,
-
-} from "@radix-ui/themes";
+import { Heading, Box, Flex, Grid, Skeleton } from "@radix-ui/themes";
 import {
   getCitiesToSelectOptions,
   getAreasToSelectOptions,
@@ -37,13 +26,13 @@ import DropFilesInput from "@/components/formManager/DropFilesInput/DropFilesInp
 import SkeletonLoader from "@/components/SkeletonLoader/SkeletonLoader";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
 import classes from "./ProfessionalsPublishForm.module.scss";
-import EmailDisclaimer from "@/components/EmailDisclaimer/EmailDisclaimer";
 import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import BasicFormField from "@/components/formManager/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/formManager/PhoneFormField/PhoneFormField";
-import ReCAPTCHA from "@/components/ReCAPTCHA/ReCAPTCHA";
-import Link from "next/link";
-
+import ReCAPTCHA from "@/components/GoogleReCAPTCHA/GoogleReCAPTCHA";
+import { useState } from "react";
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import Checkbox from "@/components/formManager/Checkbox/Checkbox";
 const areas = getAreasToSelectOptions();
 const cities = getCitiesToSelectOptions();
 const citiesOptions = [...areas, ...cities];
@@ -53,6 +42,7 @@ export const ProfessionalsPublishForm = () => {
     isErrorFromTheServer: false,
     isSuccess: false,
   });
+  const [prevImages, setPrevImages] = useState<File[]>([]);
 
   const [form, fields] = useForm({
     defaultValue: {
@@ -82,8 +72,10 @@ export const ProfessionalsPublishForm = () => {
     email,
     phoneNumber,
     areaCode,
+    acceptTerms,
   } = fields;
-
+console.log('prevImages',prevImages)
+console.log('images.value ',images.value )
   const renderForm = () => {
     if (isLoading) return <SkeletonLoader />;
 
@@ -97,7 +89,12 @@ export const ProfessionalsPublishForm = () => {
       category.value
     );
     return (
-      <Form action={formAction} {...getFormProps(form)}>
+      <Form
+        action={(x) => {
+          console.log("x", x.get("acceptTerms"));
+        }}
+        {...getFormProps(form)}
+      >
         {(formStatus) => {
           return (
             <Skeleton loading={isLoading}>
@@ -167,10 +164,11 @@ export const ProfessionalsPublishForm = () => {
                   key={images.key}
                   field={images}
                   errors={images.errors}
+                  onFilesDrop={setPrevImages}
                 />
-                {images.value && (
+                {(images.value || prevImages.length > 0) && (
                   <Box mt="4" mb="4">
-                    <ImagesPreviewer images={images.value} />
+                    <ImagesPreviewer images={images.value || prevImages} />
                   </Box>
                 )}
 
@@ -184,6 +182,7 @@ export const ProfessionalsPublishForm = () => {
                       {...getInputProps(fields.email, { type: "email" })}
                       key={email.key}
                       label="Email"
+                      anotherLabel="*виден только администрации сайта и не отображается публично"
                       placeholder="@ Адрес электронной почты"
                       size="3"
                       defaultValue={fields.email.initialValue}
@@ -202,27 +201,21 @@ export const ProfessionalsPublishForm = () => {
                     />
                   </Grid>
                 </Box>
-                <Link href="/about">about</Link>
-                  <ReCAPTCHA />
-            
-                <Button size="3" variant="solid">
-                  Добавить объявление
-                </Button>
-                {/* Submit Section
-                <Flex direction="column" gap="3" align="start">
-                  <Flex gap="2" align="center">
-                    <input type="checkbox" id="terms" />
-                    <Text size="2">
-                      Я принимаю{" "}
-                      <a href="/agreement" target="_blank">
-                        пользовательское соглашение
-                      </a>
-                    </Text>
-                  </Flex>
-                  <Button size="3" variant="solid">
-                    Добавить объявление
-                  </Button>
-                </Flex> */}
+
+                <Flex
+                  mt="4"
+                  direction="column"
+                  gap="3"
+                  justify="center"
+                  align="center"
+                >
+                  <Checkbox
+                    defaultChecked={Boolean(acceptTerms.initialValue)}
+                    field={acceptTerms}
+                    label="Я согласен с условиями"
+                  />
+                  <ReCAPTCHA submitButtonText="Добавить объявление" />
+                </Flex>
               </Box>
             </Skeleton>
           );

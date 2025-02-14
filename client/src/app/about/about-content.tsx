@@ -3,7 +3,7 @@
 
 // import { useQuery } from '@tanstack/react-query'
 // import { getPosts } from '../posts/_lib/actions'
-import ReCAPTCHA from '@/components/ReCAPTCHA/ReCAPTCHA'
+import ReCAPTCHA from '@/components/GoogleReCAPTCHA/GoogleReCAPTCHA'
 
 export default function AboutContent() {
   // const { data: posts } = useQuery({ 
