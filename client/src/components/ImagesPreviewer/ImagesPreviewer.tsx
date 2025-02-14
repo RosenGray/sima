@@ -33,6 +33,7 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({ images }) => {
         </div>
         <Grid columns="2" rows="2" gap="2">
           {filesWithPreview.slice(1).map((file) => {
+            console.log('file.name',file.name)
             return (
               <div
                 key={file.name}

@@ -66,4 +66,17 @@ export const professionalMutationSchema = z.object({
   phoneNumber: z.number({
     required_error: "Телефон обязателен. Используйте только цифры",
   }),
+  acceptTerms: z.string({
+    required_error: "Вы должны согласиться с условиями",
+  }).superRefine((value, ctx) => {
+    if (value !== "true") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Вы должны согласиться с условиями",
+        fatal: true,
+      });
+      return z.NEVER;
+    }
+    return true;
+  }),
 });

@@ -7,6 +7,7 @@ import { Text } from "@radix-ui/themes";
 import {
   FieldMetadata,
   getInputProps as conformGetInputProps,
+  useInputControl,
 } from "@conform-to/react";
 
 type AcceptedFileTypes =
@@ -27,12 +28,16 @@ interface DropFilesInputProps {
 
 const DropFilesInput: React.FC<DropFilesInputProps> = ({
   field,
+  onFilesDrop,
   accept,
   maxSize,
   maxFiles,
   errors,
 }) => {
   const onDrop = useCallback((_acceptedFiles: File[]) => {
+    onFilesDrop?.(_acceptedFiles);
+
+    console.log("_acceptedFiles", _acceptedFiles);
     // console.log("acceptedFiles", acceptedFiles);
     // acceptedFiles.map((file) =>
     //   Object.assign(file, {
@@ -71,7 +76,8 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
               Перетащите файлы сюда или нажмите, чтобы выбрать файлы
               <br />
               <span>
-                (макс: {maxFiles} файлов, до {Math.round(maxSize! / 1024 / 1024)}MB - 1 файл)
+                (макс: {maxFiles} файлов, до{" "}
+                {Math.round(maxSize! / 1024 / 1024)}MB - 1 файл)
               </span>
             </span>
           )}

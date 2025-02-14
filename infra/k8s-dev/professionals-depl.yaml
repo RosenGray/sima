@@ -17,23 +17,33 @@ spec:
           image: rosengray/sima-professionals
           ports:
             - containerPort: 3000
-            - containerPort: 9229  # Debug port
+            - containerPort: 9229 # Debug port
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
             - name: NATS_URL
-              value: 'http://nats-srv:4222'
+              value: "http://nats-srv:4222"
             - name: NATS_CLUSTER_ID
-              value: 'sima'
+              value: "sima"
             - name: NODE_ENV
-              value: 'development'
+              value: "development"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
+            - name: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-access-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
+            - name: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-secret-key
+                  key: BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
 ---
 apiVersion: v1
 kind: Service
