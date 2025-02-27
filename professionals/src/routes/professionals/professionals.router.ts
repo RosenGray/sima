@@ -120,6 +120,7 @@ router.post(
       accessKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY ?? "",
       secretKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY ?? "",
       baseUrl: process.env.BACKBLAZEB_BASE_URL ?? "",
+      env: process.env.NODE_ENV ?? "",
     });
   }
 );
