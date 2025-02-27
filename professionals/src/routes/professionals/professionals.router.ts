@@ -83,38 +83,43 @@ router.post(
   requireAuth,
   upload.array("images", 5),
   async (req: CustomRequest<AddProfessional, {}, {}>, res: Response) => {
-    req.body.images = req.files as Express.Multer.File[];
-    const userId = req.currentUser!.id;
-    const result = addProfessionalSchema.safeParse(req.body);
-    if (!result.success) {
-      return res
-        .status(400)
-        .send({ message: "Invalid request body", error: result.error });
-    }
-    const fileManager = new FileManager();
-    const images = await fileManager.uploadFiles({
-      userId,
-      folderName: "professionals",
-      files: req.files!,
-    });
+    // req.body.images = req.files as Express.Multer.File[];
+    // const userId = req.currentUser!.id;
+    // const result = addProfessionalSchema.safeParse(req.body);
+    // if (!result.success) {
+    //   return res
+    //     .status(400)
+    //     .send({ message: "Invalid request body", error: result.error });
+    // }
+    // const fileManager = new FileManager();
+    // const images = await fileManager.uploadFiles({
+    //   userId,
+    //   folderName: "professionals",
+    //   files: req.files!,
+    // });
 
-    const imagesArray = images.map((image) => ({
-      src: image.url,
-      versionId: image.data.VersionId,
-    }));
+    // const imagesArray = images.map((image) => ({
+    //   src: image.url,
+    //   versionId: image.data.VersionId,
+    // }));
 
-    const professional = new Professional({
-      ...req.body,
-      images: imagesArray,
-    });
+    // const professional = new Professional({
+    //   ...req.body,
+    //   images: imagesArray,
+    // });
 
-    await professional.save();
+    // await professional.save();
     res.status(201).send({
       // name,
 
       message: "Professional added successfully",
-      receivedBody: req.body, // Send
-      // result
+      // receivedBody: req.body, // Send
+      region: process.env.BACKBLAZEB_REGION ?? "",
+      bucketName: process.env.BACKBLAZEB_PUBLIC_BUCKET_NAME ?? "",
+      endpoint: process.env.BACKBLAZEB_ENDPOINT ?? "",
+      accessKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY ?? "",
+      secretKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY ?? "",
+      baseUrl: process.env.BACKBLAZEB_BASE_URL ?? "",
     });
   }
 );
