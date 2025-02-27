@@ -1,8 +1,9 @@
 import { ServerErrorType } from "@sima-board/common";
 import ReplacePasswordFormPage from "./ReplacePasswordFormPage";
 import { verifyResetToken } from "../../_lib/actions";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getUserSessionData } from "@/utils/auth";
+
 
 interface TokenPageProps {
   params: {
@@ -11,8 +12,8 @@ interface TokenPageProps {
 }
 
 const TokenPage = async ({ params }: TokenPageProps) => {
-  const sessionCookie = cookies().get("sima-auth-session");
-  if (sessionCookie) {
+  const userSession = await getUserSessionData();
+  if (userSession && userSession.isSessionValid) {
     return redirect("/auth/success");
   }
   const { token } = params;

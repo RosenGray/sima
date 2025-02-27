@@ -51,9 +51,9 @@ router.post(
     );
 
     // Store it on session object
-    req.session = {
-      jwt: userJwt,
-    };
+    if (req.session) {
+      req.session.simaAuthSession = userJwt;
+    }
 
     res.status(200).send(existingUser);
   }

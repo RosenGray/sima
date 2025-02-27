@@ -10,21 +10,22 @@ import resetPassword from "./routes/reset-password";
 import verifyResetToken from "./routes/verify-reset-token";
 import { errorHandler, NotFoundError } from "@sima-board/common";
 import cookieParser from "cookie-parser";
+require("dotenv").config();
 
-
-console.log('process.env.NEXT_PUBLIC_APP_URL)',process.env.NEXT_PUBLIC_APP_URL);
-
+const DEV_DOMAIN = ".sima.dev"; // //.sima.dev//localhost
 export const app = express();
-app.use(cookieParser());
 app.set("trust proxy", true);
 app.use(json());
+app.use(cookieParser());
 app.use(
   cookieSession({
-    name: "sima-auth-session",
+    name: "sima-session",
     signed: false,
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    domain:
+      process.env.NODE_ENV === "production" ? ".sima-board.com" : DEV_DOMAIN,
   })
 );
 

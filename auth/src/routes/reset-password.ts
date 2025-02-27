@@ -15,25 +15,23 @@ import {
   TOKEN_EXPIRATION_MINUTES,
 } from "../services/TokenManager";
 import { passwordValidationChain } from "./register/register.schema";
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
 const upload = multer();
-
-
 
 // Create a rate limiter for password reset attempts
 const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
   max: 5, // limit each IP to 5 requests per windowMs
   message: {
-    error: 'Слишком много попыток сброса пароля. Пожалуйста, попробуйте снова через час.',
+    error:
+      "Слишком много попыток сброса пароля. Пожалуйста, попробуйте снова через час.",
     type: ServerErrorType.TooManyRequests,
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
-
 
 // Create a function to get the transporter instead of creating it at module level
 const getTransporter = () => {
@@ -161,7 +159,7 @@ const sendPasswordResetEmail = async (email: string, resetLink: string) => {
 
 router.post(
   "/api/auth/reset-password",
-  passwordResetLimiter,
+  // passwordResetLimiter,
   upload.none(),
   [
     body("email")
@@ -171,6 +169,7 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { email } = req.body;
+    console.log('aaaaaa',process.env.NEXT_PUBLIC_APP_URL)
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
@@ -217,9 +216,9 @@ router.post(
     );
 
     // Store it on session object
-    req.session = {
-      jwt: userJwt,
-    };
+    if (req.session) {
+      req.session.simaAuthSession = userJwt;
+    }
 
     res.status(200).send(user);
   }

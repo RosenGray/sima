@@ -25,7 +25,6 @@ export const config: Config = {
     "sima-board-public-dev",
   RECAPTCHA_FRONTNED_SITE_KEY:
     process.env.NEXT_PUBLIC_RECAPTCHA_FRONTNED_SITE_KEY || "",
-  // Keep these as is since they're server-side only
   BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY:
     process.env.BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY || "",
   BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY:

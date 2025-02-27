@@ -1,10 +1,10 @@
-import { cookies } from "next/headers";
 import LoginFormPage from "./LoginFormPage";
 import { redirect } from "next/navigation";
+import { getUserSessionData } from "@/utils/auth";
 
-const LoginPage = () => {
-  const sessionCookie = cookies().get("sima-auth-session");
-  if (sessionCookie) {
+const LoginPage = async () => {
+  const userSession = await getUserSessionData();
+  if (userSession && userSession.isSessionValid) {
     return redirect("/auth/success");
   }
 

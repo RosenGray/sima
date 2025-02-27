@@ -20,13 +20,15 @@ export const customFetch = async <T, E>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<CustomFetchResponse<T, E>> => {
-  const sessionCookie = nextCookies().get("sima-auth-session");
+  const sessionCookie = nextCookies().get("sima-session");
   const url = `${API_URL}${endpoint}`;
   const response = await fetch(url, {
     ...options,
     headers: {
-      Cookie: `sima-auth-session=${sessionCookie?.value}`,
       ...options.headers,
+      ...(sessionCookie
+        ? { Cookie: `sima-session=${sessionCookie.value}` }
+        : {}),
     },
   });
   if (response.ok) {

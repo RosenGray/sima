@@ -12,9 +12,11 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({ images }) => {
   const filesWithPreview = useMemo(() => {
     return files.map((file) => ({
       ...file,
+      fileName: file.name,
       previewUrl: URL.createObjectURL(file),
     }));
   }, [images]);
+
   return (
     <Box
       className={classes.ImagesPreviewer}
@@ -33,10 +35,10 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({ images }) => {
         </div>
         <Grid columns="2" rows="2" gap="2">
           {filesWithPreview.slice(1).map((file) => {
-            console.log('file.name',file.name)
+            console.log("file.name", file.name);
             return (
               <div
-                key={file.name}
+                key={file.fileName}
                 className={classes.ImagesPreviewer__GridItem}
               >
                 <Image fill src={file.previewUrl} alt="Image" />

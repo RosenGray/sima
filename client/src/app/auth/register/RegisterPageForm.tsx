@@ -26,16 +26,19 @@ import { useOutsideElement } from "@/hooks/useOutsideAlerter";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 import { passwordValidationPlaceHolderItems } from "../_lib/config";
 import { mapZodErrorsToValidationItems } from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
-import { registerActionWrapper } from "../_lib/actions";
+import { registerActionWrapper, setCookieAction } from "../_lib/actions";
 import { useonTogglePasswordView } from "../_lib/hooks";
-import classes from "./../layout.module.scss";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { ServerErrorType } from "@sima-board/common";
 import Form from "@/components/formManager/Form/Form";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import classes from "./../layout.module.scss";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 const RegisterPageForm = () => {
+  const { setUser } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const passwordInputRef = useRef<null | HTMLInputElement>(null);
   const [openPasswordValidationToolTip, setOpenPasswordValidationToolTip] =
     useState(false);
@@ -73,7 +76,16 @@ const RegisterPageForm = () => {
     if (formState?.isErrorFromTheServer) {
       setErrorModalOpen(true);
     }
-  }, [formState?.isErrorFromTheServer]);
+    if (formState?.isSuccess) {
+      setLoading(true);
+      const data = formState.data;
+      if (data && data.cookieData) {
+        const { cookieData, user } = data;
+        setUser(user);
+        setCookieAction(cookieData);
+      }
+    }
+  }, [formState?.isErrorFromTheServer, formState?.isSuccess, formState?.data]);
 
   return (
     <Box width="100%" maxWidth="500px">
@@ -95,7 +107,7 @@ const RegisterPageForm = () => {
                   className={classes.AuthLayout__TextFieldRoot}
                   dataIsValid={firstName.valid}
                   errors={firstName.errors}
-                  disabled={pending}
+                  disabled={pending || loading}
                 >
                   <PersonIcon height="16" width="16" />
                 </AuthTextField>
@@ -111,7 +123,7 @@ const RegisterPageForm = () => {
                   className={classes.AuthLayout__TextFieldRoot}
                   dataIsValid={lastName.valid}
                   errors={lastName.errors}
-                  disabled={pending}
+                  disabled={pending || loading}
                 >
                   <PersonIcon height="16" width="16" />
                 </AuthTextField>
@@ -127,7 +139,7 @@ const RegisterPageForm = () => {
                   className={classes.AuthLayout__TextFieldRoot}
                   dataIsValid={email.valid}
                   errors={email.errors}
-                  disabled={pending}
+                  disabled={pending || loading}
                 >
                   <EnvelopeClosedIcon height="16" width="16" />
                 </AuthTextField>
@@ -163,7 +175,7 @@ const RegisterPageForm = () => {
                       key={password.key}
                       placeholder="пароль"
                       defaultValue={password.initialValue}
-                      disabled={pending}
+                      disabled={pending || loading}
                       onClick={() => {
                         setOpenPasswordValidationToolTip(true);
                       }}
@@ -197,7 +209,7 @@ const RegisterPageForm = () => {
                   className={classes.AuthLayout__TextFieldRoot}
                   dataIsValid={confirmPassword.valid}
                   errors={confirmPassword.errors}
-                  disabled={pending}
+                  disabled={pending || loading}
                 >
                   <>
                     <LockClosedIcon height="16" width="16" />
@@ -221,7 +233,7 @@ const RegisterPageForm = () => {
                     </Text>
                   </Text>
                 </Flex>
-                <SubmitButton pending={pending} />
+                <SubmitButton pending={pending || loading} />
               </Flex>
             </Flex>
           </Card>
@@ -242,3 +254,4 @@ const RegisterPageForm = () => {
 };
 
 export default RegisterPageForm;
+

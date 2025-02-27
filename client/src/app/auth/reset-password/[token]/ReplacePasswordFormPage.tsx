@@ -19,15 +19,21 @@ import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import classes from "../../layout.module.scss";
 import { passwordValidationPlaceHolderItems } from "../../_lib/config";
 import { mapZodErrorsToValidationItems } from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
-import { resetPasswordConfirmActionWrapper } from "../../_lib/actions";
+import {
+  resetPasswordConfirmActionWrapper,
+  setCookieAction,
+} from "../../_lib/actions";
 import { useFormState } from "react-dom";
 import { useonTogglePasswordView } from "../../_lib/hooks";
 import { parseWithZod } from "@conform-to/zod";
 import { resetPasswordConfirmSchema } from "../../_lib/validations";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { ServerErrorType } from "@sima-board/common";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
+  const { setUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const passwordInputRef = useRef<null | HTMLInputElement>(null);
   const [openPasswordValidationToolTip, setOpenPasswordValidationToolTip] =
@@ -41,7 +47,7 @@ const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
       isErrorFromTheServer: false,
     }
   );
-  console.log(formState);
+
   const { onTogglePasswordView, inputPasswordType } = useonTogglePasswordView({
     password: "password",
     confirmPassword: "password",
@@ -67,7 +73,16 @@ const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
     if (formState?.isErrorFromTheServer) {
       setErrorModalOpen(true);
     }
-  }, [formState?.isErrorFromTheServer]);
+    if (formState?.isSuccess) {
+      setLoading(true);
+      const data = formState.data;
+      if (data && data.cookieData) {
+        const { cookieData, user } = data;
+        setUser(user);
+        setCookieAction(cookieData);
+      }
+    }
+  }, [formState?.isErrorFromTheServer, formState?.isSuccess, formState?.data]);
 
   const { password, confirmPassword, token } = fields;
 
@@ -89,6 +104,7 @@ const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
                   })}
                   key={token.key}
                   defaultValue={token.initialValue}
+                  disabled={pending || loading}
                 />
 
                 {/* Password */}
@@ -122,7 +138,7 @@ const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
                       key={password.key}
                       placeholder="пароль"
                       defaultValue={password.initialValue}
-                      disabled={pending}
+                      disabled={pending || loading}
                       onClick={() => {
                         setOpenPasswordValidationToolTip(true);
                       }}
@@ -171,7 +187,7 @@ const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
                     </IconButton>
                   </>
                 </AuthTextField>
-                <SubmitButton pending={pending} />
+                <SubmitButton pending={pending || loading} />
               </Flex>
             </Flex>
           </Card>

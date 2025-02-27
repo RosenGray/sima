@@ -15,13 +15,13 @@ global.login = () => {
   };
   const token = jwt.sign(payload, process.env.JWT_KEY!);
 
-  const session = { jwt: token };
+  const session = { simaAuthSession: token };
 
-  const sessionJson = JSON.stringify(session);
+  const sessionJson = JSON.stringify(session.simaAuthSession);
 
   const base64 = Buffer.from(sessionJson).toString("base64");
 
-  return [`session=${base64}`];
+  return [`sima-auth-session=${base64}`];
 };
 beforeAll(async () => {
   process.env.JWT_KEY = "RosenGray";

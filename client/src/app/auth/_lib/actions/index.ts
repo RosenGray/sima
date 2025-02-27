@@ -103,14 +103,18 @@ export const authUser = async (
       };
     }
 
-    const setCookieHeader = response.headers.get("set-cookie");
+    const setCookieHeader = response.headers.getSetCookie();
     if (setCookieHeader) {
       const cookies = parse(setCookieHeader, {
         decodeValues: true,
       });
+
       const simaAuthSession = cookies.find(
-        (cookie) => cookie.name === "sima-auth-session"
+        (cookie) => cookie.name === "sima-session"
       );
+      if (!simaAuthSession) {
+        throw new Error("Session not found");
+      }
       if (simaAuthSession) {
         const user = await response.json();
         const successResponse = {
@@ -214,7 +218,7 @@ export const logout = async () => {
       "Content-Type": "application/json",
     },
   });
-  nextCookies().delete("sima-auth-session");
+  nextCookies().delete("sima-session");
   return true;
 };
 

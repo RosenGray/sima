@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 
 interface UserPayload {
   id: string;
+  firstName: string;
+  lastName: string;
   email: string;
 }
 
@@ -20,16 +22,9 @@ export const currentUser = (
   next: NextFunction
 ) => {
   try {
-    if (req.headers.cookie) {
-      const value = req.cookies["sima-auth-session"];
-      if (value) {
-        req.session = JSON.parse(Buffer.from(value, "base64").toString("utf8"));
-      }
-    }
-
-    if (req.session?.jwt) {
+    if (req.session?.simaAuthSession) {
       const payload = jwt.verify(
-        req.session.jwt,
+        req.session.simaAuthSession,
         process.env.JWT_KEY!
       ) as UserPayload;
       req.currentUser = payload;
