@@ -74,8 +74,7 @@ export const ProfessionalsPublishForm = () => {
     areaCode,
     acceptTerms,
   } = fields;
-console.log('prevImages',prevImages)
-console.log('images.value ',images.value )
+
   const renderForm = () => {
     if (isLoading) return <SkeletonLoader />;
 

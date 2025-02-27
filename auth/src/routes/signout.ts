@@ -1,12 +1,11 @@
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
-router.post('/api/auth/signout', async (req, res) => {
-  console.log('before', req.session);
+router.post("/api/auth/signout", async (req, res) => {
   req.session = null;
-  res.clearCookie('sima-auth-session');
-  console.log('after', req.session);
+  res.clearCookie("sima-session");
+
   res.send({});
 });
 

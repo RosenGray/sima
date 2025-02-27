@@ -1,13 +1,13 @@
-import { cookies } from "next/headers";
+import { getUserSessionData } from "@/utils/auth";
 import ResetPasswordForm from "./ResetPasswordForm";
 import { redirect } from "next/navigation";
 
-const ResetPasswordPage = () => {
-  const sessionCookie = cookies().get("sima-auth-session");
-  if (sessionCookie) {
+const ResetPasswordPage = async () => {
+  const userSession = await getUserSessionData();
+  if (userSession && userSession.isSessionValid) {
     return redirect("/auth/success");
   }
-  return <ResetPasswordForm/>
+  return <ResetPasswordForm />;
 };
 
 export default ResetPasswordPage;

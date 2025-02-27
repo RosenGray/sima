@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import Providers from './providers'
+import Providers from "./providers";
 import { Theme } from "@radix-ui/themes";
 import { config } from "@/utils/config";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
-import Script from "next/script";
 import { generateBackblazeUrl } from "@/utils/common";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
-import { getUserData } from "@/utils/auth";
+import { getUserSessionData } from "@/utils/auth";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 
-
 const inter = Inter({ subsets: ["latin"] });
-const bla = generateBackblazeUrl("sima", "sima.dark.logo.png");
+const bla = generateBackblazeUrl("public", "sima.dark.logo.png");
 console.log("bla", bla);
 export const metadata: Metadata = {
   title:
@@ -30,7 +28,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: generateBackblazeUrl("sima", "sima.dark.logo.png"),
+        url: generateBackblazeUrl("public", "sima.dark.logo.png"),
       },
     ],
   },
@@ -45,7 +43,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userData = await getUserData();
+  const userSession = await getUserSessionData();
+  const user = userSession?.user;
   return (
     <html lang="ru">
       <body className={inter.className}>
@@ -54,8 +53,8 @@ export default async function RootLayout({
           src="https://acc-landing.vercel.app/accessibilik.min.js"
         ></Script> */}
         {/* <StoreProvider> */}
-          <AuthProvider initialUser={userData}>
-            <Providers>
+        <AuthProvider initialUser={user}>
+          <Providers>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -79,7 +78,7 @@ export default async function RootLayout({
               />
             </ThemeProvider>
           </Providers>
-          </AuthProvider>
+        </AuthProvider>
         {/* </StoreProvider> */}
       </body>
     </html>

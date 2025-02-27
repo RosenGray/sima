@@ -7,6 +7,17 @@ import bla from './../assets/images/1.png';
 import { config } from "@/utils/config";
 import Dummy from "@/components/Dummy/Dummy";
 import { Box } from "@radix-ui/themes";
+import { customFetch } from "@/fetch/server";
+
+const fetchCurrentUserClient = async () => {
+  'use server'
+  console.log('this is server')
+  const response = await customFetch("/api/auth/signout", {
+    credentials: "include",
+    method: "POST",
+  });
+  return response.json();
+};
 
 export default function Home() {
   
@@ -14,8 +25,12 @@ export default function Home() {
     <>
       <Header />
       <main className={styles.Page}>
+  
+  <form action={fetchCurrentUserClient}>
+    <button type="submit">server</button>
+  </form>
 
-        {/* <Dummy/> */}
+        <Dummy/>
 
       {/* <BannerCarousel slides={bannerslides}/> */}
 

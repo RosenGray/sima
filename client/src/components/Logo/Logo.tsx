@@ -8,8 +8,8 @@ interface LogoProps {
 }
 
 export const Logo = ({ isDark }: LogoProps) => {
-  const darkSrc = generateBackblazeUrl("sima", "sima.dark.logo.png");
-  const lightSrc = generateBackblazeUrl("sima", "sima.light.logo.png");
+  const darkSrc = generateBackblazeUrl("public", "sima.dark.logo.png");
+  const lightSrc = generateBackblazeUrl("public", "sima.light.logo.png");
 
   const logoSrc = isDark ? darkSrc : lightSrc;
 
