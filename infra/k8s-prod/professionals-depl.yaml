@@ -15,17 +15,17 @@ spec:
       containers:
         - name: professionals
           image: rosengray/sima-professionals
-          env: 
+          env:
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
             - name: NATS_URL
-              value: 'http://nats-srv:4222'
+              value: "http://nats-srv:4222"
             - name: NATS_CLUSTER_ID
-              value: 'sima'
+              value: "sima"
             - name: NODE_ENV
-              value: 'production'
+              value: "production"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
@@ -41,6 +41,26 @@ spec:
                 secretKeyRef:
                   name: db-password
                   key: DB_PASSWORD
+            - name: BACKBLAZEB_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-base-url
+                  key: BACKBLAZEB_BASE_URL
+              - name: BACKBLAZEB_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-endpoint
+                  key: BACKBLAZEB_ENDPOINT
+              - name: BACKBLAZEB_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-region
+                  key: BACKBLAZEB_REGION
+            - name: BACKBLAZEB_PUBLIC_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backblazeb-public-bucket-name
+                  key: BACKBLAZEB_PUBLIC_BUCKET_NAME
             - name: BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
