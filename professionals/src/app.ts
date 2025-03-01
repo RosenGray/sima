@@ -7,16 +7,7 @@ import serviceCategoriesRouter from "./routes/service-categories";
 import serviceSubCategoriesRouter from "./routes/service-sub-categories";
 import professionalsRouter from "./routes/professionals/professionals.router";
 import cookieParser from "cookie-parser";
-
-const env = process.env.NODE_ENV || "development";
-switch (env) {
-  case "development":
-    require("dotenv").config();
-    break;
-  case "production":
-    require("dotenv").config({ path: ".env.production" });
-    break;
-}
+require("dotenv").config();
 
 const DEV_DOMAIN = ".sima.dev"; // //.sima.dev//localhost
 
