@@ -46,12 +46,12 @@ spec:
                 secretKeyRef:
                   name: backblazeb-base-url
                   key: BACKBLAZEB_BASE_URL
-              - name: BACKBLAZEB_ENDPOINT
+            - name: BACKBLAZEB_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: backblazeb-endpoint
                   key: BACKBLAZEB_ENDPOINT
-              - name: BACKBLAZEB_REGION
+            - name: BACKBLAZEB_REGION
               valueFrom:
                 secretKeyRef:
                   name: backblazeb-region
