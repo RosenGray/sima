@@ -12,13 +12,11 @@ import {  Button, } from '@radix-ui/themes'
 const Dummy = () => {
 
   const fetchUser = async () => {
-    console.log('blaaAAAA');
-    const res = await fetch('/api/auth/signout',{
+    console.log('kuku');
+     await fetch('/api/auth/signout',{
       credentials: 'include',
       method: 'POST'
     })
-    const data = await res.json()
-    console.log('data,',data)
   }
 
   return (

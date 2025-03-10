@@ -210,18 +210,6 @@ export const verifyResetToken = async (token: string) => {
   return response;
 };
 
-export const logout = async () => {
-  await customFetch("/api/auth/signout", {
-    credentials: "include",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  nextCookies().delete("sima-session");
-  return true;
-};
-
 export async function setCookieAction(cookieData: ResponseCookie) {
   "use server";
   nextCookies().set(cookieData);
