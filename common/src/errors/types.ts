@@ -13,3 +13,9 @@ export enum ServerErrorType {
   TooManyRequests = 11,
   InternalServerError = 12,
 }
+
+export interface CustomNextRequest<B, P, Q> extends Express.Request {
+  body: B;
+  params: P;
+  query: Q;
+}

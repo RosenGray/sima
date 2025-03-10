@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import styles from "./DropFilesInput.module.scss";
 import { UploadIcon } from "@radix-ui/react-icons";
@@ -7,7 +7,6 @@ import { Text } from "@radix-ui/themes";
 import {
   FieldMetadata,
   getInputProps as conformGetInputProps,
-  useInputControl,
 } from "@conform-to/react";
 
 type AcceptedFileTypes =
@@ -19,38 +18,69 @@ type AcceptedFileTypes =
 interface DropFilesInputProps {
   // Accept either a MIME type group (e.g., 'image/*') or specific types (e.g., {'.jpg': [], '.gif': []})
   field: FieldMetadata<File[] | undefined>;
+  onFilesDrop: (files: File[]) => void;
+  files: File[];
   accept?: AcceptedFileTypes;
-  onFilesDrop?: (files: File[]) => void;
   maxSize?: number; // Optional max file size in bytes
   maxFiles?: number; // Add this new prop
   errors?: string[];
+  disabled?: boolean;
 }
 
 const DropFilesInput: React.FC<DropFilesInputProps> = ({
   field,
   onFilesDrop,
+  files,
   accept,
   maxSize,
   maxFiles,
   errors,
+  disabled,
 }) => {
-  const onDrop = useCallback((_acceptedFiles: File[]) => {
-    onFilesDrop?.(_acceptedFiles);
+  const { id, name, type } = conformGetInputProps(field, {
+    type: "file",
+  });
 
-    console.log("_acceptedFiles", _acceptedFiles);
-    // console.log("acceptedFiles", acceptedFiles);
-    // acceptedFiles.map((file) =>
-    //   Object.assign(file, {
-    //     previewUrl: URL.createObjectURL(file),
-    //   })
-    // );
-  }, []);
+  const onDrop = useCallback(
+    (newFiles: File[]) => {
+      const updatedFiles = [...files];
+      console.log("updatedFiles before", updatedFiles);
+
+      newFiles.forEach((file) => {
+        //Check if file with the same name already exists
+        const existingFileIndex = updatedFiles.findIndex(
+          (f) => f.name === file.name
+        );
+        if (existingFileIndex !== -1) {
+          updatedFiles[existingFileIndex] = file;
+        } else {
+          updatedFiles.push(file);
+        }
+      });
+
+      onFilesDrop(updatedFiles);
+    },
+    [files]
+  );
+
+  useEffect(() => {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    const fileInputElement = document.getElementById(id) as HTMLInputElement;
+    if (fileInputElement) {
+      fileInputElement.files = dataTransfer.files;
+    }
+  }, [files]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept,
     maxSize,
     maxFiles, // Add this to useDropzone config
+    multiple: maxFiles === 1 ? false : true,
+    disabled,
   });
 
   return (
@@ -63,7 +93,10 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
       >
         <input
           {...getInputProps()}
-          {...conformGetInputProps(field, { type: "file", multiple: true })}
+          id={id}
+          name={name}
+          type={type}
+          disabled={disabled}
         />
         <p className={styles.dropzone__text}>
           <IconButton variant="soft" size="3" mb="20px">

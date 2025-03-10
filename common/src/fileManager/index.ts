@@ -187,7 +187,7 @@ class FileManager {
   }
 }
 
-export default FileManager;
+export { FileManager };
 
 // Usage example:
 /*

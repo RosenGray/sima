@@ -1,4 +1,4 @@
-export type Area = {
+export type District = {
   id: string;
   name: string;
   cities: City[];
@@ -8,12 +8,14 @@ export type Area = {
 export type City = {
   id: string;
   name: string;
+  nameRussian: string;
 };
 
-export enum AREAS {
-  NORTH = "a1",
-  SOUTH = "a2",
-  EAST = "a3",
-  WEST = "a4",
-  CENTER = "a5",
+export enum Districts {
+  North = "d1",
+  South = "d2",
+  Center = "d3",
+  Heifa = "d4",
+  Jerusalem = "d5",
+  TelAviv = "d6",
 }

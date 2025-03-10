@@ -1,3 +1,9 @@
+import { z } from "zod";
+import {
+  ProfessionalSchema,
+  ProfessionalSchemaGET,
+} from "./validations/professionalMutationSchema";
+
 export enum ServiceCategoryMetadataKeys {
   ConstructionRepair = "ConstructionRepair",
   ApplianceRepair = "ApplianceRepair",
@@ -39,3 +45,6 @@ export type ServiceCategoryMapping = Record<
     subCategories: ServiceSubCategory[];
   }
 >;
+
+export type Professional = z.infer<typeof ProfessionalSchema>;
+export type ProfessionalGET = z.infer<typeof ProfessionalSchemaGET>;

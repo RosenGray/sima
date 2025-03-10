@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
 // Apply middleware to all routes
 export const config = {
   // matcher: [],
-  matcher: ["/about/:path*"],
+  matcher: ["/publish-ad/:path*"],
   //  runtime:"nodejs",
   // matcher: ["/about/:path*"], // Routes that require authentication
   // matcher: '/:path*', // Match all routes

@@ -2,13 +2,14 @@ import mongoose from "mongoose";
 
 interface Image {
   src: string;
+  fileName: string;
   versionId?: string;
 }
 
 export interface IProfessional {
   category: mongoose.Types.ObjectId;
   subCategory: mongoose.Types.ObjectId;
-  area: string;
+  district: string;
   city: string;
   description: string;
   email: string;
@@ -29,7 +30,7 @@ const professionalSchema = new mongoose.Schema(
       ref: "ServiceSubCategory",
       required: true,
     },
-    area: {
+    district: {
       type: String,
       required: true,
     },
@@ -57,6 +58,10 @@ const professionalSchema = new mongoose.Schema(
       type: [
         {
           src: {
+            type: String,
+            required: true,
+          },
+          fileName: {
             type: String,
             required: true,
           },

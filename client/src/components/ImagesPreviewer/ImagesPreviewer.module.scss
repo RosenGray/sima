@@ -2,14 +2,28 @@
   border: 2px dashed #7c8ba1;
   padding: 5px;
 
+
   &__GridItem {
     position: relative;
     & > img {
       object-fit: cover;
     }
+    &:hover {
+      border: 2px solid #7c8ba1;
+      .ImagesPreviewer__DeleteButton {
+        opacity: 1;
+      }
+    }
   }
-  // &__GridFirstItem{
-  //     border: 2px solid blue;
-  //     height: 100%;
-  // }
+  &__DeleteButton {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

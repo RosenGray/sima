@@ -5,7 +5,7 @@ export const MAX_FILES = 5;
 export const addProfessionalSchema = z.object({
   category: z.string().min(1),
   subCategory: z.string().min(1),
-  area: z.string().min(1),
+  district: z.string().min(1),
   city: z.string().min(1),
   description: z.string().min(1),
   email: z.string().email(),
@@ -14,8 +14,7 @@ export const addProfessionalSchema = z.object({
     message: "You must accept the terms and conditions",
   }),
   images: z.custom<Express.Multer.File[]>().superRefine((files, ctx) => {
-    console.log(files.length);
-    if (!files) {
+    if (!files || files.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `Загрузите хотя бы одно изображение`,
