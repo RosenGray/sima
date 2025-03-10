@@ -3,7 +3,6 @@ import { FC } from "react";
 import { ExitIcon, PersonIcon } from "@radix-ui/react-icons";
 import { IconButton, Link, Text, HoverCard, Box } from "@radix-ui/themes";
 import classNames from "classnames";
-import { logout } from "@/app/auth/_lib/actions";
 import styles from "./UserLoginIndicator.module.scss";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
@@ -68,22 +67,23 @@ const UserLoginIndicator: FC<UserLoginIndicatorProps> = ({
           </li>
           <li className={styles.UserDropdown__Item}>
             <Box height="40px" className={styles.UserDropdown__Content}>
-              <form
-                action={() => {
-                  logout().then((isSuccess) => {
-                    if (isSuccess) {
-                      setUser(null);
-                    }
+              <button
+                onClick={async () => {
+                  console.log('logout')
+                  await fetch("/api/auth/signout", {
+                    credentials: "include",
+                    method: "POST",
                   });
+                  setUser(null);
                 }}
+                className={styles.UserDropdown__Button}
+                type="submit"
               >
-                <button className={styles.UserDropdown__Button} type="submit">
-                  <ExitIcon width="18" height="18" />
-                  <Text size="2" weight="bold" color="gray" as="span">
-                    Выйти
-                  </Text>
-                </button>
-              </form>
+                <ExitIcon width="18" height="18" />
+                <Text size="2" weight="bold" color="gray" as="span">
+                  Выйти
+                </Text>
+              </button>
             </Box>
           </li>
         </ul>

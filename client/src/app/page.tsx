@@ -16,6 +16,7 @@ const fetchCurrentUserClient = async () => {
     credentials: "include",
     method: "POST",
   });
+  console.log('response', response.json())
   return response.json();
 };
 
