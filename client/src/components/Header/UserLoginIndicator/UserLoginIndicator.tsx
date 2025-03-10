@@ -69,6 +69,7 @@ const UserLoginIndicator: FC<UserLoginIndicatorProps> = ({
             <Box height="40px" className={styles.UserDropdown__Content}>
               <button
                 onClick={async () => {
+                  console.log('logout')
                   await fetch("/api/auth/signout", {
                     credentials: "include",
                     method: "POST",
