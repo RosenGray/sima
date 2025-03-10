@@ -12,7 +12,6 @@ require("dotenv").config();
 const DEV_DOMAIN = ".sima.dev"; // //.sima.dev//localhost
 
 export const app = express();
-
 app.use(cookieParser());
 app.set("trust proxy", true);
 app.use(json());

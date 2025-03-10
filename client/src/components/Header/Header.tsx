@@ -35,7 +35,7 @@ const AddAdButton = ({
         [styles.AddAdButton]: true,
         [styles.AddAdButton__HideOnMobile]: shouldHideOnMobile,
       })}
-      href={isLoggedIn ? "/publish-ad/professionals" : "/auth/login"}
+      href={isLoggedIn ? "/publish-ad/professionals" : "/auth/login?redirect=/publish-ad/professionals"}
     >
       <PlusIcon width="26" height="26" />
       <Text as="span">Добавить объявление</Text>

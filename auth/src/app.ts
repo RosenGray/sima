@@ -12,7 +12,7 @@ import { errorHandler, NotFoundError } from "@sima-board/common";
 import cookieParser from "cookie-parser";
 require("dotenv").config();
 
-const DEV_DOMAIN = ".sima.dev"; // //.sima.dev//localhost
+const DEV_DOMAIN = "localhost"; // //.sima.dev//localhost
 export const app = express();
 app.set("trust proxy", true);
 app.use(json());

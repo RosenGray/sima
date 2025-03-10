@@ -2,7 +2,7 @@
 import { FC, useEffect } from "react";
 import React from "react";
 import Select, { Props } from "react-select";
-import { Text } from "@radix-ui/themes";
+import { Box, Text } from "@radix-ui/themes";
 
 import { styles } from "./SelectSingle.styles";
 import { FieldMetadata, useInputControl } from "@conform-to/react";
@@ -36,9 +36,15 @@ const SelectSingle: FC<SelectSingleProps> = ({
     }
   }, [defaultValue?.value]);
   return (
-    <>
+    <Box>
       {label && (
-        <Text htmlFor={rest.id} as="label" size="3" weight="bold">
+        <Text
+          style={{ lineHeight: "2" }}
+          htmlFor={rest.id}
+          as="label"
+          size="3"
+          weight="bold"
+        >
           {label}
         </Text>
       )}
@@ -60,7 +66,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}
       </Text>
-    </>
+    </Box>
   );
 };
 

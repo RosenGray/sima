@@ -1,8 +1,12 @@
 import { FC, LegacyRef, ReactNode } from "react";
 import { TextField, Text, Box } from "@radix-ui/themes";
 import EmailDisclaimer from "@/components/EmailDisclaimer/EmailDisclaimer";
+import { FieldMetadata, getInputProps } from "@conform-to/react";
 
 interface BasicFormFieldrops extends TextField.RootProps {
+  field: FieldMetadata<
+    number | string | string[] | (string | undefined)[] | undefined
+  >;
   dataIsValid: boolean;
   errors?: string[];
   ref?: LegacyRef<HTMLInputElement>;
@@ -10,10 +14,11 @@ interface BasicFormFieldrops extends TextField.RootProps {
   label?: string;
   anotherLabel?: string;
   showEmailDisclaimer?: boolean;
+  _key?: string;
 }
 
 const BasicFormField: FC<BasicFormFieldrops> = ({
-  key,
+  field,
   placeholder,
   size,
   defaultValue,
@@ -25,9 +30,12 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
   label,
   anotherLabel,
   showEmailDisclaimer,
+  type = "text",
+  _key,
   ...rest
 }) => {
   const { mb, mt, mr, ml } = rest;
+
   return (
     <Box mb={mb} mt={mt} mr={mr} ml={ml}>
       {label && (
@@ -43,8 +51,8 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
         </Text>
       )}
       <TextField.Root
-        {...rest}
-        key={key}
+        {...getInputProps(field, { type })}
+        key={_key}
         placeholder={placeholder}
         size={size}
         defaultValue={defaultValue}

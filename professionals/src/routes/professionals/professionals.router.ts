@@ -1,8 +1,14 @@
-import { currentUser, requireAuth } from "@sima-board/common";
-import express, { Request, Response } from "express";
+import {
+  currentUser,
+  FileManager,
+  RequestValidationErrorWithZod,
+  requireAuth,
+  validateRequestWithZod,
+  CustomNextRequest,
+} from "@sima-board/common";
+import express, { NextFunction, Request, Response } from "express";
 import multer from "multer";
-import FileManager from "../../filesManager";
-import { validateFiles } from "../../filesManager/filesManager.middleware";
+import { z } from "zod";
 import { Professional } from "../../models/Professional";
 import {
   AddProfessional,
@@ -11,24 +17,21 @@ import {
 import { ServiceCategory } from "../../models/ServiceCategory";
 import { ServiceSubCategory } from "../../models/ServiceSubCategory";
 
-export interface CustomRequest<B, P, Q> extends Express.Request {
-  body: B;
-  params: P;
-  query: Q;
-}
 const router = express.Router();
-const upload = multer();
+const upload = multer({
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+    fieldSize: 10 * 1024 * 1024, // 10MB
+    files: 5,
+  },
+  storage: multer.memoryStorage(),
+});
 
 router.post(
   "/temp",
   requireAuth,
   upload.array("images", 2),
-  validateFiles({
-    required: true,
-    maxFiles: 2,
-    allowedMimeTypes: ["image/jpeg", "image/png"],
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-  }),
+
   async (req: Request, res: Response) => {
     const userId = req.currentUser?.id;
     if (!userId) {
@@ -82,25 +85,26 @@ router.post(
   "/",
   requireAuth,
   upload.array("images", 5),
-  async (req: CustomRequest<AddProfessional, {}, {}>, res: Response) => {
-    req.body.images = req.files as Express.Multer.File[];
+  validateRequestWithZod(addProfessionalSchema),
+  async (req: CustomNextRequest<AddProfessional, {}, {}>, res: Response) => {
     const userId = req.currentUser!.id;
-    const result = addProfessionalSchema.safeParse(req.body);
-    if (!result.success) {
-      return res
-        .status(400)
-        .send({ message: "Invalid request body", error: result.error });
-    }
-    const fileManager = new FileManager();
+    const fileManager = new FileManager({
+      bucketName: process.env.BACKBLAZEB_PUBLIC_BUCKET_NAME,
+      endpoint: process.env.BACKBLAZEB_ENDPOINT,
+      region: process.env.BACKBLAZEB_REGION,
+      accessKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY,
+      secretKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY,
+      baseUrl: process.env.BACKBLAZEB_BASE_URL,
+    });
     const images = await fileManager.uploadFiles({
       userId,
       folderName: "professionals",
       files: req.files!,
     });
-
     const imagesArray = images.map((image) => ({
       src: image.url,
       versionId: image.data.VersionId,
+      fileName: image.uniqueName,
     }));
 
     const professional = new Professional({
@@ -109,19 +113,8 @@ router.post(
     });
 
     await professional.save();
-    res.status(201).send({
-      // name,
 
-      message: "Professional added successfully",
-      // receivedBody: req.body, // Send
-      region: process.env.BACKBLAZEB_REGION ?? "",
-      bucketName: process.env.BACKBLAZEB_PUBLIC_BUCKET_NAME ?? "",
-      endpoint: process.env.BACKBLAZEB_ENDPOINT ?? "",
-      accessKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY ?? "",
-      secretKey: process.env.BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY ?? "",
-      baseUrl: process.env.BACKBLAZEB_BASE_URL ?? "",
-      env: process.env.NODE_ENV ?? "",
-    });
+    res.status(201).send(professional);
   }
 );
 

@@ -11,9 +11,14 @@ import { SubmitButton } from "../buttons/SubmitButton/SubmitButton";
 interface ReCAPTCHAProps {
   showText?: boolean;
   submitButtonText?: string;
+  isLoading?: boolean;
 }
 
-const GoogleReCAPTCHA: FC<ReCAPTCHAProps> = ({ showText = false,submitButtonText }) => {
+const GoogleReCAPTCHA: FC<ReCAPTCHAProps> = ({
+  showText = false,
+  submitButtonText,
+  isLoading = false,
+}) => {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [isVerified, setIsVerified] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -82,7 +87,7 @@ const GoogleReCAPTCHA: FC<ReCAPTCHAProps> = ({ showText = false,submitButtonText
       />
       <SubmitButton
         style={{ width: "100%" }}
-        pending={isPending}
+        pending={isPending || isLoading}
         disabled={!isVerified}
         text={submitButtonText}
       />
