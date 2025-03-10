@@ -23,7 +23,7 @@ app.use(
     signed: false,
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
     domain:
       process.env.NODE_ENV === "production" ? ".sima-board.com" : DEV_DOMAIN,
   })
