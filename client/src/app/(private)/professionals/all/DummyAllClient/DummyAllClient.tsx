@@ -39,7 +39,7 @@ export const DummyAllClient = () => {
         Invalidate
       </Button> */}
       <div>
-        {data?.map((professional, index) => (
+        {data?.map((professional: { id: string }, index: number) => (
           <div key={professional.id}>
             <span style={{ color: "red" }}>{index + 1}</span>
             <br />
