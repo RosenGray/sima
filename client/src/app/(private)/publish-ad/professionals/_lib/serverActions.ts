@@ -9,7 +9,7 @@ import {
 import { Professional } from "./types";
 import { customFetch } from "@/fetch/server";
 import { ServerErrorType } from "@sima-board/common";
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export const professionalsMutateActionWrapper = async (
   prevState: unknown,
@@ -46,8 +46,6 @@ export const createProfessionalsAction = async (
       body: formData,
     });
 
-    console.log("response", response);
-
     if (!response.ok) {
       const errorResponse = await response.json();
       return {
@@ -57,8 +55,6 @@ export const createProfessionalsAction = async (
         errorType: errorResponse?.errorType,
       };
     }
-
-    // redirect("/");
 
     const professional = await response.json();
     const successResponse = {
@@ -77,4 +73,9 @@ export const createProfessionalsAction = async (
       errorType: ServerErrorType.BadRequest,
     };
   }
+};
+
+export const revalidateProfessionals = () => {
+  "use server";
+  revalidatePath("/professionals/all", "page");
 };
