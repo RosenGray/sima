@@ -16,9 +16,8 @@ export const customFetch = async <T, E>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<CustomFetchResponse<T, E>> => {
-
-  const url = `/${endpoint}`;
-  const response = await fetch(url, {
+  console.log({ endpoint });
+  const response = await fetch(endpoint, {
     ...options,
     headers: {
       ...options.headers,

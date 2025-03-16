@@ -9,7 +9,7 @@ import {
     return new QueryClient({
       defaultOptions: {
         queries: {
-          staleTime: 60 * 1000,
+          staleTime: 60 * 1000, // 1 minute
         },
         dehydrate: {
           // include pending queries in dehydration
