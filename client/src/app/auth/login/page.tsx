@@ -10,7 +10,8 @@ interface LoginPageProps {
 }
 
 const LoginPage: NextPage<LoginPageProps> = async (params) => {
-  const redirectPath = params.searchParams?.redirect;
+  const redirectPath =  params.searchParams?.redirect;
+  console.log(redirectPath)
   const userSession = await getUserSessionData();
   if (userSession && userSession.isSessionValid) {
     return redirect(redirectPath || "/auth/success");

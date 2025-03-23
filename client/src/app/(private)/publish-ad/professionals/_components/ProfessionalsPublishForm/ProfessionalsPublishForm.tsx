@@ -12,7 +12,6 @@ import {
   mapServiceSubCategoriesToSelectOptions,
 } from "../../_lib/utils";
 import { parseWithZod } from "@conform-to/zod";
-import { useFormState } from "react-dom";
 import { getFormProps, useForm } from "@conform-to/react";
 import {
   professionalsMutateActionWrapper,
@@ -32,7 +31,7 @@ import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import BasicFormField from "@/components/formManager/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/formManager/PhoneFormField/PhoneFormField";
 import ReCAPTCHA from "@/components/GoogleReCAPTCHA/GoogleReCAPTCHA";
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import Checkbox from "@/components/formManager/Checkbox/Checkbox";
 import { Districts } from "@/types/cities";
@@ -49,7 +48,7 @@ export const ProfessionalsPublishForm = () => {
   const { user } = useAuth();
   console.log(user);
   const router = useRouter();
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     professionalsMutateActionWrapper,
     {
       isErrorFromTheServer: false,
