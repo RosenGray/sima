@@ -19,7 +19,7 @@ import {
 
 import { registerSchema } from "../_lib/validations";
 import Link from "next/link";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";
 import { useOutsideElement } from "@/hooks/useOutsideAlerter";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
@@ -33,6 +33,7 @@ import Form from "@/components/formManager/Form/Form";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import classes from "./../layout.module.scss";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import { useFormState } from "react-dom";
 
 const RegisterPageForm = () => {
   const { setUser } = useAuth();
@@ -44,7 +45,7 @@ const RegisterPageForm = () => {
   useOutsideElement(passwordInputRef.current, () => {
     setOpenPasswordValidationToolTip(false);
   });
-  const [formState, formAction] = useActionState(registerActionWrapper, {
+  const [formState, formAction] = useFormState(registerActionWrapper, {
     isErrorFromTheServer: false,
   });
 

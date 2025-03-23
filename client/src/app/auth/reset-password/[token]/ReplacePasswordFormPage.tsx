@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useOutsideElement } from "@/hooks/useOutsideAlerter";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import {
@@ -29,7 +29,7 @@ import { resetPasswordConfirmSchema } from "../../_lib/validations";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { ServerErrorType } from "@sima-board/common";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-
+import { useFormState } from "react-dom";
 const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
   const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
   useOutsideElement(passwordInputRef.current, () => {
     setOpenPasswordValidationToolTip(false);
   });
-  const [formState, formAction] = useActionState(
+  const [formState, formAction] = useFormState(
     resetPasswordConfirmActionWrapper,
     {
       isErrorFromTheServer: false,

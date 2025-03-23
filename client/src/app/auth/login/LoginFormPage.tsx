@@ -1,7 +1,6 @@
 "use client";
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { useActionState } from "react";
 import { Flex, Text, Heading, Card, Box, IconButton } from "@radix-ui/themes";
 import {
   EnvelopeClosedIcon,
@@ -20,12 +19,13 @@ import { ServerErrorType } from "@sima-board/common";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import classes from "./../layout.module.scss";
+import { useFormState } from "react-dom";
 
 const LoginFormPage = () => {
   const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [formState, formAction] = useActionState(loginActionWrapper, {
+  const [formState, formAction] = useFormState(loginActionWrapper, {
     isErrorFromTheServer: false,
     isSuccess: false,
   });

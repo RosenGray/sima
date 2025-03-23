@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Flex, Text, Heading, Card, Box } from "@radix-ui/themes";
@@ -11,10 +11,10 @@ import { resetPasswordActionWrapper } from "../_lib/actions";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
 import Form from "@/components/formManager/Form/Form";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
-
+import { useFormState } from "react-dom";
 
 const ResetPasswordForm = () => {
-  const [formState, formAction] = useActionState(resetPasswordActionWrapper, {
+  const [formState, formAction] = useFormState(resetPasswordActionWrapper, {
     isErrorFromTheServer: false,
     isSuccess: false,
   });
