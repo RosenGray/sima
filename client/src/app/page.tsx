@@ -9,16 +9,16 @@ import Dummy from "@/components/Dummy/Dummy";
 import { Box } from "@radix-ui/themes";
 import { customFetch } from "@/fetch/server";
 
-const fetchCurrentUserClient = async () => {
-  'use server'
-  console.log('this is server')
-  const response = await customFetch("/api/auth/signout", {
-    credentials: "include",
-    method: "POST",
-  });
-  console.log('response', response.json())
-  return response.json();
-};
+// const fetchCurrentUserClient = async () => {
+//   'use server'
+//   console.log('this is server')
+//   const response = await customFetch("/api/auth/signout", {
+//     credentials: "include",
+//     method: "POST",
+//   });
+//   console.log('response', response.json())
+//   return response.json();
+// };
 
 export default function Home() {
   
@@ -27,9 +27,9 @@ export default function Home() {
       <Header />
       <main className={styles.Page}>
   
-  <form action={fetchCurrentUserClient}>
+  {/* <form action={fetchCurrentUserClient}>
     <button type="submit">server</button>
-  </form>
+  </form> */}
 
         <Dummy/>
 
