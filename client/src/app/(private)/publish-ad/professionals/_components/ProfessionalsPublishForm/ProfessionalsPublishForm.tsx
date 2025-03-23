@@ -12,6 +12,7 @@ import {
   mapServiceSubCategoriesToSelectOptions,
 } from "../../_lib/utils";
 import { parseWithZod } from "@conform-to/zod";
+import { useFormState } from "react-dom";
 import { getFormProps, useForm } from "@conform-to/react";
 import {
   professionalsMutateActionWrapper,
@@ -31,7 +32,7 @@ import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import BasicFormField from "@/components/formManager/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/formManager/PhoneFormField/PhoneFormField";
 import ReCAPTCHA from "@/components/GoogleReCAPTCHA/GoogleReCAPTCHA";
-import { useActionState, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import Checkbox from "@/components/formManager/Checkbox/Checkbox";
 import { Districts } from "@/types/cities";
@@ -48,7 +49,7 @@ export const ProfessionalsPublishForm = () => {
   const { user } = useAuth();
   console.log(user);
   const router = useRouter();
-  const [formState, formAction] = useActionState(
+  const [formState, formAction] = useFormState(
     professionalsMutateActionWrapper,
     {
       isErrorFromTheServer: false,
@@ -89,7 +90,8 @@ export const ProfessionalsPublishForm = () => {
         }
       );
       revalidateProfessionals();
-      router.push("/professionals/all");//
+      router.push("/professionals/all");
+    }
   }, [formState.isSuccess]);
 
   const handleModalClose = () => {
@@ -256,19 +258,19 @@ export const ProfessionalsPublishForm = () => {
                 {/* Personal Page Link */}
 
                 <BasicFormField
-                  type="text"
-                  field={email}
-                  label="Email"
-                  anotherLabel="*виден только администрации сайта и не отображается публично"
-                  placeholder="@ Адрес электронной почты"
-                  size="3"
-                  defaultValue={fields.email.initialValue}
-                  dataIsValid={email.valid}
-                  errors={email.errors}
-                  disabled
-                >
-                  <EnvelopeClosedIcon height="16" width="16" />
-                </BasicFormField>
+                      type="text"
+                      field={email}
+                      label="Email"
+                      anotherLabel="*виден только администрации сайта и не отображается публично"
+                      placeholder="@ Адрес электронной почты"
+                      size="3"
+                      defaultValue={fields.email.initialValue}
+                      dataIsValid={email.valid}
+                      errors={email.errors}
+                      disabled
+                    >
+                      <EnvelopeClosedIcon height="16" width="16" />
+                    </BasicFormField>
 
                 <Box mt="4">
                   <Heading as="h3" size="4" mb="2">
@@ -290,7 +292,7 @@ export const ProfessionalsPublishForm = () => {
                   </Link>
                 </Box>
 
-                <Flex
+                <Flex                 
                   mt="4"
                   direction="column"
                   gap="3"
