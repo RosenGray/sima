@@ -12,10 +12,8 @@ import { getUserSessionData } from "@/utils/auth";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
-
-// Move this outside of the component to avoid hydration mismatch
-const logoUrl = generateBackblazeUrl("public", "sima.dark.logo.png");
-
+const bla = generateBackblazeUrl("public", "sima.dark.logo.png");
+console.log("bla", bla);
 export const metadata: Metadata = {
   title:
     "Русская Доска объявлений Sima - Аренда квартир, Продажа, Автомобили, Вакансии, б/у товары",
@@ -30,10 +28,11 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: logoUrl,
+        url: generateBackblazeUrl("public", "sima.dark.logo.png"),
       },
     ],
   },
+
   alternates: {
     canonical: "https://www.sima-board.com/",
   },
@@ -46,10 +45,15 @@ export default async function RootLayout({
 }>) {
   const userSession = await getUserSessionData();
   const user = userSession?.user;
-  
+  console.log("userBLA", user);
   return (
-    <html lang="ru" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+    <html lang="ru">
+      <body className={inter.className}>
+        {/* <Script
+          defer
+          src="https://acc-landing.vercel.app/accessibilik.min.js"
+        ></Script> */}
+      
         <AuthProvider initialUser={user}>
           <Providers>
             <ThemeProvider
@@ -57,7 +61,7 @@ export default async function RootLayout({
               defaultTheme="dark"
               enableSystem={true}
               storageKey="sima-theme"
-              enableColorScheme 
+              enableColorScheme
               disableTransitionOnChange
             >
               <Theme
@@ -76,6 +80,7 @@ export default async function RootLayout({
             </ThemeProvider>
           </Providers>
         </AuthProvider>
+
       </body>
     </html>
   );
