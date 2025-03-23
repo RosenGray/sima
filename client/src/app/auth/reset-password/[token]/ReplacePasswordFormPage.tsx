@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useOutsideElement } from "@/hooks/useOutsideAlerter";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import {
@@ -23,7 +23,6 @@ import {
   resetPasswordConfirmActionWrapper,
   setCookieAction,
 } from "../../_lib/actions";
-import { useFormState } from "react-dom";
 import { useonTogglePasswordView } from "../../_lib/hooks";
 import { parseWithZod } from "@conform-to/zod";
 import { resetPasswordConfirmSchema } from "../../_lib/validations";
@@ -41,7 +40,7 @@ const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
   useOutsideElement(passwordInputRef.current, () => {
     setOpenPasswordValidationToolTip(false);
   });
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     resetPasswordConfirmActionWrapper,
     {
       isErrorFromTheServer: false,

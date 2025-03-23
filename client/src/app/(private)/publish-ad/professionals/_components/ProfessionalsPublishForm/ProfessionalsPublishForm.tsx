@@ -71,7 +71,7 @@ export const ProfessionalsPublishForm = () => {
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-
+//
   const { data, isLoading } = useQuery({
     queryKey: ["serviceCategoriesMapping"],
     queryFn: () => getServiceCategoriesMapping(),
