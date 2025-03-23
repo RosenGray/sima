@@ -46,7 +46,7 @@ export async function validateSimaAuthSession(
 }
 
 export async function getUserSessionData() {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const simaSessionCookie = cookieStore.get("sima-session");
   if (!simaSessionCookie || !simaSessionCookie.value) return null;
   const simaAuthSession = getSimaAuthSessionFromSimaSession(simaSessionCookie);
