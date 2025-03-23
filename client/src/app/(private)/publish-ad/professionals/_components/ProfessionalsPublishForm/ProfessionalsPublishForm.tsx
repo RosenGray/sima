@@ -89,8 +89,7 @@ export const ProfessionalsPublishForm = () => {
         }
       );
       revalidateProfessionals();
-      router.push("/professionals/all");
-    }//
+      router.push("/professionals/all");//
   }, [formState.isSuccess]);
 
   const handleModalClose = () => {
