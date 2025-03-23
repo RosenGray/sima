@@ -53,7 +53,7 @@ export default async function RootLayout({
           defer
           src="https://acc-landing.vercel.app/accessibilik.min.js"
         ></Script> */}
-        {/* <StoreProvider> */}
+      
         <AuthProvider initialUser={user}>
           <Providers>
             <ThemeProvider
@@ -80,7 +80,7 @@ export default async function RootLayout({
             </ThemeProvider>
           </Providers>
         </AuthProvider>
-        {/* </StoreProvider> */}
+
       </body>
     </html>
   );
