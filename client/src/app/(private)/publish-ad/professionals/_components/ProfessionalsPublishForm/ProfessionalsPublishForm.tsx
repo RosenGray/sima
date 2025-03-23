@@ -80,20 +80,17 @@ export const ProfessionalsPublishForm = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const revalidate = async () => {
-      if (formState.isSuccess && formState.data) {
-        const prof = formState.data.professional;
-        queryClient.setQueryData(
-          ["getProfessionals"],
-          (draft: ProfessionalGET[]) => {
-            return [...draft, prof];
-          }
-        );
-        await revalidateProfessionals();
-        router.push("/professionals/all");
-      }
-    };
-    revalidate();
+    if (formState.isSuccess && formState.data) {
+      const prof = formState.data.professional;
+      queryClient.setQueryData(
+        ["getProfessionals"],
+        (draft: ProfessionalGET[]) => {
+          return [...draft, prof];
+        }
+      );
+      revalidateProfessionals();
+      router.push("/professionals/all");
+    }//
   }, [formState.isSuccess]);
 
   const handleModalClose = () => {
