@@ -1,7 +1,7 @@
 # Stage 1: Build the app
 FROM node:alpine AS builder
 
-WORKDIR /app
+WORKDIR /app2
 
 # Copy only the package.json and package-lock.json to take advantage of Docker layer caching
 COPY package.json ./
@@ -19,10 +19,10 @@ RUN npm run build
 # Stage 2: Serve the app with a lightweight server
 FROM node:alpine
 
-WORKDIR /app
+WORKDIR /app2
 
 # Copy the built files from the 'builder' stage
-COPY --from=builder /app ./
+COPY --from=builder /app2 ./
 
 # Install only production dependencies (for a lighter image)
 RUN npm install --production
