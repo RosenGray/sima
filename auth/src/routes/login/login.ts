@@ -9,6 +9,7 @@ import {
   NotAuthorizedError,
   validateRequest,
 } from "@sima-board/common";
+import { jwtSignUser } from "../../utils";
 
 const router = express.Router();
 const upload = multer();
@@ -40,15 +41,7 @@ router.post(
     }
 
     // Generate JWT
-    const userJwt = jwt.sign(
-      {
-        id: existingUser.id,
-        email: existingUser.email,
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-      },
-      process.env.JWT_KEY!
-    );
+    const userJwt = jwtSignUser(existingUser);
 
     // Store it on session object
     if (req.session) {

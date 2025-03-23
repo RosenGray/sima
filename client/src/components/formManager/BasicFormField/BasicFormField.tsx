@@ -59,6 +59,7 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
         className={className}
         data-isvalid={dataIsValid}
         ref={ref}
+        {...rest}
       >
         <TextField.Slot>{children}</TextField.Slot>
       </TextField.Root>

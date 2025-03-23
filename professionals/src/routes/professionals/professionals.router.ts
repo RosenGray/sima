@@ -1,22 +1,17 @@
 import {
-  currentUser,
   FileManager,
-  RequestValidationErrorWithZod,
   requireAuth,
   validateRequestWithZod,
   CustomNextRequest,
   NotAuthorizedError,
 } from "@sima-board/common";
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import multer from "multer";
-import { z } from "zod";
 import { Professional } from "../../models/Professional";
 import {
   AddProfessional,
   addProfessionalSchema,
 } from "./professionals.schemas";
-import { ServiceCategory } from "../../models/ServiceCategory";
-import { ServiceSubCategory } from "../../models/ServiceSubCategory";
 
 const router = express.Router();
 const upload = multer({
@@ -75,8 +70,8 @@ router.post(
  */
 router.get("/", async (req: Request, res: Response) => {
   // Add 5 second delay
-  await new Promise(resolve => setTimeout(resolve, 5000));
-  
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   const professionals = await Professional.find({});
   res.status(200).send(professionals);
 });

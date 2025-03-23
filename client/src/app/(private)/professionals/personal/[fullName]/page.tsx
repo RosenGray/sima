@@ -2,20 +2,20 @@ import { notFound } from "next/navigation";
 
 interface PersonalProfessionalsPageProps {
   params: {
-    userId: string;
+    fullName: string;
   };
 }
 
 const PersonalProfessionalsPage = ({
   params,
 }: PersonalProfessionalsPageProps) => {
-  const { userId } = params;
-  const shouldRender = false; // Replace with your actual condition
-  if (!shouldRender) {
-    notFound();
-  }
-  
-  return <div>PersonalProfessionalsPage {userId}</div>;
+  const { fullName } = params;
+  // const shouldRender = false; // Replace with your actual condition
+  // if (!shouldRender) {
+  //   notFound();
+  // }
+
+  return <div>PersonalProfessionalsPage {fullName}</div>;
 };
 
 export default PersonalProfessionalsPage;

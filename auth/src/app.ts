@@ -6,6 +6,7 @@ import currentUserRouter from "./routes/current-user";
 import loginUserRouter from "./routes/login/login";
 import registerUserRouter from "./routes/register/register";
 import signoutUserRouter from "./routes/signout";
+import generalRouter from "./routes/general";
 import resetPassword from "./routes/reset-password";
 import verifyResetToken from "./routes/verify-reset-token";
 import { errorHandler, NotFoundError } from "@sima-board/common";
@@ -39,6 +40,7 @@ app.use(registerUserRouter);
 app.use(signoutUserRouter);
 app.use(resetPassword);
 app.use(verifyResetToken);
+app.use(generalRouter);
 app.get("*", async (req, res) => {
   throw new NotFoundError(`Route ${req.method} ${req.url} not found`);
 });

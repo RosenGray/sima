@@ -1,5 +1,5 @@
 "use client";
-import { Heading, Box, Flex, Grid } from "@radix-ui/themes";
+import { Heading, Box, Flex, Grid, Button } from "@radix-ui/themes";
 import {
   getCitiesToSelectOptions,
   mapAreasToSelectOptions,
@@ -12,7 +12,6 @@ import {
   mapServiceSubCategoriesToSelectOptions,
 } from "../../_lib/utils";
 import { parseWithZod } from "@conform-to/zod";
-import { useFormState } from "react-dom";
 import { getFormProps, useForm } from "@conform-to/react";
 import {
   professionalsMutateActionWrapper,
@@ -32,19 +31,24 @@ import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import BasicFormField from "@/components/formManager/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/formManager/PhoneFormField/PhoneFormField";
 import ReCAPTCHA from "@/components/GoogleReCAPTCHA/GoogleReCAPTCHA";
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import Checkbox from "@/components/formManager/Checkbox/Checkbox";
 import { Districts } from "@/types/cities";
 import { useRouter } from "next/navigation";
 import classes from "./ProfessionalsPublishForm.module.scss";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import { ProfessionalGET } from "../../_lib/types";
+import Link from "next/link";
 
 const areasOptions = mapAreasToSelectOptions();
 
 export const ProfessionalsPublishForm = () => {
+  const { user } = useAuth();
+  console.log(user);
   const router = useRouter();
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     professionalsMutateActionWrapper,
     {
       isErrorFromTheServer: false,
@@ -67,8 +71,6 @@ export const ProfessionalsPublishForm = () => {
     shouldValidate: "onInput",
   });
 
-  console.log("formState", formState);
-
   const { data, isLoading } = useQuery({
     queryKey: ["serviceCategoriesMapping"],
     queryFn: () => getServiceCategoriesMapping(),
@@ -78,16 +80,20 @@ export const ProfessionalsPublishForm = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (formState.isSuccess && formState.data) {
-      const prof = formState.data.professional;
-      console.log("prof", prof);
-      queryClient.setQueryData(["getProfessionals"], (x: any) => {
-        console.log("x", x);
-        return [...x, prof];
-      });
-      revalidateProfessionals();
-      router.push("/professionals/all");
-    }
+    const revalidate = async () => {
+      if (formState.isSuccess && formState.data) {
+        const prof = formState.data.professional;
+        queryClient.setQueryData(
+          ["getProfessionals"],
+          (draft: ProfessionalGET[]) => {
+            return [...draft, prof];
+          }
+        );
+        await revalidateProfessionals();
+        router.push("/professionals/all");
+      }
+    };
+    revalidate();
   }, [formState.isSuccess]);
 
   const handleModalClose = () => {
@@ -195,7 +201,6 @@ export const ProfessionalsPublishForm = () => {
                   mb="5px"
                   disabled={pending}
                 />
-                {/* <input type="file" multiple name={images.name} /> */}
 
                 <DropFilesInput
                   accept={{
@@ -224,7 +229,7 @@ export const ProfessionalsPublishForm = () => {
 
                 {/* Contact Information */}
                 <Box mt="4">
-                  <Heading size="4" mb="2">
+                  <Heading as="h3" size="4" mb="2">
                     Контактная информация
                   </Heading>
                   <Grid columns="2" gap="4">
@@ -251,6 +256,42 @@ export const ProfessionalsPublishForm = () => {
                       disabled={pending}
                     />
                   </Grid>
+                </Box>
+                {/* Personal Page Link */}
+
+                <BasicFormField
+                  type="text"
+                  field={email}
+                  label="Email"
+                  anotherLabel="*виден только администрации сайта и не отображается публично"
+                  placeholder="@ Адрес электронной почты"
+                  size="3"
+                  defaultValue={fields.email.initialValue}
+                  dataIsValid={email.valid}
+                  errors={email.errors}
+                  disabled
+                >
+                  <EnvelopeClosedIcon height="16" width="16" />
+                </BasicFormField>
+
+                <Box mt="4">
+                  <Heading as="h3" size="4" mb="2">
+                    Твоя Личная страница
+                  </Heading>
+                  {/* <p>{user?.hasPrivateProfessionalPage ? "Да" : "Нет"}</p> */}
+                  <Link
+                    target="_blank"
+                    href={`/professionals/personal/${user!.firstName.toLowerCase()}-${user!.lastName.toLowerCase()}`}
+                  >
+                    <Button
+                      type="button"
+                      style={{ cursor: "pointer" }}
+                      variant="outline"
+                      size="3"
+                    >
+                      {`${process.env.NEXT_PUBLIC_CLIENT_URL}/professionals/personal/${user!.firstName.toLowerCase()}-${user!.lastName.toLowerCase()}`}
+                    </Button>
+                  </Link>
                 </Box>
 
                 <Flex

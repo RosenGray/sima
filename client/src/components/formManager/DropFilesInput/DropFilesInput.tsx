@@ -44,7 +44,6 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
   const onDrop = useCallback(
     (newFiles: File[]) => {
       const updatedFiles = [...files];
-      console.log("updatedFiles before", updatedFiles);
 
       newFiles.forEach((file) => {
         //Check if file with the same name already exists
@@ -65,14 +64,20 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
 
   useEffect(() => {
     const dataTransfer = new DataTransfer();
-    files.forEach((file) => {
-      dataTransfer.items.add(file);
-    });
+    if (maxFiles && files.length > maxFiles) {
+      files.slice(0, maxFiles).forEach((file) => {
+        dataTransfer.items.add(file);
+      });
+    } else {
+      files.forEach((file) => {
+        dataTransfer.items.add(file);
+      });
+    }
     const fileInputElement = document.getElementById(id) as HTMLInputElement;
     if (fileInputElement) {
       fileInputElement.files = dataTransfer.files;
     }
-  }, [files]);
+  }, [files, maxFiles]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
