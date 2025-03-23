@@ -9,22 +9,17 @@ RUN rm -rf node_modules package-lock.json
 # Copy package.json first
 COPY package.json ./
 
-# Modify package.json to use React 18 instead of React 19
-# This step is crucial based on your error logs
-RUN sed -i 's/"react": "19.0.0"/"react": "^18.3.1"/' package.json && \
-    sed -i 's/"react-dom": "19.0.0"/"react-dom": "^18.3.1"/' package.json && \
-    sed -i 's/"@types\/react": "19.0.12"/"@types\/react": "^18.3.19"/' package.json && \
-    sed -i 's/"@types\/react-dom": "19.0.4"/"@types\/react-dom": "^18.3.5"/' package.json
+# Modify package.json to pin Next.js to version 14
+RUN sed -i 's/"next": "[^"]*"/"next": "14.1.0"/' package.json
 
-# Now install dependencies with the correct versions
+# Install dependencies with the pinned version
 RUN npm install
+
+# Force reinstall Next.js 14 to override any potential upgrade
+RUN npm uninstall next && npm install next@14.1.0 --save-exact
 
 # Copy the rest of the app's source code
 COPY . .
-
-RUN echo "NEXT_DISABLE_TYPECHECK=true" > .env.local && \
-    echo "ESLINT_NO_DEV_ERRORS=true" >> .env.local && \
-    echo "ESLINT_SKIP=true" >> .env.local
 
 # Build the Next.js app
 RUN npm run build
