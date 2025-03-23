@@ -1,7 +1,7 @@
 "use client";
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { Flex, Text, Heading, Card, Box, IconButton } from "@radix-ui/themes";
 import {
   EnvelopeClosedIcon,
@@ -25,7 +25,7 @@ const LoginFormPage = () => {
   const { setUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [formState, formAction] = useFormState(loginActionWrapper, {
+  const [formState, formAction] = useActionState(loginActionWrapper, {
     isErrorFromTheServer: false,
     isSuccess: false,
   });
