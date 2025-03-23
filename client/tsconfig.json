@@ -19,8 +19,15 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "target": "ES2022"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/loading.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/loading.js"
+  ],
   "exclude": ["node_modules"]
 }

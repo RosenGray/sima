@@ -276,7 +276,7 @@ export const ProfessionalsPublishForm = () => {
                   <Heading as="h3" size="4" mb="2">
                     Твоя Личная страница
                   </Heading>
-                  {/* <p>{user?.hasPrivateProfessionalPage ? "Да" : "Нет"}</p> */}
+                  {/* <p>{user?.hasPrivateProfessionalPage ? "Да" : "Нет"}</p> */} 
                   <Link
                     target="_blank"
                     href={`/professionals/personal/${user!.firstName.toLowerCase()}-${user!.lastName.toLowerCase()}`}
