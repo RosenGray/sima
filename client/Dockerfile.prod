@@ -3,14 +3,23 @@ FROM node:alpine AS builder
 
 WORKDIR /app
 
-# Copy only the package.json and package-lock.json to take advantage of Docker layer caching
-COPY package.json ./
-COPY package-lock.json ./
+# Clean start - avoid using cached dependencies
+RUN rm -rf node_modules package-lock.json
 
-# Install dependencies
+# Copy package.json first
+COPY package.json ./
+
+# Modify package.json to use React 18 instead of React 19
+# This step is crucial based on your error logs
+RUN sed -i 's/"react": "19.0.0"/"react": "^18.3.1"/' package.json && \
+    sed -i 's/"react-dom": "19.0.0"/"react-dom": "^18.3.1"/' package.json && \
+    sed -i 's/"@types\/react": "19.0.12"/"@types\/react": "^18.3.19"/' package.json && \
+    sed -i 's/"@types\/react-dom": "19.0.4"/"@types\/react-dom": "^18.3.5"/' package.json
+
+# Now install dependencies with the correct versions
 RUN npm install
 
-# Copy the rest of the app’s source code
+# Copy the rest of the app's source code
 COPY . .
 
 # Build the Next.js app
@@ -23,9 +32,6 @@ WORKDIR /app
 
 # Copy the built files from the 'builder' stage
 COPY --from=builder /app ./
-
-# Install only production dependencies (for a lighter image)
-RUN npm install --production
 
 # Expose the default Next.js port
 EXPOSE 3000
