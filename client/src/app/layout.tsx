@@ -45,6 +45,7 @@ export default async function RootLayout({
 }>) {
   const userSession = await getUserSessionData();
   const user = userSession?.user;
+  console.log("userBLA", user);
   return (
     <html lang="ru">
       <body className={inter.className}>

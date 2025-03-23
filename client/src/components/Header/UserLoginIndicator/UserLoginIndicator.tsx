@@ -5,7 +5,7 @@ import { IconButton, Link, Text, HoverCard, Box } from "@radix-ui/themes";
 import classNames from "classnames";
 import styles from "./UserLoginIndicator.module.scss";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-
+import { useRouter } from "next/navigation";
 interface UserLoginIndicatorProps {
   buttonSize?: "1" | "2" | "3" | "4";
   hideOnMobile?: boolean;
@@ -14,6 +14,7 @@ const UserLoginIndicator: FC<UserLoginIndicatorProps> = ({
   buttonSize,
   hideOnMobile,
 }) => {
+  const router = useRouter();
   const { user, setUser } = useAuth();
   if (!user)
     return (
@@ -74,6 +75,7 @@ const UserLoginIndicator: FC<UserLoginIndicatorProps> = ({
                     method: "POST",
                   });
                   setUser(null);
+                  router.push("/");
                 }}
                 className={styles.UserDropdown__Button}
                 type="submit"

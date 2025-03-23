@@ -6,7 +6,7 @@ import {
   ActionWrapperOptions,
   ServerError,
 } from "@/fetch/fetch.types";
-import { Professional } from "./types";
+import { Professional, ProfessionalGET } from "./types";
 import { customFetch } from "@/fetch/server";
 import { ServerErrorType } from "@sima-board/common";
 import { revalidatePath } from "next/cache";
@@ -25,11 +25,12 @@ export const createProfessionalsAction = async (
   prevState: unknown,
   formData: FormData,
   { url, schema }: ActionWrapperOptions
-): Promise<SubmissionResultWithErrorsState<{ professional: Professional }>> => {
+): Promise<
+  SubmissionResultWithErrorsState<{ professional: ProfessionalGET }>
+> => {
   const submissionResult = parseWithZod(formData, {
     schema,
   }).reply();
-  console.log("submissionResult.status", submissionResult.status);
 
   if (submissionResult.status !== "success") {
     return {
@@ -38,7 +39,7 @@ export const createProfessionalsAction = async (
   }
 
   try {
-    const response = await customFetch<Professional, ServerError>(url, {
+    const response = await customFetch<ProfessionalGET, ServerError>(url, {
       headers: {
         Accept: "application/json",
       },
