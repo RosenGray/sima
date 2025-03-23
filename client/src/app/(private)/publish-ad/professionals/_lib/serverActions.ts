@@ -76,7 +76,7 @@ export const createProfessionalsAction = async (
   }
 };
 
-export const revalidateProfessionals = () => {
+export const revalidateProfessionals = async () => {
   "use server";
   revalidatePath("/professionals/all", "page");
 };
