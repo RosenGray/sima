@@ -1,7 +1,6 @@
 "use client";
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { useFormState } from "react-dom";
 import {
   Flex,
   TextField,
@@ -20,7 +19,7 @@ import {
 
 import { registerSchema } from "../_lib/validations";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";
 import { useOutsideElement } from "@/hooks/useOutsideAlerter";
 import AuthTextField from "../_components/AuthTextField/AuthTextField";
@@ -45,7 +44,7 @@ const RegisterPageForm = () => {
   useOutsideElement(passwordInputRef.current, () => {
     setOpenPasswordValidationToolTip(false);
   });
-  const [formState, formAction] = useFormState(registerActionWrapper, {
+  const [formState, formAction] = useActionState(registerActionWrapper, {
     isErrorFromTheServer: false,
   });
 
