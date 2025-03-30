@@ -1,12 +1,17 @@
-import { getServiceCategoriesMapping } from "../(private)/publish-ad/professionals/_lib/actions";
+import { config } from "@/utils/config";
+import { ServiceCategoryMapping } from "../(private)/publish-ad/professionals/_lib/types";
+
+const { API_URL } = config;
+
+const url = `${API_URL}/api/professionals/service-categories/mapping`;
 
 export default async function Dummypage() {
-  const b = await getServiceCategoriesMapping();
-
+  const b = await fetch(url);
+  const data = (await b.json()) as ServiceCategoryMapping;
   return (
     <div>
       <h1>Dummy Page</h1>
-      {b["67a4ff1fe474c3020a84b980"].subCategories.map((item) => (
+      {data["67a4ff1fe474c3020a84b980"].subCategories.map((item) => (
         <p key={item.id}>
           {item.displayName}
           <br />
