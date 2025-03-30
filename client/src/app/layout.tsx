@@ -10,10 +10,13 @@ import { generateBackblazeUrl } from "@/utils/common";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { getUserSessionData } from "@/utils/auth";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
+import { fetchClient } from "@/fetch/fetch.utils";
+import { User } from "@/types/auth/auth.types";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 const bla = generateBackblazeUrl("public", "sima.dark.logo.png");
-console.log("bla", bla);
+
 export const metadata: Metadata = {
   title:
     "Русская Доска объявлений Sima - Аренда квартир, Продажа, Автомобили, Вакансии, б/у товары",
@@ -43,18 +46,23 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userSession = await getUserSessionData();
-  const user = userSession?.user;
-  console.log("userBLA", user);
+  const user = await fetchClient<{ currentUser: User }, { currentUser: null }>(
+    "/api/auth/currentuser",
+    {
+      // cache: "force-cache",
+    }
+  );
+  const { currentUser } = await user.json();
+
   return (
-    <html lang="ru">
-      <body className={inter.className}>
+    <html lang="ru" suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
         {/* <Script
           defer
           src="https://acc-landing.vercel.app/accessibilik.min.js"
         ></Script> */}
-      
-        <AuthProvider initialUser={user}>
+
+        <AuthProvider initialUser={currentUser}>
           <Providers>
             <ThemeProvider
               attribute="class"
@@ -69,7 +77,19 @@ export default async function RootLayout({
                 id={config.RADIX_THEME_APP_ID}
                 accentColor="red"
               >
-                <div className="SimaApp">{children}</div>
+                <div className="SimaApp">
+                  {children}
+                  <p>{currentUser?.hasPrivateProfessionalPage?.toString()}</p>
+                  <br />
+                  <Link href="/professionals/personal/vladislav-iokhim">
+                    page
+                  </Link>
+                  <br />
+                  <Link href="/about">
+                    About
+                  </Link>
+                </div>
+
                 <LayoutBackground />
               </Theme>
               <Theme
@@ -80,7 +100,6 @@ export default async function RootLayout({
             </ThemeProvider>
           </Providers>
         </AuthProvider>
-
       </body>
     </html>
   );

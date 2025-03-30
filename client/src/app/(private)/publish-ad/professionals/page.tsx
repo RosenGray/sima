@@ -5,8 +5,16 @@ import { getProfessionals, getServiceCategoriesMapping } from "./_lib/actions";
 import { getQueryClient } from "@/app/get-query-client";
 import classes from "./page.module.scss";
 import Link from "next/link";
+import { getUserSessionData } from "@/utils/auth";
+import { redirect } from "next/navigation";
+const PublishAdProfessionalsPage = async () => {
 
-const PublishAdProfessionalsPage = () => {
+  const userSession = await getUserSessionData();
+  const user = userSession?.user;
+  if (!user) {
+    redirect("/login");
+  }
+
   const queryClient = getQueryClient();
   queryClient.fetchQuery({
     queryKey: ["serviceCategoriesMapping"],
@@ -28,7 +36,7 @@ const PublishAdProfessionalsPage = () => {
         </Heading>
         <Card className={classes.PublishAdProfessionalsPage__Card}>
           <HydrationBoundary state={dehydrate(queryClient)}>
-            <ProfessionalsPublishForm />
+            <ProfessionalsPublishForm user={user} />
           </HydrationBoundary>
         </Card>
       </Box>

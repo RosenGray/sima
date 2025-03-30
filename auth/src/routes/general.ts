@@ -62,6 +62,7 @@ router.patch("/api/auth", currentUser, requireAuth, async (req, res) => {
 
     res.status(200).send(user);
   } catch (error) {
+    console.log(error);
     throw new BadRequestError("Update failed");
   }
 });
