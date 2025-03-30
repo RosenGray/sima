@@ -80,3 +80,8 @@ export const revalidateProfessionals = async () => {
   "use server";
   revalidatePath("/professionals/all", "page");
 };
+
+export const revlidateVladislavPage = async () => {
+  "use server";
+  revalidatePath("/professionals/personal/vladislav-iokhim", "page");
+}

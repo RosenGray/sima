@@ -1,6 +1,7 @@
 "use client";
 
 import { getProfessionals } from "@/app/(private)/publish-ad/professionals/_lib/actions";
+import { revlidateVladislavPage } from "@/app/(private)/publish-ad/professionals/_lib/serverActions";
 import { Button } from "@radix-ui/themes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
@@ -31,13 +32,18 @@ export const DummyAllClient = () => {
   return (
     <div>
       <h1 style={{ color: "red" }}>DummyAllClient</h1>
-      {/* <Button
-        onClick={() =>
-          queryClient.invalidateQueries({ queryKey: ["getProfessionals"] })
+      <Button
+        onClick={
+          async () => {
+            console.log("clicked");
+            await revlidateVladislavPage();
+          }
+
+          // queryClient.invalidateQueries({ queryKey: ["getProfessionals"] })
         }
       >
         Invalidate
-      </Button> */}
+      </Button>
       <div>
         {data?.map((professional: { id: string }, index: number) => (
           <div key={professional.id}>

@@ -1,5 +1,6 @@
 import express from "express";
 import { currentUser, requireAuth } from "@sima-board/common";
+import { User } from "../models/User";
 
 const router = express.Router();
 
@@ -8,7 +9,13 @@ router.get(
   currentUser,
   requireAuth,
   async (req, res) => {
-    res.send({ currentUser: req.currentUser || null });
+    const { currentUser } = req;
+    if (!currentUser) {
+      return res.send({ currentUser: null });
+    }
+    console.log('user was requested')
+    const user = await User.findOne({ email: currentUser.email });
+    res.send({ currentUser: user });
   }
 );
 

@@ -42,12 +42,11 @@ import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { ProfessionalGET } from "../../_lib/types";
 import Link from "next/link";
+import { User } from "@/types/auth/auth.types";
 
 const areasOptions = mapAreasToSelectOptions();
 
-export const ProfessionalsPublishForm = () => {
-  const { user } = useAuth();
-  console.log(user);
+export const ProfessionalsPublishForm = ({ user }: { user: User }) => {
   const router = useRouter();
   const [formState, formAction] = useFormState(
     professionalsMutateActionWrapper,
@@ -71,7 +70,7 @@ export const ProfessionalsPublishForm = () => {
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-//
+  //
   const { data, isLoading } = useQuery({
     queryKey: ["serviceCategoriesMapping"],
     queryFn: () => getServiceCategoriesMapping(),
@@ -79,19 +78,22 @@ export const ProfessionalsPublishForm = () => {
   });
 
   const queryClient = useQueryClient();
-//
+  //
   useEffect(() => {
-    if (formState.isSuccess && formState.data) {
-      const prof = formState.data.professional;
-      queryClient.setQueryData(
-        ["getProfessionals"],
-        (draft: ProfessionalGET[]) => {
-          return [...draft, prof];
-        }
-      );
-      revalidateProfessionals();
-      router.push("/professionals/all");
-    }
+    const revalidate = async () => {
+      if (formState.isSuccess && formState.data) {
+        const prof = formState.data.professional;
+        queryClient.setQueryData(
+          ["getProfessionals"],
+          (draft: ProfessionalGET[]) => {
+            return [...draft, prof];
+          }
+        );
+        await revalidateProfessionals();
+        router.push("/professionals/all");
+      }
+    };
+    revalidate();
   }, [formState.isSuccess]);
 
   const handleModalClose = () => {
@@ -257,24 +259,9 @@ export const ProfessionalsPublishForm = () => {
                 </Box>
                 {/* Personal Page Link */}
 
-                <BasicFormField
-                      type="text"
-                      field={email}
-                      label="Email"
-                      anotherLabel="*виден только администрации сайта и не отображается публично"
-                      placeholder="@ Адрес электронной почты"
-                      size="3"
-                      defaultValue={fields.email.initialValue}
-                      dataIsValid={email.valid}
-                      errors={email.errors}
-                      disabled
-                    >
-                      <EnvelopeClosedIcon height="16" width="16" />
-                    </BasicFormField>
-
                 <Box mt="4">
                   <Heading as="h3" size="4" mb="2">
-                    Твоя Личная страница
+                    Ваша Личная страница
                   </Heading>
                   {/* <p>{user?.hasPrivateProfessionalPage ? "Да" : "Нет"}</p> */}
                   <Link
@@ -292,7 +279,7 @@ export const ProfessionalsPublishForm = () => {
                   </Link>
                 </Box>
 
-                <Flex                 
+                <Flex
                   mt="4"
                   direction="column"
                   gap="3"
