@@ -76,16 +76,7 @@ export default async function RootLayout({
                 id={config.RADIX_THEME_APP_ID}
                 accentColor="red"
               >
-                <div className="SimaApp">
-                  {children}
-                  <p>{currentUser?.hasPrivateProfessionalPage?.toString()}</p>
-                  <br />
-                  <Link href="/professionals/personal/vladislav-iokhim">
-                    page
-                  </Link>
-                  <br />
-                  <Link href="/about">About</Link>
-                </div>
+                <div className="SimaApp">{children}</div>
 
                 <LayoutBackground />
               </Theme>

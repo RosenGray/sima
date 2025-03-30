@@ -13,7 +13,7 @@ router.get(
     if (!currentUser) {
       return res.send({ currentUser: null });
     }
-    console.log('user was requested2')
+    console.log('user was requested3')
     const user = await User.findOne({ email: currentUser.email });
     res.send({ currentUser: user });
   }
