@@ -8,14 +8,13 @@ import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import { generateBackblazeUrl } from "@/utils/common";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
-import { getUserSessionData } from "@/utils/auth";
+
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import { fetchClient } from "@/fetch/fetch.utils";
 import { User } from "@/types/auth/auth.types";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
-const bla = generateBackblazeUrl("public", "sima.dark.logo.png");
 
 export const metadata: Metadata = {
   title:
@@ -85,9 +84,7 @@ export default async function RootLayout({
                     page
                   </Link>
                   <br />
-                  <Link href="/about">
-                    About
-                  </Link>
+                  <Link href="/about">About</Link>
                 </div>
 
                 <LayoutBackground />

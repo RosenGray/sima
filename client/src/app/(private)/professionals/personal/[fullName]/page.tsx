@@ -1,10 +1,6 @@
 import { fetchClient } from "@/fetch/fetch.utils";
 import { User } from "@/types/auth/auth.types";
-import { getUserSessionData } from "@/utils/auth";
-import { notFound, redirect } from "next/navigation";
-
-
-
+import { redirect } from "next/navigation";
 
 interface PersonalProfessionalsPageProps {
   params: {
