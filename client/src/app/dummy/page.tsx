@@ -1,12 +1,11 @@
-import { config } from "@/utils/config";
 import { ServiceCategoryMapping } from "../(private)/publish-ad/professionals/_lib/types";
+import { staticFetch } from "@/fetch/static";
 
-const { API_URL } = config;
 
-const url = `${API_URL}/api/professionals/service-categories/mapping`;
+const url = `/api/professionals/service-categories/mapping`;
 
 export default async function Dummypage() {
-  const b = await fetch(url);
+  const b = await staticFetch<ServiceCategoryMapping, Error>(url, {});
   const data = (await b.json()) as ServiceCategoryMapping;
   return (
     <div>
