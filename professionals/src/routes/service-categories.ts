@@ -16,6 +16,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.get("/mapping", async (req: Request, res: Response) => {
+  console.log("mapping was requested");
   try {
     const serviceCategories = await ServiceCategory.find({});
 
