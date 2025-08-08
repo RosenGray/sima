@@ -13,7 +13,7 @@ spec:
         app: client
     spec:
       hostAliases:
-        - ip: "10.107.202.135"
+        - ip: "10.103.239.197"
           hostnames:
             - "sima.dev"
       containers:
