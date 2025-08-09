@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Theme } from "@radix-ui/themes";
+import { Theme as RadixTheme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import "./../globals.css";
+import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 
 export const metadata: Metadata = {
   title: "Sima Marketplace",
-  description: "Discover amazing products, connect with sellers, and build your business in our vibrant marketplace community.",
+  description:
+    "Discover amazing products, connect with sellers, and build your business in our vibrant marketplace community.",
 };
 
 export default function RootLayout({
@@ -16,9 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Theme         accentColor="red">
-          {children}
-        </Theme>
+        <RadixTheme accentColor="red">{children}
+
+          <LayoutBackground />
+        </RadixTheme>
       </body>
     </html>
   );

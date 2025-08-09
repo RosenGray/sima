@@ -8,6 +8,12 @@
     );
     --header-height: 70px;
     --hero-card-background-color: #fffc; */
+      /* Radix breakpoints as CSS variables */
+  --breakpoint-xs: 520px;
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 1024px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1640px;
   }
   
   html:is(.dark) {
