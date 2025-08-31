@@ -16,6 +16,19 @@
   --breakpoint-xl: 1640px;
   }
   
+  .dark {
+    /* --background-color: linear-gradient(
+      135deg,
+      #2b2543,
+      #111c2a,
+      #2a2d3f,
+      #3a2b3d,
+      #111216
+    );
+    --hero-card-background-color: #1b1d1eb3; */
+  }
+  
+  /* For backwards compatibility */
   html:is(.dark) {
     /* --background-color: linear-gradient(
       135deg,
@@ -45,6 +58,16 @@
   p {
     all: unset;
   }
+
+  .globalContentOverflowWrapper{
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .SimaApp{
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
   
   /* footer{
     background-color: var(--gray-2);
@@ -65,12 +88,5 @@
     list-style: none;
   }
   
-  .globalContentOverflowWrapper{
-    height: 100dvh;
-    overflow: hidden;
-  }
-  .SimaApp{
-    height: 100%;
-    overflow-y: auto;
-  }
+
    */

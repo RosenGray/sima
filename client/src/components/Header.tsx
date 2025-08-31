@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Flex, Text } from "@radix-ui/themes";
+import { useTheme } from "next-themes";
 import {
   HeaderContainer,
   Logo,
@@ -74,6 +75,7 @@ const navigationItems = [
 
 export default function Header({ isDark = false, onThemeToggle }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const toggleMobileMenu = () => {
     console.log('Toggle mobile menu, current state:', isMobileMenuOpen);
@@ -88,9 +90,8 @@ export default function Header({ isDark = false, onThemeToggle }: HeaderProps) {
     if (onThemeToggle) {
       onThemeToggle();
     } else {
-      // Fallback theme toggle logic
-      document.documentElement.classList.toggle("dark-theme", !isDark);
-      document.documentElement.classList.toggle("light-theme", isDark);
+      // Fallback theme toggle logic using next-themes
+      setTheme(theme === 'dark' ? 'light' : 'dark');
     }
   };
 

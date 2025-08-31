@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Theme as RadixTheme } from "@radix-ui/themes";
+import { ThemeProvider } from "next-themes";
 import "@radix-ui/themes/styles.css";
 import "./../globals.css";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
@@ -16,12 +17,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <RadixTheme accentColor="red">{children}
-
-          <LayoutBackground />
-        </RadixTheme>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <RadixTheme className="globalContentOverflowWrapper" accentColor="red">
+            <div className="SimaApp">
+              {children}
+            </div>
+            <LayoutBackground />
+          </RadixTheme>
+        </ThemeProvider>
       </body>
     </html>
   );
