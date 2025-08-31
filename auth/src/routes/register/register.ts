@@ -19,8 +19,6 @@ const upload = multer();
 router.post(
   "/api/auth/register",
   upload.none(),
-  registerSchema,
-  validateRequest,
   async (req: Request, res: Response) => {
     const { firstName, lastName, email, password } = req.body;
 
@@ -48,3 +46,5 @@ router.post(
 );
 
 export default router;
+
+
