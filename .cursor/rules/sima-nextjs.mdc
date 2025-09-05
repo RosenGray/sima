@@ -1,0 +1,9 @@
+---
+description: Icons and styling
+globs:
+alwaysApply: true
+---
+
+- for link, always use import Link from "next/link";
+- please note that we are in   "next": "15.4.6", so always read the relevant docs/api/ and keep the best practises : https://nextjs.org/docs
+

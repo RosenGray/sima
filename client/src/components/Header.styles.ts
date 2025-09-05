@@ -161,3 +161,13 @@ export const HamburgerIcon = styled.div<{ $isOpen: boolean }>`
   }
 `;
 
+export const ActionsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+export const LoginButton = styled(Button)`
+  border-radius: var(--radius-2);
+`;
+

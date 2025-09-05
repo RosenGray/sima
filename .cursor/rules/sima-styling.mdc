@@ -1,0 +1,12 @@
+---
+description: Icons and styling
+globs:
+alwaysApply: true
+---
+
+- always use radix-ui components
+- always use radix-ui theme and colors system
+- always use radix-ui icons
+- for any other additional styaling , plese use styled components
+- when creating a component the name of the component always start with big letter and .tsx format; for example Header.ts
+- when creating a styled component, it will have the same component name following by .style.ts - for example : Header.styles.ts
