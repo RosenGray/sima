@@ -2,7 +2,6 @@ import { IUserDocument } from "../models/User";
 import jwt from "jsonwebtoken";
 
 
-
 export const jwtSignUser = (user: IUserDocument) => {
     return jwt.sign(
       {
@@ -19,4 +18,3 @@ export const jwtSignUser = (user: IUserDocument) => {
   };
   
 
-  

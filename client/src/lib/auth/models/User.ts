@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
   {
     timestamps: true,
     toJSON: {
-      transform: (doc, ret) => {
+      transform: (doc, ret: Record<string, unknown>) => {
         ret.id = ret._id;
         delete ret._id;
         delete ret.password;
@@ -68,4 +68,4 @@ userSchema.pre("save", async function (done) {
 
 export const User = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
 
-export type IUserDocument = Document<unknown, {}, IUser> & IUser;
+export type IUserDocument = Document<unknown, object, IUser> & IUser;

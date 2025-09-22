@@ -69,7 +69,7 @@
     overflow-x: hidden;
   }
   
-  /* footer{
+  footer{
     background-color: var(--gray-2);
   }
   
@@ -89,4 +89,9 @@
   }
   
 
-   */
+  .disabled-link {
+    color: grey; /* Or any other desired color */
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none; /* Prevents click events */
+  } 

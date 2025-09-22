@@ -1,4 +1,4 @@
-import { SESSION_CONFIG } from '@/lib/auth/config';
+import { SIMA_AUTH_SESSION_CONFIG } from '@/lib/auth/config';
 import { User } from '@/lib/auth/models/User';
 import { RegisterSchema } from '@/lib/auth/types/auth.scema';
 import { jwtSignUser } from '@/lib/auth/utils/auth.utils';
@@ -14,12 +14,18 @@ import  { NextRequest,NextResponse, } from 'next/server'
 export async function POST(request: NextRequest) {
   try{
     await connectDB();
-    const formData = await request.formData()
-    const result =  RegisterSchema.safeParse(formData);
-    if(!result.success){
-      throw new RequestValidationErrorWithZod(result.error);
-    }
-    const { firstName, lastName, email, password } = result.data;
+    // const formData = await request.formData()
+    // const result =  RegisterSchema.safeParse(formData);
+    // if(!result.success){
+    //   throw new RequestValidationErrorWithZod(result.error);
+    // }
+    // console.log('result', result.data)
+    // const { firstName, lastName, email, password } = result.data;
+
+    const firstName = 'vladi';
+    const lastName = 'iokhim'
+    const email = 'vladonchik@gmail.com'
+    const password = '123456789';
   
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -37,7 +43,7 @@ export async function POST(request: NextRequest) {
     const userJwt = jwtSignUser(user);
 
     // Store it on session object
-    response.cookies.set(SESSION_CONFIG.name, userJwt, SESSION_CONFIG)
+    response.cookies.set(SIMA_AUTH_SESSION_CONFIG.name, userJwt, SIMA_AUTH_SESSION_CONFIG)
     return response
 
 

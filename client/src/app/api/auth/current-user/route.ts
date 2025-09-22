@@ -1,4 +1,4 @@
-import { SESSION_CONFIG } from '@/lib/auth/config';
+import { SIMA_AUTH_SESSION_CONFIG } from '@/lib/auth/config';
 import { User } from '@/lib/auth/models/User';
 import connectDB from '@/lib/mongo/mongodb';
 import { NotAuthorizedError } from '@/lib/errors/NotAuthorizedError';
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
-    const token = request.cookies.get(SESSION_CONFIG.name)?.value;
+    const token = request.cookies.get(SIMA_AUTH_SESSION_CONFIG.name)?.value;
     if (!token) {
       throw new NotAuthorizedError(ServerErrorType.AuthTokenNotFound);
     }

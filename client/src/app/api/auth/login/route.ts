@@ -1,9 +1,10 @@
 
 
 
-import { SESSION_CONFIG } from '@/lib/auth/config';
+import { SIMA_AUTH_SESSION_CONFIG } from '@/lib/auth/config';
 import { User } from '@/lib/auth/models/User';
 import { PasswordManager } from '@/lib/auth/services/PasswordManager';
+import { LoginSchema } from '@/lib/auth/types/auth.scema';
 import { jwtSignUser } from '@/lib/auth/utils/auth.utils';
 import { BadRequestError } from '@/lib/errors/BadRequestError';
 import { RequestValidationErrorWithZod } from '@/lib/errors/RequestValidationErrorWithZod';
@@ -11,14 +12,9 @@ import { ServerErrorType } from '@/lib/errors/types';
 import { isSimaError } from '@/lib/errors/utils';
 import connectDB from '@/lib/mongo/mongodb';
 import { NextRequest, NextResponse } from 'next/server'
-import z from 'zod';
-import { zfd } from 'zod-form-data';
 
 
-const LoginSchema = zfd.formData({
-  email: zfd.text(z.string({ message: 'Неверный формат электронной почты' }).email({ message: 'Неверный формат электронной почты' })),
-  password: zfd.text(z.string({ message: 'Пароль обязателен' }).min(1, { message: 'Пароль обязателен' })),
-});
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,7 +51,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json(existingUser, { status: 200 });
 
     const userJwt = jwtSignUser(existingUser);
-    response.cookies.set(SESSION_CONFIG.name, userJwt, SESSION_CONFIG);
+    response.cookies.set(SIMA_AUTH_SESSION_CONFIG.name, userJwt, SIMA_AUTH_SESSION_CONFIG);
 
     return response;
   } catch (error) {

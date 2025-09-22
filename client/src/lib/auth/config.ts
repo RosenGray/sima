@@ -1,6 +1,6 @@
 export const DEV_DOMAIN = "localhost"; // //.sima.dev//localhost
-export const SESSION_CONFIG = {
-  name: 'sima-session',
+export const SIMA_AUTH_SESSION_CONFIG = {
+  name: 'sima-auth-session',
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,

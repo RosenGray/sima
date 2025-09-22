@@ -1,4 +1,4 @@
-import { SESSION_CONFIG } from '@/lib/auth/config';
+import { SIMA_AUTH_SESSION_CONFIG } from '@/lib/auth/config';
 import { isSimaError } from '@/lib/errors/utils';
 import { NextResponse } from 'next/server'
 
@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server'
 export async function POST() {
   try {
     const response = NextResponse.json({ session: null }, { status: 200 });
-    response.cookies.set(SESSION_CONFIG.name, '', { ...SESSION_CONFIG, maxAge: 0 });
+    response.cookies.set(SIMA_AUTH_SESSION_CONFIG.name, '', { ...SIMA_AUTH_SESSION_CONFIG, maxAge: 0 });
     return response;
   } catch (error) {
     console.log('error', error);
