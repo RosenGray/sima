@@ -19,7 +19,6 @@ export async function loginUser(initialState: unknown, formData: FormData) {
     const { email, password } = result.value;
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
-      console.log('existingUser', existingUser);
       return result.reply({
         formErrors: ["Неверный email или пароль"],
       });
@@ -30,7 +29,6 @@ export async function loginUser(initialState: unknown, formData: FormData) {
       password
     );
     if (!passwordsMatch) {
-      console.log('passwordsMatch', passwordsMatch);
       return result.reply({
         formErrors: ["Неверный email или пароль"],
       });
@@ -45,7 +43,6 @@ export async function loginUser(initialState: unknown, formData: FormData) {
     );
   } catch (error) {
     if (error instanceof Error) {
-      console.log("error", error);
       return result.reply({
         formErrors: ["Неизвестная ошибка"],
       });
@@ -53,6 +50,6 @@ export async function loginUser(initialState: unknown, formData: FormData) {
     return result.reply({
       formErrors: ["Неизвестная ошибка"],
     });
-  } 
+  }
   redirect("/");
 }
