@@ -105,14 +105,6 @@ export const DropdownItem = styled.a`
   }
 `;
 
-export const ThemeToggleButton = styled(Button)`
-  cursor: pointer;
-  border-radius: var(--radius-2);
-  
-  &:hover {
-    background: var(--gray-4);
-  }
-`;
 
 export const MobileMenuButton = styled(Button)`
   display: flex;
@@ -169,5 +161,9 @@ export const ActionsContainer = styled.div`
 
 export const LoginButton = styled(Button)`
   border-radius: var(--radius-2);
+  cursor: pointer;
+  &:hover {
+    background: var(--gray-4);
+  }
 `;
 

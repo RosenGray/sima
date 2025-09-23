@@ -1,39 +1,40 @@
-'use client';
 
-import { Button, Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+
+import { Button, Flex, Heading, Text, Container, Section, Box } from '@radix-ui/themes';
 import styled from 'styled-components';
 import Header from '../components/Header';
 import { useTheme } from "next-themes";
 
 
-const PageContainer = styled(Container)`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  padding-top: 6rem; /* Add padding to account for fixed header */
-`;
+// const PageContainer = styled(Container)`
+//   min-height: 100vh;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   padding: 2rem;
+//   padding-top: 6rem; /* Add padding to account for fixed header */
+// `;
 
-const MainContent = styled(Section)`
-  text-align: center;
-  max-width: 600px;
-`;
+// const MainContent = styled(Section)`
+//   text-align: center;
+//   max-width: 600px;
+// `;
 
 export default function Home() {
-  const { theme, setTheme } = useTheme();
+  console.log('Home');
+  // const { theme, setTheme } = useTheme();
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+  // const toggleTheme = () => {
+  //   setTheme(theme === 'dark' ? 'light' : 'dark');
+  // };
 
   return (
     <>
-      <Header isDark={theme === 'dark'} onThemeToggle={toggleTheme} />
+      <Header  />
 
-      <PageContainer size="4">
-        <MainContent size="1">
+      <Box >
+        <Box >
           <Flex direction="column" gap="6" align="center">
             <Heading size="9" weight="bold">
               Hello World
@@ -56,8 +57,8 @@ export default function Home() {
           <div style={{ marginTop: 40, width: '100%' }}>
    
           </div>
-        </MainContent>
-      </PageContainer>
+        </Box>
+      </Box>
     </>
   );
 }

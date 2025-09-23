@@ -6,22 +6,23 @@ import {
   EyeOpenIcon,
   LockClosedIcon,
 } from "@radix-ui/react-icons";
-import { Card, Box, Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+import { Box, Flex, Heading, IconButton, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { LoginSchema } from "@/lib/auth/types/auth.scema";
-import { loginUser } from "@/lib/auth/actions";
+import { loginUser } from "@/lib/auth/actions/login";
 import Form from "@/components/Form/Form";
-import { FormCard } from "./LoginForm.styles";
+
 import AuthTextField from "@/components/Form/AuthTextField/AuthTextField";
 import { useOnTogglePasswordView } from "@/lib/auth/hooks/useOnTogglePasswordView";
-import { SubmitButton } from "@/components/Form/SubmitButton/SubmitButton";
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import { FormCard } from "@/components/Form/FormCard/FormCard.styles";
+
 
 const LoginForm = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [formState, formAction] = useActionState(loginUser, undefined);
-
   const { onTogglePasswordView, inputPasswordType } = useOnTogglePasswordView({
     password: "password",
   });

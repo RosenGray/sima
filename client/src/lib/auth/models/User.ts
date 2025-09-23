@@ -1,8 +1,9 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import { PasswordManager } from "../services/PasswordManager";
 
 
-interface IUser {
+export interface IUser {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -14,7 +15,7 @@ interface IUser {
   hasPrivateProfessionalPage?: boolean;
 }
 
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema<IUser>(
   {
     firstName: {
       type: String,
@@ -68,4 +69,4 @@ userSchema.pre("save", async function (done) {
 
 export const User = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
 
-export type IUserDocument = Document<unknown, object, IUser> & IUser;
+
