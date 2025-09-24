@@ -57,6 +57,13 @@ export const SerializedUserSchema = z.object({
   hasPrivateProfessionalPage: z.boolean().optional(),
 });
 
+export const ResetPasswordSchema = z.object({
+  email: z.string({
+    required_error: "Email обязательно",
+  }).email({ message: "Неверный формат электронной почты" }),
+});
+
 export type UserLogin = z.infer<typeof LoginSchema>;
 export type UserRegister = z.infer<typeof RegisterSchema>;
 export type SerializedUser = z.infer<typeof SerializedUserSchema>;
+export type ResetPassword = z.infer<typeof ResetPasswordSchema>;

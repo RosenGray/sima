@@ -1,22 +1,18 @@
-// import LoginFormPage from "./LoginFormPage";
-
-// import { redirect } from "next/navigation";
-// import { getUserSessionData } from "@/utils/auth";
-
 import { FC } from "react";
 import LoginForm from "../_components/LoginForm/LoginForm";
+import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
+import { redirect } from "next/navigation";
+
 interface LoginPageProps {
-  searchParams: { redirect?: string };
+  searchParams: { redirectTo?: string };
 }
 
 const LoginPage: FC<LoginPageProps> = async ({ searchParams }) => {
-//   const { redirect: redirectPath } = searchParams;
-
-//   const userSession = await getUserSessionData();
-//   if (userSession && userSession.isSessionValid) {
-//     return redirect(redirectPath || "/auth/success");
-//   }
-
+  const { redirectTo } = searchParams;
+  const user = await getCurrentUser();
+  if (user) {
+    return redirect(redirectTo || "/auth/success");
+  }
   return <LoginForm />;
 };
 

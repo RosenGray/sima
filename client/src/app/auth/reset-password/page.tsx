@@ -1,15 +1,15 @@
 import { FC } from "react";
-import RegisterPageForm from "../_components/RegisterForm/RegisterForm";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
+import ResetPasswordForm from "../_components/ResetPasswordForm/ResetPasswordForm";
 
 
-const LoginPage: FC = async () => {
+const ResetPasswordPage: FC = async () => {
   const user = await getCurrentUser();
   if (user) {
     return redirect("/auth/success");
   }
-  return <RegisterPageForm />
+  return <ResetPasswordForm />
 };
 
-export default LoginPage;
+export default ResetPasswordPage;

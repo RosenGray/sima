@@ -1,6 +1,6 @@
 "use client";
 import { SerializedUser } from "@/lib/auth/types/auth.scema";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type AuthContextType = {
   user: SerializedUser | null;
@@ -10,13 +10,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: React.ReactNode;
-  initialUser?: SerializedUser | null;
+  initialUser: SerializedUser | null;
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  const [user, setUser] = useState<SerializedUser | null>(initialUser || null);
+  const [user, setUser] = useState<SerializedUser | null>(initialUser);
 
-  return (
+  useEffect(() => { 
+    setUser(initialUser);
+  }, [initialUser]);
+
+  return (  
     <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>

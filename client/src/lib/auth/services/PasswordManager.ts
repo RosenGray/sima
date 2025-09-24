@@ -1,3 +1,4 @@
+
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
 import nodemailer from "nodemailer";
@@ -93,7 +94,7 @@ export const getPasswordResetEmailTemplate = (resetLink: string) => {
     <body>
       <div class="container">
         <div class="logo">
-          <img src="https://f003.backblazeb2.com/file/sima-board-public/sima/sima.dark.logo.png" alt="Sima" />
+          <img src="https://f003.backblazeb2.com/file/sima-board-public/public/sima.dark.logo.png" alt="Sima" />
         </div>
         <div class="header">
           <h2>Запрос на напоминание пароля</h2>
@@ -116,7 +117,7 @@ export const getPasswordResetEmailTemplate = (resetLink: string) => {
           <p>Это автоматическое сообщение, пожалуйста, не отвечайте на него.</p>
           <p>Если у вас возникли проблемы с нажатием кнопки сброса пароля, скопируйте и вставьте URL-адрес ниже в ваш веб-браузер:</p>
           <p style="word-break: break-all;">${resetLink}</p>
-          <p>Если у вас возникли проблемы,пожалуйста свяжитесь с нами по адресу å${GMAIL_APP_USER}</p>
+          <p>Если у вас возникли проблемы,пожалуйста свяжитесь с нами по адресу ${GMAIL_APP_USER}</p>
         </div>
       </div>
     </body>

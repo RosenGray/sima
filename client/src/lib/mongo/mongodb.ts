@@ -1,12 +1,16 @@
+'use server';
+
 import mongoose from "mongoose";
 import { DatabaseConnectionError, ServerErrorType } from "@sima-board/common";
 
-const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } = process.env;
+
+const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } =  process.env;
 
 const isProd = NODE_ENV === "production";
 const MONGO_URI = isProd
   ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/auth`
   : "mongodb://localhost:30016/sima";
+
 
 if (!JWT_KEY) {
   throw new Error("JWT_KEY must be defined");

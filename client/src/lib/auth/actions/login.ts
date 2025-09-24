@@ -8,6 +8,7 @@ import { SIMA_AUTH_SESSION_CONFIG } from "../config";
 import { jwtSignUser } from "../utils/auth.utils";
 import { PasswordManager } from "../services/PasswordManager";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function loginUser(initialState: unknown, formData: FormData) {
   const result = parseWithZod(formData, { schema: LoginSchema });
@@ -51,5 +52,6 @@ export async function loginUser(initialState: unknown, formData: FormData) {
       formErrors: ["Неизвестная ошибка"],
     });
   }
-  redirect("/");
+  revalidatePath('/', 'layout');
+  redirect("/auth/success");
 }
