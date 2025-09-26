@@ -58,12 +58,35 @@ export const SerializedUserSchema = z.object({
 });
 
 export const ResetPasswordSchema = z.object({
-  email: z.string({
-    required_error: "Email обязательно",
-  }).email({ message: "Неверный формат электронной почты" }),
+  email: z
+    .string({
+      required_error: "Email обязательно",
+    })
+    .email({ message: "Неверный формат электронной почты" }),
 });
+
+export const ResetPasswordConfirmSchema = z
+  .object({
+    token: z.string({
+      required_error: "токен обязательный",
+    }),
+    password: passwordValidationSchema,
+    confirmPassword: z.string({
+      required_error: "Пожалуйста, подтвердите свой пароль",
+    }),
+  })
+  .refine(
+    (data) => {
+      return data.password === data.confirmPassword;
+    },
+    {
+      message: "Пароли не совпадают",
+      path: ["confirmPassword"],
+    }
+  );
 
 export type UserLogin = z.infer<typeof LoginSchema>;
 export type UserRegister = z.infer<typeof RegisterSchema>;
 export type SerializedUser = z.infer<typeof SerializedUserSchema>;
 export type ResetPassword = z.infer<typeof ResetPasswordSchema>;
+export type ResetPasswordConfirm = z.infer<typeof ResetPasswordConfirmSchema>;

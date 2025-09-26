@@ -4,7 +4,7 @@ import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import AuthTextField from "@/components/Form/AuthTextField/AuthTextField";
 import Form from "@/components/Form/Form";
 import { FormCard } from "@/components/Form/FormCard/FormCard.styles";
-import { resetPassword } from "@/lib/auth/actions/reset-password";
+import { resetPassword } from "@/lib/auth/actions/resetPassword";
 import { ResetPasswordSchema } from "@/lib/auth/types/auth.scema";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
