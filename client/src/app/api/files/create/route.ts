@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FileManager } from '@sima-board/common';
 import { z } from 'zod';
 
+// Route configuration for file uploads
+export const config = {
+  maxDuration: 60, // 60 seconds timeout
+  runtime: 'nodejs', // Use Node.js runtime for better file handling
+};
+
 // Validation schema for file uploads
 const FileUploadSchema = z.object({
   folderName: z.string().min(1, 'Folder name is required'),
@@ -36,19 +42,22 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-   
-    debugger;
-    // Parse form data
+    console.log('Starting file upload process...');
+    
+    // Parse form data with timeout handling
     const formData = await request.formData();
-    console.log(123)
+    console.log('Form data parsed successfully');
     
     // Extract metadata
     const folderName = formData.get('folderName') as string;
     const userId = formData.get('userId') as string;
     
+    console.log('Metadata extracted:', { folderName, userId });
+    
     // Validate metadata
     const validationResult = FileUploadSchema.safeParse({ folderName, userId });
     if (!validationResult.success) {
+      console.log('Validation failed:', validationResult.error.errors);
       return NextResponse.json(
         { 
           error: 'Validation failed', 
@@ -62,6 +71,8 @@ export async function POST(request: NextRequest) {
     const files: File[] = [];
     const fileEntries = formData.getAll('files') as File[];
     
+    console.log('Files received:', fileEntries.length);
+    
     // Handle both single file and multiple files
     if (fileEntries.length === 0) {
       return NextResponse.json(
@@ -70,9 +81,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate files
-    for (const file of fileEntries) {
+    // Validate files with detailed logging
+    for (let i = 0; i < fileEntries.length; i++) {
+      const file = fileEntries[i];
+      console.log(`Validating file ${i + 1}/${fileEntries.length}:`, {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      });
+      
       if (!file || file.size === 0) {
+        console.log('Invalid file detected:', file);
         return NextResponse.json(
           { error: 'Invalid file detected' },
           { status: 400 }
@@ -81,6 +100,7 @@ export async function POST(request: NextRequest) {
 
       // Check file size
       if (file.size > FILE_VALIDATION.maxFileSize) {
+        console.log('File size exceeded:', file.name, file.size);
         return NextResponse.json(
           { 
             error: `File ${file.name} exceeds maximum size of ${FILE_VALIDATION.maxFileSize / (1024 * 1024)}MB` 
@@ -91,6 +111,7 @@ export async function POST(request: NextRequest) {
 
       // Check file type
       if (!FILE_VALIDATION.allowedMimeTypes.includes(file.type)) {
+        console.log('File type not allowed:', file.name, file.type);
         return NextResponse.json(
           { 
             error: `File type ${file.type} is not allowed. Allowed types: ${FILE_VALIDATION.allowedMimeTypes.join(', ')}` 
@@ -112,11 +133,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('All files validated successfully, converting to multer format...');
+
     // Convert File objects to Express.Multer.File format for FileManager
-    const multerFiles: Express.Multer.File[] = await Promise.all(
-      files.map(async (file) => {
+    // Process files sequentially to avoid memory issues with large files
+    const multerFiles: Express.Multer.File[] = [];
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      console.log(`Processing file ${i + 1}/${files.length}: ${file.name}`);
+      
+      try {
         const buffer = Buffer.from(await file.arrayBuffer());
-        return {
+        const multerFile = {
           fieldname: 'files',
           originalname: file.name,
           encoding: '7bit',
@@ -124,8 +153,22 @@ export async function POST(request: NextRequest) {
           buffer: buffer,
           size: file.size,
         } as Express.Multer.File;
-      })
-    );
+        
+        multerFiles.push(multerFile);
+        console.log(`File ${i + 1} processed successfully`);
+      } catch (error) {
+        console.error(`Error processing file ${i + 1}:`, error);
+        return NextResponse.json(
+          { 
+            error: `Failed to process file ${file.name}`,
+            message: error instanceof Error ? error.message : 'Unknown error'
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+    console.log('All files converted, initializing FileManager...');
 
     // Initialize FileManager
     const fileManager = new FileManager({
@@ -137,12 +180,16 @@ export async function POST(request: NextRequest) {
         baseUrl: process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL,
       });
 
+    console.log('FileManager initialized, starting upload...');
+
     // Upload files
     const uploadResults = await fileManager.uploadFiles({
       userId: validationResult.data.userId,
       folderName: validationResult.data.folderName,
       files: multerFiles,
     });
+
+    console.log('Upload completed successfully:', uploadResults.length, 'files');
 
     // Format response
     const response = {
@@ -161,15 +208,18 @@ export async function POST(request: NextRequest) {
       }
     };
 
+    console.log('Response prepared, sending...');
     return NextResponse.json(response, { status: 200 });
 
   } catch (error) {
     console.error('File upload error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error occurred'
+        message: error instanceof Error ? error.message : 'Unknown error occurred',
+        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
       },
       { status: 500 }
     );

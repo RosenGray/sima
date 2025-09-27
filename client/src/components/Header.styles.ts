@@ -12,6 +12,8 @@ export const HeaderContainer = styled.header`
   border-bottom: 1px solid var(--gray-6);
   z-index: 1000;
   backdrop-filter: blur(10px);
+  min-height: var(--header-height);
+  max-height: var(--header-height);
   @supports (backdrop-filter: blur(10px)) {
     background: var(--color-background-alpha);
   }

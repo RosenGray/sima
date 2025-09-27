@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface FileUploadRequest {
   folderName: string;
   userId: string;
@@ -42,3 +44,12 @@ export interface FileUploadConfig {
   endpoint: string;
   validation: FileValidationOptions;
 }
+
+export const ImageSchema = z.object({
+  src: z.string(),
+  fileName: z.string(),
+  versionId: z.string().optional(),
+});
+
+export type Image = z.infer<typeof ImageSchema>;
+

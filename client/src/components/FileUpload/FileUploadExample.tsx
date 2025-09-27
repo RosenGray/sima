@@ -29,7 +29,7 @@ export const FileUploadExample: React.FC = () => {
         folderName="uploads"
         userId="user123"
         multiple={true}
-        maxFiles={5}
+        maxFiles={7}
         onSuccess={handleUploadSuccess}
         onError={handleUploadError}
       />

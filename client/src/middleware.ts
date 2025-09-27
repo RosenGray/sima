@@ -9,7 +9,7 @@ const protectedRoutes = [
   "/settings",
   "/admin",
   "/api/protected",
-  "/about",
+
 ];
 
 // Define routes that should be accessible without authentication
@@ -21,7 +21,7 @@ const publicRoutes = [
   "/auth/register",
   "/auth/reset-password",
   "/auth/verify-reset-token",
-
+  "/about",
   "/api/auth",
   "/api/files",
 ];
