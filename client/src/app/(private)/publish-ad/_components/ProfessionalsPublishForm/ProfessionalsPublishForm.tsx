@@ -10,7 +10,7 @@ import {
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Box, Grid } from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading } from "@radix-ui/themes";
 import { useActionState } from "react";
 import { usePublishAd } from "../../_providers/PublishAdProvider";
 import {
@@ -25,6 +25,11 @@ import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import Form from "@/components/Form/Form";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
+import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
+import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
+import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import Checkbox from "@/components/Form/Checkbox/Checkbox";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -153,6 +158,55 @@ const ProfessionalsPublishForm: FC = () => {
                 />
               </Box>
             )}
+                 <Box mt="4">
+                  <Heading as="h3" size="4" mb="2">
+                    Контактная информация
+                  </Heading>
+                  <Grid columns="2" gap="4">
+                    <BasicFormField
+                      type="email"
+                      field={email}
+                      label="Email"
+                      anotherLabel="*виден только администрации сайта и не отображается публично"
+                      placeholder="@ Адрес электронной почты"
+                      size="3"
+                      defaultValue={fields.email.initialValue}
+                      dataIsValid={email.valid}
+                      errors={email.errors}
+                      disabled={ false}
+                    >
+                      <EnvelopeClosedIcon height="16" width="16" />
+                    </BasicFormField>
+                    <PhoneFormField
+                      areaCodeField={areaCode}
+                      label="Телефон"
+                      field={phoneNumber}
+                      errors={phoneNumber.errors}
+                      size="3"
+                      disabled={false}
+                    />
+                  </Grid>
+                </Box>
+                <Flex
+                  mt="4"
+                  direction="column"
+                  gap="3"
+                  justify="center"
+                  align="center"
+                >
+                  <Checkbox
+                    field={acceptTerms}
+                    label="Я согласен с условиями"
+                    errors={acceptTerms.errors}
+                    disabled={false}
+                  />
+                  <SubmitButton pending={pending} text="Добавить объявление" />
+
+                  {/* <ReCAPTCHA
+                  submitButtonText="Добавить объявление"
+                  isLoading={pending || isRevalidating}
+                /> */}
+                </Flex>
           </Box>
         )}
       </Form>
