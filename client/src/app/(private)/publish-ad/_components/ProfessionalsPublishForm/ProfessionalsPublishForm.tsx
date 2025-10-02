@@ -69,6 +69,7 @@ const ProfessionalsPublishForm: FC = () => {
     category.value
   );
   const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+console.log('images',images.errors)
 
   return (
     <>

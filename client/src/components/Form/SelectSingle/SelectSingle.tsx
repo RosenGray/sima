@@ -54,15 +54,23 @@ const SelectSingle: FC<SelectSingleProps> = ({
       <Select
         defaultValue={defaultValue}
         classNamePrefix="sima-select-single"
+        instanceId={`select-${field.name}`}
         styles={styles}
         name={field.name}
-        menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+        menuPortalTarget={
+          typeof document !== "undefined" ? document.body : undefined
+        }
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}
         options={options}
         onChange={(option) => {
-          if (option && typeof option === 'object' && option !== null && 'value' in option) {
+          if (
+            option &&
+            typeof option === "object" &&
+            option !== null &&
+            "value" in option
+          ) {
             controlRef.current.change((option as Option).value);
           }
         }}

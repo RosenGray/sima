@@ -41,7 +41,9 @@ export const ProfessionalSchema = z.object({
         });
         return z.NEVER;
       }
+      console.log('files',files)
       files.forEach((file) => {
+        console.log('file',file)
         if (file.size > MAX_FILE_SIZE) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
