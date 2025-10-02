@@ -1,5 +1,5 @@
 "use client";
-import { FC, useLayoutEffect } from "react";
+import { FC, useLayoutEffect, useRef } from "react";
 import React from "react";
 import Select, { Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
@@ -29,10 +29,12 @@ const SelectSingle: FC<SelectSingleProps> = ({
   ...rest
 }) => {
   const control = useInputControl(field);
+  const controlRef = useRef(control);
+  controlRef.current = control;
 
   useLayoutEffect(() => {
     if (defaultValue?.value) {
-      control.change(defaultValue.value);
+      controlRef.current.change(defaultValue.value);
     }
   }, [defaultValue?.value]);
 
@@ -55,13 +57,13 @@ const SelectSingle: FC<SelectSingleProps> = ({
         styles={styles}
         name={field.name}
         menuPortalTarget={document.body}
-        onBlur={control.blur}
-        onFocus={control.focus}
+        onBlur={() => controlRef.current.blur()}
+        onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}
         options={options}
         onChange={(option) => {
-          if (option) {
-            control.change((option as Option).value);
+          if (option && typeof option === 'object' && option !== null && 'value' in option) {
+            controlRef.current.change((option as Option).value);
           }
         }}
         {...rest}
