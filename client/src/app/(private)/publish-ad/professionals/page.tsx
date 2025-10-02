@@ -3,6 +3,7 @@ import { PublishAdProfessionalsPageContainer } from "./page.styles";
 import ProfessionalsPublishForm from "../_components/ProfessionalsPublishForm/ProfessionalsPublishForm";
 
 const PublishAdProfessionalsPage = async () => {
+
   return (
     <PublishAdProfessionalsPageContainer>
       <Box>
@@ -10,7 +11,7 @@ const PublishAdProfessionalsPage = async () => {
           Добавление нового объявления
         </Heading>
         <Card>
-          <ProfessionalsPublishForm />
+          <ProfessionalsPublishForm  />
         </Card>
       </Box>
     </PublishAdProfessionalsPageContainer>

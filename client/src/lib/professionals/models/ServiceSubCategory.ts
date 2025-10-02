@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IServiceSubCategory {
+  id: string;
   key: string;
   displayName: string;
   description: string;
@@ -8,6 +9,8 @@ export interface IServiceSubCategory {
   russianDescription: string;
   serviceCategory: mongoose.Types.ObjectId;
   serviceCategoryKey: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const serviceSubCategorySchema = new mongoose.Schema(

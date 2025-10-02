@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import * as Styled from './Loader.styles';
 

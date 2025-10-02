@@ -95,5 +95,39 @@ export const ProfessionalSchemaGET = ProfessionalSchema.omit({
   images: z.array(ImageSchema),
 });
 
+export const ServiceSubCategorySchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  displayName: z.string(),
+  description: z.string(),
+  russianDisplayName: z.string(),
+  russianDescription: z.string(),
+  serviceCategory: z.string(),
+  serviceCategoryKey: z.string(),
+  updatedAt: z.string().optional(),
+  createdAt: z.string().optional(),
+});
+
+export const ServiceCategorySchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  displayName: z.string(),
+  description: z.string(),
+  russianDisplayName: z.string(),
+  russianDescription: z.string(),
+  updatedAt: z.string().optional(),
+  createdAt: z.string().optional(),
+});
+
+export type ServiceSubCategory = z.infer<typeof ServiceSubCategorySchema>;
+export type ServiceCategory = z.infer<typeof ServiceCategorySchema>;
 export type Professional = z.infer<typeof ProfessionalSchema>;
 export type ProfessionalGET = z.infer<typeof ProfessionalSchemaGET>;
+
+export type ServiceCategoryMapping = Record<
+  ServiceCategory["id"],
+  {
+    category: ServiceCategory;
+    subCategories: ServiceSubCategory[];
+  }
+>;

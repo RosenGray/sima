@@ -7,6 +7,8 @@ export interface IServiceCategory {
   description: string;
   russianDisplayName: string;
   russianDescription: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const serviceCategorySchema = new mongoose.Schema({

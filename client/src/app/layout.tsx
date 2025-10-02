@@ -7,6 +7,7 @@ import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
+import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 
 export const metadata: Metadata = {
   title: "Sima Marketplace",
@@ -24,6 +25,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <StyledComponentsRegistry>
         <AuthProvider initialUser={user}>
           <ThemeProvider
             attribute="class"
@@ -47,6 +49,7 @@ export default async function RootLayout({
             />
           </ThemeProvider>
         </AuthProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

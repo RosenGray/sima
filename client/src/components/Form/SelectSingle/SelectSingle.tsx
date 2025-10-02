@@ -33,7 +33,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
     if (defaultValue?.value) {
       control.change(defaultValue.value);
     }
-  }, [defaultValue?.value]);
+  }, [defaultValue?.value,control]);
   return (
     <Box>
       {label && (
@@ -51,6 +51,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
         classNamePrefix="sima-select-single"
         styles={styles}
         name={field.name}
+        menuPortalTarget={document.body}
         onBlur={control.blur}
         onFocus={control.focus}
         value={options.find((opt) => opt.value === control.value)}
