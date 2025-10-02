@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect } from "react";
+import { FC, useLayoutEffect } from "react";
 import React from "react";
 import Select, { Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
@@ -29,11 +29,13 @@ const SelectSingle: FC<SelectSingleProps> = ({
   ...rest
 }) => {
   const control = useInputControl(field);
-  useEffect(() => {
+
+  useLayoutEffect(() => {
     if (defaultValue?.value) {
       control.change(defaultValue.value);
     }
-  }, [defaultValue?.value,control]);
+  }, [defaultValue?.value]);
+
   return (
     <Box>
       {label && (
@@ -48,6 +50,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
         </Text>
       )}
       <Select
+        defaultValue={defaultValue}
         classNamePrefix="sima-select-single"
         styles={styles}
         name={field.name}

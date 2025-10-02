@@ -20,6 +20,9 @@ import {
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import Form from "@/components/Form/Form";
 
+
+const areasOptions = mapAreasToSelectOptions();
+
 const ProfessionalsPublishForm: FC = () => {
   const { mappedCategories } = usePublishAd();
 
@@ -55,7 +58,8 @@ const ProfessionalsPublishForm: FC = () => {
     mappedCategories,
     category.value
   );
-  console.log("   category.value", category.value);
+  const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+ 
   return (
     <>
       <Form action={formAction} {...getFormProps(form)} noValidate>
@@ -68,7 +72,7 @@ const ProfessionalsPublishForm: FC = () => {
                 field={category}
                 placeholder="Выберите доску"
                 options={categoriesOptions}
-                // defaultValue={categoriesOptions[0]}
+                defaultValue={categoriesOptions[0]}
                 errors={category.errors}
                 isDisabled={false}
               />
@@ -80,7 +84,7 @@ const ProfessionalsPublishForm: FC = () => {
                 field={subCategory}
                 placeholder="Выберите подкатегорию"
                 options={subCategoryOptions}
-                // defaultValue={subCategoryOptions[0]}
+                defaultValue={subCategoryOptions[0]}
                 errors={subCategory.errors}
                 isDisabled={false}
               />
@@ -89,7 +93,8 @@ const ProfessionalsPublishForm: FC = () => {
                 label="Выберите район"
                 field={district}
                 placeholder="Выберите район"
-                options={mapAreasToSelectOptions()}
+                options={areasOptions}
+                defaultValue={areasOptions[0]}
                 errors={district.errors}
                 isDisabled={false}
               />
@@ -99,7 +104,8 @@ const ProfessionalsPublishForm: FC = () => {
                 label="Выберите город"
                 field={city}
                 placeholder="Выберите город"
-                options={getCitiesToSelectOptions(district.value as Districts)}
+                defaultValue={citiesOptions[0]}
+                options={citiesOptions}
                 errors={city.errors}
                 isDisabled={false}
               />
