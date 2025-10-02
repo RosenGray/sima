@@ -1,8 +1,12 @@
 "use client";
-import { FC } from "react";
+import { FC, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import { createProfessional } from "@/lib/professionals/actions/login";
-import { ProfessionalSchema } from "@/lib/professionals/types/professionals.scema";
+import {
+  MAX_FILE_SIZE,
+  MAX_FILES,
+  ProfessionalSchema,
+} from "@/lib/professionals/types/professionals.scema";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
@@ -19,13 +23,13 @@ import {
 } from "@/lib/cities";
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import Form from "@/components/Form/Form";
-
+import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 
 const areasOptions = mapAreasToSelectOptions();
 
 const ProfessionalsPublishForm: FC = () => {
   const { mappedCategories } = usePublishAd();
-
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [formState, formAction] = useActionState(createProfessional, undefined);
   const [form, fields] = useForm({
     defaultValue: {
@@ -59,7 +63,7 @@ const ProfessionalsPublishForm: FC = () => {
     category.value
   );
   const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
- 
+
   return (
     <>
       <Form action={formAction} {...getFormProps(form)} noValidate>
@@ -121,6 +125,22 @@ const ProfessionalsPublishForm: FC = () => {
               errors={description.errors}
               rows={5}
               mb="5px"
+              disabled={false}
+            />
+
+            <DropFilesInput
+              accept={{
+                "image/png": [],
+                "image/jpeg": [],
+                "image/jpg": [],
+                "image/webp": [],
+              }}
+              maxSize={MAX_FILE_SIZE}
+              maxFiles={MAX_FILES}
+              field={images}
+              errors={images.errors}
+              onFilesDrop={setSelectedFiles}
+              files={selectedFiles}
               disabled={false}
             />
           </Box>
