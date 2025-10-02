@@ -56,7 +56,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
         classNamePrefix="sima-select-single"
         styles={styles}
         name={field.name}
-        menuPortalTarget={document.body}
+        menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}

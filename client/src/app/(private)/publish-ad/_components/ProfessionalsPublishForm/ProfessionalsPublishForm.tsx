@@ -24,6 +24,7 @@ import {
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import Form from "@/components/Form/Form";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
+import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -143,6 +144,15 @@ const ProfessionalsPublishForm: FC = () => {
               files={selectedFiles}
               disabled={false}
             />
+            {selectedFiles.length > 0 && (
+              <Box mt="4" mb="4">
+                <ImagesPreviewer
+                  images={selectedFiles}
+                  setImages={setSelectedFiles}
+                  maxImages={MAX_FILES}
+                />
+              </Box>
+            )}
           </Box>
         )}
       </Form>
