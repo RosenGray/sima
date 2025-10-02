@@ -41,7 +41,7 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
   errors,
   disabled,
 }) => {
-  const { id, name, type } = conformGetInputProps(field, {
+  const { id, name, type,form   } = conformGetInputProps(field, {
     type: "file",
   });
 
@@ -83,6 +83,7 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
     }
   }, [files, id, maxFiles]);
 
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept,
@@ -96,6 +97,7 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
     <DropzoneContainer {...getRootProps()} $isDragActive={isDragActive}>
       <input
         {...getInputProps()}
+        form={form}
         id={id}
         name={name}
         type={type}

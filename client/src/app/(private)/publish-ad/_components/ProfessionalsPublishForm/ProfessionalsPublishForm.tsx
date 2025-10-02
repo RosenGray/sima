@@ -69,11 +69,13 @@ const ProfessionalsPublishForm: FC = () => {
     category.value
   );
   const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+  console.log('district value',district.value)
 console.log('images',images.errors)
 
+console.log('images value',images.value)
   return (
     <>
-      <Form action={formAction} {...getFormProps(form)} noValidate>
+      <Form action={formAction} {...getFormProps(form)} encType="multipart/form-data">
         {({ pending }) => (
           <Box>
             <Grid columns="2" gap="4" mb="4">
@@ -150,7 +152,7 @@ console.log('images',images.errors)
               files={selectedFiles}
               disabled={false}
             />
-            {selectedFiles.length > 0 && (
+            {/* {selectedFiles.length > 0 && (
               <Box mt="4" mb="4">
                 <ImagesPreviewer
                   images={selectedFiles}
@@ -158,7 +160,7 @@ console.log('images',images.errors)
                   maxImages={MAX_FILES}
                 />
               </Box>
-            )}
+            )} */}
                  <Box mt="4">
                   <Heading as="h3" size="4" mb="2">
                     Контактная информация

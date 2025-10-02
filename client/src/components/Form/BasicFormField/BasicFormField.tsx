@@ -1,4 +1,4 @@
-import { FC, LegacyRef, ReactNode } from "react";
+import { FC, Ref, ReactNode } from "react";
 import { TextField, Text, Box } from "@radix-ui/themes";
 import { FieldMetadata, getInputProps } from "@conform-to/react";
 import EmailDisclaimer from "@/components/EmailDisclaimer/EmailDisclaimer";
@@ -9,7 +9,7 @@ interface BasicFormFieldrops extends TextField.RootProps {
   >;
   dataIsValid: boolean;
   errors?: string[];
-  ref?: LegacyRef<HTMLInputElement>;
+  ref?: Ref<HTMLInputElement>;
   children?: ReactNode;
   label?: string;
   anotherLabel?: string;
