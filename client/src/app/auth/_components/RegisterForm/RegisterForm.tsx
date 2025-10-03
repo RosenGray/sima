@@ -56,9 +56,6 @@ const RegisterPageForm = () => {
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
-    const formData = new FormData();
-    formData.append("_action", "reset_server_error");
-    formAction(formData);
   };
   useEffect(() => {
     if (form.errors) {

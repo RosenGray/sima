@@ -1,5 +1,5 @@
 "use client";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
@@ -30,16 +30,24 @@ import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";
 import { publishProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/publishProfessionalServiceAd";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 
 const areasOptions = mapAreasToSelectOptions();
 
 const ProfessionalServicePublishForm: FC = () => {
+  const { user } = useAuth();
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [formState, formAction] = useActionState(publishProfessionalServiceAd, undefined);
+  const [formState, formAction] = useActionState(
+    publishProfessionalServiceAd,
+    undefined
+  );
   const [form, fields] = useForm({
     defaultValue: {
       images: [],
+      email: user?.email,
       district: Districts.Center,
     },
     lastResult: formState,
@@ -70,12 +78,22 @@ const ProfessionalServicePublishForm: FC = () => {
         }
       });
 
-      return parseWithZod(updatedFormData, { schema: ProfessionalServiceSchema });
+      return parseWithZod(updatedFormData, {
+        schema: ProfessionalServiceSchema,
+      });
     },
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
   console.log("formState", formState);
+  console.log("form", form.errors);
+
+  const handleModalClose = () => {
+    
+    setErrorModalOpen(false);
+  };
+
+
 
   const {
     category,
@@ -96,6 +114,14 @@ const ProfessionalServicePublishForm: FC = () => {
     category.value
   );
   const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+  useEffect(() => {
+    console.log(1)
+    if (formState) {
+      setErrorModalOpen(true);
+    }
+  }, [formState]);
+
+  console.log('errorModalOpen',errorModalOpen)
 
   return (
     <>
@@ -111,7 +137,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 options={categoriesOptions}
                 defaultValue={categoriesOptions[0]}
                 errors={category.errors}
-                isDisabled={false}
+                isDisabled={pending}
               />
 
               {/* subCategory */}
@@ -122,7 +148,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 options={subCategoryOptions}
                 defaultValue={subCategoryOptions[0]}
                 errors={subCategory.errors}
-                isDisabled={false}
+                isDisabled={pending}
               />
 
               {/* area */}
@@ -133,7 +159,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 options={areasOptions}
                 defaultValue={areasOptions[0]}
                 errors={district.errors}
-                isDisabled={false}
+                isDisabled={pending}
               />
               {/* city */}
 
@@ -144,7 +170,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 defaultValue={citiesOptions[0]}
                 options={citiesOptions}
                 errors={city.errors}
-                isDisabled={false}
+                isDisabled={pending}
               />
             </Grid>
             {/* description */}
@@ -158,7 +184,7 @@ const ProfessionalServicePublishForm: FC = () => {
               errors={description.errors}
               rows={5}
               mb="5px"
-              disabled={false}
+              disabled={pending}
             />
 
             <DropFilesInput
@@ -200,7 +226,7 @@ const ProfessionalServicePublishForm: FC = () => {
                   defaultValue={fields.email.initialValue}
                   dataIsValid={email.valid}
                   errors={email.errors}
-                  disabled={false}
+                  disabled={pending}
                 >
                   <EnvelopeClosedIcon height="16" width="16" />
                 </BasicFormField>
@@ -210,7 +236,7 @@ const ProfessionalServicePublishForm: FC = () => {
                   field={phoneNumber}
                   errors={phoneNumber.errors}
                   size="3"
-                  disabled={false}
+                  disabled={pending}
                 />
               </Grid>
             </Box>
@@ -225,7 +251,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 field={acceptTerms}
                 label="Я согласен с условиями"
                 errors={acceptTerms.errors}
-                disabled={false}
+                disabled={pending}
               />
               <SubmitButton pending={pending} text="Добавить объявление" />
 
@@ -237,6 +263,7 @@ const ProfessionalServicePublishForm: FC = () => {
           </Box>
         )}
       </Form>
+      <ErrorModal open={errorModalOpen} onOpenChange={handleModalClose} />
     </>
   );
 };

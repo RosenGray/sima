@@ -11,7 +11,9 @@ export async function publishProfessionalServiceAd(
   initialState: unknown,
   formData: FormData
 ) {
+  
   const result = parseWithZod(formData, { schema: ProfessionalServiceSchema });
+
   if (result.status !== "success") return result.reply();
   const user = await getCurrentUser();
   if (!user) {
@@ -21,7 +23,9 @@ export async function publishProfessionalServiceAd(
   }
 
   const { images } = result.value;
-
+  return result.reply({
+    formErrors: ["Неизвестная ошибка"],
+  });
   try {
     // Create FormData for file upload
     const uploadFormData = new FormData();

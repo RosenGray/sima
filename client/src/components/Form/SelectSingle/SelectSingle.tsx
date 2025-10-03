@@ -57,9 +57,9 @@ const SelectSingle: FC<SelectSingleProps> = ({
         instanceId={`select-${field.name}`}
         styles={styles}
         name={field.name}
-        menuPortalTarget={
-          typeof document !== "undefined" ? document.body : undefined
-        }
+        // menuPortalTarget={
+        //   typeof document !== "undefined" ? document.body : undefined
+        // }
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}
