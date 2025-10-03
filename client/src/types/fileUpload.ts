@@ -34,16 +34,7 @@ export interface FileUploadError {
   }>;
 }
 
-export interface FileValidationOptions {
-  maxFileSize: number;
-  allowedMimeTypes: string[];
-  maxFiles: number;
-}
 
-export interface FileUploadConfig {
-  endpoint: string;
-  validation: FileValidationOptions;
-}
 
 export const ImageSchema = z.object({
   src: z.string(),

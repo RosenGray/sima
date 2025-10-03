@@ -40,7 +40,7 @@ const ProfessionalsPublishForm: FC = () => {
   const [form, fields] = useForm({
     defaultValue: {
       images: [],
-      district: Districts.Center,
+      // district: Districts.Center,
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -75,24 +75,24 @@ const ProfessionalsPublishForm: FC = () => {
   
 
   const {
-    category,
-    subCategory,
-    district,
-    city,
-    description,
+    // category,
+    // subCategory,
+    // district,
+    // city,
+    // description,
+    // email,
+    // phoneNumber,
+    // areaCode,
+    // acceptTerms,
     images,
-    email,
-    phoneNumber,
-    areaCode,
-    acceptTerms,
   } = fields;
-  const categoriesOptions =
-    mapServiceCategoriesToSelectOptions(mappedCategories);
-  const subCategoryOptions = mapServiceSubCategoriesToSelectOptions(
-    mappedCategories,
-    category.value
-  );
-  const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+  // const categoriesOptions =
+  //   mapServiceCategoriesToSelectOptions(mappedCategories);
+  // const subCategoryOptions = mapServiceSubCategoriesToSelectOptions(
+  //   mappedCategories,
+  //   category.value
+  // );
+  // const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
 
   return (
     <>
@@ -101,7 +101,7 @@ const ProfessionalsPublishForm: FC = () => {
           <Box>
             <Grid columns="2" gap="4" mb="4">
               {/* category */}
-              <SelectSingle
+              {/* <SelectSingle
                 label="Выберите доску"
                 field={category}
                 placeholder="Выберите доску"
@@ -109,11 +109,11 @@ const ProfessionalsPublishForm: FC = () => {
                 defaultValue={categoriesOptions[0]}
                 errors={category.errors}
                 isDisabled={false}
-              />
+              /> */}
 
               {/* subCategory */}
 
-              <SelectSingle
+              {/* <SelectSingle
                 label="Выберите подкатегорию"
                 field={subCategory}
                 placeholder="Выберите подкатегорию"
@@ -121,9 +121,9 @@ const ProfessionalsPublishForm: FC = () => {
                 defaultValue={subCategoryOptions[0]}
                 errors={subCategory.errors}
                 isDisabled={false}
-              />
+              /> */}
               {/* area */}
-              <SelectSingle
+              {/* <SelectSingle
                 label="Выберите район"
                 field={district}
                 placeholder="Выберите район"
@@ -131,9 +131,9 @@ const ProfessionalsPublishForm: FC = () => {
                 defaultValue={areasOptions[0]}
                 errors={district.errors}
                 isDisabled={false}
-              />
+              /> */}
               {/* city */}
-
+{/* 
               <SelectSingle
                 label="Выберите город"
                 field={city}
@@ -142,10 +142,10 @@ const ProfessionalsPublishForm: FC = () => {
                 options={citiesOptions}
                 errors={city.errors}
                 isDisabled={false}
-              />
+              /> */}
             </Grid>
             {/* description */}
-            <TextAreaField
+            {/* <TextAreaField
               field={description}
               label="Текст объявления:"
               placeholder="Текст объявления:"
@@ -156,7 +156,7 @@ const ProfessionalsPublishForm: FC = () => {
               rows={5}
               mb="5px"
               disabled={false}
-            />
+            /> */}
 
             <DropFilesInput
               accept={{
@@ -182,7 +182,7 @@ const ProfessionalsPublishForm: FC = () => {
                 />
               </Box>
             )}
-                 <Box mt="4">
+                 {/* <Box mt="4">
                   <Heading as="h3" size="4" mb="2">
                     Контактная информация
                   </Heading>
@@ -210,7 +210,7 @@ const ProfessionalsPublishForm: FC = () => {
                       disabled={false}
                     />
                   </Grid>
-                </Box>
+                </Box> */}
                 <Flex
                   mt="4"
                   direction="column"
@@ -218,12 +218,12 @@ const ProfessionalsPublishForm: FC = () => {
                   justify="center"
                   align="center"
                 >
-                  <Checkbox
+                  {/* <Checkbox
                     field={acceptTerms}
                     label="Я согласен с условиями"
                     errors={acceptTerms.errors}
                     disabled={false}
-                  />
+                  /> */}
                   <SubmitButton pending={pending} text="Добавить объявление" />
 
                   {/* <ReCAPTCHA

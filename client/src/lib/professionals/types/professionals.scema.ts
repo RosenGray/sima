@@ -14,22 +14,47 @@ export const ACCEPTED_FILE_TYPES = [
 ];
 
 export const ProfessionalSchema = z.object({
-  category: z.string({
-    required_error: "Выберите категорию",
-  }),
-  subCategory: z.string({
-    required_error: "Выберите подкатегорию",
-  }),
-  district: z.nativeEnum(Districts, {
-    required_error: "Выберите район",
-  }),
-  city: z.string({
-    required_error: "Выберите город",
-  }),
-  description: z.string({
-    required_error: "Введите описание",
-  }),
-  images: z
+  // category: z.string({
+  //   required_error: "Выберите категорию",
+  // }),
+  // subCategory: z.string({
+  //   required_error: "Выберите подкатегорию",
+  // }),
+  // district: z.nativeEnum(Districts, {
+  //   required_error: "Выберите район",
+  // }),
+  // city: z.string({
+  //   required_error: "Выберите город",
+  // }),
+  // description: z.string({
+  //   required_error: "Введите описание",
+  // }),
+  // email: z
+  //   .string({
+  //     required_error: "электронное почта обязательная",
+  //   })
+  //   .email("Введите корректный адрес электронной почты"),
+  // areaCode: z.number(),
+  // phoneNumber: z.number({
+  //   required_error: "Телефон обязателен. Используйте только цифры",
+  // }),
+  // acceptTerms: z
+  //   .string({
+  //     required_error: "Вы должны согласиться с условиями",
+  //   })
+  //   .optional()
+  //   .superRefine((value, ctx) => {
+  //     if (value === "on") {
+  //       return true;
+  //     }
+  //     ctx.addIssue({
+  //       code: z.ZodIssueCode.custom,
+  //       message: "Вы должны согласиться с условиями",
+  //       fatal: true,
+  //     });
+  //     return z.NEVER;
+  //   }),
+    images: z
     .array(z.instanceof(File))
     .min(1, "Загрузите хотя бы одно изображение")
     .superRefine((files, ctx) => {
@@ -59,31 +84,6 @@ export const ProfessionalSchema = z.object({
         }
       });
       return true;
-    }),
-  email: z
-    .string({
-      required_error: "электронное почта обязательная",
-    })
-    .email("Введите корректный адрес электронной почты"),
-  areaCode: z.number(),
-  phoneNumber: z.number({
-    required_error: "Телефон обязателен. Используйте только цифры",
-  }),
-  acceptTerms: z
-    .string({
-      required_error: "Вы должны согласиться с условиями",
-    })
-    .optional()
-    .superRefine((value, ctx) => {
-      if (value === "on") {
-        return true;
-      }
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Вы должны согласиться с условиями",
-        fatal: true,
-      });
-      return z.NEVER;
     }),
 });
 
