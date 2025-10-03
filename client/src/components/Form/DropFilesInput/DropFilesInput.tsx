@@ -50,6 +50,11 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
       const updatedFiles = [...files];
 
       newFiles.forEach((file) => {
+        // Check if we've reached the maxFiles limit
+        if (maxFiles && updatedFiles.length >= maxFiles) {
+          return; // Skip adding more files if limit reached
+        }
+
         //Check if file with the same name already exists
         const existingFileIndex = updatedFiles.findIndex(
           (f) => f.name === file.name
@@ -63,7 +68,7 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
 
       onFilesDrop(updatedFiles);
     },
-    [files, onFilesDrop]
+    [files, onFilesDrop, maxFiles]
   );
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton } from "@radix-ui/themes";
+import { Grid } from "@radix-ui/themes";
 import { TrashIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { FC, useMemo } from "react";
