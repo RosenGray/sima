@@ -13,6 +13,7 @@ export interface IProfessionalService {
   images: FileUploadResponse["files"];
 }
 
+
 const professionalServiceSchema = new mongoose.Schema(
   {
     category: {
@@ -60,26 +61,18 @@ const professionalServiceSchema = new mongoose.Schema(
             type: String,
             required: true,
           },
-        },
-        {
           url: {
             type: String,
             required: true,
           },
-        },
-        {
           fieldname: {
             type: String,
             required: true,
           },
-        },
-        {
           versionId: {
             type: String,
             required: false,
           },
-        },
-        {
           folderName: {
             type: String,
             required: true,
