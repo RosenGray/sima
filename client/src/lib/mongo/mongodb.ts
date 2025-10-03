@@ -8,7 +8,7 @@ const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } =  process.env;
 
 const isProd = NODE_ENV === "production";
 const MONGO_URI = isProd
-  ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/auth`
+  ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/sima`
   : "mongodb://localhost:30016/sima";
 
 

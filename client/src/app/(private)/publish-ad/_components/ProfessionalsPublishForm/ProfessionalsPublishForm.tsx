@@ -72,7 +72,7 @@ const ProfessionalsPublishForm: FC = () => {
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-  
+  console.log("formState",formState);
 
   const {
     // category,
