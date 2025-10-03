@@ -1,5 +1,4 @@
 import { Districts } from "@/lib/cities/types/cities.schema";
-import { ImageSchema } from "@/types/fileUpload";
 import { z } from "zod";
 
 export const SIZE_IN_MB = 5;

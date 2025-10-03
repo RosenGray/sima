@@ -1,10 +1,5 @@
+import { FileUploadResponse } from "@/app/api/files/create/route";
 import mongoose from "mongoose";
-
-interface Image {
-  src: string;
-  fileName: string;
-  versionId?: string;
-}
 
 export interface IProfessionalService {
   category: mongoose.Types.ObjectId;
@@ -15,7 +10,7 @@ export interface IProfessionalService {
   email: string;
   phoneNumber: string;
   acceptTerms: boolean;
-  images: Image[];
+  images: FileUploadResponse["files"];
 }
 
 const professionalServiceSchema = new mongoose.Schema(
@@ -57,17 +52,37 @@ const professionalServiceSchema = new mongoose.Schema(
     images: {
       type: [
         {
-          src: {
+          originalName: {
             type: String,
             required: true,
           },
-          fileName: {
+          uniqueName: {
             type: String,
             required: true,
           },
+        },
+        {
+          url: {
+            type: String,
+            required: true,
+          },
+        },
+        {
+          fieldname: {
+            type: String,
+            required: true,
+          },
+        },
+        {
           versionId: {
             type: String,
             required: false,
+          },
+        },
+        {
+          folderName: {
+            type: String,
+            required: true,
           },
         },
       ],
@@ -86,7 +101,9 @@ const professionalServiceSchema = new mongoose.Schema(
   }
 );
 
-export const ProfessionalService = mongoose.models.ProfessionalService || mongoose.model<IProfessionalService>(
-  "ProfessionalService",
-  professionalServiceSchema
-);
+export const ProfessionalService =
+  mongoose.models.ProfessionalService ||
+  mongoose.model<IProfessionalService>(
+    "ProfessionalService",
+    professionalServiceSchema
+  );

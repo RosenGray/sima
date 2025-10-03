@@ -14,6 +14,24 @@ export async function GET() {
   });
 }
 
+export interface FileUploadResponse {
+  success: boolean;
+  message: string;
+  files: Array<{
+    originalName: string;
+    uniqueName: string;
+    url: string;
+    fieldname: string;
+    versionId?: string;
+    folderName: string;
+  }>;
+  metadata: {
+    totalFiles: number;
+    folderName: string;
+    userId: string;
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('Starting file upload process...');
@@ -106,8 +124,10 @@ export async function POST(request: NextRequest) {
       files: uploadResults.map(result => ({
         originalName: result.originalName,
         uniqueName: result.uniqueName,
+        versionId: result.data.VersionId,
         url: result.url,
         fieldname: result.fieldname,
+        folderName: folderName,
       })),
       metadata: {
         totalFiles: uploadResults.length,
