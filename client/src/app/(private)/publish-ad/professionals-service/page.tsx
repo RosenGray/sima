@@ -1,6 +1,6 @@
 import { Box, Heading, Card } from "@radix-ui/themes";
 import { PublishAdProfessionalsPageContainer } from "./page.styles";
-import ProfessionalsPublishForm from "../_components/ProfessionalsPublishForm/ProfessionalsPublishForm";
+import ProfessionalServicePublishForm from "../_components/ProfessionalServicePublishForm/ProfessionalServicePublishForm";
 
 const PublishAdProfessionalsPage = async () => {
 
@@ -11,7 +11,7 @@ const PublishAdProfessionalsPage = async () => {
           Добавление нового объявления
         </Heading>
         <Card>
-          <ProfessionalsPublishForm  />
+          <ProfessionalServicePublishForm  />
         </Card>
       </Box>
     </PublishAdProfessionalsPageContainer>

@@ -1,12 +1,11 @@
 "use client";
 import { FC, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
-import { createProfessional } from "@/lib/professionals/actions/login";
 import {
   MAX_FILE_SIZE,
   MAX_FILES,
-  ProfessionalSchema,
-} from "@/lib/professionals/types/professionals.scema";
+  ProfessionalServiceSchema,
+} from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
@@ -30,69 +29,73 @@ import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";
+import { publishProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/publishProfessionalServiceAd";
 
 const areasOptions = mapAreasToSelectOptions();
 
-const ProfessionalsPublishForm: FC = () => {
+const ProfessionalServicePublishForm: FC = () => {
   const { mappedCategories } = usePublishAd();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [formState, formAction] = useActionState(createProfessional, undefined);
+  const [formState, formAction] = useActionState(publishProfessionalServiceAd, undefined);
   const [form, fields] = useForm({
     defaultValue: {
       images: [],
-      // district: Districts.Center,
+      district: Districts.Center,
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
       // Create a new FormData with accumulated files
       const updatedFormData = new FormData();
-      
+
       // Copy all existing form data
       for (const [key, value] of formData.entries()) {
-        if (key !== 'images') {
+        if (key !== "images") {
           updatedFormData.append(key, value);
         }
       }
-      
+
       // Add all accumulated files (this includes files from the current drop)
       selectedFiles.forEach((file) => {
-        updatedFormData.append('images', file);
+        updatedFormData.append("images", file);
       });
-      
+
       // Also add any files from the current formData (for the first drop)
-      const currentImages = formData.getAll('images');
+      const currentImages = formData.getAll("images");
       currentImages.forEach((file) => {
-        if (file instanceof File && !selectedFiles.some(f => f.name === file.name)) {
-          updatedFormData.append('images', file);
+        if (
+          file instanceof File &&
+          !selectedFiles.some((f) => f.name === file.name)
+        ) {
+          updatedFormData.append("images", file);
         }
       });
-      
-      return parseWithZod(updatedFormData, { schema: ProfessionalSchema });
+
+      return parseWithZod(updatedFormData, { schema: ProfessionalServiceSchema });
     },
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-  console.log("formState",formState);
+  console.log("formState", formState);
 
   const {
-    // category,
-    // subCategory,
-    // district,
-    // city,
-    // description,
-    // email,
-    // phoneNumber,
-    // areaCode,
-    // acceptTerms,
+    category,
+    subCategory,
+    district,
+    city,
+    description,
+    email,
+    phoneNumber,
+    areaCode,
+    acceptTerms,
     images,
   } = fields;
-  // const categoriesOptions =
-  //   mapServiceCategoriesToSelectOptions(mappedCategories);
-  // const subCategoryOptions = mapServiceSubCategoriesToSelectOptions(
-  //   mappedCategories,
-  //   category.value
-  // );
-  // const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+  const categoriesOptions =
+    mapServiceCategoriesToSelectOptions(mappedCategories);
+  const subCategoryOptions = mapServiceSubCategoriesToSelectOptions(
+    mappedCategories,
+    category.value
+  );
+  const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
 
   return (
     <>
@@ -101,7 +104,7 @@ const ProfessionalsPublishForm: FC = () => {
           <Box>
             <Grid columns="2" gap="4" mb="4">
               {/* category */}
-              {/* <SelectSingle
+              <SelectSingle
                 label="Выберите доску"
                 field={category}
                 placeholder="Выберите доску"
@@ -109,11 +112,10 @@ const ProfessionalsPublishForm: FC = () => {
                 defaultValue={categoriesOptions[0]}
                 errors={category.errors}
                 isDisabled={false}
-              /> */}
+              />
 
               {/* subCategory */}
-
-              {/* <SelectSingle
+              <SelectSingle
                 label="Выберите подкатегорию"
                 field={subCategory}
                 placeholder="Выберите подкатегорию"
@@ -121,9 +123,10 @@ const ProfessionalsPublishForm: FC = () => {
                 defaultValue={subCategoryOptions[0]}
                 errors={subCategory.errors}
                 isDisabled={false}
-              /> */}
+              />
+
               {/* area */}
-              {/* <SelectSingle
+              <SelectSingle
                 label="Выберите район"
                 field={district}
                 placeholder="Выберите район"
@@ -131,9 +134,9 @@ const ProfessionalsPublishForm: FC = () => {
                 defaultValue={areasOptions[0]}
                 errors={district.errors}
                 isDisabled={false}
-              /> */}
+              />
               {/* city */}
-{/* 
+
               <SelectSingle
                 label="Выберите город"
                 field={city}
@@ -142,10 +145,10 @@ const ProfessionalsPublishForm: FC = () => {
                 options={citiesOptions}
                 errors={city.errors}
                 isDisabled={false}
-              /> */}
+              />
             </Grid>
             {/* description */}
-            {/* <TextAreaField
+            <TextAreaField
               field={description}
               label="Текст объявления:"
               placeholder="Текст объявления:"
@@ -156,7 +159,7 @@ const ProfessionalsPublishForm: FC = () => {
               rows={5}
               mb="5px"
               disabled={false}
-            /> */}
+            />
 
             <DropFilesInput
               accept={{
@@ -182,55 +185,55 @@ const ProfessionalsPublishForm: FC = () => {
                 />
               </Box>
             )}
-                 {/* <Box mt="4">
-                  <Heading as="h3" size="4" mb="2">
-                    Контактная информация
-                  </Heading>
-                  <Grid columns="2" gap="4">
-                    <BasicFormField
-                      type="email"
-                      field={email}
-                      label="Email"
-                      anotherLabel="*виден только администрации сайта и не отображается публично"
-                      placeholder="@ Адрес электронной почты"
-                      size="3"
-                      defaultValue={fields.email.initialValue}
-                      dataIsValid={email.valid}
-                      errors={email.errors}
-                      disabled={ false}
-                    >
-                      <EnvelopeClosedIcon height="16" width="16" />
-                    </BasicFormField>
-                    <PhoneFormField
-                      areaCodeField={areaCode}
-                      label="Телефон"
-                      field={phoneNumber}
-                      errors={phoneNumber.errors}
-                      size="3"
-                      disabled={false}
-                    />
-                  </Grid>
-                </Box> */}
-                <Flex
-                  mt="4"
-                  direction="column"
-                  gap="3"
-                  justify="center"
-                  align="center"
+            <Box mt="4">
+              <Heading as="h3" size="4" mb="2">
+                Контактная информация
+              </Heading>
+              <Grid columns="2" gap="4">
+                <BasicFormField
+                  type="email"
+                  field={email}
+                  label="Email"
+                  anotherLabel="*виден только администрации сайта и не отображается публично"
+                  placeholder="@ Адрес электронной почты"
+                  size="3"
+                  defaultValue={fields.email.initialValue}
+                  dataIsValid={email.valid}
+                  errors={email.errors}
+                  disabled={false}
                 >
-                  {/* <Checkbox
-                    field={acceptTerms}
-                    label="Я согласен с условиями"
-                    errors={acceptTerms.errors}
-                    disabled={false}
-                  /> */}
-                  <SubmitButton pending={pending} text="Добавить объявление" />
+                  <EnvelopeClosedIcon height="16" width="16" />
+                </BasicFormField>
+                <PhoneFormField
+                  areaCodeField={areaCode}
+                  label="Телефон"
+                  field={phoneNumber}
+                  errors={phoneNumber.errors}
+                  size="3"
+                  disabled={false}
+                />
+              </Grid>
+            </Box>
+            <Flex
+              mt="4"
+              direction="column"
+              gap="3"
+              justify="center"
+              align="center"
+            >
+              <Checkbox
+                field={acceptTerms}
+                label="Я согласен с условиями"
+                errors={acceptTerms.errors}
+                disabled={false}
+              />
+              <SubmitButton pending={pending} text="Добавить объявление" />
 
-                  {/* <ReCAPTCHA
+              {/* <ReCAPTCHA
                   submitButtonText="Добавить объявление"
                   isLoading={pending || isRevalidating}
                 /> */}
-                </Flex>
+            </Flex>
           </Box>
         )}
       </Form>
@@ -238,4 +241,4 @@ const ProfessionalsPublishForm: FC = () => {
   );
 };
 
-export default ProfessionalsPublishForm;
+export default ProfessionalServicePublishForm;

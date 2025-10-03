@@ -6,7 +6,7 @@ interface Image {
   versionId?: string;
 }
 
-export interface IProfessional {
+export interface IProfessionalService {
   category: mongoose.Types.ObjectId;
   subCategory: mongoose.Types.ObjectId;
   district: string;
@@ -18,7 +18,7 @@ export interface IProfessional {
   images: Image[];
 }
 
-const professionalSchema = new mongoose.Schema(
+const professionalServiceSchema = new mongoose.Schema(
   {
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -86,7 +86,7 @@ const professionalSchema = new mongoose.Schema(
   }
 );
 
-export const Professional = mongoose.models.Professional || mongoose.model<IProfessional>(
-  "Professional",
-  professionalSchema
+export const ProfessionalService = mongoose.models.ProfessionalService || mongoose.model<IProfessionalService>(
+  "ProfessionalService",
+  professionalServiceSchema
 );

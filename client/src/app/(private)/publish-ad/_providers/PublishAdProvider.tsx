@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
-import { ServiceCategoryMapping } from "@/lib/professionals/types/professionals.scema";
+import { ServiceCategoryMapping } from "@/lib/professionals/professional-service/types/professional-service.scema";
 
 // Context type
 interface PublishAdContextType {

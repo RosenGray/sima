@@ -3,7 +3,7 @@ import { ServiceCategory, IServiceCategory } from "../models/ServiceCategory";
 import { IServiceSubCategory, ServiceSubCategory } from "../models/ServiceSubCategory";
 import serviceCategoriesData from "./professionals.servicecategories.json";
 import { unstable_cache } from "next/cache";
-import { ServiceCategoryMapping } from "../types/professionals.scema";
+import { ServiceCategoryMapping } from "../professional-service/types/professional-service.scema";
 import { serviceSubCategoryRepository } from "./ServiceSubCategoryRepository";
 
 // Internal function that performs the actual database operations

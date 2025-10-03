@@ -1,6 +1,6 @@
 'use server';
 import { parseWithZod } from "@conform-to/zod";
-import { ProfessionalSchema } from "../types/professionals.scema";
+import { ProfessionalServiceSchema } from "../types/professional-service.scema";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 
 // Type for the files API response
@@ -20,8 +20,8 @@ interface FileUploadResponse {
   };
 }
 
-export async function createProfessional(initialState: unknown, formData: FormData) {
-  const result = parseWithZod(formData, { schema: ProfessionalSchema });
+export async function publishProfessionalServiceAd(initialState: unknown, formData: FormData) {
+  const result = parseWithZod(formData, { schema: ProfessionalServiceSchema });
   if (result.status !== "success") return result.reply();
   const user = await getCurrentUser();
   if (!user) {
