@@ -16,7 +16,7 @@ import { usePublishAd } from "../../_providers/PublishAdProvider";
 import {
   mapServiceCategoriesToSelectOptions,
   mapServiceSubCategoriesToSelectOptions,
-} from "@/lib/professionals/utils/proffesionals.utils";
+} from "@/lib/professionals/utils/professionals.utils";
 import {
   getCitiesToSelectOptions,
   mapAreasToSelectOptions,
