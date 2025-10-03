@@ -34,7 +34,6 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   }, [files]);
 
   const handleRemoveImage = (file: File) => {
-    console.log("file.name", file);
     setImages(files.filter((f) => f.name !== file.name));
   };
 

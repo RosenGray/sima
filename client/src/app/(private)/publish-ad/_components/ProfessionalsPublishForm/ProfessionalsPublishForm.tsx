@@ -44,11 +44,35 @@ const ProfessionalsPublishForm: FC = () => {
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
-      return parseWithZod(formData, { schema: ProfessionalSchema });
+      // Create a new FormData with accumulated files
+      const updatedFormData = new FormData();
+      
+      // Copy all existing form data
+      for (const [key, value] of formData.entries()) {
+        if (key !== 'images') {
+          updatedFormData.append(key, value);
+        }
+      }
+      
+      // Add all accumulated files (this includes files from the current drop)
+      selectedFiles.forEach((file) => {
+        updatedFormData.append('images', file);
+      });
+      
+      // Also add any files from the current formData (for the first drop)
+      const currentImages = formData.getAll('images');
+      currentImages.forEach((file) => {
+        if (file instanceof File && !selectedFiles.some(f => f.name === file.name)) {
+          updatedFormData.append('images', file);
+        }
+      });
+      
+      return parseWithZod(updatedFormData, { schema: ProfessionalSchema });
     },
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
+  
 
   const {
     category,
@@ -69,13 +93,10 @@ const ProfessionalsPublishForm: FC = () => {
     category.value
   );
   const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
-  console.log('district value',district.value)
-console.log('images',images.errors)
 
-console.log('images value',images.value)
   return (
     <>
-      <Form action={formAction} {...getFormProps(form)} encType="multipart/form-data">
+      <Form action={formAction} {...getFormProps(form)}>
         {({ pending }) => (
           <Box>
             <Grid columns="2" gap="4" mb="4">
@@ -152,7 +173,7 @@ console.log('images value',images.value)
               files={selectedFiles}
               disabled={false}
             />
-            {/* {selectedFiles.length > 0 && (
+            {selectedFiles.length > 0 && (
               <Box mt="4" mb="4">
                 <ImagesPreviewer
                   images={selectedFiles}
@@ -160,7 +181,7 @@ console.log('images value',images.value)
                   maxImages={MAX_FILES}
                 />
               </Box>
-            )} */}
+            )}
                  <Box mt="4">
                   <Heading as="h3" size="4" mb="2">
                     Контактная информация

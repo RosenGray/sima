@@ -33,33 +33,31 @@ export const ProfessionalSchema = z.object({
     .array(z.instanceof(File))
     .min(1, "Загрузите хотя бы одно изображение")
     .superRefine((files, ctx) => {
-      console.log('files',files)
-      // if (files.length > MAX_FILES) {
-      //   ctx.addIssue({
-      //     code: z.ZodIssueCode.custom,
-      //     message: `Максимальное количество изображений: ${MAX_FILES}`,
-      //     fatal: true,
-      //   });
-      //   return z.NEVER;
-      // }
-      // console.log('files',files)
-      // files.forEach((file) => {
-      //   console.log('file',file)
-      //   if (file.size > MAX_FILE_SIZE) {
-      //     ctx.addIssue({
-      //       code: z.ZodIssueCode.custom,
-      //       message: `Файл слишком большой. Максимальный размер файла ${SIZE_IN_MB}MB`,
-      //     });
-      //   }
-      //   if (!new Set(ACCEPTED_FILE_TYPES).has(file.type)) {
-      //     ctx.addIssue({
-      //       code: z.ZodIssueCode.custom,
-      //       message: `Файл должен быть изображением (PNG, JPEG, JPG или WebP)`,
-      //       fatal: true,
-      //     });
-      //     return z.NEVER;
-      //   }
-      // });
+      if (files.length > MAX_FILES) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Максимальное количество изображений: ${MAX_FILES}`,
+          fatal: true,
+        });
+        return z.NEVER;
+      }
+
+      files.forEach((file) => {
+        if (file.size > MAX_FILE_SIZE) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Файл слишком большой. Максимальный размер файла ${SIZE_IN_MB}MB`,
+          });
+        }
+        if (!new Set(ACCEPTED_FILE_TYPES).has(file.type)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Файл должен быть изображением (PNG, JPEG, JPG или WebP)`,
+            fatal: true,
+          });
+          return z.NEVER;
+        }
+      });
       return true;
     }),
   email: z
@@ -134,4 +132,3 @@ export type ServiceCategoryMapping = Record<
     subCategories: ServiceSubCategory[];
   }
 >;
-
