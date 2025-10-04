@@ -5,6 +5,7 @@ interface FormProps {
   children: (formStatus: FormStatus) => ReactNode;
   action: string | ((formData: FormData) => void);
   noValidate?: boolean;
+  _key?: string;
 }
 
 interface FormStatusWrapperProps {
@@ -21,7 +22,7 @@ const FormStatusWrapper: FC<FormStatusWrapperProps> = ({ children }) => {
 
 const Form: FC<FormProps> = ({ children, ...rest }) => {
   return (
-    <form {...rest}>
+    <form {...rest} key={rest._key}>
       <FormStatusWrapper>
         {(formStatus) => children(formStatus)}
       </FormStatusWrapper>

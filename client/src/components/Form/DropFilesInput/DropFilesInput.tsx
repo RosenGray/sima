@@ -125,9 +125,11 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
           </span>
         )}
       </DropzoneText>
-      <DropzoneError as="p" align="center" weight="bold" size="2" color="red">
-        {errors}
-      </DropzoneError>
+      {errors && (
+        <DropzoneError as="p" align="center" weight="bold" size="2" color="red">
+          {errors}
+        </DropzoneError>
+      )}
     </DropzoneContainer>
   );
 };

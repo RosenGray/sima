@@ -2,10 +2,7 @@
 import Header from "@/components/Header";
 import type { Metadata } from "next";
 import { PublishAdLayoutSection } from "./layout.styles";
-import {
-  serviceCategoryRepository,
-  serviceSubCategoryRepository,
-} from "@/lib/professionals/repositories";
+import { serviceCategoryRepository } from "@/lib/professionals/repositories";
 import { PublishAdProvider } from "./_providers/PublishAdProvider";
 
 export const metadata: Metadata = {

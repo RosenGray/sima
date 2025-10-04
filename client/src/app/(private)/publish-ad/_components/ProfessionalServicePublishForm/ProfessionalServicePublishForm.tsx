@@ -39,6 +39,7 @@ const ProfessionalServicePublishForm: FC = () => {
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
+  const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [formState, formAction] = useActionState(
     publishProfessionalServiceAd,
@@ -88,8 +89,17 @@ const ProfessionalServicePublishForm: FC = () => {
   console.log("formState", formState);
   console.log("form", form.errors);
 
+    // Function to reset form state
+    const resetForm = () => {
+      // Reset selected files
+      setSelectedFiles([]);
+      // Force form re-render by updating the key - this will reset the entire form
+      setFormKey(prev => prev + 1);
+    };
+  
+
   const handleModalClose = () => {
-    
+    resetForm();
     setErrorModalOpen(false);
   };
 
@@ -125,7 +135,7 @@ const ProfessionalServicePublishForm: FC = () => {
 
   return (
     <>
-      <Form action={formAction} {...getFormProps(form)}>
+      <Form _key={formKey.toString()} action={formAction} {...getFormProps(form)}>
         {({ pending }) => (
           <Box>
             <Grid columns="2" gap="4" mb="4">
