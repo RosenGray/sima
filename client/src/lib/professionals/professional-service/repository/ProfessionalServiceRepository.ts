@@ -16,8 +16,12 @@ class ProfessionalServiceRepository {
       const professionalServices = await ProfessionalService.find({})
         .populate("category")
         .populate("subCategory")
+        .populate("userId")
         .sort({ createdAt: -1 }); // Sort by newest first
 
+      //dummy await for 5 sec
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
+      throw new Error("Failed to fetch professional services");
       return professionalServices;
     } catch (error) {
       console.error("Error fetching professional services:", error);

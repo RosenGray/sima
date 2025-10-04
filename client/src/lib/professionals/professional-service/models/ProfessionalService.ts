@@ -2,6 +2,7 @@ import { FileUploadResponse } from "@/app/api/files/create/route";
 import mongoose from "mongoose";
 
 export interface IProfessionalService {
+  userId: mongoose.Types.ObjectId;
   category: mongoose.Types.ObjectId;
   subCategory: mongoose.Types.ObjectId;
   district: string;
@@ -42,6 +43,12 @@ const imageSchema = new mongoose.Schema({
 
 const professionalServiceSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true  // Index for faster queries
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ServiceCategory",

@@ -17,11 +17,11 @@ export async function publishProfessionalServiceAd(
 
   if (result.status !== "success") return result.reply();
   const user = await getCurrentUser();
-  // if (!user) {
-  //   return result.reply({
-  //     formErrors: ["Что-то пошло не так, попробуйте позже"],
-  //   });
-  // }
+  if (!user) {
+    return result.reply({
+      formErrors: ["Что-то пошло не так, попробуйте позже"],
+    });
+  }
 
   const { images } = result.value;
 
@@ -36,7 +36,7 @@ export async function publishProfessionalServiceAd(
 
     // Add metadata
     uploadFormData.append("folderName", "professionals");
-    uploadFormData.append("userId", 'user.id'); // You'll need to get this from auth context
+    uploadFormData.append("userId", user.id); // You'll need to get this from auth context
 
     // Send request to files API route
     const response = await fetch("http://localhost:3000/api/files/create", {
@@ -55,6 +55,7 @@ export async function publishProfessionalServiceAd(
 
     const professionalService = new ProfessionalService({
       ...result.value,
+      userId: user.id,
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,
     });

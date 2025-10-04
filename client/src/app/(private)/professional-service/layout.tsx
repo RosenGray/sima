@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { ProfessionalServiceLayoutSection } from "./layout.styles";
 import { ProfessionalServiceProvider } from "./_providers/ProfessionalServiceProvider";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
+import Dummy from "@/components/Dummy/Dummy";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Профессиональные услуги",
@@ -14,7 +16,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const professionalServices = await professionalServiceRepository.getAll();
+  const professionalServices =  await professionalServiceRepository.getAll();
   console.log(professionalServices);
   // Placeholder data - to be replaced with actual data later
   const placeholderData = {
@@ -25,8 +27,14 @@ export default async function RootLayout({
     <ProfessionalServiceProvider data={placeholderData}>
       <ProfessionalServiceLayoutSection>
         <Header />
-        <main>{children}</main>
+
+        {/* <main>{children}</main> */}
       </ProfessionalServiceLayoutSection>
     </ProfessionalServiceProvider>
   );
 }
+
+
+{/* <Suspense fallback={<div>Loading...</div>}>
+<Dummy posts={professionalServices} />
+</Suspense> */}
