@@ -2,6 +2,7 @@ import mongoose, { Document } from "mongoose";
 import { PasswordManager } from "../services/PasswordManager";
 
 interface IUser {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;

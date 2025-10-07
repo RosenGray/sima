@@ -27,7 +27,7 @@ export const ProfessionalServiceProvider: React.FC<ProfessionalServiceProviderPr
 }) => {
   const contextValue: ProfessionalServiceContextType = {
     // Map placeholder data here when needed
-    ...data,
+   p:data,
   };
 
   return (

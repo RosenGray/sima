@@ -2,6 +2,7 @@ import { FileUploadResponse } from "@/app/api/files/create/route";
 import mongoose from "mongoose";
 
 export interface IProfessionalService {
+  id: string;
   userId: mongoose.Types.ObjectId;
   category: mongoose.Types.ObjectId;
   subCategory: mongoose.Types.ObjectId;
@@ -12,6 +13,8 @@ export interface IProfessionalService {
   phoneNumber: string;
   acceptTerms: boolean;
   images: FileUploadResponse["files"];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const imageSchema = new mongoose.Schema({
