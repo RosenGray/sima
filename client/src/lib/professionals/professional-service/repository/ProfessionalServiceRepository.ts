@@ -19,7 +19,7 @@ class ProfessionalServiceRepository {
         .populate("userId")
         .sort({ createdAt: -1 }) // Sort by newest first
         .lean(); // Convert to plain objects to avoid circular references
-
+console.log('repository 1',professionalServices);
       //dummy await for 5 sec
       // await new Promise((resolve) => setTimeout(resolve, 5000));
   

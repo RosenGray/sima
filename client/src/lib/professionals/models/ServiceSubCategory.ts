@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+// Import ServiceCategory to ensure it's registered before this model
+import "./ServiceCategory";
+
 export interface IServiceSubCategory {
   id: string;
   key: string;
