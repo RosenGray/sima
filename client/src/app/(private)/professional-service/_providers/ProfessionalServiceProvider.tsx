@@ -15,7 +15,9 @@ const ProfessionalServiceContext = createContext<ProfessionalServiceContextType 
 // Provider component
 interface ProfessionalServiceProviderProps {
   children: ReactNode;
-  data: IProfessionalService[];
+  data: {
+    professionalServices: IProfessionalService[];
+  }
 }
 
 export const ProfessionalServiceProvider: React.FC<ProfessionalServiceProviderProps> = ({
@@ -23,7 +25,7 @@ export const ProfessionalServiceProvider: React.FC<ProfessionalServiceProviderPr
   data,
 }) => {
   const contextValue: ProfessionalServiceContextType = {
-    professionalServices: data,
+    professionalServices: data.professionalServices,
   };
 
   return (

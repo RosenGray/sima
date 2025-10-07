@@ -23,7 +23,10 @@ class ProfessionalServiceRepository {
       //dummy await for 5 sec
       // await new Promise((resolve) => setTimeout(resolve, 5000));
   
-      return professionalServices as unknown as IProfessionalService[];
+      // Serialize to remove MongoDB ObjectIds and other non-serializable types
+      const serializedServices = JSON.parse(JSON.stringify(professionalServices));
+      
+      return serializedServices;
     } catch (error) {
       console.error("Error fetching professional services:", error);
       throw new Error("Failed to fetch professional services");

@@ -18,10 +18,10 @@ export default async function RootLayout({
   console.log(professionalServices);
 
   return (
-    <ProfessionalServiceProvider data={professionalServices}>
+    <ProfessionalServiceProvider data={{professionalServices} }>
       <ProfessionalServiceLayoutSection>
         <Header />
-    
+  
         <main>{children}</main>
       </ProfessionalServiceLayoutSection>
     </ProfessionalServiceProvider>

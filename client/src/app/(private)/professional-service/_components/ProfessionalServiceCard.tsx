@@ -1,20 +1,7 @@
 import React from "react";
 import { IProfessionalService } from "@/lib/professionals/professional-service/models/ProfessionalService";
-import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
-import {
-  Card,
-  CardContent,
-  CardImage,
-  CardTitle,
-  CardDescription,
-  CardLocation,
-  CardContact,
-  CardCategory,
-  CardImageContainer,
-  CardImageOverlay,
-  CardImageCount,
-  CardContactItem,
-} from "./ProfessionalServiceCard.styles";
+import Image from "next/image";
+import { ServiceCardBox } from "./ProfessionalServiceCard.styles";
 
 interface ProfessionalServiceCardProps {
   service: IProfessionalService;
@@ -24,12 +11,18 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   service,
 }) => {
   const firstImage = service.images?.[0];
-  const imageCount = service.images?.length || 0;
 
   return (
-    <div>
-      1
-    </div>
+    <ServiceCardBox>
+      <Image 
+        src={firstImage.url} 
+        alt={firstImage.originalName} 
+        fill 
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        style={{ objectFit: 'cover' }}
+        priority={false}
+      />
+    </ServiceCardBox>
     // <Card>
     //   <CardImageContainer>
     //     {firstImage ? (
