@@ -16,10 +16,6 @@ export default async function RootLayout({
 }>) {
   const professionalServices = await professionalServiceRepository.getAll();
   console.log(professionalServices);
-  // Placeholder data - to be replaced with actual data later
-  const placeholderData = {
-    // Add placeholder data here when needed
-  };
 
   return (
     <ProfessionalServiceProvider data={professionalServices}>

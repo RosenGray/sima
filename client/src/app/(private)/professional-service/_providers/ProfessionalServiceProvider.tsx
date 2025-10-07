@@ -1,11 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
+import { IProfessionalService } from "@/lib/professionals/professional-service/models/ProfessionalService";
 
-// Context type - placeholder for now
+// Context type
 interface ProfessionalServiceContextType {
-  // Add actual data types here when needed
-  [key: string]: any;
+  professionalServices: IProfessionalService[];
 }
 
 const ProfessionalServiceContext = createContext<ProfessionalServiceContextType | undefined>(
@@ -15,10 +15,7 @@ const ProfessionalServiceContext = createContext<ProfessionalServiceContextType 
 // Provider component
 interface ProfessionalServiceProviderProps {
   children: ReactNode;
-  data: {
-    // Add actual data structure here when needed
-    [key: string]: any;
-  };
+  data: IProfessionalService[];
 }
 
 export const ProfessionalServiceProvider: React.FC<ProfessionalServiceProviderProps> = ({
@@ -26,8 +23,7 @@ export const ProfessionalServiceProvider: React.FC<ProfessionalServiceProviderPr
   data,
 }) => {
   const contextValue: ProfessionalServiceContextType = {
-    // Map placeholder data here when needed
-   p:data,
+    professionalServices: data,
   };
 
   return (

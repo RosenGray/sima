@@ -17,12 +17,13 @@ class ProfessionalServiceRepository {
         .populate("category")
         .populate("subCategory")
         .populate("userId")
-        .sort({ createdAt: -1 }); // Sort by newest first
+        .sort({ createdAt: -1 }) // Sort by newest first
+        .lean(); // Convert to plain objects to avoid circular references
 
       //dummy await for 5 sec
       // await new Promise((resolve) => setTimeout(resolve, 5000));
   
-      return professionalServices;
+      return professionalServices as unknown as IProfessionalService[];
     } catch (error) {
       console.error("Error fetching professional services:", error);
       throw new Error("Failed to fetch professional services");
