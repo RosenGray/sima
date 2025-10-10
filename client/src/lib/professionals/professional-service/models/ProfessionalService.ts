@@ -1,7 +1,10 @@
 import { FileUploadResponse } from "@/app/api/files/create/route";
 import mongoose from "mongoose";
 
-
+// Import referenced models to ensure they are registered before this model
+import "@/lib/auth/models/User";
+import "@/lib/professionals/models/ServiceCategory";
+import "@/lib/professionals/models/ServiceSubCategory";
 
 export interface IProfessionalService {
   id: string;

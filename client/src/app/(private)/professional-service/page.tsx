@@ -18,8 +18,8 @@ const ProfessionalsPage = () => {
         gap="3"
         columns={{
           xs: "1",
-          sm: "2",
-          md: "3",
+          // sm: "2",
+          // md: "3",
         }}
         width="auto"
       >
