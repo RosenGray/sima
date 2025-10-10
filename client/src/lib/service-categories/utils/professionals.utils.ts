@@ -1,4 +1,4 @@
-import { ServiceCategoryMapping } from "../professional-service/types/professional-service.scema";
+import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
 
 
 export const mapServiceCategoriesToSelectOptions = (

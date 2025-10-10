@@ -1,9 +1,9 @@
 import connectDB from "@/lib/mongo/mongodb";
 import { ServiceCategory, IServiceCategory } from "../models/ServiceCategory";
-import { IServiceSubCategory, ServiceSubCategory } from "../models/ServiceSubCategory";
+import { IServiceSubCategory } from "../models/ServiceSubCategory";
 import serviceCategoriesData from "./professionals.servicecategories.json";
 import { unstable_cache } from "next/cache";
-import { ServiceCategoryMapping } from "../professional-service/types/professional-service.scema";
+import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
 import { serviceSubCategoryRepository } from "./ServiceSubCategoryRepository";
 
 // Internal function that performs the actual database operations
@@ -52,7 +52,7 @@ async function _getAllCategories(): Promise<IServiceCategory[]> {
     console.log(
       `Found ${existingCategories.length} existing service categories`
     );
-    return existingCategories;
+    return JSON.parse(JSON.stringify(existingCategories));
   } catch (error) {
     console.error("Error in ServiceCategoryRepository.getAll:", error);
     throw error;

@@ -1,11 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
-import { IProfessionalService } from "@/lib/professionals/professional-service/models/ProfessionalService";
+import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 
 // Context type
 interface ProfessionalServiceContextType {
-  professionalServices: IProfessionalService[];
+  professionalServices: SerilizeProfessionalService[];
 }
 
 const ProfessionalServiceContext = createContext<ProfessionalServiceContextType | undefined>(
@@ -16,7 +16,7 @@ const ProfessionalServiceContext = createContext<ProfessionalServiceContextType 
 interface ProfessionalServiceProviderProps {
   children: ReactNode;
   data: {
-    professionalServices: IProfessionalService[];
+    professionalServices: SerilizeProfessionalService[];
   }
 }
 

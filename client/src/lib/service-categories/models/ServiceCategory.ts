@@ -1,14 +1,11 @@
 import mongoose from "mongoose";
 
 export interface IServiceCategory {
-  id: string;
   key: string;
   displayName: string;
   description: string;
   russianDisplayName: string;
   russianDescription: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const serviceCategorySchema = new mongoose.Schema({
@@ -43,6 +40,8 @@ const serviceCategorySchema = new mongoose.Schema({
       ret.id = ret._id;
       delete ret._id;
       delete ret.__v;
+      ret.updatedAt = (ret.updatedAt as Date).toISOString();
+      ret.createdAt = (ret.createdAt as Date).toISOString();
     }
   }
 });

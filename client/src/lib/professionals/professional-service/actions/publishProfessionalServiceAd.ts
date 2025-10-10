@@ -56,7 +56,7 @@ export async function publishProfessionalServiceAd(
 
     const professionalService = new ProfessionalService({
       ...result.value,
-      userId: user.id,
+      user: user.id,
       publicId: nanoid(10),
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,

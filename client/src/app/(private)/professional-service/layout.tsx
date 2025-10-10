@@ -16,6 +16,8 @@ export default async function RootLayout({
 }>) {
   const professionalServices = await professionalServiceRepository.getAll();
   console.log('professionalServices',professionalServices);
+  const m = professionalServices[0];
+  console.log('m',m.category)
 
   return (
     <ProfessionalServiceProvider data={{professionalServices} }>

@@ -1,5 +1,7 @@
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { z } from "zod";
+import { IProfessionalService } from "../models/ProfessionalService";
+import { SerializedUser } from "@/lib/auth/types/auth.scema";
 
 export const SIZE_IN_MB = 5;
 export const MAX_FILE_SIZE = SIZE_IN_MB * 1024 * 1024;
@@ -53,7 +55,7 @@ export const ProfessionalServiceSchema = z.object({
       });
       return z.NEVER;
     }),
-    images: z
+  images: z
     .array(z.instanceof(File))
     .min(1, "Загрузите хотя бы одно изображение")
     .superRefine((files, ctx) => {
@@ -104,8 +106,8 @@ export const ServiceSubCategorySchema = z.object({
   russianDescription: z.string(),
   serviceCategory: z.string(),
   serviceCategoryKey: z.string(),
-  updatedAt: z.string().optional(),
-  createdAt: z.string().optional(),
+  updatedAt: z.string(),
+  createdAt: z.string(),
 });
 
 export const ServiceCategorySchema = z.object({
@@ -115,9 +117,16 @@ export const ServiceCategorySchema = z.object({
   description: z.string(),
   russianDisplayName: z.string(),
   russianDescription: z.string(),
-  updatedAt: z.string().optional(),
-  createdAt: z.string().optional(),
+  updatedAt: z.string(),
+  createdAt: z.string(),
 });
+
+export interface SerilizeProfessionalService
+  extends Omit<IProfessionalService, "createdAt" | "updatedAt" | "user"> {
+  updatedAt: string;
+  createdAt: string;
+  user: SerializedUser;
+}
 
 export type ServiceSubCategory = z.infer<typeof ServiceSubCategorySchema>;
 export type ServiceCategory = z.infer<typeof ServiceCategorySchema>;

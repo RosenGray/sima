@@ -52,8 +52,8 @@ export const SerializedUserSchema = z.object({
   email: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   hasPrivateProfessionalPage: z.boolean().optional(),
 });
 

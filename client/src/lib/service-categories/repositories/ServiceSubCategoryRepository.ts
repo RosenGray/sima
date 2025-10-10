@@ -11,8 +11,9 @@ async function _getAllSubCategories(): Promise<IServiceSubCategory[]> {
     await connectDB();
     console.log('ServiceSubCategoryRepositor 2y');
     // First, check if there are any existing service subcategories
-    const existingSubCategories = await ServiceSubCategory.find({});
-    
+    const existingSubCategories = await ServiceSubCategory.find({})
+    .populate("serviceCategory");
+    console.log("existingSubCategories", existingSubCategories);
     // If no subcategories exist, initialize with the JSON data
     if (existingSubCategories.length === 0) {
       console.log('No service subcategories found. Initializing with default data...');
@@ -66,7 +67,7 @@ async function _getAllSubCategories(): Promise<IServiceSubCategory[]> {
     }
 
     console.log(`Found ${existingSubCategories.length} existing service subcategories`);
-    return existingSubCategories;
+    return JSON.parse(JSON.stringify(existingSubCategories));
   } catch (error) {
     console.error('Error in ServiceSubCategoryRepository.getAll:', error);
     throw error;

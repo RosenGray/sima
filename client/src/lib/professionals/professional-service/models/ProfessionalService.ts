@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 
 // Import referenced models to ensure they are registered before this model
 import "@/lib/auth/models/User";
-import "@/lib/professionals/models/ServiceCategory";
-import "@/lib/professionals/models/ServiceSubCategory";
+import "@/lib/service-categories/models/ServiceCategory";
+import "@/lib/service-categories/models/ServiceSubCategory";
 
 export interface IProfessionalService {
   id: string;
   publicId: string;
-  userId: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
   category: mongoose.Types.ObjectId;
   subCategory: mongoose.Types.ObjectId;
   district: string;
@@ -57,7 +57,7 @@ const professionalServiceSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
@@ -107,6 +107,8 @@ const professionalServiceSchema = new mongoose.Schema(
     toJSON: {
       transform: (doc, ret: Record<string, unknown>) => {
         ret.id = ret._id;
+        ret.updatedAt = (ret.updatedAt as Date).toISOString();
+        ret.createdAt = (ret.createdAt as Date).toISOString();
         delete ret._id;
         delete ret.__v;
       },

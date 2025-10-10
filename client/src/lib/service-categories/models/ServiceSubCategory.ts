@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import "./ServiceCategory";
 
 export interface IServiceSubCategory {
-  id: string;
   key: string;
   displayName: string;
   description: string;
@@ -12,8 +11,6 @@ export interface IServiceSubCategory {
   russianDescription: string;
   serviceCategory: mongoose.Types.ObjectId;
   serviceCategoryKey: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const serviceSubCategorySchema = new mongoose.Schema(
@@ -53,9 +50,11 @@ const serviceSubCategorySchema = new mongoose.Schema(
     timestamps: true,
     toJSON: {
         transform: (doc, ret: Record<string, unknown>) => {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
+            ret.id = ret._id;
+            delete ret._id;
+            delete ret.__v;
+            ret.updatedAt = (ret.updatedAt as Date).toISOString();
+            ret.createdAt = (ret.createdAt as Date).toISOString();
       },
     },
   }

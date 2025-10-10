@@ -4,7 +4,7 @@ import { IUser, User } from "../models/User";
 import jwt from "jsonwebtoken";
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
-import { SerializedUser } from "../types/auth.scema";
+
 
 export const jwtSignUser = (user: IUser) => {
   return jwt.sign(
@@ -20,17 +20,7 @@ export const jwtSignUser = (user: IUser) => {
     process.env.JWT_KEY!
   );
 };
-const serializeUser = (user: IUser):SerializedUser => {
-  return {
-    id: user.id,
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    createdAt: user.createdAt?.toISOString(),
-    updatedAt: user.updatedAt?.toISOString(),
-    hasPrivateProfessionalPage: user.hasPrivateProfessionalPage,
-  };
-};
+
 export async function getCurrentUser() {
   try {
     const cookieStore = await cookies();
@@ -46,8 +36,7 @@ export async function getCurrentUser() {
     await connectDB();
     const user = await User.findOne<IUser>({ email: decoded.email });
     if(!user) return null;
-    const serializedUser = serializeUser(user);
-    return serializedUser;
+    return JSON.parse(JSON.stringify(user));
   } catch (_error) {
     console.log("error", _error);
     return null;

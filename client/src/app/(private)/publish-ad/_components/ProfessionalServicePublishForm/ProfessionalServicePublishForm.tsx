@@ -15,7 +15,7 @@ import { usePublishAd } from "../../_providers/PublishAdProvider";
 import {
   mapServiceCategoriesToSelectOptions,
   mapServiceSubCategoriesToSelectOptions,
-} from "@/lib/professionals/utils/professionals.utils";
+} from "@/lib/service-categories/utils/professionals.utils";
 import {
   getCitiesToSelectOptions,
   mapAreasToSelectOptions,
@@ -39,6 +39,7 @@ const ProfessionalServicePublishForm: FC = () => {
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
+  console.log("mappedCategories", mappedCategories);
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [formState, formAction] = useActionState(
@@ -86,24 +87,19 @@ const ProfessionalServicePublishForm: FC = () => {
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
-  console.log("formState", formState);
-  console.log("form", form.errors);
 
-    // Function to reset form state
-    const resetForm = () => {
-      // Reset selected files
-      setSelectedFiles([]);
-      // Force form re-render by updating the key - this will reset the entire form
-      setFormKey(prev => prev + 1);
-    };
-  
+  // Function to reset form state
+  const resetForm = () => {
+    // Reset selected files
+    setSelectedFiles([]);
+    // Force form re-render by updating the key - this will reset the entire form
+    setFormKey((prev) => prev + 1);
+  };
 
   const handleModalClose = () => {
     resetForm();
     setErrorModalOpen(false);
   };
-
-
 
   const {
     category,
@@ -125,17 +121,18 @@ const ProfessionalServicePublishForm: FC = () => {
   );
   const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
   useEffect(() => {
-    console.log(1)
     if (formState) {
       setErrorModalOpen(true);
     }
   }, [formState]);
 
-  console.log('errorModalOpen',errorModalOpen)
-
   return (
     <>
-      <Form _key={formKey.toString()} action={formAction} {...getFormProps(form)}>
+      <Form
+        _key={formKey.toString()}
+        action={formAction}
+        {...getFormProps(form)}
+      >
         {({ pending }) => (
           <Box>
             <Grid columns="2" gap="4" mb="4">
