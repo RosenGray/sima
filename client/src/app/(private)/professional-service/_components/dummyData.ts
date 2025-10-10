@@ -1,5 +1,6 @@
 import { IProfessionalService } from "@/lib/professionals/professional-service/models/ProfessionalService";
 import mongoose from "mongoose";
+import { nanoid } from "nanoid";
 
 // Generate dummy data for testing
 export const generateDummyProfessionalServices = (): IProfessionalService[] => {
@@ -49,6 +50,8 @@ export const generateDummyProfessionalServices = (): IProfessionalService[] => {
     const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
 
     dummyServices.push({
+      id: `service-${i + 1}`,
+      publicId: nanoid(10),
       userId: new mongoose.Types.ObjectId(),
       category: new mongoose.Types.ObjectId(),
       subCategory: new mongoose.Types.ObjectId(),
@@ -67,16 +70,38 @@ export const generateDummyProfessionalServices = (): IProfessionalService[] => {
           versionId: "",
           folderName: "professional-services"
         },
-        ...(Math.random() > 0.5 ? [
-          {
-            originalName: `service-${i + 1}-2.jpg`,
-            uniqueName: `service-${i + 1}-2-${Date.now()}.jpg`,
-            url: `https://picsum.photos/400/300?random=${i + 100}`,
-            fieldname: "images",
-            versionId: "",
-            folderName: "professional-services"
-          }
-        ] : [])
+        {
+          originalName: `service-${i + 21}.jpg`,
+          uniqueName: `service-${i + 21}-${Date.now()}.jpg`,
+          url: `https://picsum.photos/400/300?random=${i + 2}`,
+          fieldname: "images",
+          versionId: "",
+          folderName: "professional-services"
+        },
+        {
+          originalName: `service-${i + 13}.jpg`,
+          uniqueName: `service-${i + 13}-${Date.now()}.jpg`,
+          url: `https://picsum.photos/400/300?random=${i + 3}`,
+          fieldname: "images",
+          versionId: "",
+          folderName: "professional-services"
+        },
+        {
+          originalName: `service-${i + 14}.jpg`,
+          uniqueName: `service-${i +  1}-${Date.now()}.jpg`,
+          url: `https://picsum.photos/400/300?random=${i + 4}`,
+          fieldname: "images",
+          versionId: "",
+          folderName: "professional-services"
+        },
+        {
+          originalName: `service-${i + 15}.jpg`,
+          uniqueName: `service-${i + 15}-${Date.now()}.jpg`,
+          url: `https://picsum.photos/400/300?random=${i + 5}`,
+          fieldname: "images",
+          versionId: "",
+          folderName: "professional-services"
+        },
       ]
     });
   }

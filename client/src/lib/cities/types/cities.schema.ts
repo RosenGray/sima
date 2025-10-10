@@ -24,4 +24,5 @@ export enum Districts {
   Heifa = "d4",
   Jerusalem = "d5",
   TelAviv = "d6",
+  All = "all",
 }

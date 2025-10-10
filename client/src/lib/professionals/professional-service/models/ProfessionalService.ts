@@ -8,6 +8,7 @@ import "@/lib/professionals/models/ServiceSubCategory";
 
 export interface IProfessionalService {
   id: string;
+  publicId: string;
   userId: mongoose.Types.ObjectId;
   category: mongoose.Types.ObjectId;
   subCategory: mongoose.Types.ObjectId;
@@ -51,6 +52,11 @@ const imageSchema = new mongoose.Schema({
 
 const professionalServiceSchema = new mongoose.Schema(
   {
+    publicId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

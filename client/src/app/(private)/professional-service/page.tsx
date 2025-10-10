@@ -18,14 +18,14 @@ const ProfessionalsPage = () => {
         gap="3"
         columns={{
           xs: "1",
-          // sm: "2",
+          sm: "2",
           // md: "3",
         }}
         width="auto"
       >
-        {dummyServices.map((service, index) => (
+        {/* {dummyServices.map((service, index) => (
           <ProfessionalServiceCard key={index} service={service} />
-        ))}
+        ))} */}
       </ProfessionalsServicesGrid>
     </ProfessionalsPageContainer>
   );

@@ -370,6 +370,14 @@ export const israelLocations: Record<Districts, District> = {
       },
     ],
   },
+  [Districts.All]: {
+    id: Districts.All,
+    name: "Все районы Израиля",
+    description: "All regions of Israel",
+    cities: [
+      { id: "c75", name: "Все города", nameRussian: "Все города" },
+    ],
+  },
 };
 
 export const mapAreasToSelectOptions = () => {

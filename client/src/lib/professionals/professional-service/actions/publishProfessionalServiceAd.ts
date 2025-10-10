@@ -6,6 +6,7 @@ import { ProfessionalService } from "../models/ProfessionalService";
 import connectDB from "@/lib/mongo/mongodb";
 import { FileUploadResponse } from "@/app/api/files/create/route";
 import { redirect } from "next/navigation";
+import { nanoid } from "nanoid";
 
 
 export async function publishProfessionalServiceAd(
@@ -56,6 +57,7 @@ export async function publishProfessionalServiceAd(
     const professionalService = new ProfessionalService({
       ...result.value,
       userId: user.id,
+      publicId: nanoid(10),
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,
     });

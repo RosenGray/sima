@@ -47,5 +47,6 @@ const serviceCategorySchema = new mongoose.Schema({
   }
 });
 
+
 export const ServiceCategory = mongoose.models.ServiceCategory || mongoose.model<IServiceCategory>("ServiceCategory", serviceCategorySchema);
 
