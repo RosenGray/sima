@@ -1,33 +1,22 @@
-import { IProfessionalService } from "@/lib/professionals/professional-service/models/ProfessionalService";
-import mongoose from "mongoose";
+import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { nanoid } from "nanoid";
 
 // Generate dummy data for testing
-export const generateDummyProfessionalServices = (): IProfessionalService[] => {
-  const categories = [
-    "Ремонт и строительство",
-    "Красота и здоровье", 
-    "Образование",
-    "IT и технологии",
-    "Транспорт и логистика",
-    "Спорт и фитнес",
-    "Домашние услуги",
-    "Бизнес и консалтинг"
+export const generateDummyProfessionalServices = (count: number): SerilizeProfessionalService[] => {
+  const firstNames = [
+    "Владислав", "Александр", "Дмитрий", "Сергей", "Андрей", 
+    "Михаил", "Николай", "Иван", "Петр", "Олег",
+    "Анна", "Мария", "Елена", "Ольга", "Наталья"
   ];
 
-  const subCategories = [
-    "Ремонт квартир",
-    "Маникюр и педикюр",
-    "Репетиторство",
-    "Веб-разработка",
-    "Доставка",
-    "Персональный тренер",
-    "Уборка",
-    "Бухгалтерские услуги"
+  const lastNames = [
+    "Иохим", "Петров", "Сидоров", "Козлов", "Васильев",
+    "Новиков", "Федоров", "Морозов", "Волков", "Алексеев",
+    "Лебедева", "Соколова", "Павлова", "Семенова", "Егорова"
   ];
 
-  const cities = ["Киев", "Харьков", "Одесса", "Днепр", "Львов"];
-  const districts = ["Центр", "Печерский", "Шевченковский", "Подольский", "Соломенский"];
+  const cities = ["c1", "c2", "c3", "c4", "c5"];
+  const districts = ["d1", "d2", "d3", "d4", "d5"];
 
   const descriptions = [
     "Профессиональный ремонт квартир любой сложности. Гарантия качества, современные материалы.",
@@ -37,72 +26,75 @@ export const generateDummyProfessionalServices = (): IProfessionalService[] => {
     "Быстрая и надежная доставка по городу. Работаем 24/7.",
     "Персональный тренер в спортзале. Индивидуальный подход к каждому клиенту.",
     "Качественная уборка квартир и офисов. Экологически чистые средства.",
-    "Бухгалтерские услуги для малого и среднего бизнеса. Налоговое планирование."
+    "Бухгалтерские услуги для малого и среднего бизнеса. Налоговое планирование.",
+    "Электрик с опытом работы более 10 лет. Все виды электромонтажных работ.",
+    "Сантехнические услуги. Установка, ремонт, замена сантехники."
   ];
 
-  const dummyServices: IProfessionalService[] = [];
+  const imageNames = [
+    "photo-1.png", "photo-2.jpg", "image-3.png", "pic-4.jpg",
+    "service-1.png", "service-2.jpg", "work-1.png", "work-2.jpg"
+  ];
 
-  for (let i = 0; i < 20; i++) {
-    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-    const randomSubCategory = subCategories[Math.floor(Math.random() * subCategories.length)];
+  const dummyServices: SerilizeProfessionalService[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const randomCity = cities[Math.floor(Math.random() * cities.length)];
     const randomDistrict = districts[Math.floor(Math.random() * districts.length)];
     const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
+    const email = `${firstName.toLowerCase()}${i}@example.com`;
+    const phoneNumber = `${Math.floor(Math.random() * 900000000) + 100000000}`;
+    
+    const now = new Date();
+    const createdAt = new Date(now.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString();
+    const updatedAt = createdAt;
+
+    // Generate 2-5 random images
+    const imageCount = Math.floor(Math.random() * 4) + 2;
+    const images = [];
+    
+    for (let j = 0; j < imageCount; j++) {
+      const originalName = imageNames[Math.floor(Math.random() * imageNames.length)];
+      const timestamp = Date.now() + j;
+      const randomId = nanoid(11);
+      const uniqueName = `${timestamp}-${randomId}.${originalName.split('.')[1]}`;
+      const userId = nanoid(24);
+      
+      images.push({
+        originalName,
+        uniqueName,
+        url: `https://f003.backblazeb2.com/file/sima-board-public-dev/professionals/${userId}/${uniqueName}`,
+        fieldname: "files",
+        versionId: `4_z${nanoid(24)}_f${nanoid(24)}_d20251010_m145500_c003_v0312031_t0052_u${timestamp}`,
+        folderName: "professionals",
+        _id: nanoid(24)
+      });
+    }
 
     dummyServices.push({
-      id: `service-${i + 1}`,
       publicId: nanoid(10),
-      userId: new mongoose.Types.ObjectId(),
-      category: new mongoose.Types.ObjectId(),
-      subCategory: new mongoose.Types.ObjectId(),
+      user: {
+        firstName,
+        lastName,
+        email,
+        createdAt,
+        updatedAt,
+        id: nanoid(24)
+      },
+      category: null,
+      subCategory: null,
       district: randomDistrict,
       city: randomCity,
       description: randomDescription,
-      email: `service${i + 1}@example.com`,
-      phoneNumber: `+380${Math.floor(Math.random() * 900000000) + 100000000}`,
+      email,
+      phoneNumber,
       acceptTerms: true,
-      images: [
-        {
-          originalName: `service-${i + 1}.jpg`,
-          uniqueName: `service-${i + 1}-${Date.now()}.jpg`,
-          url: `https://picsum.photos/400/300?random=${i + 1}`,
-          fieldname: "images",
-          versionId: "",
-          folderName: "professional-services"
-        },
-        {
-          originalName: `service-${i + 21}.jpg`,
-          uniqueName: `service-${i + 21}-${Date.now()}.jpg`,
-          url: `https://picsum.photos/400/300?random=${i + 2}`,
-          fieldname: "images",
-          versionId: "",
-          folderName: "professional-services"
-        },
-        {
-          originalName: `service-${i + 13}.jpg`,
-          uniqueName: `service-${i + 13}-${Date.now()}.jpg`,
-          url: `https://picsum.photos/400/300?random=${i + 3}`,
-          fieldname: "images",
-          versionId: "",
-          folderName: "professional-services"
-        },
-        {
-          originalName: `service-${i + 14}.jpg`,
-          uniqueName: `service-${i +  1}-${Date.now()}.jpg`,
-          url: `https://picsum.photos/400/300?random=${i + 4}`,
-          fieldname: "images",
-          versionId: "",
-          folderName: "professional-services"
-        },
-        {
-          originalName: `service-${i + 15}.jpg`,
-          uniqueName: `service-${i + 15}-${Date.now()}.jpg`,
-          url: `https://picsum.photos/400/300?random=${i + 5}`,
-          fieldname: "images",
-          versionId: "",
-          folderName: "professional-services"
-        },
-      ]
+      images,
+      createdAt,
+      updatedAt,
+      id: nanoid(24)
     });
   }
 

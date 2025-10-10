@@ -15,9 +15,10 @@ import {
 import {Text} from "@radix-ui/themes";
 // import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay  } from "swiper/modules";
+import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 
 interface ProfessionalServiceCardProps {
-  service: IProfessionalService;
+  service: SerilizeProfessionalService;
 }
 
 const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({

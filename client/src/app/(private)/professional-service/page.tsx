@@ -9,7 +9,7 @@ import {
 console.log(1);
 
 const ProfessionalsPage = () => {
-  const dummyServices = generateDummyProfessionalServices();
+  const dummyServices = generateDummyProfessionalServices(20);
 
   return (
     <ProfessionalsPageContainer>
@@ -23,9 +23,9 @@ const ProfessionalsPage = () => {
         }}
         width="auto"
       >
-        {/* {dummyServices.map((service, index) => (
+        {dummyServices.map((service, index) => (
           <ProfessionalServiceCard key={index} service={service} />
-        ))} */}
+        ))}
       </ProfessionalsServicesGrid>
     </ProfessionalsPageContainer>
   );

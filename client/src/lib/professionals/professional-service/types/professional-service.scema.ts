@@ -123,10 +123,12 @@ export const ServiceCategorySchema = z.object({
 });
 
 export interface SerilizeProfessionalService
-  extends Omit<IProfessionalService, "createdAt" | "updatedAt" | "user"> {
+  extends Omit<IProfessionalService, "createdAt" | "updatedAt" | "user" | "category" | "subCategory"> {
   updatedAt: string;
   createdAt: string;
   user: SerializedUser;
+  category: SerializeServiceCategory | null;
+  subCategory: SerializeServiceSubCategory | null;
 }
 
 export type ServiceSubCategory = z.infer<typeof ServiceSubCategorySchema>;
