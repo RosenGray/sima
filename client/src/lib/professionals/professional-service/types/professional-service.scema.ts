@@ -127,8 +127,8 @@ export interface SerilizeProfessionalService
   updatedAt: string;
   createdAt: string;
   user: SerializedUser;
-  category: SerializeServiceCategory | null;
-  subCategory: SerializeServiceSubCategory | null;
+  category: SerializeServiceCategory;
+  subCategory: SerializeServiceSubCategory;
 }
 
 export type ServiceSubCategory = z.infer<typeof ServiceSubCategorySchema>;

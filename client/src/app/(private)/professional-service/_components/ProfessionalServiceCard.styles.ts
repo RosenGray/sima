@@ -24,29 +24,32 @@ export const ServiceCard = styled(Card)`
 `;
 
 export const ServiceCardImages = styled(Flex)`
-  border: 1px solid green;
   flex:1;
 `;
 
 export const ServiceCardImageContainer = styled(Box)`
   height: 100%;
-
-  /* flex:1 0 100%; */
-  /* max-height: 85%; */
   position: relative;
 `;
-//Header
+
 export const ServiceCardHeader = styled.header`
   width: 100%;
   height: 30px;
   display: flex;
   align-items: center;
-  border: 1px solid red;
+  justify-content: space-between;
+
 `;
 export const ServiceCardFooter = styled.footer`
   height: 100px;
   width: 100%;
-  border: 1px solid blue;
+
+  padding: 5px 0;;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const ServiceCardSwiper = styled(Swiper)`
@@ -54,6 +57,4 @@ export const ServiceCardSwiper = styled(Swiper)`
   height: 100%;
 `;
 export const ServiceCardSwiperSlide = styled(SwiperSlide)`
-  /* width: 100%;
-  height: 100%; */
 `;

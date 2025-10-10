@@ -15,7 +15,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const professionalServices = await professionalServiceRepository.getAll();
-
+console.log('professionalServices',professionalServices)
   return (
     <ProfessionalServiceProvider data={{ professionalServices }}>
       <ProfessionalServiceLayoutSection>

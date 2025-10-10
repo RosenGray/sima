@@ -97,7 +97,7 @@ export class ServiceSubCategoryRepository {
       _getAllSubCategories,
       ['service-subcategories'], // cache key
       { 
-        revalidate: 86400, // 1 day
+        revalidate: 31536000, // 1 year
         tags: ['service-subcategories']
       }
     );

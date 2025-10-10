@@ -393,3 +393,14 @@ export const getCitiesToSelectOptions = (districtId: Districts) => {
     label: city.nameRussian,
   }));
 };
+
+
+// create a helper function to get the city name by id
+export const getCityById = (id: string, districtId: Districts) => {
+  return israelLocations[districtId].cities.find((city) => city.id === id);
+};
+
+// create a helper function to get the district name by id
+export const getDistrictById = (id: Districts) => {
+  return israelLocations[id];
+};  
