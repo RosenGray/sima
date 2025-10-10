@@ -1,11 +1,13 @@
-import { ServiceSubCategory, IServiceSubCategory } from '../models/ServiceSubCategory';
+import { ServiceSubCategory } from '../models/ServiceSubCategory';
 import { ServiceCategory } from '../models/ServiceCategory';
 import serviceSubCategoriesData from './professionals.servicesubcategories.json';
+import serviceCategoriesData from './professionals.servicecategories.json';
 import connectDB from '@/lib/mongo/mongodb';
 import { unstable_cache } from 'next/cache';
+import { SerializeServiceSubCategory } from '../types/service-categories.types';
 
 // Internal function that performs the actual database operations
-async function _getAllSubCategories(): Promise<IServiceSubCategory[]> {
+async function _getAllSubCategories(): Promise<SerializeServiceSubCategory[]> {
   console.log('ServiceSubCategoryRepositor 1y');
   try {
     await connectDB();
@@ -18,10 +20,24 @@ async function _getAllSubCategories(): Promise<IServiceSubCategory[]> {
     if (existingSubCategories.length === 0) {
       console.log('No service subcategories found. Initializing with default data...');
       
-      // First, we need to get the service category IDs to map them correctly
-      const serviceCategories = await ServiceCategory.find({});
-      const categoryMap = new Map();
+      // First, ensure service categories are initialized
+      let serviceCategories = await ServiceCategory.find({});
       
+      if (serviceCategories.length === 0) {
+        console.log('No service categories found. Initializing categories first...');
+        const categoriesToInsert = serviceCategoriesData.map((category) => ({
+          key: category.key,
+          displayName: category.displayName,
+          description: category.description,
+          russianDisplayName: category.russianDisplayName,
+          russianDescription: category.russianDescription,
+        }));
+        serviceCategories = await ServiceCategory.insertMany(categoriesToInsert);
+        console.log(`Initialized ${serviceCategories.length} service categories`);
+      }
+      
+      // Now map the service category IDs
+      const categoryMap = new Map();
       serviceCategories.forEach(category => {
         categoryMap.set(category.key, category._id);
       });
@@ -76,7 +92,7 @@ async function _getAllSubCategories(): Promise<IServiceSubCategory[]> {
 
 export class ServiceSubCategoryRepository {
   // Cached version of getAll - caches for 1 hour (3600 seconds)
-  async getAll(): Promise<IServiceSubCategory[]> {
+  async getAll(): Promise<SerializeServiceSubCategory[]> {
     const cachedGetAll = unstable_cache(
       _getAllSubCategories,
       ['service-subcategories'], // cache key

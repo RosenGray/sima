@@ -2,6 +2,7 @@ import { Districts } from "@/lib/cities/types/cities.schema";
 import { z } from "zod";
 import { IProfessionalService } from "../models/ProfessionalService";
 import { SerializedUser } from "@/lib/auth/types/auth.scema";
+import { SerializeServiceCategory, SerializeServiceSubCategory } from "@/lib/service-categories/types/service-categories.types";
 
 export const SIZE_IN_MB = 5;
 export const MAX_FILE_SIZE = SIZE_IN_MB * 1024 * 1024;
@@ -136,7 +137,7 @@ export type ProfessionalService = z.infer<typeof ProfessionalServiceSchema>;
 export type ServiceCategoryMapping = Record<
   ServiceCategory["id"],
   {
-    category: ServiceCategory;
-    subCategories: ServiceSubCategory[];
+    category: SerializeServiceCategory;
+    subCategories: SerializeServiceSubCategory[];
   }
 >;

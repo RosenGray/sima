@@ -1,13 +1,13 @@
 import connectDB from "@/lib/mongo/mongodb";
-import { ServiceCategory, IServiceCategory } from "../models/ServiceCategory";
-import { IServiceSubCategory } from "../models/ServiceSubCategory";
+import { ServiceCategory } from "../models/ServiceCategory";
 import serviceCategoriesData from "./professionals.servicecategories.json";
 import { unstable_cache } from "next/cache";
 import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
 import { serviceSubCategoryRepository } from "./ServiceSubCategoryRepository";
+import { SerializeServiceCategory } from "../types/service-categories.types";
 
 // Internal function that performs the actual database operations
-async function _getAllCategories(): Promise<IServiceCategory[]> {
+async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
   try {
     console.log("ServiceCategoryRepository 1y");
     await connectDB();
@@ -59,38 +59,9 @@ async function _getAllCategories(): Promise<IServiceCategory[]> {
   }
 }
 
-// Normalize data to ensure all ObjectIds and Dates are converted to strings
-function normalizeServiceCategory(category: IServiceCategory) {
-  return {
-    id: category.id.toString(),
-    key: category.key,
-    displayName: category.displayName,
-    description: category.description,
-    russianDisplayName: category.russianDisplayName,
-    russianDescription: category.russianDescription,
-    createdAt: category.createdAt?.toString(),
-    updatedAt: category.updatedAt?.toString(),
-  };
-}
-
-function normalizeServiceSubCategory(subCategory: IServiceSubCategory) {
-  return {
-    id: subCategory.id.toString(),
-    key: subCategory.key,
-    displayName: subCategory.displayName,
-    description: subCategory.description,
-    russianDisplayName: subCategory.russianDisplayName,
-    russianDescription: subCategory.russianDescription,
-    serviceCategory: subCategory.serviceCategory.toString(),
-    serviceCategoryKey: subCategory.serviceCategoryKey,
-    createdAt: subCategory.createdAt?.toString(),
-    updatedAt: subCategory.updatedAt?.toString(),
-  };
-}
-
 export class ServiceCategoryRepository {
   // Cached version of getAll - caches for 1 hour (3600 seconds)
-  async getAll(): Promise<IServiceCategory[]> {
+  async getAll(): Promise<SerializeServiceCategory[]> {
     const cachedGetAll = unstable_cache(
       _getAllCategories,
       ["service-categories"], // cache key
@@ -117,8 +88,8 @@ export class ServiceCategoryRepository {
       );
 
       mapping[category.id] = {
-        category: normalizeServiceCategory(category),
-        subCategories: subCategories.map(normalizeServiceSubCategory),
+        category: category,
+        subCategories: subCategories,
       };
     });
 
