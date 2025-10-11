@@ -1,11 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FileManager } from '@sima-board/common';
+import { Readable } from 'stream';
 
 // Route configuration for file uploads
 export const config = {
   maxDuration: 60, // 60 seconds timeout
   runtime: 'nodejs', // Use Node.js runtime for better file handling
 };
+
+// Define multer-like file interface for FileManager compatibility
+// Extends the base properties needed for Express.Multer.File
+interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  buffer: Buffer;
+  size: number;
+  stream: Readable;
+  destination: string;
+  filename: string;
+  path: string;
+}
 
 export async function GET() {
   return NextResponse.json({ 
@@ -61,9 +77,9 @@ export async function POST(request: NextRequest) {
 
     console.log('Converting files to multer format...');
 
-    // Convert File objects to Express.Multer.File format for FileManager
+    // Convert File objects to MulterFile format for FileManager
     // Process files sequentially to avoid memory issues with large files
-    const multerFiles: Express.Multer.File[] = [];
+    const multerFiles: MulterFile[] = [];
     
     for (let i = 0; i < fileEntries.length; i++) {
       const file = fileEntries[i];
@@ -71,14 +87,19 @@ export async function POST(request: NextRequest) {
       
       try {
         const buffer = Buffer.from(await file.arrayBuffer());
-        const multerFile = {
+        const multerFile: MulterFile = {
           fieldname: 'files',
           originalname: file.name,
           encoding: '7bit',
           mimetype: file.type,
           buffer: buffer,
           size: file.size,
-        } as Express.Multer.File;
+          // Properties required for Express.Multer.File interface but not used in Next.js
+          stream: new Readable(),
+          destination: '',
+          filename: file.name,
+          path: '',
+        };
         
         multerFiles.push(multerFile);
         console.log(`File ${i + 1} processed successfully`);
