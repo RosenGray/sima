@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { Badge, Heading, Text } from "@radix-ui/themes";
+import { Badge, Text } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -11,13 +11,12 @@ import {
   IdCardIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { SwiperSlide } from "swiper/react";
 import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import ImageModal from "../ImageModal";
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+
 import {
   PageContainer,
   PageTitle,
@@ -25,7 +24,6 @@ import {
   ImageSection,
   ImageCarouselContainer,
   CarouselSwiper,
-  CarouselSlide,
   ImageWrapper,
   InfoCard,
   InfoSection,
@@ -79,7 +77,7 @@ const ProfessionalServiceDetailClient: React.FC<
       day: "numeric",
     });
   };
-console.log("service", images);
+
   return (
     <PageContainer size="4">
       {/* Header Section */}
@@ -128,7 +126,7 @@ console.log("service", images);
               }}
             >
               {images.map((image, index) => (
-                <CarouselSlide key={image.uniqueName}>
+                <SwiperSlide key={image.uniqueName}>
                   <ImageWrapper onClick={() => handleImageClick(index)}>
                     <Image
                       src={image.url}
@@ -138,7 +136,7 @@ console.log("service", images);
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   </ImageWrapper>
-                </CarouselSlide>
+                </SwiperSlide>
               ))}
             </CarouselSwiper>
           </ImageCarouselContainer>

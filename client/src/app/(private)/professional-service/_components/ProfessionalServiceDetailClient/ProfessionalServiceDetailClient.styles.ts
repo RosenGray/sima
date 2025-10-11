@@ -1,7 +1,7 @@
 "use client";
 import styled from "styled-components";
 import { Box, Card, Container, Flex, Grid, Heading, Section } from "@radix-ui/themes";
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
@@ -52,14 +52,15 @@ export const ImageCarouselContainer = styled(Box)`
 export const CarouselSwiper = styled(Swiper)`
   width: 100%;
   height: 100%;
-`;
-
-export const CarouselSlide = styled(SwiperSlide)`
-  cursor: pointer;
-  transition: transform 0.2s ease;
   
-  &:hover {
-    transform: scale(1.02);
+  .swiper-slide {
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.02);
+    }
   }
 `;
 
@@ -67,6 +68,7 @@ export const ImageWrapper = styled(Box)`
   width: 100%;
   height: 100%;
   position: relative;
+  display: block;
 `;
 
 export const InfoCard = styled(Card)`
