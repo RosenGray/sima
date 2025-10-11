@@ -7,8 +7,6 @@ import {
   Title,
 } from "./page.styles";
 
-console.log(1);
-
 const ProfessionalsPage = () => {
   const dummyServices = generateDummyProfessionalServices(20);
 
