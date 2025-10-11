@@ -3,26 +3,25 @@
 import mongoose from "mongoose";
 import { DatabaseConnectionError, ServerErrorType } from "@sima-board/common";
 
-
-
-const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } =  process.env;
-
-const isProd = NODE_ENV === "production";
-const MONGO_URI = isProd
-  ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/sima`
-  : "mongodb://localhost:30016/sima";
-
-
-if (!JWT_KEY) {
-  throw new Error("JWT_KEY must be defined");
-}
-if (!MONGO_URI) {
-  throw new Error("MONG_URI must be defined");
-}
-
 let isConnected = false;
 
 const connectDB = async () => {
+  // Validate environment variables at runtime
+  const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } = process.env;
+
+  if (!JWT_KEY) {
+    throw new Error("JWT_KEY must be defined");
+  }
+
+  const isProd = NODE_ENV === "production";
+  const MONGO_URI = isProd
+    ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/sima`
+    : "mongodb://localhost:30016/sima";
+
+  if (!MONGO_URI) {
+    throw new Error("MONGO_URI must be defined");
+  }
+
   if (isConnected) {
     console.log("Already connected to MongoDB");
     return;
