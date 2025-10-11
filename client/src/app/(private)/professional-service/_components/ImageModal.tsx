@@ -95,6 +95,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
 
   return (
     <Dialog.Root  open={open} onOpenChange={onOpenChange}>
+      <Dialog.Title>Image</Dialog.Title>
+      <Dialog.Description>Image</Dialog.Description>
       <ModalContent>
         <ImageContainer>
           <CloseButton
