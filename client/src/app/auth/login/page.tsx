@@ -4,11 +4,11 @@ import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { redirect } from "next/navigation";
 
 interface LoginPageProps {
-  searchParams: { redirectTo?: string };
+  searchParams: Promise<{ redirectTo?: string }>;
 }
 
 const LoginPage: FC<LoginPageProps> = async ({ searchParams }) => {
-  const { redirectTo } = searchParams;
+  const { redirectTo } = await searchParams;
   const user = await getCurrentUser();
   if (user) {
     return redirect(redirectTo || "/auth/success");
