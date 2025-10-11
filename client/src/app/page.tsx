@@ -1,9 +1,7 @@
 
 
-import { Button, Flex, Heading, Text, Container, Section, Box } from '@radix-ui/themes';
-import styled from 'styled-components';
+import { Button, Flex, Heading, Text, Box } from '@radix-ui/themes';
 import Header from '../components/Header';
-import { useTheme } from "next-themes";
 
 
 // const PageContainer = styled(Container)`

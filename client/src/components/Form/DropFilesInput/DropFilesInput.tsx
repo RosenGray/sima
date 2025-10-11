@@ -2,7 +2,6 @@ import React, { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { UploadIcon } from "@radix-ui/react-icons";
 import { IconButton } from "@radix-ui/themes";
-import { Text } from "@radix-ui/themes";
 import {
   FieldMetadata,
   getInputProps as conformGetInputProps,

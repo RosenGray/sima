@@ -5,6 +5,9 @@ import { PublishAdLayoutSection } from "./layout.styles";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 import { PublishAdProvider } from "./_providers/PublishAdProvider";
 
+// Mark as dynamic because we fetch data from MongoDB
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Публикация нового объявления",
   description: "Публикация нового объявления",

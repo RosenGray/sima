@@ -15,7 +15,6 @@ interface VerifyEmailPageProps {
 
 export default function VerifyEmailPage({ params }: VerifyEmailPageProps) {
   const router = useRouter();
-  const [token, setToken] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [verificationResult, setVerificationResult] = useState<{
     success: boolean;
@@ -25,13 +24,6 @@ export default function VerifyEmailPage({ params }: VerifyEmailPageProps) {
   const [email, setEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
-
-  useEffect(() => {
-    params.then(({ token: tokenValue }) => {
-      setToken(tokenValue);
-      handleVerification(tokenValue);
-    });
-  }, []);
 
   const handleVerification = async (tokenValue: string) => {
     setLoading(true);
@@ -46,6 +38,13 @@ export default function VerifyEmailPage({ params }: VerifyEmailPageProps) {
       }, 3000);
     }
   };
+
+  useEffect(() => {
+    params.then(({ token: tokenValue }) => {
+      handleVerification(tokenValue);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleResendVerification = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -10,6 +10,9 @@ import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 
+// Mark as dynamic because we use cookies in getCurrentUser
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Sima Marketplace",
   description:

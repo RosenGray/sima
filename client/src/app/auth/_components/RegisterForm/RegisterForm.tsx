@@ -20,7 +20,6 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { registerUser } from "@/lib/auth/actions/register";
 import { useOnTogglePasswordView } from "@/lib/auth/hooks/useOnTogglePasswordView";
 import { RegisterSchema } from "@/lib/auth/types/auth.scema";
-import Form from "@/components/Form/Form";
 import AuthTextField from "@/components/Form/AuthTextField/AuthTextField";
 import Link from "next/link";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
