@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { processAccountCleanup } from "@/lib/auth/services/AccountCleanupService";
 
 // This should be set in your environment variables
-const CRON_SECRET = process.env.CRON_SECRET || "your-secret-key-change-this";
+const CRON_SECRET = process.env.CRON_SECRET || "RosenGray";
 
 export async function POST(request: NextRequest) {
   try {
