@@ -17,6 +17,7 @@ jobs:
         run: |
           response=$(curl -s -w "\n%{http_code}" -X POST \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -L \
             ${{ secrets.APP_URL }}/api/cron/cleanup-accounts)
           
           http_code=$(echo "$response" | tail -n1)

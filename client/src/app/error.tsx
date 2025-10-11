@@ -14,7 +14,7 @@ interface ErrorProps {
   reset: () => void;
 }
 
-export default function ErrorPage({ reset, error }: ErrorProps) {
+export default function ErrorPage({ reset }: ErrorProps) {
   return (
     <ErrorPageContainer size="3">
       <Flex direction="column" align="center" gap="4">
