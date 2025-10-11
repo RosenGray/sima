@@ -10,6 +10,9 @@ export interface IUser {
   password: string;
   resetToken?: string;
   resetTokenExpiresAt?: Date;
+  emailVerificationToken?: string;
+  emailVerificationTokenExpiresAt?: Date;
+  isEmailVerified: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   hasPrivateProfessionalPage?: boolean;
@@ -40,6 +43,19 @@ const userSchema = new mongoose.Schema<IUser>(
     resetTokenExpiresAt: {
       type: Date,
       required: false,
+    },
+    emailVerificationToken: {
+      type: String,
+      required: false,
+    },
+    emailVerificationTokenExpiresAt: {
+      type: Date,
+      required: false,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     hasPrivateProfessionalPage: {
       type: Boolean,

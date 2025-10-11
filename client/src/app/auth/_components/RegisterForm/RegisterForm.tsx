@@ -27,7 +27,10 @@ import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { useOutsideElement } from "@/lib/auth/hooks/useOutsideElement";
 import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";
-import { mapZodErrorsToValidationItems, passwordValidationPlaceHolderItems } from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
+import {
+  mapZodErrorsToValidationItems,
+  passwordValidationPlaceHolderItems,
+} from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
 
 const RegisterPageForm = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
@@ -37,7 +40,10 @@ const RegisterPageForm = () => {
   useOutsideElement(passwordInputRef.current, () => {
     setOpenPasswordValidationToolTip(false);
   });
-  const [formState, formAction] = useActionState(registerUser, undefined);
+  const [formState, formAction, isPending] = useActionState(
+    registerUser,
+    undefined
+  );
   const { onTogglePasswordView, inputPasswordType } = useOnTogglePasswordView({
     password: "password",
     confirmPassword: "password",
@@ -64,152 +70,150 @@ const RegisterPageForm = () => {
   }, [form.errors]);
   return (
     <Box width="100%" maxWidth="500px">
-      <Form action={formAction} {...getFormProps(form)} noValidate>
-        {({ pending }) => (
-          <Card  size="4">
-            <Flex direction="column" gap="5" p="4">
-              <Heading align="center" size="7" mb="2">
-                Приятно познакомиться
-              </Heading>
-              <Flex direction="column" gap="2">
-                {/* First Name */}
-                <AuthTextField
-                  {...getInputProps(firstName, { type: "text" })}
-                  key={firstName.key}
-                  placeholder="Имя"
-                  size="3"
-                  defaultValue={firstName.initialValue}
-                  dataIsValid={firstName.valid}
-                  errors={firstName.errors}
-                  disabled={pending}
-                >
-                  <PersonIcon height="16" width="16" />
-                </AuthTextField>
+      <form action={formAction} {...getFormProps(form)} noValidate>
+        <Card size="4">
+          <Flex direction="column" gap="5" p="4">
+            <Heading align="center" size="7" mb="2">
+              Приятно познакомиться
+            </Heading>
+            <Flex direction="column" gap="2">
+              {/* First Name */}
+              <AuthTextField
+                {...getInputProps(firstName, { type: "text" })}
+                key={firstName.key}
+                placeholder="Имя"
+                size="3"
+                defaultValue={firstName.initialValue}
+                dataIsValid={firstName.valid}
+                errors={firstName.errors}
+                disabled={isPending}
+              >
+                <PersonIcon height="16" width="16" />
+              </AuthTextField>
 
-                {/* Last Name */}
+              {/* Last Name */}
 
-                <AuthTextField
-                  {...getInputProps(fields.lastName, { type: "text" })}
-                  key={lastName.key}
-                  placeholder="фамилия"
-                  size="3"
-                  defaultValue={fields.lastName.initialValue}
-                  dataIsValid={lastName.valid}
-                  errors={lastName.errors}
-                  disabled={pending}
-                >
-                  <PersonIcon height="16" width="16" />
-                </AuthTextField>
+              <AuthTextField
+                {...getInputProps(fields.lastName, { type: "text" })}
+                key={lastName.key}
+                placeholder="фамилия"
+                size="3"
+                defaultValue={fields.lastName.initialValue}
+                dataIsValid={lastName.valid}
+                errors={lastName.errors}
+                disabled={isPending}
+              >
+                <PersonIcon height="16" width="16" />
+              </AuthTextField>
 
-                {/* Email */}
+              {/* Email */}
 
-                <AuthTextField
-                  {...getInputProps(fields.email, { type: "email" })}
-                  key={email.key}
-                  placeholder="@ Адрес электронной почты"
-                  size="3"
-                  defaultValue={fields.email.initialValue}
-                  dataIsValid={email.valid}
-                  errors={email.errors}
-                  disabled={pending}
-                >
-                  <EnvelopeClosedIcon height="16" width="16" />
-                </AuthTextField>
+              <AuthTextField
+                {...getInputProps(fields.email, { type: "email" })}
+                key={email.key}
+                placeholder="@ Адрес электронной почты"
+                size="3"
+                defaultValue={fields.email.initialValue}
+                dataIsValid={email.valid}
+                errors={email.errors}
+                disabled={isPending}
+              >
+                <EnvelopeClosedIcon height="16" width="16" />
+              </AuthTextField>
 
-                {/* Password */}
+              {/* Password */}
 
-                 <ValidationCheckListTooltip
-                  title="пароль должен содержать:"
-                  placeHolderItems={passwordValidationPlaceHolderItems}
-                  itemsAfterValidation={mapZodErrorsToValidationItems(
-                    password.errors
-                  )}
-                  isValid={password.valid}
-                  isDirty={password.dirty}
-                  open={openPasswordValidationToolTip}
-                >
-                  <Box>
-                    <Text
-                      htmlFor={password.id}
-                      as="label"
-                      size="2"
-                      weight="medium"
-                    >
-                      пароль
-                    </Text>
-                    <TextField.Root
-                      {...getInputProps(password, {
-                        type: inputPasswordType.password,
-                      })}
-                      ref={passwordInputRef}
-                      size="3"
-                      mt="10px"
-                      key={password.key}
-                      placeholder="пароль"
-                      defaultValue={password.initialValue}
-                      disabled={pending}
-                      onClick={() => {
-                        setOpenPasswordValidationToolTip(true);
-                      }}
-                    >
-                      <TextField.Slot>
-                        <LockClosedIcon height="16" width="16" />
-                        <IconButton
-                          type="button"
-                          onClick={onTogglePasswordView(password.name)}
-                          size="3"
-                          variant="ghost"
-                          color="yellow"
-                        >
-                          <EyeOpenIcon height="16" width="16" />
-                        </IconButton>
-                      </TextField.Slot>
-                    </TextField.Root>
-                  </Box>
-                </ValidationCheckListTooltip> 
-
-                {/* confirmPassword Password */}
-
-                <AuthTextField
-                  {...getInputProps(confirmPassword, {
-                    type: inputPasswordType.confirmPassword,
-                  })}
-                  key={confirmPassword.key}
-                  placeholder="Повторите пароль"
-                  size="3"
-                  defaultValue={confirmPassword.initialValue}
-                  dataIsValid={confirmPassword.valid}
-                  errors={confirmPassword.errors}
-                  disabled={pending}
-                >
-                  <>
-                    <LockClosedIcon height="16" width="16" />
-                    <IconButton
-                      type="button"
-                      onClick={onTogglePasswordView(confirmPassword.name)}
-                      size="3"
-                      variant="ghost"
-                      color="yellow"
-                    >
-                      <EyeOpenIcon height="16" width="16" />
-                    </IconButton>
-                  </>
-                </AuthTextField>
-
-                <Flex justify="between" align="center" mt="1">
-                  <Text size="4" color="gray">
-                    Уже есть аккаунт?
-                    <Text ml="10px" color="blue">
-                      <Link href="/auth/login">Войти</Link>
-                    </Text>
+              <ValidationCheckListTooltip
+                title="пароль должен содержать:"
+                placeHolderItems={passwordValidationPlaceHolderItems}
+                itemsAfterValidation={mapZodErrorsToValidationItems(
+                  password.errors
+                )}
+                isValid={password.valid}
+                isDirty={password.dirty}
+                open={openPasswordValidationToolTip}
+              >
+                <Box>
+                  <Text
+                    htmlFor={password.id}
+                    as="label"
+                    size="2"
+                    weight="medium"
+                  >
+                    пароль
                   </Text>
-                </Flex>
-                <SubmitButton pending={pending} />
+                  <TextField.Root
+                    {...getInputProps(password, {
+                      type: inputPasswordType.password,
+                    })}
+                    ref={passwordInputRef}
+                    size="3"
+                    mt="10px"
+                    key={password.key}
+                    placeholder="пароль"
+                    defaultValue={password.initialValue}
+                    disabled={isPending}
+                    onClick={() => {
+                      setOpenPasswordValidationToolTip(true);
+                    }}
+                  >
+                    <TextField.Slot>
+                      <LockClosedIcon height="16" width="16" />
+                      <IconButton
+                        type="button"
+                        onClick={onTogglePasswordView(password.name)}
+                        size="3"
+                        variant="ghost"
+                        color="yellow"
+                      >
+                        <EyeOpenIcon height="16" width="16" />
+                      </IconButton>
+                    </TextField.Slot>
+                  </TextField.Root>
+                </Box>
+              </ValidationCheckListTooltip>
+
+              {/* confirmPassword Password */}
+
+              <AuthTextField
+                {...getInputProps(confirmPassword, {
+                  type: inputPasswordType.confirmPassword,
+                })}
+                key={confirmPassword.key}
+                placeholder="Повторите пароль"
+                size="3"
+                defaultValue={confirmPassword.initialValue}
+                dataIsValid={confirmPassword.valid}
+                errors={confirmPassword.errors}
+                disabled={isPending}
+              >
+                <>
+                  <LockClosedIcon height="16" width="16" />
+                  <IconButton
+                    type="button"
+                    onClick={onTogglePasswordView(confirmPassword.name)}
+                    size="3"
+                    variant="ghost"
+                    color="yellow"
+                  >
+                    <EyeOpenIcon height="16" width="16" />
+                  </IconButton>
+                </>
+              </AuthTextField>
+
+              <Flex justify="between" align="center" mt="1">
+                <Text size="4" color="gray">
+                  Уже есть аккаунт?
+                  <Text ml="10px" color="blue">
+                    <Link href="/auth/login">Войти</Link>
+                  </Text>
+                </Text>
               </Flex>
+              <SubmitButton pending={isPending} />
             </Flex>
-          </Card>
-        )}
-      </Form>
+          </Flex>
+        </Card>
+      </form>
 
       <ErrorModal
         open={errorModalOpen}
@@ -221,4 +225,3 @@ const RegisterPageForm = () => {
 };
 
 export default RegisterPageForm;
-

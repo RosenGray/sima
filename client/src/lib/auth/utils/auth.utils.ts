@@ -13,6 +13,7 @@ export const jwtSignUser = (user: IUser) => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      isEmailVerified: user.isEmailVerified ?? false,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       hasPrivateProfessionalPage: user.hasPrivateProfessionalPage,

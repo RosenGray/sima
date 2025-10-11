@@ -8,6 +8,7 @@ import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
+import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 
 export const metadata: Metadata = {
   title: "Sima Marketplace",
@@ -21,34 +22,37 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+  console.log("user",   user);
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
         <StyledComponentsRegistry>
-        <AuthProvider initialUser={user}>
-          <ThemeProvider
-            attribute="class"
-       
-            enableSystem
-            enableColorScheme
-            storageKey="sima-theme"
-          >
-            <RadixTheme
-              className="globalContentOverflowWrapper"
-              accentColor="red"
-              id={RADIX_THEME_APP_ID}
+          <AuthProvider initialUser={user}>
+            <ThemeProvider
+              attribute="class"
+              enableSystem
+              enableColorScheme
+              storageKey="sima-theme"
             >
-              <div className="SimaApp">{children}</div>
-              <LayoutBackground />
-            </RadixTheme>
-            <RadixTheme
-              id={RADIX_THEME_PORTAL_ID}
-              style={{ height: "auto", minHeight: "auto" }}
-              accentColor="indigo"
-            />
-          </ThemeProvider>
-        </AuthProvider>
+              <RadixTheme
+                className="globalContentOverflowWrapper"
+                accentColor="yellow"
+                id={RADIX_THEME_APP_ID}
+              >
+                {user && !user.isEmailVerified && (
+                  <EmailVerificationBanner userEmail={user.email} />
+                )}
+                <div className="SimaApp">{children}</div>
+                <LayoutBackground />
+              </RadixTheme>
+              <RadixTheme
+                id={RADIX_THEME_PORTAL_ID}
+                style={{ height: "auto", minHeight: "auto" }}
+                accentColor="indigo"
+              />
+            </ThemeProvider>
+          </AuthProvider>
         </StyledComponentsRegistry>
       </body>
     </html>

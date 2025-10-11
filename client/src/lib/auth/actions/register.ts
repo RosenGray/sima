@@ -8,6 +8,11 @@ import { SIMA_AUTH_SESSION_CONFIG } from "../config";
 import { jwtSignUser } from "../utils/auth.utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { 
+  generateVerificationToken, 
+  storeVerificationToken, 
+  sendVerificationEmail 
+} from "../services/EmailVerificationManager";
 
 export async function registerUser(initialState: unknown, formData: FormData) {
   const result = parseWithZod(formData, { schema: RegisterSchema });
@@ -23,9 +28,26 @@ export async function registerUser(initialState: unknown, formData: FormData) {
         formErrors: ["Электронная почта уже используется"],
       });
     }
-    const user = new User({ firstName, lastName, email, password });
+    const user = new User({ 
+      firstName, 
+      lastName, 
+      email, 
+      password,
+      isEmailVerified: false 
+    });
     await user.save();
     
+    // Generate and send email verification
+    try {
+      const verificationToken = generateVerificationToken();
+      await storeVerificationToken(email, verificationToken);
+      const { NEXT_PUBLIC_CLIENT_URL } = process.env;
+      const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
+      await sendVerificationEmail(email, verificationLink);
+    } catch (emailError) {
+      console.error("Error sending verification email:", emailError);
+      // Don't block registration if email fails
+    }
 
     const cookieStore = await cookies();
     const userJwt = jwtSignUser(user);
