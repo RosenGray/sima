@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ServiceCard,
@@ -12,7 +12,6 @@ import {
   ServiceCardSwiperSlide,
 } from "./ProfessionalServiceCard.styles";
 import { Text } from "@radix-ui/themes";
-import Link from "next/link";
 import { Autoplay } from "swiper/modules";
 import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { getCityById } from "@/lib/cities";
@@ -20,79 +19,75 @@ import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface ProfessionalServiceCardProps {
   service: SerilizeProfessionalService;
-  fullPage?: boolean;
 }
 
 const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   service,
-  fullPage = false,
 }) => {
   const { images, publicId, district, city, description } = service;
 
   return (
-
-      <ServiceCardBox $fullPage={fullPage}>
-        <ServiceCard variant="surface">
-          <ServiceCardHeader>
-            <Text weight="bold">
-              {getCityById(city, district as Districts)?.nameRussian}
-            </Text>
-            <Text size="1" color="gray" weight="bold">
-              #{publicId}
-            </Text>
-          </ServiceCardHeader>
-          <ServiceCardImages>
-            <ServiceCardSwiper
-              modules={[Autoplay]}
-              autoplay={true}
-              spaceBetween={0}
-              slidesPerView={2}
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
-            >
-              {images.map((image) => (
-                <ServiceCardSwiperSlide key={image.uniqueName}>
-                  <ServiceCardImageContainer>
-                    <Image
-                      src={image.url}
-                      alt={image.originalName}
-                      fill
-                      style={{ objectFit: "cover" }}
-                    />
-                  </ServiceCardImageContainer>
-                </ServiceCardSwiperSlide>
-              ))}
-            </ServiceCardSwiper>
-          </ServiceCardImages>
-          <ServiceCardFooter>
-            <Text as="p" size="2" color="gray" weight="bold">
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-
-
-            </Text>
-          </ServiceCardFooter>
-        </ServiceCard>
-      </ServiceCardBox>
-
+    <ServiceCardBox>
+      <ServiceCard variant="surface">
+        <ServiceCardHeader>
+          <Text weight="bold">
+            {getCityById(city, district as Districts)?.nameRussian}
+          </Text>
+          <Text size="1" color="gray" weight="bold">
+            #{publicId}
+          </Text>
+        </ServiceCardHeader>
+        <ServiceCardImages>
+          <ServiceCardSwiper
+            modules={[Autoplay]}
+            autoplay={true}
+            spaceBetween={0}
+            slidesPerView={2}
+            onSlideChange={() => console.log("slide change")}
+            onSwiper={(swiper) => console.log(swiper)}
+          >
+            {images.map((image) => (
+              <ServiceCardSwiperSlide key={image.uniqueName}>
+                <ServiceCardImageContainer>
+                  <Image
+                    src={image.url}
+                    alt={image.originalName}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </ServiceCardImageContainer>
+              </ServiceCardSwiperSlide>
+            ))}
+          </ServiceCardSwiper>
+        </ServiceCardImages>
+        <ServiceCardFooter>
+          <Text as="p" color="gray" weight="bold" >
+            loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos. loremp ipsum dolor sit amet consectetur adipisicing elit.
+            Quisquam, quos. loremp ipsum dolor sit amet consectetur adipisicing
+            elit. Quisquam, quos. loremp ipsum dolor sit amet consectetur
+            adipisicing elit. Quisquam, quos. loremp ipsum dolor sit amet
+            consectetur adipisicing elit. Quisquam, quos. loremp ipsum dolor sit
+            amet consectetur adipisicing elit. Quisquam, quos. loremp ipsum
+            dolor sit amet consectetur adipisicing elit. Quisquam, quos. loremp
+            ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+            loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos. loremp ipsum dolor sit amet consectetur adipisicing elit.
+            Quisquam, quos. loremp ipsum dolor sit amet consectetur adipisicing
+            elit. Quisquam, quos. loremp ipsum dolor sit amet consectetur
+            adipisicing elit. Quisquam, quos. loremp ipsum dolor sit amet
+            consectetur adipisicing elit. Quisquam, quos. loremp ipsum dolor sit
+            amet consectetur adipisicing elit. Quisquam, quos. loremp ipsum
+            dolor sit amet consectetur adipisicing elit. Quisquam, quos. loremp
+            ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+            loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos. loremp ipsum dolor sit amet consectetur adipisicing elit.
+            Quisquam, quos. loremp ipsum dolor sit amet consectetur adipisicing
+            elit. Quisquam, quos. vladi vladi
+          </Text>
+        </ServiceCardFooter>
+      </ServiceCard>
+    </ServiceCardBox>
   );
 };
 
