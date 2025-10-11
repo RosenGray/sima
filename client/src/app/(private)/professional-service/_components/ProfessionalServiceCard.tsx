@@ -20,16 +20,18 @@ import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface ProfessionalServiceCardProps {
   service: SerilizeProfessionalService;
+  fullPage?: boolean;
 }
 
 const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   service,
+  fullPage = false,
 }) => {
   const { images, publicId, district, city, description } = service;
 
   return (
-    <Link href={`/professional-service/${publicId}`}>
-      <ServiceCardBox>
+
+      <ServiceCardBox $fullPage={fullPage}>
         <ServiceCard variant="surface">
           <ServiceCardHeader>
             <Text weight="bold">
@@ -39,7 +41,7 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
               #{publicId}
             </Text>
           </ServiceCardHeader>
-          {/* <ServiceCardImages>
+          <ServiceCardImages>
             <ServiceCardSwiper
               modules={[Autoplay]}
               autoplay={true}
@@ -61,15 +63,36 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
                 </ServiceCardSwiperSlide>
               ))}
             </ServiceCardSwiper>
-          </ServiceCardImages> */}
+          </ServiceCardImages>
           <ServiceCardFooter>
             <Text as="p" size="2" color="gray" weight="bold">
-              {description}
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+              loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+
+
             </Text>
           </ServiceCardFooter>
         </ServiceCard>
       </ServiceCardBox>
-    </Link>
+
   );
 };
 

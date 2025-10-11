@@ -3,6 +3,7 @@ import { professionalServiceRepository } from "@/lib/professionals/professional-
 import { notFound } from "next/navigation";
 import { Text, Container } from "@radix-ui/themes";
 import ProfessionalServiceCard from "../_components/ProfessionalServiceCard";
+import { ProfessionalServicePageContainer } from "./page.styles";
 
 interface ProfessionalServicePageProps {
   params: Promise<{ id: string }>;
@@ -23,9 +24,9 @@ const ProfessionalServicePage: FC<ProfessionalServicePageProps> = async ({
   }
 
   return (
-   <Container style={{border: '1px solid red',height: '100%'}} height="100%" >
-     <ProfessionalServiceCard service={service} />
-   </Container>
+   <ProfessionalServicePageContainer>
+     <ProfessionalServiceCard service={service} fullPage={true} />
+   </ProfessionalServicePageContainer>
   );
 };
 

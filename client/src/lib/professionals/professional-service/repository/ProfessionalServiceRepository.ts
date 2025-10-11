@@ -40,6 +40,7 @@ class ProfessionalServiceRepository {
   async getByPublicId(publicId: string): Promise<SerilizeProfessionalService | null> {
     try {
       await connectDB();
+      console.log('publicId',publicId)
 
       const professionalService = await ProfessionalService.findOne({ publicId })
         .populate("category")

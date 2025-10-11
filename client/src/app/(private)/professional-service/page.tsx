@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ProfessionalServiceCard from "./_components/ProfessionalServiceCard";
 import { generateDummyProfessionalServices } from "./_components/dummyData";
 import {
@@ -24,7 +25,9 @@ const ProfessionalsPage = () => {
         width="auto"
       >
         {dummyServices.map((service, index) => (
-          <ProfessionalServiceCard key={index} service={service} />
+          <Link href={`/professional-service/${service.publicId}`} key={index}>
+            <ProfessionalServiceCard service={service} />
+          </Link>
         ))}
       </ProfessionalsServicesGrid>
     </ProfessionalsPageContainer>
