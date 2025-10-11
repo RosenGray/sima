@@ -107,7 +107,7 @@ const ProfessionalServiceDetailClient: React.FC<
         <ImageSection>
           <ImageCarouselContainer>
             <CarouselSwiper
-              modules={[Autoplay, Navigation, Pagination]}
+              modules={[ Navigation, Pagination]}
               autoplay={{ delay: 3000, disableOnInteraction: false }}
               navigation
               pagination={{ clickable: true }}

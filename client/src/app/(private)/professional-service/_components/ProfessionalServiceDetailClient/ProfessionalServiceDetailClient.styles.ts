@@ -62,6 +62,71 @@ export const CarouselSwiper = styled(Swiper)`
       transform: scale(1.02);
     }
   }
+  
+  /* Navigation buttons styling */
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: var(--gray-12);
+    background: var(--gray-1);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-4);
+    transition: all 0.2s ease;
+    
+    &:after {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    &:hover {
+      background: var(--accent-9);
+      color: var(--gray-1);
+      transform: scale(1.1);
+    }
+    
+    &.swiper-button-disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      
+      &:hover {
+        background: var(--gray-1);
+        color: var(--gray-12);
+        transform: none;
+      }
+    }
+    & > svg {
+      width: 50%;
+    height: 50%;
+    }
+  }
+  
+  /* Pagination styling */
+  .swiper-pagination {
+    bottom: 10px;
+    
+    .swiper-pagination-bullet {
+      width: 10px;
+      height: 10px;
+      background: var(--gray-1);
+      opacity: 0.6;
+      transition: all 0.3s ease;
+      border: 2px solid var(--gray-12);
+      
+      &:hover {
+        opacity: 0.8;
+        transform: scale(1.2);
+      }
+    }
+    
+    .swiper-pagination-bullet-active {
+      background: var(--accent-9);
+      opacity: 1;
+      width: 12px;
+      height: 12px;
+      border-color: var(--accent-9);
+    }
+  }
 `;
 
 export const ImageWrapper = styled(Box)`

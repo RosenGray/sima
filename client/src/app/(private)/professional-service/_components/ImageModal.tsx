@@ -19,6 +19,7 @@ const ImageContainer = styled(Flex)`
   height: 90vh;
   justify-content: center;
   align-items: center;
+  margin: auto;
 `;
 
 const StyledImage = styled(Image)`
@@ -93,7 +94,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   const currentImage = images[currentIndex];
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root  open={open} onOpenChange={onOpenChange}>
       <ModalContent>
         <ImageContainer>
           <CloseButton
