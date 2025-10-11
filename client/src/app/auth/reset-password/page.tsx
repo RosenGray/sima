@@ -1,13 +1,15 @@
-import { getUserSessionData } from "@/utils/auth";
-import ResetPasswordForm from "./ResetPasswordForm";
+import { FC } from "react";
 import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
+import ResetPasswordForm from "../_components/ResetPasswordForm/ResetPasswordForm";
 
-const ResetPasswordPage = async () => {
-  const userSession = await getUserSessionData();
-  if (userSession && userSession.isSessionValid) {
+
+const ResetPasswordPage: FC = async () => {
+  const user = await getCurrentUser();
+  if (user) {
     return redirect("/auth/success");
   }
-  return <ResetPasswordForm />;
+  return <ResetPasswordForm />
 };
 
 export default ResetPasswordPage;

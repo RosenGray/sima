@@ -1,21 +1,30 @@
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+// import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header";
 import type { Metadata } from "next";
-import styles from "./layout.module.scss";
+import { PublishAdLayoutSection } from "./layout.styles";
+import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
+import { PublishAdProvider } from "./_providers/PublishAdProvider";
 
 export const metadata: Metadata = {
   title: "Публикация нового объявления",
   description: "Публикация нового объявления",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const mappedCategories =
+    await serviceCategoryRepository.getMappedCategories();
+
   return (
-    <section className={styles.PublishAdLayout}>
-      <SimpleHeader />
-      <main>{children}</main>
-    </section>
+    <PublishAdProvider data={{ mappedCategories }}>
+      <PublishAdLayoutSection>
+        {/* <SimpleHeader /> */}
+        <Header />
+        <main>{children}</main>
+      </PublishAdLayoutSection>
+    </PublishAdProvider>
   );
 }

@@ -1,0 +1,854 @@
+[{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc59"
+  },
+  "key": "GeneralRepair",
+  "displayName": "General Repair",
+  "description": "General construction and repair services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b980"
+  },
+  "serviceCategoryKey": "ConstructionRepair",
+  "russianDisplayName": "Общий ремонт",
+  "russianDescription": "Общие строительные и ремонтные работы",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.759Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.759Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc5b"
+  },
+  "key": "PaintingPlastering",
+  "displayName": "Painting & Plastering",
+  "description": "Professional painting and plastering services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b980"
+  },
+  "serviceCategoryKey": "ConstructionRepair",
+  "russianDisplayName": "Покраска и штукатурка",
+  "russianDescription": "Профессиональные услуги по покраске и штукатурке",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.783Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.783Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc5d"
+  },
+  "key": "TileWork",
+  "displayName": "Tile Work",
+  "description": "Professional tile installation and repair",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b980"
+  },
+  "serviceCategoryKey": "ConstructionRepair",
+  "russianDisplayName": "Плиточные работы",
+  "russianDescription": "Профессиональная укладка и ремонт плитки",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.785Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.785Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc5f"
+  },
+  "key": "Plumbing",
+  "displayName": "Plumbing",
+  "description": "Plumbing installation and repair services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b980"
+  },
+  "serviceCategoryKey": "ConstructionRepair",
+  "russianDisplayName": "Сантехника",
+  "russianDescription": "Установка и ремонт сантехники",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.787Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.787Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc61"
+  },
+  "key": "Electrical",
+  "displayName": "Electrical",
+  "description": "Electrical installation and repair services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b980"
+  },
+  "serviceCategoryKey": "ConstructionRepair",
+  "russianDisplayName": "Электрика",
+  "russianDescription": "Установка и ремонт электрики",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.789Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.789Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc63"
+  },
+  "key": "AcSpecialist",
+  "displayName": "AC Specialist",
+  "description": "Air conditioning installation and repair",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b980"
+  },
+  "serviceCategoryKey": "ConstructionRepair",
+  "russianDisplayName": "Специалист по кондиционерам",
+  "russianDescription": "Установка и ремонт кондиционеров",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.790Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.790Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc65"
+  },
+  "key": "Carpentry",
+  "displayName": "Carpentry",
+  "description": "Professional carpentry services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b980"
+  },
+  "serviceCategoryKey": "ConstructionRepair",
+  "russianDisplayName": "Столярные работы",
+  "russianDescription": "Профессиональные столярные услуги",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.792Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.792Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc68"
+  },
+  "key": "Refrigerator",
+  "displayName": "Refrigerator Repair",
+  "description": "Refrigerator repair and maintenance",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b981"
+  },
+  "serviceCategoryKey": "ApplianceRepair",
+  "russianDisplayName": "Ремонт холодильников",
+  "russianDescription": "Ремонт и обслуживание холодильников",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.795Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.795Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc6a"
+  },
+  "key": "WasherDryer",
+  "displayName": "Washer & Dryer Repair",
+  "description": "Washer and dryer repair services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b981"
+  },
+  "serviceCategoryKey": "ApplianceRepair",
+  "russianDisplayName": "Ремонт стиральных машин",
+  "russianDescription": "Ремонт стиральных и сушильных машин",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.796Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.796Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc6c"
+  },
+  "key": "KitchenAppliances",
+  "displayName": "Kitchen Appliances",
+  "description": "Kitchen appliance repair services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b981"
+  },
+  "serviceCategoryKey": "ApplianceRepair",
+  "russianDisplayName": "Кухонная техника",
+  "russianDescription": "Ремонт кухонной техники",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.798Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.798Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc6e"
+  },
+  "key": "ComputerElectronics",
+  "displayName": "Computer & Electronics",
+  "description": "Computer and electronics repair",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b981"
+  },
+  "serviceCategoryKey": "ApplianceRepair",
+  "russianDisplayName": "Компьютеры и электроника",
+  "russianDescription": "Ремонт компьютеров и электроники",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.799Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.799Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc71"
+  },
+  "key": "Lawyer",
+  "displayName": "Lawyer",
+  "description": "Legal consultation and services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b982"
+  },
+  "serviceCategoryKey": "Legal",
+  "russianDisplayName": "Юрист",
+  "russianDescription": "Юридические консультации и услуги",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.822Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.822Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc73"
+  },
+  "key": "ImmigrationSpecialist",
+  "displayName": "Immigration Specialist",
+  "description": "Immigration law and consulting",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b982"
+  },
+  "serviceCategoryKey": "Legal",
+  "russianDisplayName": "Специалист по иммиграции",
+  "russianDescription": "Иммиграционное право и консультации",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.827Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.827Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc75"
+  },
+  "key": "FinancialLaw",
+  "displayName": "Financial Law",
+  "description": "Financial legal services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b982"
+  },
+  "serviceCategoryKey": "Legal",
+  "russianDisplayName": "Финансовое право",
+  "russianDescription": "Услуги в области финансового права",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.834Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.834Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc77"
+  },
+  "key": "DocumentsLicenses",
+  "displayName": "Documents & Licenses",
+  "description": "Document and license processing",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b982"
+  },
+  "serviceCategoryKey": "Legal",
+  "russianDisplayName": "Документы и лицензии",
+  "russianDescription": "Оформление документов и лицензий",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.836Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.836Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc7a"
+  },
+  "key": "Orthopedist",
+  "displayName": "Orthopedist",
+  "description": "Orthopedic medical services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b983"
+  },
+  "serviceCategoryKey": "Medical",
+  "russianDisplayName": "Ортопед",
+  "russianDescription": "Ортопедические медицинские услуги",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.839Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.839Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc7c"
+  },
+  "key": "MassageTherapist",
+  "displayName": "Massage Therapist",
+  "description": "Professional massage therapy",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b983"
+  },
+  "serviceCategoryKey": "Medical",
+  "russianDisplayName": "Массажист",
+  "russianDescription": "Профессиональный массаж",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.840Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.840Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc7e"
+  },
+  "key": "Physiotherapist",
+  "displayName": "Physiotherapist",
+  "description": "Physiotherapy services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b983"
+  },
+  "serviceCategoryKey": "Medical",
+  "russianDisplayName": "Физиотерапевт",
+  "russianDescription": "Физиотерапевтические услуги",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.843Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.843Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc80"
+  },
+  "key": "Psychologist",
+  "displayName": "Psychologist",
+  "description": "Psychological counseling",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b983"
+  },
+  "serviceCategoryKey": "Medical",
+  "russianDisplayName": "Психолог",
+  "russianDescription": "Психологическое консультирование",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.844Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.844Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc83"
+  },
+  "key": "Moving",
+  "displayName": "Moving Services",
+  "description": "Professional moving services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b984"
+  },
+  "serviceCategoryKey": "Transportation",
+  "russianDisplayName": "Услуги переезда",
+  "russianDescription": "Профессиональные услуги по переезду",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.847Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.847Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc85"
+  },
+  "key": "FurnitureAssembly",
+  "displayName": "Furniture Assembly",
+  "description": "Furniture assembly services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b984"
+  },
+  "serviceCategoryKey": "Transportation",
+  "russianDisplayName": "Сборка мебели",
+  "russianDescription": "Услуги по сборке мебели",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.848Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.848Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc87"
+  },
+  "key": "Courier",
+  "displayName": "Courier",
+  "description": "Courier delivery services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b984"
+  },
+  "serviceCategoryKey": "Transportation",
+  "russianDisplayName": "Курьер",
+  "russianDescription": "Курьерские услуги доставки",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.849Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.849Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc8a"
+  },
+  "key": "LocksDoors",
+  "displayName": "Locks & Doors",
+  "description": "Lock and door installation services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b985"
+  },
+  "serviceCategoryKey": "SecurityInstallation",
+  "russianDisplayName": "Замки и двери",
+  "russianDescription": "Установка замков и дверей",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.850Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.850Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc8c"
+  },
+  "key": "VideoSurveillance",
+  "displayName": "Video Surveillance",
+  "description": "Video surveillance system installation",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b985"
+  },
+  "serviceCategoryKey": "SecurityInstallation",
+  "russianDisplayName": "Видеонаблюдение",
+  "russianDescription": "Установка систем видеонаблюдения",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.851Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.851Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc8e"
+  },
+  "key": "SecuritySystems",
+  "displayName": "Security Systems",
+  "description": "Security system installation",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b985"
+  },
+  "serviceCategoryKey": "SecurityInstallation",
+  "russianDisplayName": "Охранные системы",
+  "russianDescription": "Установка охранных систем",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.851Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.851Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc91"
+  },
+  "key": "WebDeveloper",
+  "displayName": "Web Developer",
+  "description": "Web development services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b986"
+  },
+  "serviceCategoryKey": "ItAdvertising",
+  "russianDisplayName": "Веб-разработчик",
+  "russianDescription": "Услуги веб-разработки",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.853Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.853Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc93"
+  },
+  "key": "AdvertisingSpecialist",
+  "displayName": "Advertising Specialist",
+  "description": "Professional advertising services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b986"
+  },
+  "serviceCategoryKey": "ItAdvertising",
+  "russianDisplayName": "Специалист по рекламе",
+  "russianDescription": "Профессиональные рекламные услуги",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.853Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.853Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc95"
+  },
+  "key": "SmmSpecialist",
+  "displayName": "SMM Specialist",
+  "description": "Social media marketing services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b986"
+  },
+  "serviceCategoryKey": "ItAdvertising",
+  "russianDisplayName": "SMM специалист",
+  "russianDescription": "Услуги маркетинга в социальных сетях",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.854Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.854Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc97"
+  },
+  "key": "TargetingSpecialist",
+  "displayName": "Targeting Specialist",
+  "description": "Targeted advertising services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b986"
+  },
+  "serviceCategoryKey": "ItAdvertising",
+  "russianDisplayName": "Специалист по таргетингу",
+  "russianDescription": "Услуги таргетированной рекламы",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.855Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.855Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc9a"
+  },
+  "key": "MathTeacher",
+  "displayName": "Math Teacher",
+  "description": "Mathematics tutoring services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b987"
+  },
+  "serviceCategoryKey": "Education",
+  "russianDisplayName": "Учитель математики",
+  "russianDescription": "Услуги репетитора по математике",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.856Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.856Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc9c"
+  },
+  "key": "ArtTeacher",
+  "displayName": "Art Teacher",
+  "description": "Art education services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b987"
+  },
+  "serviceCategoryKey": "Education",
+  "russianDisplayName": "Учитель искусства",
+  "russianDescription": "Услуги обучения искусству",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.858Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.858Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdc9e"
+  },
+  "key": "Tutor",
+  "displayName": "Tutor",
+  "description": "General tutoring services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b987"
+  },
+  "serviceCategoryKey": "Education",
+  "russianDisplayName": "Репетитор",
+  "russianDescription": "Услуги репетитора",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.859Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.859Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdca1"
+  },
+  "key": "Accountant",
+  "displayName": "Accountant",
+  "description": "Accounting services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b988"
+  },
+  "serviceCategoryKey": "Business",
+  "russianDisplayName": "Бухгалтер",
+  "russianDescription": "Бухгалтерские услуги",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.862Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.862Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdca3"
+  },
+  "key": "BusinessConsultant",
+  "displayName": "Business Consultant",
+  "description": "Business consulting services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b988"
+  },
+  "serviceCategoryKey": "Business",
+  "russianDisplayName": "Бизнес-консультант",
+  "russianDescription": "Услуги бизнес-консультирования",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.863Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.863Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdca5"
+  },
+  "key": "TenderSpecialist",
+  "displayName": "Tender Specialist",
+  "description": "Tender processing services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b988"
+  },
+  "serviceCategoryKey": "Business",
+  "russianDisplayName": "Специалист по тендерам",
+  "russianDescription": "Услуги по работе с тендерами",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.864Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.864Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdca7"
+  },
+  "key": "InternationalTrade",
+  "displayName": "International Trade",
+  "description": "International trade services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b988"
+  },
+  "serviceCategoryKey": "Business",
+  "russianDisplayName": "Международная торговля",
+  "russianDescription": "Услуги международной торговли",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.865Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.865Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdcaa"
+  },
+  "key": "Cleaning",
+  "displayName": "Cleaning",
+  "description": "Professional cleaning services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b989"
+  },
+  "serviceCategoryKey": "Household",
+  "russianDisplayName": "Уборка",
+  "russianDescription": "Профессиональные услуги уборки",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.867Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.867Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdcac"
+  },
+  "key": "Handyman",
+  "displayName": "Handyman",
+  "description": "General handyman services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b989"
+  },
+  "serviceCategoryKey": "Household",
+  "russianDisplayName": "Мастер на все руки",
+  "russianDescription": "Услуги мастера на все руки",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.868Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.868Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdcae"
+  },
+  "key": "PetCare",
+  "displayName": "Pet Care",
+  "description": "Pet care services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b989"
+  },
+  "serviceCategoryKey": "Household",
+  "russianDisplayName": "Уход за животными",
+  "russianDescription": "Услуги по уходу за животными",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.870Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.870Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a732362b9c8f6c7d0cdcb0"
+  },
+  "key": "BeautyServices",
+  "displayName": "Beauty Services",
+  "description": "Professional beauty services",
+  "serviceCategory": {
+    "$oid": "67a4ff1fe474c3020a84b989"
+  },
+  "serviceCategoryKey": "Household",
+  "russianDisplayName": "Услуги красоты",
+  "russianDescription": "Профессиональные услуги красоты",
+  "createdAt": {
+    "$date": "2025-02-08T10:30:14.871Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-08T10:30:14.871Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67a8e603a764e4a8040c758e"
+  },
+  "description": "Other",
+  "displayName": "Other",
+  "key": "Other",
+  "russianDescription": "Другое",
+  "russianDisplayName": "Другое",
+  "serviceCategory": {
+    "$oid": "67a8e17ea764e4a8040c758c"
+  },
+  "serviceCategoryKey": "Other"
+}]

@@ -1,0 +1,100 @@
+:root {
+  --header-height: 70px;
+    /* --background-color: linear-gradient(
+      135deg,
+      #e9e5fe,
+      #eef7ff,
+      #ecedfe,
+      #eddbe6
+    );
+    --header-height: 70px;
+    --hero-card-background-color: #fffc; */
+      /* Radix breakpoints as CSS variables */
+  --breakpoint-xs: 520px;
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 1024px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1640px;
+  }
+  
+  .dark {
+    /* --background-color: linear-gradient(
+      135deg,
+      #2b2543,
+      #111c2a,
+      #2a2d3f,
+      #3a2b3d,
+      #111216
+    );
+    --hero-card-background-color: #1b1d1eb3; */
+  }
+  
+  /* For backwards compatibility */
+  html:is(.dark) {
+    /* --background-color: linear-gradient(
+      135deg,
+      #2b2543,
+      #111c2a,
+      #2a2d3f,
+      #3a2b3d,
+      #111216
+    );
+    --hero-card-background-color: #1b1d1eb3; */
+  }
+
+  
+  
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+  
+  html,
+  body {
+    max-width: 100vw;
+  }
+  
+  /* reset */
+
+  button,
+  p {
+    all: unset;
+  }
+
+  .globalContentOverflowWrapper{
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .SimaApp{
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  footer{
+  
+  }
+  
+  a{
+    text-decoration: none;
+    cursor: pointer;
+    color:var(--current-color);
+  }
+  a:hover{
+    text-decoration: none;
+    cursor: pointer;
+  
+  }
+  
+  ul{
+    list-style: none;
+  }
+  
+
+  .disabled-link {
+    color: grey; /* Or any other desired color */
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none; /* Prevents click events */
+  } 

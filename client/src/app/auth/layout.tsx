@@ -1,6 +1,5 @@
 import { FC, ReactNode } from "react";
-import { Container, Flex } from "@radix-ui/themes";
-import classes from "./layout.module.scss";
+import { AuthLayoutContainer, AuthLayoutFlex } from "./layout.styles";
 
 
 interface AuthLayoutProps {
@@ -10,15 +9,15 @@ interface AuthLayoutProps {
 const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
 
   return (
-    <Container px="10px" className={classes.AuthLayout}>
-      <Flex
-        className={classes.AuthLayout__Flex}
+    <AuthLayoutContainer px="10px">
+      <AuthLayoutFlex
+
         justify="center"
         align="center"
       >
         {children}
-      </Flex>
-    </Container>
+      </AuthLayoutFlex>
+    </AuthLayoutContainer>
   );
 };
 

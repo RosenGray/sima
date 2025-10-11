@@ -1,0 +1,185 @@
+"use client";
+
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import AuthTextField from "@/components/Form/AuthTextField/AuthTextField";
+import Form from "@/components/Form/Form";
+import { FormCard } from "@/components/Form/FormCard/FormCard.styles";
+import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";
+import {
+  mapZodErrorsToValidationItems,
+  passwordValidationPlaceHolderItems,
+} from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
+import { resetPasswordConfirm } from "@/lib/auth/actions/resetPasswordConfirm";
+import { useOnTogglePasswordView } from "@/lib/auth/hooks/useOnTogglePasswordView";
+import { useOutsideElement } from "@/lib/auth/hooks/useOutsideElement";
+import { ResetPasswordConfirmSchema } from "@/lib/auth/types/auth.scema";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { EyeOpenIcon, LockClosedIcon } from "@radix-ui/react-icons";
+import {
+  Box,
+  Flex,
+  Heading,
+  IconButton,
+  Text,
+  TextField,
+} from "@radix-ui/themes";
+import { useActionState, useEffect, useRef, useState } from "react";
+
+const ReplacePasswordFormPage = ({ token: _token }: { token: string }) => {
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const passwordInputRef = useRef<null | HTMLInputElement>(null);
+  const [openPasswordValidationToolTip, setOpenPasswordValidationToolTip] =
+    useState(false);
+  useOutsideElement(passwordInputRef.current, () => {
+    setOpenPasswordValidationToolTip(false);
+  });
+  const [formState, formAction] = useActionState(
+    resetPasswordConfirm,
+    undefined
+  );
+
+  const { onTogglePasswordView, inputPasswordType } = useOnTogglePasswordView({
+    password: "password",
+    confirmPassword: "password",
+  });
+  const [form, fields] = useForm({
+    defaultValue: {
+      token: _token,
+    },
+    lastResult: formState,
+    onValidate: ({ formData }) => {
+      return parseWithZod(formData, { schema: ResetPasswordConfirmSchema });
+    },
+    shouldRevalidate: "onInput",
+    shouldValidate: "onInput",
+  });
+  const handleModalClose = () => {
+    setErrorModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (form.errors) {
+      setErrorModalOpen(true);
+    }
+  }, [form.errors]);
+
+  const { password, confirmPassword, token } = fields;
+
+  return (
+    <Box width="100%" maxWidth="500px">
+      <Form action={formAction} {...getFormProps(form)} noValidate>
+        {({ pending }) => (
+          <FormCard size="4">
+            <Flex direction="column" gap="5" p="4">
+              <Heading align="center" size="7" mb="2">
+                Новый пароль
+              </Heading>
+              <Flex direction="column" gap="2">
+                {/* Token */}
+
+                <input
+                  {...getInputProps(token, {
+                    type: "hidden",
+                  })}
+                  key={token.key}
+                  defaultValue={token.initialValue}
+                  disabled={pending}
+                />
+
+                {/* Password */}
+
+                <ValidationCheckListTooltip
+                  title="пароль должен содержать:"
+                  placeHolderItems={passwordValidationPlaceHolderItems}
+                  itemsAfterValidation={mapZodErrorsToValidationItems(
+                    password.errors
+                  )}
+                  isValid={password.valid}
+                  isDirty={password.dirty}
+                  open={openPasswordValidationToolTip}
+                >
+                  <Box>
+                    <Text
+                      htmlFor={password.id}
+                      as="label"
+                      size="2"
+                      weight="medium"
+                    >
+                      пароль
+                    </Text>
+                    <TextField.Root
+                      {...getInputProps(password, {
+                        type: inputPasswordType.password,
+                      })}
+                      ref={passwordInputRef}
+                      size="3"
+                      mt="10px"
+                      key={password.key}
+                      placeholder="пароль"
+                      defaultValue={password.initialValue}
+                      disabled={pending}
+                      onClick={() => {
+                        setOpenPasswordValidationToolTip(true);
+                      }}
+                    >
+                      <TextField.Slot>
+                        <LockClosedIcon height="16" width="16" />
+                        <IconButton
+                          type="button"
+                          onClick={onTogglePasswordView(password.name)}
+                          size="3"
+                          variant="ghost"
+                          color="yellow"
+                        >
+                          <EyeOpenIcon height="16" width="16" />
+                        </IconButton>
+                      </TextField.Slot>
+                    </TextField.Root>
+                  </Box>
+                </ValidationCheckListTooltip>
+
+                {/* confirmPassword Password */}
+
+                <AuthTextField
+                  {...getInputProps(confirmPassword, {
+                    type: inputPasswordType.confirmPassword,
+                  })}
+                  key={confirmPassword.key}
+                  placeholder="Повторите пароль"
+                  size="3"
+                  defaultValue={confirmPassword.initialValue}
+                  dataIsValid={confirmPassword.valid}
+                  errors={confirmPassword.errors}
+                  disabled={pending}
+                >
+                  <>
+                    <LockClosedIcon height="16" width="16" />
+                    <IconButton
+                      type="button"
+                      onClick={onTogglePasswordView(confirmPassword.name)}
+                      size="3"
+                      variant="ghost"
+                      color="yellow"
+                    >
+                      <EyeOpenIcon height="16" width="16" />
+                    </IconButton>
+                  </>
+                </AuthTextField>
+                <SubmitButton pending={pending} />
+              </Flex>
+            </Flex>
+          </FormCard>
+        )}
+      </Form>
+      <ErrorModal
+        open={errorModalOpen}
+        onOpenChange={handleModalClose}
+        errorMessage={form.errors}
+      />
+    </Box>
+  );
+};
+
+export default ReplacePasswordFormPage;

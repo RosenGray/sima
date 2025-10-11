@@ -1,8 +1,8 @@
-import Loader from "@/components/Loader/Loader";
-import { Button } from "@radix-ui/themes";
+import { Button, Spinner } from "@radix-ui/themes";
 import { HTMLAttributes } from "react";
 
-interface SubmitButtonProps extends Omit<HTMLAttributes<HTMLButtonElement>, "color"> {
+interface SubmitButtonProps
+  extends Omit<HTMLAttributes<HTMLButtonElement>, "color"> {
   pending?: boolean;
   disabled?: boolean;
   text?: string;
@@ -27,7 +27,7 @@ export function SubmitButton({
       mt={mt}
       {...props}
     >
-      {pending ? <Loader isSpin width={500} height={500} /> : text}
+      {pending ? <Spinner size="3" /> : text}
     </Button>
   );
 }

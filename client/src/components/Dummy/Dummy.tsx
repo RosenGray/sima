@@ -1,31 +1,12 @@
+// Client Component
 'use client'
-import {  Button, } from '@radix-ui/themes'
 
-// const fetchCurrentUserClient = async () => {
-//   const response = await fetch("http://localhost:3000/api/auth/currentuser", {
-//     credentials: "include",
-//   });
-//   return response.json();
-// };
-
-
-const Dummy = () => {
-
-  const fetchUser = async () => {
-    console.log('kuku');
-     await fetch('/api/auth/signout',{
-      credentials: 'include',
-      method: 'POST'
-    })
-  }
-
+export default function Dummy({ posts }: { posts: unknown[] }) {
   return (
     <div>
-      <Button onClick={fetchUser}>
-         Hello
-      </Button>
+      <h1>Dummy Component</h1>
+      <p>Posts count: {posts.length}</p>
+      <pre>{JSON.stringify(posts, null, 2)}</pre>
     </div>
   )
 }
-
-export default Dummy

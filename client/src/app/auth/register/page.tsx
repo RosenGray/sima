@@ -1,13 +1,15 @@
-import RegisterPageForm from "./RegisterPageForm";
+import { FC } from "react";
+import RegisterPageForm from "../_components/RegisterForm/RegisterForm";
 import { redirect } from "next/navigation";
-import { getUserSessionData } from "@/utils/auth";
+import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 
-const RegisterPage = async () => {
-  const userSession = await getUserSessionData();
-  if (userSession && userSession.isSessionValid) {
+
+const LoginPage: FC = async () => {
+  const user = await getCurrentUser();
+  if (user) {
     return redirect("/auth/success");
   }
-  return <RegisterPageForm />;
+  return <RegisterPageForm />
 };
 
-export default RegisterPage;
+export default LoginPage;
