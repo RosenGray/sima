@@ -31,6 +31,36 @@ class ProfessionalServiceRepository {
       throw new Error("Failed to fetch professional services");
     }
   }
+
+  /**
+   * Get a professional service by publicId
+   * @param publicId - The public ID of the professional service
+   * @returns Promise<SerilizeProfessionalService | null> - The professional service or null if not found
+   */
+  async getByPublicId(publicId: string): Promise<SerilizeProfessionalService | null> {
+    try {
+      await connectDB();
+
+      const professionalService = await ProfessionalService.findOne({ publicId })
+        .populate("category")
+        .populate("subCategory")
+        .populate("user");
+
+      if (!professionalService) {
+        return null;
+      }
+
+      // Serialize to remove MongoDB ObjectIds and other non-serializable types
+      const serializedService = JSON.parse(
+        JSON.stringify(professionalService)
+      );
+
+      return serializedService;
+    } catch (error) {
+      console.error("Error fetching professional service:", error);
+      throw new Error("Failed to fetch professional service");
+    }
+  }
 }
 
 export const professionalServiceRepository =

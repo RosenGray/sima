@@ -1,4 +1,8 @@
 import { FC } from "react";
+import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
+import { notFound } from "next/navigation";
+import { Text, Container } from "@radix-ui/themes";
+import ProfessionalServiceCard from "../_components/ProfessionalServiceCard";
 
 interface ProfessionalServicePageProps {
   params: Promise<{ id: string }>;
@@ -9,7 +13,20 @@ const ProfessionalServicePage: FC<ProfessionalServicePageProps> = async ({
 }) => {
   const { id } = await params;
 
-  return <h1>Professional Service Page {id}</h1>;
+  // Fetch the professional service data server-side
+  const service = await professionalServiceRepository.getByPublicId('NfTgZlw973');
+  console.log('service',service)
+
+  // If service not found, trigger Next.js 404 page
+  if (!service) {
+    notFound();
+  }
+
+  return (
+   <Container style={{border: '1px solid red',height: '100%'}} height="100%" >
+     <ProfessionalServiceCard service={service} />
+   </Container>
+  );
 };
 
 export default ProfessionalServicePage;
