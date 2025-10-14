@@ -1,18 +1,11 @@
 import { FC } from "react";
 import LoginForm from "../_components/LoginForm/LoginForm";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
-interface LoginPageProps {
-  searchParams: Promise<{ redirectTo?: string }>;
-}
-
-const LoginPage: FC<LoginPageProps> = async ({ searchParams }) => {
-  const { redirectTo } = await searchParams;
+const LoginPage: FC = async () => {
   const user = await getCurrentUser();
-  if (user) {
-    return redirect(redirectTo || "/auth/success");
-  }
+  if (user) return notFound();
   return <LoginForm />;
 };
 

@@ -42,6 +42,7 @@ import {
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { ThisUserIsOwner } from "@/lib/auth/utils/auth.utils";
+import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
 
 interface ProfessionalServiceDetailClientProps {
   service: SerilizeProfessionalService;
@@ -90,8 +91,8 @@ const ProfessionalServiceDetailClient: React.FC<
     console.log("edit");
   };
 
-  const handleDelete = () => {
-    console.log("delete");
+  const handleDelete = async () => {
+    await deleteProfessionalServiceAdWithRedirect(publicId);
   };
 
   return (

@@ -21,7 +21,6 @@ import {
   mapAreasToSelectOptions,
 } from "@/lib/cities";
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
-import Form from "@/components/Form/Form";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
 import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
@@ -39,10 +38,9 @@ const ProfessionalServicePublishForm: FC = () => {
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
-  console.log("mappedCategories", mappedCategories);
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [formState, formAction] = useActionState(
+  const [formState, formAction, isPending] = useActionState(
     publishProfessionalServiceAd,
     undefined
   );
@@ -128,12 +126,12 @@ const ProfessionalServicePublishForm: FC = () => {
 
   return (
     <>
-      <Form
+      <form
         _key={formKey.toString()}
         action={formAction}
         {...getFormProps(form)}
       >
-        {({ pending }) => (
+   
           <Box>
             <Grid columns="2" gap="4" mb="4">
               {/* category */}
@@ -144,7 +142,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 options={categoriesOptions}
                 defaultValue={categoriesOptions[0]}
                 errors={category.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
               />
 
               {/* subCategory */}
@@ -155,7 +153,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 options={subCategoryOptions}
                 defaultValue={subCategoryOptions[0]}
                 errors={subCategory.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
               />
 
               {/* area */}
@@ -166,7 +164,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 options={areasOptions}
                 defaultValue={areasOptions[0]}
                 errors={district.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
               />
               {/* city */}
 
@@ -177,7 +175,7 @@ const ProfessionalServicePublishForm: FC = () => {
                 defaultValue={citiesOptions[0]}
                 options={citiesOptions}
                 errors={city.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
               />
             </Grid>
             {/* description */}
@@ -191,7 +189,7 @@ const ProfessionalServicePublishForm: FC = () => {
               errors={description.errors}
               rows={5}
               mb="5px"
-              disabled={pending}
+              disabled={isPending}
             />
 
             <DropFilesInput
@@ -233,7 +231,7 @@ const ProfessionalServicePublishForm: FC = () => {
                   defaultValue={fields.email.initialValue}
                   dataIsValid={email.valid}
                   errors={email.errors}
-                  disabled={pending}
+                  disabled={isPending}
                 >
                   <EnvelopeClosedIcon height="16" width="16" />
                 </BasicFormField>
@@ -243,7 +241,7 @@ const ProfessionalServicePublishForm: FC = () => {
                   field={phoneNumber}
                   errors={phoneNumber.errors}
                   size="3"
-                  disabled={pending}
+                  disabled={isPending}
                 />
               </Grid>
             </Box>
@@ -258,9 +256,9 @@ const ProfessionalServicePublishForm: FC = () => {
                 field={acceptTerms}
                 label="Я согласен с условиями"
                 errors={acceptTerms.errors}
-                disabled={pending}
+                disabled={isPending}
               />
-              <SubmitButton pending={pending} text="Добавить объявление" />
+              <SubmitButton pending={isPending} text="Добавить объявление" />
 
               {/* <ReCAPTCHA
                   submitButtonText="Добавить объявление"
@@ -268,8 +266,8 @@ const ProfessionalServicePublishForm: FC = () => {
                 /> */}
             </Flex>
           </Box>
-        )}
-      </Form>
+      
+      </form>
       <ErrorModal open={errorModalOpen} onOpenChange={handleModalClose} />
     </>
   );

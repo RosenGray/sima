@@ -9,6 +9,7 @@ const protectedRoutes = [
   "/settings",
   "/admin",
   "/api/protected",
+  "/publish-ad",
 
 ];
 
@@ -69,7 +70,6 @@ export function middleware(request: NextRequest) {
 
   // If it's a protected route, check authentication
   if (isProtectedRoute) {
-    console.log("isProtectedRoute1", isProtectedRoute);
     if (!token) {
       // No token, redirect to login
       return NextResponse.redirect(new URL("/auth/login", request.url));

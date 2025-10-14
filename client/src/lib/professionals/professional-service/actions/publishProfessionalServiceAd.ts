@@ -14,6 +14,8 @@ export async function publishProfessionalServiceAd(
   formData: FormData
 ) {
   
+  //fake 5 sec await
+  await new Promise((resolve) => setTimeout(resolve, 5000));
   const result = parseWithZod(formData, { schema: ProfessionalServiceSchema });
 
   if (result.status !== "success") return result.reply();
