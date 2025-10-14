@@ -2,7 +2,11 @@
 import React from "react";
 import Image from "next/image";
 import { Dialog, Flex, IconButton } from "@radix-ui/themes";
-import { Cross2Icon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import {
+  Cross2Icon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@radix-ui/react-icons";
 import styled from "styled-components";
 
 const ModalContent = styled(Dialog.Content)`
@@ -33,7 +37,7 @@ const NavigationButton = styled(IconButton)`
   z-index: 10;
   background: var(--gray-12);
   color: var(--gray-1);
-  
+
   &:hover {
     background: var(--gray-11);
   }
@@ -54,7 +58,7 @@ const CloseButton = styled(IconButton)`
   z-index: 10;
   background: var(--gray-12);
   color: var(--gray-1);
-  
+
   &:hover {
     background: var(--gray-11);
   }
@@ -94,10 +98,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
   const currentImage = images[currentIndex];
 
   return (
-    <Dialog.Root  open={open} onOpenChange={onOpenChange}>
-      <Dialog.Title>Image</Dialog.Title>
-      <Dialog.Description>Image</Dialog.Description>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <ModalContent>
+        <Dialog.Title>Image</Dialog.Title>
+        <Dialog.Description>Image</Dialog.Description>
         <ImageContainer>
           <CloseButton
             size="3"
@@ -144,4 +148,3 @@ const ImageModal: React.FC<ImageModalProps> = ({
 };
 
 export default ImageModal;
-

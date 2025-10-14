@@ -52,3 +52,8 @@ export async function requireAuthOrRedirectTo(redirectTo: string = "/auth/login"
   }
   return user;
 }
+
+
+export const isOwner = (userId: string, ownerId: string) => {
+  return userId === ownerId;
+}

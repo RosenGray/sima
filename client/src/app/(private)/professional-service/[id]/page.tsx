@@ -21,16 +21,7 @@ const ProfessionalServicePage: FC<ProfessionalServicePageProps> = async ({
     notFound();
   }
 
-  // Check if user is authenticated
-  const currentUser = await getCurrentUser();
-  const isAuthenticated = !!currentUser;
-
-  return (
-    <ProfessionalServiceDetailClient
-      service={service}
-      isAuthenticated={isAuthenticated}
-    />
-  );
+  return <ProfessionalServiceDetailClient service={service} />;
 };
 
 export default ProfessionalServicePage;

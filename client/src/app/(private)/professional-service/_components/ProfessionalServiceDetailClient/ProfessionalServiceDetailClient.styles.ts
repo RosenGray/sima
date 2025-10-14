@@ -203,10 +203,7 @@ export const DescriptionBox = styled(Box)`
   background: var(--gray-2);
   border-radius: var(--radius-3);
   line-height: 1.6;
-  height:150px;
-  //elipsis
 
-  overflow: auto;
   
 
 

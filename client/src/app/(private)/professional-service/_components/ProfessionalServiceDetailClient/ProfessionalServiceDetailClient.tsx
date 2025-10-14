@@ -36,17 +36,19 @@ import {
   MetaInfo,
   MetaItem,
 } from "./ProfessionalServiceDetailClient.styles";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 interface ProfessionalServiceDetailClientProps {
   service: SerilizeProfessionalService;
-  isAuthenticated: boolean;
 }
 
 const ProfessionalServiceDetailClient: React.FC<
   ProfessionalServiceDetailClientProps
-> = ({ service, isAuthenticated }) => {
+> = ({ service }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const { user: currentUser } = useAuth();
+  const isAuthenticated = !!currentUser;
 
   const {
     images,
@@ -96,14 +98,50 @@ const ProfessionalServiceDetailClient: React.FC<
           #{publicId}
         </Badge>
       </BadgeContainer>
-
       <ContentGrid
         columns={{
           initial: "1",
           md: "2",
         }}
       >
-
+        {/* Image Gallery Section */}
+        <ImageSection>
+          <ImageCarouselContainer>
+            <CarouselSwiper
+              modules={[Autoplay, Navigation, Pagination]}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              navigation
+              pagination={{ clickable: true }}
+              spaceBetween={10}
+              slidesPerView={1}
+              breakpoints={{
+                640: {
+                  slidesPerView: 1,
+                },
+                768: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 2,
+                },
+              }}
+            >
+              {images.map((image, index) => (
+                <SwiperSlide key={image.uniqueName}>
+                  <ImageWrapper onClick={() => handleImageClick(index)}>
+                    <Image
+                      src={image.url}
+                      alt={image.originalName}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+                    />
+                  </ImageWrapper>
+                </SwiperSlide>
+              ))}
+            </CarouselSwiper>
+          </ImageCarouselContainer>
+        </ImageSection>
 
         {/* Information Section */}
         <InfoCard>
@@ -168,45 +206,6 @@ const ProfessionalServiceDetailClient: React.FC<
             </MetaItem>
           </MetaInfo>
         </InfoCard>
-
-        {/* Image Gallery Section */}
-        <ImageSection>
-          <ImageCarouselContainer>
-            <CarouselSwiper
-              modules={[ Autoplay, Navigation, Pagination]}
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
-              navigation
-              pagination={{ clickable: true }}
-              spaceBetween={10}
-              slidesPerView={1}
-              breakpoints={{
-                640: {
-                  slidesPerView: 1,
-                },
-                768: {
-                  slidesPerView: 2,
-                },
-                1024: {
-                  slidesPerView: 2,
-                },
-              }}
-            >
-              {images.map((image, index) => (
-                <SwiperSlide key={image.uniqueName}>
-                  <ImageWrapper onClick={() => handleImageClick(index)}>
-                    <Image
-                      src={image.url}
-                      alt={image.originalName}
-                      fill
-                      style={{ objectFit: "cover" }}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  </ImageWrapper>
-                </SwiperSlide>
-              ))}
-            </CarouselSwiper>
-          </ImageCarouselContainer>
-        </ImageSection>
       </ContentGrid>
 
       {/* Image Modal */}
@@ -222,4 +221,3 @@ const ProfessionalServiceDetailClient: React.FC<
 };
 
 export default ProfessionalServiceDetailClient;
-
