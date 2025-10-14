@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 
 const LoginPage: FC = async () => {
   const user = await getCurrentUser();
-  if (user) return notFound();
+  // if (user) return notFound();
   return <RegisterPageForm />;
 };
 

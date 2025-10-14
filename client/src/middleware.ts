@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 import { SIMA_AUTH_SESSION_CONFIG } from "@/lib/auth/config";
+import { notFound } from "next/navigation";
 
 // Define routes that should be protected
 const protectedRoutes = [
@@ -10,7 +11,6 @@ const protectedRoutes = [
   "/admin",
   "/api/protected",
   "/publish-ad",
-
 ];
 
 // Define routes that should be accessible without authentication
@@ -19,7 +19,6 @@ const publicRoutes = [
   "/login",
   "/register",
   "/auth/login",
-  "/auth/register",
   "/auth/reset-password",
   "/auth/verify-reset-token",
   "/about",
@@ -30,7 +29,16 @@ const publicRoutes = [
 // Define routes that should redirect authenticated users away
 const authRoutes = ["/login", "/register", "/auth/login", "/auth/register"];
 
-export function middleware(request: NextRequest) {
+// Helper function to get JWT secret as Uint8Array
+const getJwtSecret = () => {
+  const secret = process.env.JWT_KEY;
+  if (!secret) {
+    throw new Error("JWT_KEY is not defined");
+  }
+  return new TextEncoder().encode(secret);
+};
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Get the JWT token from cookies
@@ -60,8 +68,8 @@ export function middleware(request: NextRequest) {
   if (isAuthRoute && token) {
     try {
       // Verify the token to ensure it's valid
-      jwt.verify(token, process.env.JWT_KEY!);
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      await jwtVerify(token, getJwtSecret());
+      return NextResponse.redirect(new URL("/404", request.url));
     } catch {
       // Token is invalid, continue to auth page
       return NextResponse.next();
@@ -77,7 +85,7 @@ export function middleware(request: NextRequest) {
 
     try {
       // Verify the token
-      jwt.verify(token, process.env.JWT_KEY!);
+      await jwtVerify(token, getJwtSecret());
       return NextResponse.next();
     } catch {
       // Token is invalid, redirect to login
@@ -102,7 +110,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - .well-known (Chrome DevTools and other system requests)
      */
-    "/((?!_next/static|_next/image|favicon.ico|public/).*)",
+    "/((?!_next/static|_next/image|favicon.ico|public/|\\.well-known/).*)",
   ],
 };
