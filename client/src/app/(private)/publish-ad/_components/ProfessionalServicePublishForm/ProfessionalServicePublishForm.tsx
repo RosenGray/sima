@@ -31,6 +31,7 @@ import Checkbox from "@/components/Form/Checkbox/Checkbox";
 import { publishProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/publishProfessionalServiceAd";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import GoogleReCAPTCHA from "@/components/GoogleReCAPTCHA/GoogleReCAPTCHA";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -127,7 +128,7 @@ const ProfessionalServicePublishForm: FC = () => {
   return (
     <>
       <form
-        _key={formKey.toString()}
+        key={formKey.toString()}
         action={formAction}
         {...getFormProps(form)}
       >
@@ -258,12 +259,12 @@ const ProfessionalServicePublishForm: FC = () => {
                 errors={acceptTerms.errors}
                 disabled={isPending}
               />
-              <SubmitButton pending={isPending} text="Добавить объявление" />
+              {/* <SubmitButton pending={isPending} text="Добавить объявление" /> */}
 
-              {/* <ReCAPTCHA
+              <GoogleReCAPTCHA
                   submitButtonText="Добавить объявление"
-                  isLoading={pending || isRevalidating}
-                /> */}
+                  isLoading={isPending}
+                />
             </Flex>
           </Box>
       
