@@ -18,8 +18,34 @@ export const PageContainer = styled(Container)`
   }
 `;
 
-export const PageTitle = styled(Heading)`
+export const HeaderSection = styled(Flex)`
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
   margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+export const PageTitle = styled(Heading)`
+  margin: 0;
+`;
+
+export const ButtonGroup = styled(Flex)`
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  
+  @media (max-width: 640px) {
+    width: 100%;
+    
+    button {
+      flex: 1;
+    }
+  }
 `;
 
 export const ContentGrid = styled(Grid)`

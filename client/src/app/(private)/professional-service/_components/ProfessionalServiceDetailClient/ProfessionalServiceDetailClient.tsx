@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { Badge, Text } from "@radix-ui/themes";
+import { Badge, Text, Button } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -9,6 +9,8 @@ import {
   CalendarIcon,
   ReaderIcon,
   IdCardIcon,
+  Pencil1Icon,
+  TrashIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
@@ -35,8 +37,11 @@ import {
   DescriptionBox,
   MetaInfo,
   MetaItem,
+  HeaderSection,
+  ButtonGroup,
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import { ThisUserIsOwner } from "@/lib/auth/utils/auth.utils";
 
 interface ProfessionalServiceDetailClientProps {
   service: SerilizeProfessionalService;
@@ -47,8 +52,9 @@ const ProfessionalServiceDetailClient: React.FC<
 > = ({ service }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
+  const isOwner = thisUserIsOwner(service.user.id);
 
   const {
     images,
@@ -80,13 +86,34 @@ const ProfessionalServiceDetailClient: React.FC<
     });
   };
 
+  const handleEdit = () => {
+    console.log("edit");
+  };
+
+  const handleDelete = () => {
+    console.log("delete");
+  };
+
   return (
     <PageContainer size="4">
       {/* Header Section */}
-      <PageTitle size="8" weight="bold">
-        {subCategory.russianDisplayName}
-      </PageTitle>
-
+      {isOwner && (
+        <HeaderSection>
+          <PageTitle size="8" weight="bold">
+            {subCategory.russianDisplayName}
+          </PageTitle>
+          <ButtonGroup>
+            <Button size="3" variant="soft" color="blue" onClick={handleEdit}>
+              <Pencil1Icon width="18" height="18" />
+              Редактировать
+            </Button>
+            <Button size="3" variant="soft" color="red" onClick={handleDelete}>
+              <TrashIcon width="18" height="18" />
+              Удалить
+            </Button>
+          </ButtonGroup>
+        </HeaderSection>
+      )}
       <BadgeContainer>
         <Badge size="2" color="blue" variant="soft">
           {category.russianDisplayName}

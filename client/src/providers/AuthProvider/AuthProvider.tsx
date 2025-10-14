@@ -1,10 +1,17 @@
 "use client";
 import { SerializedUser } from "@/lib/auth/types/auth.scema";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type AuthContextType = {
   user: SerializedUser | null;
   setUser: (user: SerializedUser | null) => void;
+  thisUserIsOwner: (ownerId: string) => boolean;
 };
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -16,12 +23,20 @@ interface AuthProviderProps {
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const [user, setUser] = useState<SerializedUser | null>(initialUser);
 
-  useEffect(() => { 
+  useEffect(() => {
     setUser(initialUser);
   }, [initialUser]);
 
-  return (  
-    <AuthContext.Provider value={{ user, setUser }}>
+  const thisUserIsOwner = useCallback(
+    (ownerId: string) => {
+      if (!user) return false;
+      return user.id === ownerId;
+    },
+    [user]
+  );
+
+  return (
+    <AuthContext.Provider value={{ user, setUser, thisUserIsOwner }}>
       {children}
     </AuthContext.Provider>
   );

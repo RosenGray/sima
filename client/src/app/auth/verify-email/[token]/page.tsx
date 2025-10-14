@@ -32,7 +32,6 @@ export default function VerifyEmailPage({ params }: VerifyEmailPageProps) {
     setLoading(false);
 
     if (result.success) {
-      // Redirect to home after successful verification
       setTimeout(() => {
         router.push("/");
       }, 3000);
