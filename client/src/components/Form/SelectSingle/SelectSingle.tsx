@@ -38,7 +38,6 @@ const SelectSingle: FC<SelectSingleProps> = ({
 
   useLayoutEffect(() => {
     if (defaultValue?.value) {
-      console.log("defaultValue", defaultValue.value);
       controlRef.current.change(defaultValue.value);
     }
   }, [defaultValue?.value]);

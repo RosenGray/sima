@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
@@ -51,12 +51,18 @@ const ProfessionalServicePublishForm: FC<
     publishProfessionalServiceAd,
     undefined
   );
+  console.log('service', service);
 
   const [form, fields] = useForm({
     defaultValue: {
+      category: service?.category?.id,
+      subCategory: service?.subCategory?.id,
+      district: service?.district || Districts.Center,
+      city: service?.city,
       images: [],
       email: user?.email,
-      district: Districts.Center,
+      phoneNumber: service?.phoneNumber.toString(),
+      description: service?.description,
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -131,21 +137,28 @@ const ProfessionalServicePublishForm: FC<
   console.log("acceptTerms", acceptTerms.value);
   console.log("images", images.value);
 
-  const categoriesOptions =
-    mapServiceCategoriesToSelectOptions(mappedCategories);
-  const subCategoryOptions = mapServiceSubCategoriesToSelectOptions(
-    mappedCategories,
-    category.value
+  const categoriesOptions = useMemo(
+    () => mapServiceCategoriesToSelectOptions(mappedCategories),
+    [mappedCategories]
   );
-  const citiesOptions = getCitiesToSelectOptions(
-    (district.value as Districts) || Districts.Center
+  const subCategoryOptions = useMemo(
+    () =>
+      mapServiceSubCategoriesToSelectOptions(mappedCategories, category.value),
+    [mappedCategories, category.value]
+  );
+  const citiesOptions = useMemo(
+    () =>
+      getCitiesToSelectOptions(
+        (district.value as Districts) || Districts.Center
+      ),
+    [district.value]
   );
   useEffect(() => {
     if (formState) {
       setErrorModalOpen(true);
     }
   }, [formState]);
-console.log('citiesOptions',citiesOptions)
+
   return (
     <>
       <form
@@ -161,7 +174,6 @@ console.log('citiesOptions',citiesOptions)
               field={category}
               placeholder="Выберите доску"
               options={categoriesOptions}
-              defaultValue={categoriesOptions[0]}
               errors={category.errors}
               isDisabled={isPending}
             />
@@ -172,7 +184,6 @@ console.log('citiesOptions',citiesOptions)
               field={subCategory}
               placeholder="Выберите подкатегорию"
               options={subCategoryOptions}
-              defaultValue={subCategoryOptions[0]}
               errors={subCategory.errors}
               isDisabled={isPending}
             />
@@ -183,7 +194,6 @@ console.log('citiesOptions',citiesOptions)
               field={district}
               placeholder="Выберите район"
               options={areasOptions}
-              defaultValue={areasOptions[0]}
               errors={district.errors}
               isDisabled={isPending}
             />
@@ -193,7 +203,6 @@ console.log('citiesOptions',citiesOptions)
               label="Выберите город"
               field={city}
               placeholder="Выберите город"
-              defaultValue={citiesOptions[0]}
               options={citiesOptions}
               errors={city.errors}
               isDisabled={isPending}
@@ -263,6 +272,7 @@ console.log('citiesOptions',citiesOptions)
                 errors={phoneNumber.errors}
                 size="3"
                 disabled={isPending}
+                
               />
             </Grid>
           </Box>
