@@ -4,7 +4,7 @@ import React from "react";
 import Select, { Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SelectSingle.styles";
-import { FieldMetadata, useInputControl } from "@conform-to/react";
+import { FieldMetadata, useInputControl, getInputProps } from "@conform-to/react";
 
 interface Option {
   value: string;
@@ -51,12 +51,14 @@ const SelectSingle: FC<SelectSingleProps> = ({
           {label}
         </Text>
       )}
+      {/* Hidden input to maintain value in DOM for form submission */}
+      <input {...getInputProps(field, { type: "hidden" })} />
       <Select
         defaultValue={defaultValue}
         classNamePrefix="sima-select-single"
         instanceId={`select-${field.name}`}
         styles={styles}
-        name={field.name}
+        // Remove name from Select since the hidden input handles it
         // menuPortalTarget={
         //   typeof document !== "undefined" ? document.body : undefined
         // }

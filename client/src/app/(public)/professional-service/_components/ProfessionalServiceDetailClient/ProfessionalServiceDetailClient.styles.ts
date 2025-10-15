@@ -56,6 +56,7 @@ export const ContentGrid = styled(Grid)`
 export const ImageSection = styled(Section)`
   padding: 0;
   width: 100%;
+  position: relative;
 `;
 
 export const ImageCarouselContainer = styled(Box)`

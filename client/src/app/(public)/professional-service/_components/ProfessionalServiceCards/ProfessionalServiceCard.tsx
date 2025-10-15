@@ -16,6 +16,21 @@ import { Autoplay } from "swiper/modules";
 import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
+import { useProfessionalService } from "../../_providers/ProfessionalServiceProvider";
+import Link from "next/link";
+export const ProfessionalServiceCards: React.FC = () => {
+  const { professionalServices } = useProfessionalService();
+  console.log(professionalServices);
+  return (
+    <>
+      {professionalServices.map((service, index) => (
+        <Link href={`/professional-service/${service.publicId}`} key={index}>
+          <ProfessionalServiceCard key={index} service={service} />
+        </Link>
+      ))}
+    </>
+  );
+};
 
 interface ProfessionalServiceCardProps {
   service: SerilizeProfessionalService;
@@ -24,6 +39,8 @@ interface ProfessionalServiceCardProps {
 const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   service,
 }) => {
+  const { professionalServices } = useProfessionalService();
+  console.log(professionalServices);
   const { images, publicId, district, city } = service;
 
   return (
@@ -38,30 +55,41 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
           </Text>
         </ServiceCardHeader>
         <ServiceCardImages>
-          <ServiceCardSwiper
-            modules={[Autoplay]}
-            autoplay={true}
-            spaceBetween={0}
-            slidesPerView={2}
-            onSlideChange={() => console.log("slide change")}
-            onSwiper={(swiper) => console.log(swiper)}
-          >
-            {images.map((image) => (
-              <ServiceCardSwiperSlide key={image.uniqueName}>
-                <ServiceCardImageContainer>
-                  <Image
-                    src={image.url}
-                    alt={image.originalName}
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </ServiceCardImageContainer>
-              </ServiceCardSwiperSlide>
-            ))}
-          </ServiceCardSwiper>
+          {images.length === 1 ? (
+            <ServiceCardImageContainer>
+              <Image src={images[0].url} alt={images[0].originalName} fill />
+            </ServiceCardImageContainer>
+          ) : (
+            <ServiceCardSwiper
+              modules={[Autoplay]}
+              autoplay={true}
+              spaceBetween={0}
+              slidesPerView={2}
+              onSlideChange={() => console.log("slide change")}
+              onSwiper={(swiper) => console.log(swiper)}
+            >
+              {images.map((image) => (
+                <ServiceCardSwiperSlide key={image.uniqueName}>
+                  <ServiceCardImageContainer>
+                    <Image
+                      src={image.url}
+                      alt={image.originalName}
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  </ServiceCardImageContainer>
+                </ServiceCardSwiperSlide>
+              ))}
+            </ServiceCardSwiper>
+          )}
         </ServiceCardImages>
         <ServiceCardFooter>
-          <Text as="p" color="gray" weight="bold" >
+          <Text
+            style={{ display: "block", height: "100%" }}
+            as="p"
+            color="gray"
+            weight="bold"
+          >
             loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             quos. loremp ipsum dolor sit amet consectetur adipisicing elit.
             Quisquam, quos. loremp ipsum dolor sit amet consectetur adipisicing

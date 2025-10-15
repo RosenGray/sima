@@ -134,7 +134,10 @@ const ProfessionalServiceDetailClient: React.FC<
       >
         {/* Image Gallery Section */}
         <ImageSection>
-          <ImageCarouselContainer>
+          {images.length === 1 ? (
+            <Image src={images[0].url} alt={images[0].originalName} fill />
+          ) : (
+            <ImageCarouselContainer>
             <CarouselSwiper
               modules={[Autoplay, Navigation, Pagination]}
               autoplay={{ delay: 3000, disableOnInteraction: false }}
@@ -169,6 +172,7 @@ const ProfessionalServiceDetailClient: React.FC<
               ))}
             </CarouselSwiper>
           </ImageCarouselContainer>
+          )}
         </ImageSection>
 
         {/* Information Section */}

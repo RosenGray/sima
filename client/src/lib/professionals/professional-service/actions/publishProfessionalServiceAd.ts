@@ -7,6 +7,8 @@ import connectDB from "@/lib/mongo/mongodb";
 import { FileUploadResponse } from "@/app/api/files/create/route";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
+import { revalidatePath } from "next/cache";
+
 
 
 export async function publishProfessionalServiceAd(
@@ -76,5 +78,6 @@ export async function publishProfessionalServiceAd(
       formErrors: ["Неизвестная ошибка"],
     });
   }
+  revalidatePath("/professional-service", "layout"); // Explicitly revalidate the layout
   redirect("/professional-service");
 }
