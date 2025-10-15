@@ -1,12 +1,11 @@
 // Client Component
 'use client'
 
-export default function Dummy({ posts }: { posts: unknown[] }) {
+export default function Dummy() {
+  console.log('Dummy');
   return (
     <div>
-      <h1>Dummy Component</h1>
-      <p>Posts count: {posts.length}</p>
-      <pre>{JSON.stringify(posts, null, 2)}</pre>
+ dummy
     </div>
   )
 }

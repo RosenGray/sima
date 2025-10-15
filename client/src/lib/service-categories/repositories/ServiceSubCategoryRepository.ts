@@ -15,7 +15,6 @@ async function _getAllSubCategories(): Promise<SerializeServiceSubCategory[]> {
     // First, check if there are any existing service subcategories
     const existingSubCategories = await ServiceSubCategory.find({})
     .populate("serviceCategory");
-    console.log("existingSubCategories", existingSubCategories);
     // If no subcategories exist, initialize with the JSON data
     if (existingSubCategories.length === 0) {
       console.log('No service subcategories found. Initializing with default data...');

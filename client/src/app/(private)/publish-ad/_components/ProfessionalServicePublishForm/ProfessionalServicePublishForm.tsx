@@ -5,6 +5,7 @@ import {
   MAX_FILE_SIZE,
   MAX_FILES,
   ProfessionalServiceSchema,
+  SerilizeProfessionalService,
 } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
@@ -34,7 +35,13 @@ import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 
 const areasOptions = mapAreasToSelectOptions();
 
-const ProfessionalServicePublishForm: FC = () => {
+interface ProfessionalServicePublishFormProps {
+  service?: SerilizeProfessionalService;
+}
+
+const ProfessionalServicePublishForm: FC<
+  ProfessionalServicePublishFormProps
+> = ({ service }) => {
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
@@ -44,6 +51,7 @@ const ProfessionalServicePublishForm: FC = () => {
     publishProfessionalServiceAd,
     undefined
   );
+
   const [form, fields] = useForm({
     defaultValue: {
       images: [],
@@ -112,19 +120,32 @@ const ProfessionalServicePublishForm: FC = () => {
     images,
   } = fields;
 
+  console.log("category", category.value);
+  console.log("subCategory", subCategory.value);
+  console.log("district", district.value);
+  console.log("city", city.value);
+  console.log("description", description.value);
+  console.log("email", email.value);
+  console.log("phoneNumber", phoneNumber.value);
+  console.log("areaCode", areaCode.value);
+  console.log("acceptTerms", acceptTerms.value);
+  console.log("images", images.value);
+
   const categoriesOptions =
     mapServiceCategoriesToSelectOptions(mappedCategories);
   const subCategoryOptions = mapServiceSubCategoriesToSelectOptions(
     mappedCategories,
     category.value
   );
-  const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+  const citiesOptions = getCitiesToSelectOptions(
+    (district.value as Districts) || Districts.Center
+  );
   useEffect(() => {
     if (formState) {
       setErrorModalOpen(true);
     }
   }, [formState]);
-
+console.log('citiesOptions',citiesOptions)
   return (
     <>
       <form

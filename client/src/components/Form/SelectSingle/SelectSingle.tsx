@@ -4,7 +4,11 @@ import React from "react";
 import Select, { Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SelectSingle.styles";
-import { FieldMetadata, useInputControl, getInputProps } from "@conform-to/react";
+import {
+  FieldMetadata,
+  useInputControl,
+  getSelectProps,
+} from "@conform-to/react";
 
 interface Option {
   value: string;
@@ -28,12 +32,13 @@ const SelectSingle: FC<SelectSingleProps> = ({
   defaultValue,
   ...rest
 }) => {
+  const selectProps = getSelectProps(field);
   const control = useInputControl(field);
   const controlRef = useRef(control);
-  controlRef.current = control;
 
   useLayoutEffect(() => {
     if (defaultValue?.value) {
+      console.log("defaultValue", defaultValue.value);
       controlRef.current.change(defaultValue.value);
     }
   }, [defaultValue?.value]);
@@ -51,32 +56,26 @@ const SelectSingle: FC<SelectSingleProps> = ({
           {label}
         </Text>
       )}
-      {/* Hidden input to maintain value in DOM for form submission */}
-      <input {...getInputProps(field, { type: "hidden" })} />
+
       <Select
         defaultValue={defaultValue}
         classNamePrefix="sima-select-single"
         instanceId={`select-${field.name}`}
         styles={styles}
-        // Remove name from Select since the hidden input handles it
-        // menuPortalTarget={
-        //   typeof document !== "undefined" ? document.body : undefined
-        // }
+        // // menuPortalTarget={
+        // //   typeof document !== "undefined" ? document.body : undefined
+        // // }
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}
         options={options}
         onChange={(option) => {
-          if (
-            option &&
-            typeof option === "object" &&
-            option !== null &&
-            "value" in option
-          ) {
+          if (option) {
             controlRef.current.change((option as Option).value);
           }
         }}
         {...rest}
+        {...selectProps}
       />
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}
