@@ -43,34 +43,28 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
     }));
   }, [existingImages]);
 
+  // Combine existing images and new files into a single array
+  const allImages = useMemo(() => {
+    return [...existingImagesWithPreview, ...filesWithPreview];
+  }, [existingImagesWithPreview, filesWithPreview]);
+
   const handleRemoveImage = (file: File) => {
     setImages(files.filter((f) => f.name !== file.name));
   };
 
   const renderImages = () => {
-    if (existingImagesWithPreview.length > 0) {
-      return existingImagesWithPreview.slice(1).map((image) => {
-        return (
-          <GridItem key={image.name} className={GridItem}>
-            <Image fill src={image.previewUrl} alt="Image" />
-            {/* <DeleteButton onClick={() => handleRemoveImage(file)}>
-                  <TrashIcon />
-                </DeleteButton> */}
-          </GridItem>
-        );
-      });
-    }
-    return filesWithPreview.slice(1).map((file) => {
+    return allImages.slice(1).map((image) => {
       return (
-        <GridItem key={file.name} className={GridItem}>
-          <Image fill src={file.previewUrl} alt="Image" />
+        <GridItem key={image.name} className={GridItem}>
+          <Image fill src={image.previewUrl} alt="Image" />
           {/* <DeleteButton onClick={() => handleRemoveImage(file)}>
-                  <TrashIcon />
-                </DeleteButton> */}
+                <TrashIcon />
+              </DeleteButton> */}
         </GridItem>
       );
     });
   };
+
   return (
     <ImagePreviewerContainerBox
       height={{
@@ -86,7 +80,7 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
         <GridItem>
           <Image
             fill
-            src={existingImages[0].url || filesWithPreview[0].previewUrl}
+            src={allImages[0].previewUrl}
             alt="Image"
           />
           <DeleteButton
