@@ -32,6 +32,7 @@ import { publishProfessionalServiceAd } from "@/lib/professionals/professional-s
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import { FileUploadResponse } from "@/app/api/files/create/route";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -47,11 +48,21 @@ const ProfessionalServicePublishForm: FC<
   const { mappedCategories } = usePublishAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<
+    FileUploadResponse["files"]
+  >(() => {
+    return (
+      service?.images.map((image) => ({
+        ...image,
+      })) || []
+    );
+  });
   const [formState, formAction, isPending] = useActionState(
     publishProfessionalServiceAd,
     undefined
   );
-  console.log('service', service);
+  console.log("service", service);
+  console.log("existingImages", existingImages);
 
   const [form, fields] = useForm({
     defaultValue: {
@@ -237,9 +248,10 @@ const ProfessionalServicePublishForm: FC<
             files={selectedFiles}
             disabled={false}
           />
-          {selectedFiles.length > 0 && (
+          { (existingImages.length > 0 || selectedFiles.length > 0) && (
             <Box mt="4" mb="4">
               <ImagesPreviewer
+                existingImages={existingImages}
                 images={selectedFiles}
                 setImages={setSelectedFiles}
                 maxImages={MAX_FILES}
@@ -272,7 +284,6 @@ const ProfessionalServicePublishForm: FC<
                 errors={phoneNumber.errors}
                 size="3"
                 disabled={isPending}
-                
               />
             </Grid>
           </Box>

@@ -9,15 +9,18 @@ import {
   DeleteButton,
 } from "./ImagesPreviewer.styles";
 import { mapMaxImagesToNumberColumnsAndRows } from "./ImagesPreviewer.utils";
+import { FileUploadResponse } from "@/app/api/files/create/route";
 
 interface ImagesPreviewerProps {
   images: File | File[];
+  existingImages: FileUploadResponse["files"];
   setImages: (images: File[]) => void;
   maxImages: MaxImages;
 }
 
 const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   images,
+  existingImages,
   setImages,
   maxImages,
 }) => {
@@ -32,11 +35,42 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
       previewUrl: URL.createObjectURL(file),
     }));
   }, [files]);
+  const existingImagesWithPreview = useMemo(() => {
+    return existingImages.map((image) => ({
+      ...image,
+      name: image.originalName,
+      previewUrl: image.url,
+    }));
+  }, [existingImages]);
 
   const handleRemoveImage = (file: File) => {
     setImages(files.filter((f) => f.name !== file.name));
   };
 
+  const renderImages = () => {
+    if (existingImagesWithPreview.length > 0) {
+      return existingImagesWithPreview.slice(1).map((image) => {
+        return (
+          <GridItem key={image.name} className={GridItem}>
+            <Image fill src={image.previewUrl} alt="Image" />
+            {/* <DeleteButton onClick={() => handleRemoveImage(file)}>
+                  <TrashIcon />
+                </DeleteButton> */}
+          </GridItem>
+        );
+      });
+    }
+    return filesWithPreview.slice(1).map((file) => {
+      return (
+        <GridItem key={file.name} className={GridItem}>
+          <Image fill src={file.previewUrl} alt="Image" />
+          {/* <DeleteButton onClick={() => handleRemoveImage(file)}>
+                  <TrashIcon />
+                </DeleteButton> */}
+        </GridItem>
+      );
+    });
+  };
   return (
     <ImagePreviewerContainerBox
       height={{
@@ -50,25 +84,20 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
     >
       <Grid height="100%" columns="2" gap="2">
         <GridItem>
-          <Image fill src={filesWithPreview[0].previewUrl} alt="Image" />
+          <Image
+            fill
+            src={existingImages[0].url || filesWithPreview[0].previewUrl}
+            alt="Image"
+          />
           <DeleteButton
             className={DeleteButton}
-            onClick={() => handleRemoveImage(filesWithPreview[0])}
+            // onClick={() => handleRemoveImage(filesWithPreview[0])}
           >
             <TrashIcon />
           </DeleteButton>
         </GridItem>
         <Grid columns={columns} rows={rows} gap="2">
-          {filesWithPreview.slice(1).map((file) => {
-            return (
-              <GridItem key={file.name} className={GridItem}>
-                <Image fill src={file.previewUrl} alt="Image" />
-                <DeleteButton onClick={() => handleRemoveImage(file)}>
-                  <TrashIcon />
-                </DeleteButton>
-              </GridItem>
-            );
-          })}
+          {renderImages()}
         </Grid>
       </Grid>
     </ImagePreviewerContainerBox>
