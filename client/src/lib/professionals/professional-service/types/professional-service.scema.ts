@@ -39,6 +39,7 @@ export const ProfessionalServiceSchema = z.object({
   areaCode: z.number(),
   phoneNumber: z.number({
     required_error: "Телефон обязателен. Используйте только цифры",
+    invalid_type_error: "Телефон должен содержать только цифры",
   }),
   acceptTerms: z
     .string({

@@ -90,7 +90,7 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
         <AreaCodeSelect size={size} areaCodeField={areaCodeField} />
         <span style={{ fontSize: "20px", alignSelf: "center" }}>-</span>
         <TextField.Root
-          {...getInputProps(field, { type: "number" })}
+          {...getInputProps(field, { type: "tel" })}
           key={_key}
           placeholder={placeholder}
           size={size}
@@ -98,7 +98,7 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
           className={className}
           data-isvalid={field.valid}
           ref={ref}
-          
+          autoComplete="one-time-code"
           {...rest}
         >
           <TextField.Slot>{children}</TextField.Slot>

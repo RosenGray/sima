@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect, useLayoutEffect, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import React from "react";
 import Select, { Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
@@ -38,7 +38,6 @@ const SelectSingle: FC<SelectSingleProps> = ({
 
   useEffect(() => {
     if (defaultValue?.value) {
-      console.log("defaultValue", defaultValue.value, label);
       controlRef.current.change(defaultValue.value);
     }
   }, [defaultValue?.value, label]);
@@ -64,6 +63,8 @@ const SelectSingle: FC<SelectSingleProps> = ({
         instanceId={`select-${field.name}`}
         options={options}
         styles={styles}
+        onBlur={() => controlRef.current.blur()}
+        onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}
         onChange={(option) => {
           console.log("option", option);
@@ -75,27 +76,6 @@ const SelectSingle: FC<SelectSingleProps> = ({
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}
       </Text>
-      {/* <Select
-        defaultValue={defaultValue}
-        classNamePrefix="sima-select-single"
-        instanceId={`select-${field.name}`}
-        styles={styles}
-        // // menuPortalTarget={
-        // //   typeof document !== "undefined" ? document.body : undefined
-        // // }
-        onBlur={() => controlRef.current.blur()}
-        onFocus={() => controlRef.current.focus()}
-        value={'dsfdsfdsffsd'}
-        options={options}
-        onChange={(option) => {
-          if (option) {
-            controlRef.current.change((option as Option).value);
-          }
-        }}
-        {...rest}
-        {...selectProps}
-      />
- */}
     </Box>
   );
 };

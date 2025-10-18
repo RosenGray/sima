@@ -141,13 +141,13 @@ const ProfessionalServicePublishForm: FC<
     images,
   } = fields;
 
-  console.log("category", category.value);
-  console.log("subCategory", subCategory.value);
+  // console.log("category", category.value);
+  // console.log("subCategory", subCategory.value);
   // console.log("district", district.value);
   // console.log("city", city.value);
   // console.log("description", description.value);
   // console.log("email", email.value);
-  // console.log("phoneNumber", phoneNumber.value);
+  console.log("phoneNumber", phoneNumber.value);
   // console.log("areaCode", areaCode.value);
   // console.log("acceptTerms", acceptTerms.value);
   // console.log("images", images.value);
