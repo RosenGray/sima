@@ -11,19 +11,20 @@ import {
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
+import { professionalServiceRepository } from "../repository/ProfessionalServiceRepository";
 
 export async function editProfessionalServiceAd(
-  {
-    servicePublicId,
-    imagesToDelete,
-    allImagesShouldBeDeleted,
-  }: { servicePublicId: string; imagesToDelete: ExistingImageItem[]; allImagesShouldBeDeleted: boolean },
+  context: {
+    servicePublicId: string;
+    imagesToDelete: ExistingImageItem[];
+    allImagesShouldBeDeleted: boolean;
+  },
   initialState: unknown,
   formData: FormData
 ) {
   const result = parseWithZod(formData, {
     schema: createProfessionalServiceSchema({
-      minNumberOfImages: allImagesShouldBeDeleted ? 1 : 0,
+      minNumberOfImages: context.allImagesShouldBeDeleted ? 1 : 0,
     }),
   });
   if (result.status !== "success") return result.reply();
@@ -33,13 +34,13 @@ export async function editProfessionalServiceAd(
       formErrors: ["Что-то пошло не так, попробуйте позже"],
     });
   }
-  //fake 5 sec await
-  if (imagesToDelete.length > 0) {
+
+  if (context.imagesToDelete.length > 0) {
     const fileManager = await getFileManager();
     await fileManager.deleteFiles(
       user.id,
       "professionals",
-      imagesToDelete.map((image) => ({
+      context.imagesToDelete.map((image) => ({
         fileName: image.uniqueName,
         versionId: image.versionId,
       }))
@@ -76,14 +77,30 @@ export async function editProfessionalServiceAd(
 
     await connectDB();
 
-    const professionalService = await ProfessionalService.findOneAndUpdate({
-      publicId: servicePublicId,
-    }, {
-      ...result.value,
-      user: user.id,
-      acceptTerms: result.value.acceptTerms === "on",
-      images: uploadResult.files,
-    });
+    const service = await professionalServiceRepository.getByPublicId(
+      context.servicePublicId
+    );
+    if (!service) {
+      return result.reply({
+        formErrors: ["Объявление не найдено"],
+      });
+    }
+    const imageIdsToDelete = context.imagesToDelete.map((img) => img.id);
+    const updatedImages = [
+      ...service.images.filter((img) => !imageIdsToDelete.includes(img.id)),
+      ...uploadResult.files,
+    ];
+
+    const professionalService = await ProfessionalService.findOneAndUpdate(
+      { publicId: context.servicePublicId },
+
+      {
+        ...result.value,
+        user: user.id,
+        acceptTerms: result.value.acceptTerms === "on",
+        images: updatedImages,
+      }
+    );
     await professionalService.save();
     // Return success response with uploaded file data
   } catch (error) {

@@ -37,12 +37,15 @@ class ProfessionalServiceRepository {
    * @param publicId - The public ID of the professional service
    * @returns Promise<SerilizeProfessionalService | null> - The professional service or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerilizeProfessionalService | null> {
+  async getByPublicId(
+    publicId: string
+  ): Promise<SerilizeProfessionalService | null> {
     try {
       await connectDB();
-      console.log('publicId',publicId)
 
-      const professionalService = await ProfessionalService.findOne({ publicId })
+      const professionalService = await ProfessionalService.findOne({
+        publicId,
+      })
         .populate("category")
         .populate("subCategory")
         .populate("user");
@@ -52,9 +55,7 @@ class ProfessionalServiceRepository {
       }
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedService = JSON.parse(
-        JSON.stringify(professionalService)
-      );
+      const serializedService = JSON.parse(JSON.stringify(professionalService));
 
       return serializedService;
     } catch (error) {
