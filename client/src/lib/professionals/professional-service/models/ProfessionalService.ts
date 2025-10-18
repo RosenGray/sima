@@ -109,6 +109,13 @@ const professionalServiceSchema = new mongoose.Schema(
         ret.id = ret._id;
         ret.updatedAt = (ret.updatedAt as Date).toISOString();
         ret.createdAt = (ret.createdAt as Date).toISOString();
+        ret.images = (ret.images as unknown[]).map((value: unknown) => {
+          const image = value as Record<string, unknown>;
+          return {
+            ...image,
+            id: image._id,
+          };
+        });
         delete ret._id;
         delete ret.__v;
       },

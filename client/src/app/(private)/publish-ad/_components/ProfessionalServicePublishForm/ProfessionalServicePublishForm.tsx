@@ -32,7 +32,8 @@ import { publishProfessionalServiceAd } from "@/lib/professionals/professional-s
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
-import { FileUploadResponse } from "@/app/api/files/create/route";
+import { ExistingImageItem } from "@/app/api/files/create/route";
+import { nanoid } from "nanoid";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -48,15 +49,18 @@ const ProfessionalServicePublishForm: FC<
   const { mappedCategories } = usePublishAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [existingImages, setExistingImages] = useState<
-    FileUploadResponse["files"]
-  >(() => {
-    return (
-      service?.images.map((image) => ({
-        ...image,
-      })) || []
-    );
-  });
+  const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
+    () => {
+      return (
+        service?.images.map((image) => ({
+          ...image,
+          isExisting: true,
+          toBeDeleted: false,
+        })) || []
+      );
+    }
+  );
+
   const [formState, formAction, isPending] = useActionState(
     publishProfessionalServiceAd,
     undefined
@@ -248,12 +252,13 @@ const ProfessionalServicePublishForm: FC<
             files={selectedFiles}
             disabled={false}
           />
-          { (existingImages.length > 0 || selectedFiles.length > 0) && (
+          {(existingImages.length > 0 || selectedFiles.length > 0) && (
             <Box mt="4" mb="4">
               <ImagesPreviewer
                 existingImages={existingImages}
                 images={selectedFiles}
                 setImages={setSelectedFiles}
+                setExistingImages={setExistingImages}
                 maxImages={MAX_FILES}
               />
             </Box>

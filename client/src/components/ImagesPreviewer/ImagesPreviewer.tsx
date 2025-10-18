@@ -1,7 +1,7 @@
 import { Grid } from "@radix-ui/themes";
 import { TrashIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { FC, useMemo } from "react";
+import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import { MaxImages } from "./ImagesPreviewer.interface";
 import {
   ImagePreviewerContainerBox,
@@ -9,12 +9,14 @@ import {
   DeleteButton,
 } from "./ImagesPreviewer.styles";
 import { mapMaxImagesToNumberColumnsAndRows } from "./ImagesPreviewer.utils";
-import { FileUploadResponse } from "@/app/api/files/create/route";
+import { ExistingImageItem } from "@/app/api/files/create/route";
+import { nanoid } from "nanoid";
 
 interface ImagesPreviewerProps {
   images: File | File[];
-  existingImages: FileUploadResponse["files"];
+  existingImages: ExistingImageItem[];
   setImages: (images: File[]) => void;
+  setExistingImages: Dispatch<SetStateAction<ExistingImageItem[]>>
   maxImages: MaxImages;
 }
 
@@ -22,6 +24,7 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   images,
   existingImages,
   setImages,
+  setExistingImages,
   maxImages,
 }) => {
   const { columns, rows } = mapMaxImagesToNumberColumnsAndRows(maxImages);
@@ -31,18 +34,24 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   const filesWithPreview = useMemo(() => {
     return files.map((file) => ({
       ...file,
+      id: nanoid(10),
       name: file.name,
       previewUrl: URL.createObjectURL(file),
+      isExisting: false,
     }));
   }, [files]);
   const existingImagesWithPreview = useMemo(() => {
-    return existingImages.map((image) => ({
-      ...image,
-      name: image.originalName,
-      previewUrl: image.url,
-    }));
+    return existingImages
+      .filter(image => !image.toBeDeleted)
+      .map((image) => ({
+        ...image,
+        id: image.id,
+        name: image.originalName,
+        previewUrl: image.url,
+      }));
   }, [existingImages]);
 
+  console.log('existingImagesWithPreview',existingImagesWithPreview)
   // Combine existing images and new files into a single array
   const allImages = useMemo(() => {
     return [...existingImagesWithPreview, ...filesWithPreview];
@@ -57,13 +66,27 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
       return (
         <GridItem key={image.name} className={GridItem}>
           <Image fill src={image.previewUrl} alt="Image" />
-          {/* <DeleteButton onClick={() => handleRemoveImage(file)}>
+          <DeleteButton color="red" onClick={() =>{
+            if(image.isExisting){
+              console.log("image is existing", image);
+                  setExistingImages((e) => {
+                    return e.map((i) => i.id === image.id ? { ...i, toBeDeleted: true } : i);
+                  });
+              // setExistingImages(existingImages.filter((i) => i.id !== image.id));
+            }else{
+              console.log("image is not existing", image);
+              // handleRemoveImage(image);
+            }
+          }}>
                 <TrashIcon />
-              </DeleteButton> */}
+              </DeleteButton>
         </GridItem>
       );
     });
   };
+  if(allImages.length === 0){
+    return null;
+  }
 
   return (
     <ImagePreviewerContainerBox
