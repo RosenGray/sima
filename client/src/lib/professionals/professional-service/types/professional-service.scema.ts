@@ -68,8 +68,11 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
         `Загрузите хотя бы ${minNumberOfImages} изображений`
       )
       .superRefine((files, ctx) => {
-        console.log('files', files);
-        if (files.length > 0) {
+        const validFiles = files.filter(
+          (file) => file.size > 0 && file.name !== 'undefined'
+        );
+        console.log('validFiles', validFiles);
+        if (validFiles.length > 0) {
           if (files.length > MAX_FILES) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
@@ -79,7 +82,7 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
             return z.NEVER;
           }
 
-          files.forEach((file) => {
+          validFiles.forEach((file) => {
             if (file.size > MAX_FILE_SIZE) {
               ctx.addIssue({
                 code: z.ZodIssueCode.custom,
