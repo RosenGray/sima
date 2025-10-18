@@ -1,7 +1,7 @@
 import { Grid } from "@radix-ui/themes";
 import { TrashIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { Dispatch, FC, SetStateAction, useMemo } from "react";
+import { Dispatch, FC, SetStateAction, useCallback, useMemo } from "react";
 import { MaxImages } from "./ImagesPreviewer.interface";
 import {
   ImagePreviewerContainerBox,
@@ -15,10 +15,17 @@ import { nanoid } from "nanoid";
 interface ImagesPreviewerProps {
   images: File | File[];
   existingImages: ExistingImageItem[];
-  setImages: (images: File[]) => void;
-  setExistingImages: Dispatch<SetStateAction<ExistingImageItem[]>>
+  setImages: Dispatch<SetStateAction<File[]>>;
+  setExistingImages: Dispatch<SetStateAction<ExistingImageItem[]>>;
   maxImages: MaxImages;
 }
+
+type ImageItem = {
+  id: string;
+  name: string;
+  previewUrl: string;
+  isExisting: boolean;
+};
 
 const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   images,
@@ -42,7 +49,7 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   }, [files]);
   const existingImagesWithPreview = useMemo(() => {
     return existingImages
-      .filter(image => !image.toBeDeleted)
+      .filter((image) => !image.toBeDeleted)
       .map((image) => ({
         ...image,
         id: image.id,
@@ -51,40 +58,46 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
       }));
   }, [existingImages]);
 
-  console.log('existingImagesWithPreview',existingImagesWithPreview)
+  console.log("existingImagesWithPreview", existingImagesWithPreview);
   // Combine existing images and new files into a single array
   const allImages = useMemo(() => {
     return [...existingImagesWithPreview, ...filesWithPreview];
   }, [existingImagesWithPreview, filesWithPreview]);
 
-  const handleRemoveImage = (file: File) => {
-    setImages(files.filter((f) => f.name !== file.name));
-  };
+  const handleRemoveImage = useCallback((image: ImageItem) => {
+    // setImages(files.filter((f) => f.name !== file.name));
+    {
+      if (image.isExisting) {
+        console.log("image is existing", image);
+        setExistingImages((e) => {
+          return e.map((i) =>
+            i.id === image.id ? { ...i, toBeDeleted: true } : i
+          );
+        });
+        // setExistingImages(existingImages.filter((i) => i.id !== image.id));
+      } else {
+        console.log("image is not existing", image);
+        setImages((i) => i.filter((f) => f.name !== image.name));
+        // setImages(files.filter((f) => f.name !== image.name));
+      }
+    }
+  }, [setExistingImages, setImages]);
+
+
 
   const renderImages = () => {
     return allImages.slice(1).map((image) => {
       return (
         <GridItem key={image.name} className={GridItem}>
           <Image fill src={image.previewUrl} alt="Image" />
-          <DeleteButton color="red" onClick={() =>{
-            if(image.isExisting){
-              console.log("image is existing", image);
-                  setExistingImages((e) => {
-                    return e.map((i) => i.id === image.id ? { ...i, toBeDeleted: true } : i);
-                  });
-              // setExistingImages(existingImages.filter((i) => i.id !== image.id));
-            }else{
-              console.log("image is not existing", image);
-              // handleRemoveImage(image);
-            }
-          }}>
-                <TrashIcon />
-              </DeleteButton>
+          <DeleteButton color="red" onClick={() => handleRemoveImage(image)}>
+            <TrashIcon />
+          </DeleteButton>
         </GridItem>
       );
     });
   };
-  if(allImages.length === 0){
+  if (allImages.length === 0) {
     return null;
   }
 
@@ -101,15 +114,8 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
     >
       <Grid height="100%" columns="2" gap="2">
         <GridItem>
-          <Image
-            fill
-            src={allImages[0].previewUrl}
-            alt="Image"
-          />
-          <DeleteButton
-            className={DeleteButton}
-            // onClick={() => handleRemoveImage(filesWithPreview[0])}
-          >
+          <Image fill src={allImages[0].previewUrl} alt="Image" />
+          <DeleteButton onClick={() => handleRemoveImage(allImages[0])}>
             <TrashIcon />
           </DeleteButton>
         </GridItem>
