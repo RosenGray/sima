@@ -1,5 +1,5 @@
 import { FC, Ref, ReactNode } from "react";
-import { TextField, Text, Box, Select, Flex } from "@radix-ui/themes";
+import { TextField, Text, Box, Select } from "@radix-ui/themes";
 import {
   FieldMetadata,
   getInputProps,
@@ -13,9 +13,9 @@ interface AreaCodeSelectProps extends Select.RootProps {
 }
 
 interface PhoneFormFieldProps extends TextField.RootProps {
-  areaCodeField: FieldMetadata<
-    number | string | string[] | (string | undefined)[] | undefined
-  >;
+  // areaCodeField: FieldMetadata<
+  //   number | string | string[] | (string | undefined)[] | undefined
+  // >;
   field: FieldMetadata<
     number | string | string[] | (string | undefined)[] | undefined
   >;
@@ -57,7 +57,7 @@ const AreaCodeSelect: FC<AreaCodeSelectProps> = ({ size, areaCodeField }) => {
 
 const PhoneFormField: FC<PhoneFormFieldProps> = ({
   field,
-  areaCodeField,
+  // areaCodeField,
   placeholder,
   size,
   defaultValue,
@@ -101,7 +101,7 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
           autoComplete="one-time-code"
           {...rest}
         >
-          {/* <TextField.Slot>{children}</TextField.Slot> */}
+          <TextField.Slot>{children}</TextField.Slot>
         </TextField.Root>
 
 

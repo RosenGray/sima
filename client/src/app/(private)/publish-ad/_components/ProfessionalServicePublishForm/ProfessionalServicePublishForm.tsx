@@ -1,5 +1,5 @@
 "use client";
-import { FC, startTransition, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
@@ -24,7 +24,7 @@ import {
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
-import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
+import { EnvelopeClosedIcon, MobileIcon } from "@radix-ui/react-icons";
 import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";
@@ -34,10 +34,7 @@ import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import { ExistingImageItem } from "@/app/api/files/create/route";
 import { FormMode } from "@/lib/professionals/professional-service/types";
-import {
-  deleteImagesFromProfessionalServiceAd,
-  editProfessionalServiceAd,
-} from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
+import { editProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
 import Loader from "@/components/Loader";
 
 const areasOptions = mapAreasToSelectOptions();
@@ -51,7 +48,6 @@ const ProfessionalServicePublishForm: FC<
   ProfessionalServicePublishFormProps
 > = ({ service, formMode }) => {
   const isCreateMode = formMode === FormMode.Create;
-  const isEditMode = formMode === FormMode.Edit;
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
@@ -75,7 +71,6 @@ const ProfessionalServicePublishForm: FC<
   const allImagesShouldBeDeleted =
     imagesToDelete.length === existingImages.length;
 
-  console.log("allImagesShouldBeDeleted", allImagesShouldBeDeleted);
   const updateUserWithImagesToDelete = editProfessionalServiceAd.bind(null, {
     servicePublicId: service?.publicId as string,
     imagesToDelete,
@@ -86,7 +81,7 @@ const ProfessionalServicePublishForm: FC<
     isCreateMode ? publishProfessionalServiceAd : updateUserWithImagesToDelete,
     undefined
   );
-  console.log("bla", formState?.error);
+
   const [form, fields] = useForm({
     defaultValue: {
       category: service?.category?.id,
@@ -121,8 +116,8 @@ const ProfessionalServicePublishForm: FC<
       currentImages.forEach((file) => {
         if (
           file instanceof File &&
-          file.size > 0 && 
-          file.name !== 'undefined' && 
+          file.size > 0 &&
+          file.name !== "undefined" &&
           !selectedFiles.some((f) => f.name === file.name)
         ) {
           updatedFormData.append("images", file);
@@ -160,11 +155,11 @@ const ProfessionalServicePublishForm: FC<
     description,
     email,
     phoneNumber,
-    areaCode,
     acceptTerms,
     images,
   } = fields;
 
+  console.log("form.dirty", form.dirty);
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
     [mappedCategories]
@@ -301,7 +296,8 @@ const ProfessionalServicePublishForm: FC<
                   type="email"
                   field={email}
                   label="Email"
-                  anotherLabel="*виден только администрации сайта и не отображается публично"
+                  // anotherLabel="*виден только администрации сайта и не отображается публично"
+
                   placeholder="@ Адрес электронной почты"
                   size="3"
                   defaultValue={fields.email.initialValue}
@@ -312,14 +308,16 @@ const ProfessionalServicePublishForm: FC<
                   <EnvelopeClosedIcon height="16" width="16" />
                 </BasicFormField>
                 <PhoneFormField
-                  areaCodeField={areaCode}
+                  // areaCodeField={areaCode}
                   label="Телефон"
                   field={phoneNumber}
                   errors={phoneNumber.errors}
                   size="3"
                   defaultValue={phoneNumber.initialValue}
                   disabled={isPending}
-                />
+                >
+                  <MobileIcon height="16" width="16" />
+                </PhoneFormField>
               </Grid>
             </Box>
             <Flex
@@ -338,7 +336,7 @@ const ProfessionalServicePublishForm: FC<
 
               <SubmitButton
                 pending={isPending}
-                disabled={!acceptTerms.valid}
+                disabled={acceptTerms.value !== "on"}
                 text="Добавить объявление"
               />
               {/* <GoogleReCAPTCHA
