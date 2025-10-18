@@ -30,7 +30,7 @@ const PublishAdProfessionalsPage: FC<PublishAdProfessionalsPageProps> = async ({
           Добавление нового объявления id
         </Heading>
         <Card>
-          <ProfessionalServicePublishForm service={service} />
+          <ProfessionalServicePublishForm service={service} formMode={FormMode.Edit}/>
         </Card>
       </Box>
     </PublishAdProfessionalsPageContainer>

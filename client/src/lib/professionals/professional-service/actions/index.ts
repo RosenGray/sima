@@ -4,3 +4,4 @@ export {
   deleteProfessionalServiceAdWithRedirect 
 } from "./deleteProfessionalServiceAd";
 
+export { editProfessionalServiceAd } from "./editProfessionalServiceAd";

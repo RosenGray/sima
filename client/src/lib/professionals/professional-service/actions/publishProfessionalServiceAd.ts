@@ -1,6 +1,6 @@
 "use server";
 import { parseWithZod } from "@conform-to/zod";
-import { ProfessionalServiceSchema } from "../types/professional-service.scema";
+import { createProfessionalServiceSchema } from "../types/professional-service.scema";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { ProfessionalService } from "../models/ProfessionalService";
 import connectDB from "@/lib/mongo/mongodb";
@@ -16,9 +16,8 @@ export async function publishProfessionalServiceAd(
   formData: FormData
 ) {
   
-  //fake 5 sec await
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  const result = parseWithZod(formData, { schema: ProfessionalServiceSchema });
+
+  const result = parseWithZod(formData, { schema: createProfessionalServiceSchema });
 
   if (result.status !== "success") return result.reply();
   const user = await getCurrentUser();

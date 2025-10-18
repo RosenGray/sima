@@ -4,7 +4,7 @@ import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
   MAX_FILES,
-  ProfessionalServiceSchema,
+  createProfessionalServiceSchema,
   SerilizeProfessionalService,
 } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { Districts } from "@/lib/cities/types/cities.schema";
@@ -33,17 +33,20 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import { ExistingImageItem } from "@/app/api/files/create/route";
-
+import { FormMode } from "@/lib/professionals/professional-service/types";
+import { editProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
 
 const areasOptions = mapAreasToSelectOptions();
 
 interface ProfessionalServicePublishFormProps {
   service?: SerilizeProfessionalService;
+  formMode: FormMode;
 }
 
 const ProfessionalServicePublishForm: FC<
   ProfessionalServicePublishFormProps
-> = ({ service }) => {
+> = ({ service, formMode }) => {
+  const isCreateMode = formMode === FormMode.Create;
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
@@ -60,12 +63,18 @@ const ProfessionalServicePublishForm: FC<
       );
     }
   );
+  const imagesToDelete = useMemo(() => {
+    return existingImages.filter((image) => image.toBeDeleted);
+  }, [existingImages]);
+
+  const allImagesShouldBeDeleted = imagesToDelete.length === existingImages.length;
+
+  console.log("allImagesShouldBeDeleted", allImagesShouldBeDeleted);
 
   const [formState, formAction, isPending] = useActionState(
-    publishProfessionalServiceAd,
+    isCreateMode ? publishProfessionalServiceAd : editProfessionalServiceAd,
     undefined
   );
-
 
   const [form, fields] = useForm({
     defaultValue: {
@@ -77,6 +86,7 @@ const ProfessionalServicePublishForm: FC<
       email: user?.email,
       phoneNumber: service?.phoneNumber,
       description: service?.description,
+      acceptTerms: service?.acceptTerms ? "on" : null,
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -107,7 +117,9 @@ const ProfessionalServicePublishForm: FC<
       });
 
       return parseWithZod(updatedFormData, {
-        schema: ProfessionalServiceSchema,
+        schema: createProfessionalServiceSchema({
+          minNumberOfImages: allImagesShouldBeDeleted ? 1 : 0,
+        }),
       });
     },
     shouldRevalidate: "onInput",
@@ -127,7 +139,6 @@ const ProfessionalServicePublishForm: FC<
     setErrorModalOpen(false);
   };
 
-
   const {
     category,
     subCategory,
@@ -141,17 +152,6 @@ const ProfessionalServicePublishForm: FC<
     images,
   } = fields;
 
-  // console.log("category", category.value);
-  // console.log("subCategory", subCategory.value);
-  // console.log("district", district.value);
-  // console.log("city", city.value);
-  // console.log("description", description.value);
-  // console.log("email", email.value);
-  console.log("phoneNumber", phoneNumber.value);
-  // console.log("areaCode", areaCode.value);
-  // console.log("acceptTerms", acceptTerms.value);
-  // console.log("images", images.value);
-
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
     [mappedCategories]
@@ -161,7 +161,7 @@ const ProfessionalServicePublishForm: FC<
       mapServiceSubCategoriesToSelectOptions(mappedCategories, category.value),
     [mappedCategories, category.value]
   );
-  console.log('subCategoryOptions',subCategoryOptions )
+
   const citiesOptions = useMemo(
     () =>
       getCitiesToSelectOptions(
@@ -224,7 +224,7 @@ const ProfessionalServicePublishForm: FC<
               options={citiesOptions}
               errors={city.errors}
               isDisabled={isPending}
-              // defaultValue={citiesOptions[0]}
+              defaultValue={citiesOptions[0]}
             />
           </Grid>
           {/* description */}
@@ -255,7 +255,9 @@ const ProfessionalServicePublishForm: FC<
             onFilesDrop={setSelectedFiles}
             files={selectedFiles}
             disabled={false}
-            existingFilesLength={existingImages.filter((image) => !image.toBeDeleted).length}
+            existingFilesLength={
+              existingImages.filter((image) => !image.toBeDeleted).length
+            }
           />
           {(existingImages.length > 0 || selectedFiles.length > 0) && (
             <Box mt="4" mb="4">

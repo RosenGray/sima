@@ -67,7 +67,6 @@ const SelectSingle: FC<SelectSingleProps> = ({
         onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}
         onChange={(option) => {
-          console.log("option", option);
           if (option) {
             controlRef.current.change((option as Option).value);
           }
