@@ -33,7 +33,7 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import { ExistingImageItem } from "@/app/api/files/create/route";
-import { nanoid } from "nanoid";
+
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -65,8 +65,7 @@ const ProfessionalServicePublishForm: FC<
     publishProfessionalServiceAd,
     undefined
   );
-  console.log("service", service);
-  console.log("existingImages", existingImages);
+
 
   const [form, fields] = useForm({
     defaultValue: {
@@ -76,7 +75,7 @@ const ProfessionalServicePublishForm: FC<
       city: service?.city,
       images: [],
       email: user?.email,
-      phoneNumber: service?.phoneNumber.toString(),
+      phoneNumber: service?.phoneNumber,
       description: service?.description,
     },
     lastResult: formState,
@@ -128,6 +127,7 @@ const ProfessionalServicePublishForm: FC<
     setErrorModalOpen(false);
   };
 
+
   const {
     category,
     subCategory,
@@ -143,14 +143,14 @@ const ProfessionalServicePublishForm: FC<
 
   console.log("category", category.value);
   console.log("subCategory", subCategory.value);
-  console.log("district", district.value);
-  console.log("city", city.value);
-  console.log("description", description.value);
-  console.log("email", email.value);
-  console.log("phoneNumber", phoneNumber.value);
-  console.log("areaCode", areaCode.value);
-  console.log("acceptTerms", acceptTerms.value);
-  console.log("images", images.value);
+  // console.log("district", district.value);
+  // console.log("city", city.value);
+  // console.log("description", description.value);
+  // console.log("email", email.value);
+  // console.log("phoneNumber", phoneNumber.value);
+  // console.log("areaCode", areaCode.value);
+  // console.log("acceptTerms", acceptTerms.value);
+  // console.log("images", images.value);
 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
@@ -161,6 +161,7 @@ const ProfessionalServicePublishForm: FC<
       mapServiceSubCategoriesToSelectOptions(mappedCategories, category.value),
     [mappedCategories, category.value]
   );
+  console.log('subCategoryOptions',subCategoryOptions )
   const citiesOptions = useMemo(
     () =>
       getCitiesToSelectOptions(
@@ -191,6 +192,7 @@ const ProfessionalServicePublishForm: FC<
               options={categoriesOptions}
               errors={category.errors}
               isDisabled={isPending}
+              defaultValue={categoriesOptions[3]}
             />
 
             {/* subCategory */}
@@ -201,6 +203,7 @@ const ProfessionalServicePublishForm: FC<
               options={subCategoryOptions}
               errors={subCategory.errors}
               isDisabled={isPending}
+              defaultValue={subCategoryOptions[0]}
             />
 
             {/* area */}
@@ -221,6 +224,7 @@ const ProfessionalServicePublishForm: FC<
               options={citiesOptions}
               errors={city.errors}
               isDisabled={isPending}
+              // defaultValue={citiesOptions[0]}
             />
           </Grid>
           {/* description */}
@@ -251,6 +255,7 @@ const ProfessionalServicePublishForm: FC<
             onFilesDrop={setSelectedFiles}
             files={selectedFiles}
             disabled={false}
+            existingFilesLength={existingImages.filter((image) => !image.toBeDeleted).length}
           />
           {(existingImages.length > 0 || selectedFiles.length > 0) && (
             <Box mt="4" mb="4">
@@ -288,6 +293,7 @@ const ProfessionalServicePublishForm: FC<
                 field={phoneNumber}
                 errors={phoneNumber.errors}
                 size="3"
+                defaultValue={phoneNumber.initialValue}
                 disabled={isPending}
               />
             </Grid>

@@ -1,5 +1,5 @@
 "use client";
-import { FC, useLayoutEffect, useRef } from "react";
+import { FC, useEffect, useLayoutEffect, useRef } from "react";
 import React from "react";
 import Select, { Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
@@ -32,15 +32,16 @@ const SelectSingle: FC<SelectSingleProps> = ({
   defaultValue,
   ...rest
 }) => {
-  const selectProps = getSelectProps(field);
+  const { key, name } = getSelectProps(field);
   const control = useInputControl(field);
   const controlRef = useRef(control);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (defaultValue?.value) {
+      console.log("defaultValue", defaultValue.value, label);
       controlRef.current.change(defaultValue.value);
     }
-  }, [defaultValue?.value]);
+  }, [defaultValue?.value, label]);
 
   return (
     <Box>
@@ -58,6 +59,24 @@ const SelectSingle: FC<SelectSingleProps> = ({
 
       <Select
         defaultValue={defaultValue}
+        key={key}
+        name={name}
+        instanceId={`select-${field.name}`}
+        options={options}
+        styles={styles}
+        value={options.find((opt) => opt.value === control.value)}
+        onChange={(option) => {
+          console.log("option", option);
+          if (option) {
+            controlRef.current.change((option as Option).value);
+          }
+        }}
+      />
+      <Text as="p" align="center" weight="bold" size="2" color="red">
+        {errors}
+      </Text>
+      {/* <Select
+        defaultValue={defaultValue}
         classNamePrefix="sima-select-single"
         instanceId={`select-${field.name}`}
         styles={styles}
@@ -66,7 +85,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
         // // }
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}
-        value={options.find((opt) => opt.value === control.value)}
+        value={'dsfdsfdsffsd'}
         options={options}
         onChange={(option) => {
           if (option) {
@@ -76,9 +95,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
         {...rest}
         {...selectProps}
       />
-      <Text as="p" align="center" weight="bold" size="2" color="red">
-        {errors}
-      </Text>
+ */}
     </Box>
   );
 };
