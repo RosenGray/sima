@@ -121,6 +121,8 @@ const ProfessionalServicePublishForm: FC<
       currentImages.forEach((file) => {
         if (
           file instanceof File &&
+          file.size > 0 && 
+          file.name !== 'undefined' && 
           !selectedFiles.some((f) => f.name === file.name)
         ) {
           updatedFormData.append("images", file);

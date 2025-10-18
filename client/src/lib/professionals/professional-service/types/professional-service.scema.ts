@@ -40,7 +40,7 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
         required_error: "электронное почта обязательная",
       })
       .email("Введите корректный адрес электронной почты"),
-    areaCode: z.number(),
+    // areaCode: z.number(),
     phoneNumber: z.number({
       required_error: "Телефон обязателен. Используйте только цифры",
       invalid_type_error: "Телефон должен содержать только цифры",

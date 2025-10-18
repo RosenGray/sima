@@ -50,30 +50,50 @@ export async function editProfessionalServiceAd(
   const { images } = result.value;
 
   try {
-    // Create FormData for file upload
-    const uploadFormData = new FormData();
+    const validImages = images.filter(
+      (file: File) => file.size > 0 && file.name !== "undefined"
+    );
 
-    // Add files to FormData
-    images.forEach((file: File) => {
-      uploadFormData.append("files", file);
-    });
+    console.log('validImages', validImages);
 
-    // Add metadata
-    uploadFormData.append("folderName", "professionals");
-    uploadFormData.append("userId", user.id); // You'll need to get this from auth context
+    let uploadResult: FileUploadResponse = {
+      success: true,
+      message: "No new files to upload",
+      files: [],
+      metadata: {
+        totalFiles: 0,
+        folderName: "professionals",
+        userId: user.id,
+      },
+    };
 
-    // Send request to files API route
-    const response = await fetch("http://localhost:3000/api/files/create", {
-      method: "POST",
-      body: uploadFormData,
-    });
+    // Only upload if there are valid images
+    if (validImages.length > 0) {
+      // Create FormData for file upload
+      const uploadFormData = new FormData();
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to upload files");
+      // Add files to FormData
+      validImages.forEach((file: File) => {
+        uploadFormData.append("files", file);
+      });
+
+      // Add metadata
+      uploadFormData.append("folderName", "professionals");
+      uploadFormData.append("userId", user.id);
+
+      // Send request to files API route
+      const response = await fetch("http://localhost:3000/api/files/create", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to upload files");
+      }
+
+      uploadResult = await response.json();
     }
-
-    const uploadResult: FileUploadResponse = await response.json();
 
     await connectDB();
 
