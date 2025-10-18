@@ -9,81 +9,94 @@ import {
   FileUploadResponse,
 } from "@/app/api/files/create/route";
 import { redirect } from "next/navigation";
-import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
+import { getFileManager } from "@/lib/common/actions/getFileManager";
 
 export async function editProfessionalServiceAd(
-  imagesToDelete: ExistingImageItem[]
+  {
+    servicePublicId,
+    imagesToDelete,
+    allImagesShouldBeDeleted,
+  }: { servicePublicId: string; imagesToDelete: ExistingImageItem[]; allImagesShouldBeDeleted: boolean },
+  initialState: unknown,
+  formData: FormData
 ) {
-  return async (initialState: unknown, formData: FormData) => {
-    console.log("editProfessionalServiceAd");
-    //fake 5 sec await
+  const result = parseWithZod(formData, {
+    schema: createProfessionalServiceSchema({
+      minNumberOfImages: allImagesShouldBeDeleted ? 1 : 0,
+    }),
+  });
+  if (result.status !== "success") return result.reply();
+  const user = await getCurrentUser();
+  if (!user) {
+    return result.reply({
+      formErrors: ["Что-то пошло не так, попробуйте позже"],
+    });
+  }
+  //fake 5 sec await
+  if (imagesToDelete.length > 0) {
+    const fileManager = await getFileManager();
+    await fileManager.deleteFiles(
+      user.id,
+      "professionals",
+      imagesToDelete.map((image) => ({
+        fileName: image.uniqueName,
+        versionId: image.versionId,
+      }))
+    );
+  }
 
-    const result = parseWithZod(formData, {
-      schema: createProfessionalServiceSchema({
-        minNumberOfImages: imagesToDelete.length === 0 ? 0 : 1,
-      }),
+  const { images } = result.value;
+
+  try {
+    // Create FormData for file upload
+    const uploadFormData = new FormData();
+
+    // Add files to FormData
+    images.forEach((file: File) => {
+      uploadFormData.append("files", file);
     });
 
-    if (result.status !== "success") return result.reply();
-    const user = await getCurrentUser();
-    if (!user) {
-      return result.reply({
-        formErrors: ["Что-то пошло не так, попробуйте позже"],
-      });
+    // Add metadata
+    uploadFormData.append("folderName", "professionals");
+    uploadFormData.append("userId", user.id); // You'll need to get this from auth context
+
+    // Send request to files API route
+    const response = await fetch("http://localhost:3000/api/files/create", {
+      method: "POST",
+      body: uploadFormData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to upload files");
     }
 
-    const { images } = result.value;
+    const uploadResult: FileUploadResponse = await response.json();
 
-    try {
-      // Create FormData for file upload
-      const uploadFormData = new FormData();
+    await connectDB();
 
-      // Add files to FormData
-      images.forEach((file: File) => {
-        uploadFormData.append("files", file);
-      });
-
-      // Add metadata
-      uploadFormData.append("folderName", "professionals");
-      uploadFormData.append("userId", user.id); // You'll need to get this from auth context
-
-      // Send request to files API route
-      const response = await fetch("http://localhost:3000/api/files/create", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to upload files");
-      }
-
-      const uploadResult: FileUploadResponse = await response.json();
-
-      await connectDB();
-
-      const professionalService = new ProfessionalService({
-        ...result.value,
-        user: user.id,
-        publicId: nanoid(10),
-        acceptTerms: result.value.acceptTerms === "on",
-        images: uploadResult.files,
-      });
-      await professionalService.save();
-      // Return success response with uploaded file data
-    } catch (error) {
-      console.log(error);
-      if (error instanceof Error) {
-        return result.reply({
-          formErrors: ["Неизвестная ошибка"],
-        });
-      }
+    const professionalService = await ProfessionalService.findOneAndUpdate({
+      publicId: servicePublicId,
+    }, {
+      ...result.value,
+      user: user.id,
+      acceptTerms: result.value.acceptTerms === "on",
+      images: uploadResult.files,
+    });
+    await professionalService.save();
+    // Return success response with uploaded file data
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
       return result.reply({
         formErrors: ["Неизвестная ошибка"],
       });
     }
-    revalidatePath("/professional-service", "layout"); // Explicitly revalidate the layout
-    redirect("/professional-service");
-  };
+    return result.reply({
+      formErrors: ["Неизвестная ошибка"],
+    });
+  }
+  revalidatePath("/professional-service", "layout"); // Explicitly revalidate the layout
+  redirect("/professional-service");
 }

@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, startTransition, useEffect, useMemo, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
@@ -10,7 +10,7 @@ import {
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Box, Flex, Grid, Heading } from "@radix-ui/themes";
+import { Box, Card, Flex, Grid, Heading } from "@radix-ui/themes";
 import { useActionState } from "react";
 import { usePublishAd } from "../../_providers/PublishAdProvider";
 import {
@@ -34,7 +34,11 @@ import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import { ExistingImageItem } from "@/app/api/files/create/route";
 import { FormMode } from "@/lib/professionals/professional-service/types";
-import { editProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
+import {
+  deleteImagesFromProfessionalServiceAd,
+  editProfessionalServiceAd,
+} from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
+import Loader from "@/components/Loader";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -47,6 +51,7 @@ const ProfessionalServicePublishForm: FC<
   ProfessionalServicePublishFormProps
 > = ({ service, formMode }) => {
   const isCreateMode = formMode === FormMode.Create;
+  const isEditMode = formMode === FormMode.Edit;
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
@@ -67,15 +72,21 @@ const ProfessionalServicePublishForm: FC<
     return existingImages.filter((image) => image.toBeDeleted);
   }, [existingImages]);
 
-  const allImagesShouldBeDeleted = imagesToDelete.length === existingImages.length;
+  const allImagesShouldBeDeleted =
+    imagesToDelete.length === existingImages.length;
 
   console.log("allImagesShouldBeDeleted", allImagesShouldBeDeleted);
+  const updateUserWithImagesToDelete = editProfessionalServiceAd.bind(null, {
+    servicePublicId: service?.publicId as string,
+    imagesToDelete,
+    allImagesShouldBeDeleted,
+  });
 
   const [formState, formAction, isPending] = useActionState(
-    isCreateMode ? publishProfessionalServiceAd : editProfessionalServiceAd,
+    isCreateMode ? publishProfessionalServiceAd : updateUserWithImagesToDelete,
     undefined
   );
-
+  console.log("bla", formState?.error);
   const [form, fields] = useForm({
     defaultValue: {
       category: service?.category?.id,
@@ -175,6 +186,14 @@ const ProfessionalServicePublishForm: FC<
     }
   }, [formState]);
 
+  if (isPending) {
+    return (
+      <Flex justify="center" align="center" style={{ minHeight: "600px" }}>
+        <Loader size="xlarge" />
+      </Flex>
+    );
+  }
+
   return (
     <>
       <form
@@ -183,150 +202,156 @@ const ProfessionalServicePublishForm: FC<
         {...getFormProps(form)}
       >
         <Box>
-          <Grid columns="2" gap="4" mb="4">
-            {/* category */}
-            <SelectSingle
-              label="Выберите доску"
-              field={category}
-              placeholder="Выберите доску"
-              options={categoriesOptions}
-              errors={category.errors}
-              isDisabled={isPending}
-              defaultValue={categoriesOptions[3]}
-            />
-
-            {/* subCategory */}
-            <SelectSingle
-              label="Выберите подкатегорию"
-              field={subCategory}
-              placeholder="Выберите подкатегорию"
-              options={subCategoryOptions}
-              errors={subCategory.errors}
-              isDisabled={isPending}
-              defaultValue={subCategoryOptions[0]}
-            />
-
-            {/* area */}
-            <SelectSingle
-              label="Выберите район"
-              field={district}
-              placeholder="Выберите район"
-              options={areasOptions}
-              errors={district.errors}
-              isDisabled={isPending}
-            />
-            {/* city */}
-
-            <SelectSingle
-              label="Выберите город"
-              field={city}
-              placeholder="Выберите город"
-              options={citiesOptions}
-              errors={city.errors}
-              isDisabled={isPending}
-              defaultValue={citiesOptions[0]}
-            />
-          </Grid>
-          {/* description */}
-          <TextAreaField
-            field={description}
-            label="Текст объявления:"
-            placeholder="Текст объявления:"
-            size="3"
-            defaultValue={description.initialValue}
-            dataIsValid={description.valid}
-            errors={description.errors}
-            rows={5}
-            mb="5px"
-            disabled={isPending}
-          />
-
-          <DropFilesInput
-            accept={{
-              "image/png": [],
-              "image/jpeg": [],
-              "image/jpg": [],
-              "image/webp": [],
-            }}
-            maxSize={MAX_FILE_SIZE}
-            maxFiles={MAX_FILES}
-            field={images}
-            errors={images.errors}
-            onFilesDrop={setSelectedFiles}
-            files={selectedFiles}
-            disabled={false}
-            existingFilesLength={
-              existingImages.filter((image) => !image.toBeDeleted).length
-            }
-          />
-          {(existingImages.length > 0 || selectedFiles.length > 0) && (
-            <Box mt="4" mb="4">
-              <ImagesPreviewer
-                existingImages={existingImages}
-                images={selectedFiles}
-                setImages={setSelectedFiles}
-                setExistingImages={setExistingImages}
-                maxImages={MAX_FILES}
+          <Card>
+            <Grid columns="2" gap="4" mb="4">
+              {/* category */}
+              <SelectSingle
+                label="Выберите доску"
+                field={category}
+                placeholder="Выберите доску"
+                options={categoriesOptions}
+                errors={category.errors}
+                isDisabled={isPending}
+                defaultValue={categoriesOptions[3]}
               />
-            </Box>
-          )}
-          <Box mt="4">
-            <Heading as="h3" size="4" mb="2">
-              Контактная информация
-            </Heading>
-            <Grid columns="2" gap="4">
-              <BasicFormField
-                type="email"
-                field={email}
-                label="Email"
-                anotherLabel="*виден только администрации сайта и не отображается публично"
-                placeholder="@ Адрес электронной почты"
-                size="3"
-                defaultValue={fields.email.initialValue}
-                dataIsValid={email.valid}
-                errors={email.errors}
-                disabled={isPending}
-              >
-                <EnvelopeClosedIcon height="16" width="16" />
-              </BasicFormField>
-              <PhoneFormField
-                areaCodeField={areaCode}
-                label="Телефон"
-                field={phoneNumber}
-                errors={phoneNumber.errors}
-                size="3"
-                defaultValue={phoneNumber.initialValue}
-                disabled={isPending}
+
+              {/* subCategory */}
+              <SelectSingle
+                label="Выберите подкатегорию"
+                field={subCategory}
+                placeholder="Выберите подкатегорию"
+                options={subCategoryOptions}
+                errors={subCategory.errors}
+                isDisabled={isPending}
+                defaultValue={subCategoryOptions[0]}
+              />
+
+              {/* area */}
+              <SelectSingle
+                label="Выберите район"
+                field={district}
+                placeholder="Выберите район"
+                options={areasOptions}
+                errors={district.errors}
+                isDisabled={isPending}
+              />
+              {/* city */}
+
+              <SelectSingle
+                label="Выберите город"
+                field={city}
+                placeholder="Выберите город"
+                options={citiesOptions}
+                errors={city.errors}
+                isDisabled={isPending}
+                defaultValue={citiesOptions[0]}
               />
             </Grid>
-          </Box>
-          <Flex
-            mt="4"
-            direction="column"
-            gap="3"
-            justify="center"
-            align="center"
-          >
-            <Checkbox
-              field={acceptTerms}
-              label="Я согласен с условиями"
-              errors={acceptTerms.errors}
+            {/* description */}
+            <TextAreaField
+              field={description}
+              label="Текст объявления:"
+              placeholder="Текст объявления:"
+              size="3"
+              defaultValue={description.initialValue}
+              dataIsValid={description.valid}
+              errors={description.errors}
+              rows={5}
+              mb="5px"
               disabled={isPending}
             />
 
-            <SubmitButton
-              pending={isPending}
-              disabled={!acceptTerms.valid}
-              text="Добавить объявление"
+            <DropFilesInput
+              accept={{
+                "image/png": [],
+                "image/jpeg": [],
+                "image/jpg": [],
+                "image/webp": [],
+              }}
+              maxSize={MAX_FILE_SIZE}
+              maxFiles={MAX_FILES}
+              field={images}
+              errors={images.errors}
+              onFilesDrop={setSelectedFiles}
+              files={selectedFiles}
+              disabled={false}
+              existingFilesLength={
+                existingImages.filter((image) => !image.toBeDeleted).length
+              }
             />
-            {/* <GoogleReCAPTCHA
+            {(existingImages.length > 0 || selectedFiles.length > 0) && (
+              <Box mt="4" mb="4">
+                <ImagesPreviewer
+                  existingImages={existingImages}
+                  images={selectedFiles}
+                  setImages={setSelectedFiles}
+                  setExistingImages={setExistingImages}
+                  maxImages={MAX_FILES}
+                />
+              </Box>
+            )}
+            <Box mt="4">
+              <Heading as="h3" size="4" mb="2">
+                Контактная информация
+              </Heading>
+              <Grid columns="2" gap="4">
+                <BasicFormField
+                  type="email"
+                  field={email}
+                  label="Email"
+                  anotherLabel="*виден только администрации сайта и не отображается публично"
+                  placeholder="@ Адрес электронной почты"
+                  size="3"
+                  defaultValue={fields.email.initialValue}
+                  dataIsValid={email.valid}
+                  errors={email.errors}
+                  disabled={isPending}
+                >
+                  <EnvelopeClosedIcon height="16" width="16" />
+                </BasicFormField>
+                <PhoneFormField
+                  areaCodeField={areaCode}
+                  label="Телефон"
+                  field={phoneNumber}
+                  errors={phoneNumber.errors}
+                  size="3"
+                  defaultValue={phoneNumber.initialValue}
+                  disabled={isPending}
+                />
+              </Grid>
+            </Box>
+            <Flex
+              mt="4"
+              direction="column"
+              gap="3"
+              justify="center"
+              align="center"
+            >
+              <Checkbox
+                field={acceptTerms}
+                label="Я согласен с условиями"
+                errors={acceptTerms.errors}
+                disabled={isPending}
+              />
+
+              <SubmitButton
+                pending={isPending}
+                disabled={!acceptTerms.valid}
+                text="Добавить объявление"
+              />
+              {/* <GoogleReCAPTCHA
               submitButtonText="Добавить объявление"
               isLoading={isPending}
             /> */}
-          </Flex>
+            </Flex>
+          </Card>
         </Box>
       </form>
-      <ErrorModal open={errorModalOpen} onOpenChange={handleModalClose} />
+      <ErrorModal
+        open={errorModalOpen}
+        onOpenChange={handleModalClose}
+        errorMessage={form.errors}
+      />
     </>
   );
 };

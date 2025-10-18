@@ -8,6 +8,7 @@ import {
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
 import { FileManager } from "@sima-board/common";
+import { getFileManager } from "@/lib/common/actions/getFileManager";
 
 export async function deleteProfessionalServiceAd(
   professionalServicePublicId: string
@@ -47,14 +48,7 @@ export async function deleteProfessionalServiceAd(
 
     // Delete associated images from storage
     if (professionalService.images && professionalService.images.length > 0) {
-      const fileManager = new FileManager({
-        bucketName: process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME,
-        endpoint: process.env.NEXT_PUBLIC_BACKBLAZEB_ENDPOINT,
-        region: process.env.NEXT_PUBLIC_BACKBLAZEB_REGION,
-        accessKey: process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY,
-        secretKey: process.env.NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY,
-        baseUrl: process.env.NEXT_PUBLIC_BACKBLAZEB_BASE_URL,
-      });
+      const fileManager = await getFileManager();
 
       // Delete each image file
 
@@ -98,4 +92,3 @@ export async function deleteProfessionalServiceAdWithRedirect(
 
   return result;
 }
-

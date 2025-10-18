@@ -9,15 +9,14 @@ import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 
-
-
 export async function publishProfessionalServiceAd(
   initialState: unknown,
   formData: FormData
 ) {
   
-
-  const result = parseWithZod(formData, { schema: createProfessionalServiceSchema });
+  const result = parseWithZod(formData, {
+    schema: createProfessionalServiceSchema({ minNumberOfImages: 1 }),
+  });
 
   if (result.status !== "success") return result.reply();
   const user = await getCurrentUser();

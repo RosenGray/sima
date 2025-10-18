@@ -68,31 +68,34 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
         `Загрузите хотя бы ${minNumberOfImages} изображений`
       )
       .superRefine((files, ctx) => {
-        if (files.length > MAX_FILES) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Максимальное количество изображений: ${MAX_FILES}`,
-            fatal: true,
-          });
-          return z.NEVER;
-        }
-
-        files.forEach((file) => {
-          if (file.size > MAX_FILE_SIZE) {
+        console.log('files', files);
+        if (files.length > 0) {
+          if (files.length > MAX_FILES) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: `Файл слишком большой. Максимальный размер файла ${SIZE_IN_MB}MB`,
-            });
-          }
-          if (!new Set(ACCEPTED_FILE_TYPES).has(file.type)) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: `Файл должен быть изображением (PNG, JPEG, JPG или WebP)`,
+              message: `Максимальное количество изображений: ${MAX_FILES}`,
               fatal: true,
             });
             return z.NEVER;
           }
-        });
+
+          files.forEach((file) => {
+            if (file.size > MAX_FILE_SIZE) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Файл слишком большой. Максимальный размер файла ${SIZE_IN_MB}MB`,
+              });
+            }
+            if (!new Set(ACCEPTED_FILE_TYPES).has(file.type)) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Файл должен быть изображением (PNG, JPEG, JPG или WebP)`,
+                fatal: true,
+              });
+              return z.NEVER;
+            }
+          });
+        }
         return true;
       }),
   });
