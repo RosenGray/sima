@@ -5,7 +5,7 @@ import { FilterQuery } from "mongoose";
 
 export interface SearchFilters {
   textSearch?: string;
-  category?: string;
+  categoryId?: string;
   subCategoryId?: string;
   district?: string;
   city?: string;
@@ -35,6 +35,7 @@ class ProfessionalServiceRepository {
   ): Promise<PaginatedResponse> {
     try {
       await connectDB();
+      console.log('searchFilters',searchFilters);
 
       // Build search filter using MongoDB text index and structured filters
       const searchFilter: FilterQuery<typeof ProfessionalService> = {};

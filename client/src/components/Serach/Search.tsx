@@ -8,7 +8,7 @@ import {
   SearchInputRoot,
   SearchIconContainer,
 } from "./Search.styles";
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebouncedCallback } from "use-debounce";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -24,20 +24,16 @@ const Search: FC<SearchProps> = ({ placeholder }) => {
   const { replace } = useRouter();
 
   const handleSearch = useDebouncedCallback((term) => {
-    console.log(`Searching... ${term}`);
-   
     const params = new URLSearchParams(searchParams);
     if (term) {
       // For now, we'll use the search term for category
       // You can extend this to handle city separately if needed
-      params.set('category', term);
+      params.set("category", term);
     } else {
-      params.delete('category');
+      params.delete("category");
     }
     replace(`${pathname}?${params.toString()}`);
   }, 300);
-
-  console.log("searchParams", searchParams);
 
   return (
     <SearchContainer>
@@ -45,7 +41,7 @@ const Search: FC<SearchProps> = ({ placeholder }) => {
       <SearchInputRoot
         id={"search"}
         placeholder={placeholder}
-        defaultValue={searchParams.get('category')?.toString()}
+        defaultValue={searchParams.get("category")?.toString()}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           handleSearch(e.target.value);
         }}
