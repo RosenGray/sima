@@ -5,7 +5,7 @@ import { FilterQuery } from "mongoose";
 
 export interface SearchFilters {
   textSearch?: string;
-  categoryId?: string;
+  category?: string;
   subCategoryId?: string;
   district?: string;
   city?: string;

@@ -28,14 +28,16 @@ const Search: FC<SearchProps> = ({ placeholder }) => {
    
     const params = new URLSearchParams(searchParams);
     if (term) {
-      params.set('query', term);
+      // For now, we'll use the search term for category
+      // You can extend this to handle city separately if needed
+      params.set('category', term);
     } else {
-      params.delete('query');
+      params.delete('category');
     }
     replace(`${pathname}?${params.toString()}`);
   }, 300);
 
-  console.log("placeholder", searchParams);
+  console.log("searchParams", searchParams);
 
   return (
     <SearchContainer>
@@ -43,7 +45,7 @@ const Search: FC<SearchProps> = ({ placeholder }) => {
       <SearchInputRoot
         id={"search"}
         placeholder={placeholder}
-        defaultValue={searchParams.get('query')?.toString()}
+        defaultValue={searchParams.get('category')?.toString()}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           handleSearch(e.target.value);
         }}

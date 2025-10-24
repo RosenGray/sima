@@ -10,12 +10,17 @@ import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards
 import Search from "@/components/Serach/Search";
 
 interface ProfessionalsPageProps {
-  searchParams?: Promise<{ query?: string; page?: string }>;
+  searchParams?: Promise<{ category?: string; city?: string; page?: string }>;
 }
 
 const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   const searchParams = await props.searchParams;
-  const query = searchParams?.query || "";
+  const filters = {
+    category: searchParams?.category || '',
+    city: searchParams?.city || '',
+    // minPrice: searchParams?.minPrice || '',
+    // maxPrice: searchParams?.maxPrice || '',
+  };
   const currentPage = Number(searchParams?.page) || 1;
 
   return (
@@ -30,13 +35,13 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
         }}
         width="auto"
       >
-        {/* <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>Loading...</div>}>
           <ProfessionalServiceCards
-            key={query + currentPage}
-            query={query}
+            key={ currentPage}
+            filters={filters}
             currentPage={currentPage}
           />
-        </Suspense> */}
+        </Suspense>
       </ProfessionalsServicesGrid>
       {/* <Pagination totalPages={totalPages} /> */}
     </ProfessionalsPageContainer>
