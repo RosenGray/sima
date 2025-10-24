@@ -16,21 +16,6 @@ import { Autoplay } from "swiper/modules";
 import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
-import { useProfessionalService } from "../../_providers/ProfessionalServiceProvider";
-import Link from "next/link";
-export const ProfessionalServiceCards: React.FC = () => {
-  const { professionalServices } = useProfessionalService();
-  console.log(professionalServices);
-  return (
-    <>
-      {professionalServices.map((service, index) => (
-        <Link href={`/professional-service/${service.publicId}`} key={index}>
-          <ProfessionalServiceCard key={index} service={service} />
-        </Link>
-      ))}
-    </>
-  );
-};
 
 interface ProfessionalServiceCardProps {
   service: SerilizeProfessionalService;
@@ -39,8 +24,6 @@ interface ProfessionalServiceCardProps {
 const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   service,
 }) => {
-  const { professionalServices } = useProfessionalService();
-  console.log(professionalServices);
   const { images, publicId, district, city } = service;
 
   return (

@@ -14,11 +14,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const professionalServices = await professionalServiceRepository.getAll();
-  //fake await for 5 seconds
 
- 
- 
+
   return (
     // <ProfessionalServiceProvider data={{ professionalServices: [] }}>
       <ProfessionalServiceLayoutSection>
