@@ -31,7 +31,7 @@ export default function Home() {
     <>
       <Header  />
 
-      <Box >
+      <Box  pt="6rem">
         <Box >
           <Flex direction="column" gap="6" align="center">
             <Heading size="9" weight="bold">

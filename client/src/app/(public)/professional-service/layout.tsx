@@ -14,10 +14,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const professionalServices = await professionalServiceRepository.getAll();
+  // const professionalServices = await professionalServiceRepository.getAll();
 
   return (
-    <ProfessionalServiceProvider data={{ professionalServices }}>
+    <ProfessionalServiceProvider data={{ professionalServices: [] }}>
       <ProfessionalServiceLayoutSection>
         <Header />
         <main>{children}</main>

@@ -23,8 +23,9 @@ import { LogoutButton } from "./buttons/LogoutButton/LogoutButton";
 
 const navigationItems = [
   {
-    label: "Products",
+    label: "Услуги специалистов",
     subItems: [
+      { label: "Все", href: "/professional-service" },
       { label: "Electronics", href: "/products/electronics" },
       { label: "Fashion", href: "/products/fashion" },
       { label: "Home & Garden", href: "/products/home-garden" },

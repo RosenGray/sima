@@ -1,5 +1,4 @@
 import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCard";
-import { generateDummyProfessionalServices } from "./_components/dummyData";
 import {
   ProfessionalsPageContainer,
   ProfessionalsServicesGrid,
@@ -7,7 +6,6 @@ import {
 } from "./page.styles";
 
 const ProfessionalsPage = () => {
-  const dummyServices = generateDummyProfessionalServices(20);
 
   return (
     <ProfessionalsPageContainer>
