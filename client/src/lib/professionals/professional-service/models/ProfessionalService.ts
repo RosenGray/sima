@@ -123,6 +123,14 @@ const professionalServiceSchema = new mongoose.Schema(
   }
 );
 
+// Add text index for efficient text search
+professionalServiceSchema.index({
+  description: 'text',
+  district: 'text',
+  city: 'text',
+  email: 'text'
+});
+
 export const ProfessionalService =
   mongoose.models.ProfessionalService ||
   mongoose.model<IProfessionalService>(
