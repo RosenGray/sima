@@ -10,12 +10,13 @@ import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards
 import Search from "@/components/Serach/Search";
 
 interface ProfessionalsPageProps {
-  searchParams?: Promise<{ categoryId?: string; city?: string; page?: string }>;
+  searchParams?: Promise<{ categoryId?: string; city?: string; email?: string; page?: string }>;
 }
 
 const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   const searchParams = await props.searchParams;
   const filters = {
+    email: searchParams?.email,
     categoryId: searchParams?.categoryId,
     city: searchParams?.city || '',
     // minPrice: searchParams?.minPrice || '',
