@@ -1,11 +1,13 @@
+import { Suspense } from "react";
 import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCard";
 import {
   ProfessionalsPageContainer,
   ProfessionalsServicesGrid,
   Title,
 } from "./page.styles";
+import Dummy from "@/components/Dummy/Dummy";
 
-const ProfessionalsPage = () => {
+const ProfessionalsPage = async () => {
 
   return (
     <ProfessionalsPageContainer>
@@ -18,10 +20,13 @@ const ProfessionalsPage = () => {
         }}
         width="auto"
       >
-        <ProfessionalServiceCards />
+        {/* <ProfessionalServiceCards /> */}
+      <Suspense fallback={<div>Loading...</div>}>
+          <Dummy />
+        </Suspense>
       </ProfessionalsServicesGrid>
     </ProfessionalsPageContainer>
   );
-};
+}
 
 export default ProfessionalsPage;

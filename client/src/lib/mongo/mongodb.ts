@@ -45,11 +45,11 @@ const connectDB = async () => {
     isConnected = true;
     console.log("Connected to MongoDB");
     // Optional: Test connection
-    const testCollection = mongoose.connection.db?.collection("test");
-    await testCollection?.insertOne({
-      message: "Database connected!",
-      timestamp: new Date(),
-    });
+    // const testCollection = mongoose.connection.db?.collection("test");
+    // await testCollection?.insertOne({
+    //   message: "Database connected!",
+    //   timestamp: new Date(),
+    // });
   } catch (error) {
     console.error("MongoDB connection error:", error);
     isConnected = false;
