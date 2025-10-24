@@ -16,7 +16,7 @@ interface ProfessionalsPageProps {
 const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   const searchParams = await props.searchParams;
   const filters = {
-    category: searchParams?.categoryId || '',
+    categoryId: searchParams?.categoryId,
     city: searchParams?.city || '',
     // minPrice: searchParams?.minPrice || '',
     // maxPrice: searchParams?.maxPrice || '',

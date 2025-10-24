@@ -2,6 +2,7 @@ import { ProfessionalService } from "../models/ProfessionalService";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerilizeProfessionalService } from "../types/professional-service.scema";
 import { FilterQuery } from "mongoose";
+import mongoose from "mongoose";
 
 export interface SearchFilters {
   textSearch?: string;
@@ -47,12 +48,24 @@ class ProfessionalServiceRepository {
 
       // Add category filter
       if (searchFilters.categoryId) {
-        searchFilter.category = searchFilters.categoryId;
+        // Validate ObjectId format before adding to filter
+        if (mongoose.Types.ObjectId.isValid(searchFilters.categoryId)) {
+          searchFilter.category = searchFilters.categoryId;
+        } else {
+          // Invalid ObjectId - return empty results by adding impossible filter
+          searchFilter._id = new mongoose.Types.ObjectId();
+        }
       }
 
       // Add subcategory filter
       if (searchFilters.subCategoryId) {
-        searchFilter.subCategory = searchFilters.subCategoryId;
+        // Validate ObjectId format before adding to filter
+        if (mongoose.Types.ObjectId.isValid(searchFilters.subCategoryId)) {
+          searchFilter.subCategory = searchFilters.subCategoryId;
+        } else {
+          // Invalid ObjectId - return empty results by adding impossible filter
+          searchFilter._id = new mongoose.Types.ObjectId();
+        }
       }
 
       // Add district filter
