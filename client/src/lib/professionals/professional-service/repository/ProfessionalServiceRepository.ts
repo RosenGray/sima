@@ -87,6 +87,7 @@ class ProfessionalServiceRepository {
 
       // Add city filter
       if (sanitizedFilters.city?.trim()) {
+        console.log('sanitizedFilters.city',sanitizedFilters.city);
         searchFilter.city = sanitizedFilters.city.trim();
       }
 
