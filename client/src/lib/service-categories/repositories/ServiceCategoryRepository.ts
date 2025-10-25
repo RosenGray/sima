@@ -62,11 +62,16 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
 export class ServiceCategoryRepository {
   // Cached version of getAll - caches for 1 hour (3600 seconds)
   async getAll(): Promise<SerializeServiceCategory[]> {
+    // In development, skip cache to always get fresh data
+    if (process.env.NODE_ENV === 'development') {
+      return _getAllCategories();
+    }
+
     const cachedGetAll = unstable_cache(
       _getAllCategories,
       ["service-categories"], // cache key
       {
-        revalidate: 31536000, // 1 year
+        revalidate: 3600, // 1 hour in production
         tags: ["service-categories"],
       }
     );
