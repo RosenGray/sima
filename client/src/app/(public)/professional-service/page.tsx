@@ -1,11 +1,10 @@
-import { FC, Suspense } from "react";
+import { FC } from "react";
 import {
   ProfessionalsPageContainer,
   ProfessionalsServicesGrid,
   StickyPaginationWrapper,
   Title,
 } from "./page.styles";
-import Dummy from "@/components/Dummy/Dummy";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCards";
 import Search from "@/components/Serach/Search";
@@ -36,7 +35,7 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
     currentPage
   );
 
-  console.log('professionalServices',professionalServices);
+  console.log("professionalServices", professionalServices);
 
   return (
     <ProfessionalsPageContainer>
@@ -45,12 +44,18 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
       <ProfessionalsServicesGrid
         gap="3"
         columns={{
-          xs: "1",
-          sm: "2",
+          initial: "1",
+          xs: "2",
+          // sm: "2",
+          md: "3",
+      
+
         }}
         width="auto"
       >
-        <ProfessionalServiceCards professionalServices={professionalServices.data} />
+        <ProfessionalServiceCards
+          professionalServices={professionalServices.data}
+        />
       </ProfessionalsServicesGrid>
       <StickyPaginationWrapper>
         <Pagination totalPages={professionalServices.totalPages} />

@@ -11,7 +11,7 @@ export const ProfessionalsServicesGrid = styled(Grid)``;
 
 export const StickyPaginationWrapper = styled(Box)`
   position: fixed;
-  /* bottom: 1em; */
+
   bottom: 0;
   left: 0;
   right: 0;
@@ -23,8 +23,6 @@ export const StickyPaginationWrapper = styled(Box)`
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--gray-6);
   border-radius: 10px;
-  /* max-width: 98%;
+  max-width: calc(100% - 2em);
   margin: 0 auto;
-  border-radius: 10px; */
-  /* background: var(--color-panel-solid); */
 `;
