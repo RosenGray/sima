@@ -7,6 +7,7 @@ import {
   PaginationContainer,
   PaginationButton,
   PaginationNavButton,
+  PaginationNavButtonText,
   PaginationEllipsis,
   PaginationInfo,
 } from "./Pagination.styles";
@@ -76,7 +77,20 @@ const Pagination: FC<PaginationProps> = ({ totalPages }) => {
   }
 
   return (
-    <PaginationContainer>
+    <PaginationContainer
+      align="center"
+      justify="center"
+      gap={{
+        initial: "2",
+        xs: "2",
+        sm: "3",
+      }}
+      py={{
+        initial: "4",
+        xs: "5",
+        sm: "6",
+      }}
+    >
       {/* Previous Button */}
       <Link
         href={createPageURL(currentPage - 1)}
@@ -84,11 +98,11 @@ const Pagination: FC<PaginationProps> = ({ totalPages }) => {
       >
         <PaginationNavButton disabled={isFirstPage} variant="outline">
           <ChevronLeftIcon />
-          Previous
+          <PaginationNavButtonText>Previous</PaginationNavButtonText>
         </PaginationNavButton>
       </Link>
 
-      {/* Page Info (mobile hidden) */}
+      {/* Page Info (mobile hidden, shown on tablet+) */}
       <PaginationInfo>
         Page {currentPage} of {totalPages}
       </PaginationInfo>
@@ -117,7 +131,7 @@ const Pagination: FC<PaginationProps> = ({ totalPages }) => {
         style={{ pointerEvents: isLastPage ? "none" : "auto" }}
       >
         <PaginationNavButton disabled={isLastPage} variant="outline">
-          Next
+          <PaginationNavButtonText>Next</PaginationNavButtonText>
           <ChevronRightIcon />
         </PaginationNavButton>
       </Link>
