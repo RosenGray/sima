@@ -159,7 +159,7 @@ const ProfessionalServicePublishForm: FC<
     images,
   } = fields;
 
-  console.log("form.dirty", form.dirty);
+ 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
     [mappedCategories]

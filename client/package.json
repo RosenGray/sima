@@ -46,6 +46,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "mongo-sanitize": "^1.1.0",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

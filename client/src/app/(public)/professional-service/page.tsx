@@ -9,10 +9,13 @@ import { professionalServiceRepository } from "@/lib/professionals/professional-
 import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCards";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import Pagination from "@/components/Pagination/Pagination";
+import SearchSingleSelect from "@/components/filters/TextSearch/SearchSingleSelect/SearchSingleSelect";
+import Filters from "./_components/Filters/Filters";
+import { Suspense } from "react";
+import { LoadingFilters } from "./_components/Filters/Filters.styles";
 
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
-    textSearch?: string;
     description?: string;
     categoryId?: string;
     city?: string;
@@ -26,7 +29,6 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
     description: searchParams?.description,
     categoryId: searchParams?.categoryId,
     city: searchParams?.city,
-    textSearch: searchParams?.textSearch,
   };
   const currentPage = Number(searchParams?.page) || 1;
   //10 sec fake await
@@ -40,12 +42,11 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   return (
     <ProfessionalsPageContainer>
       <Title align="center">Профессиональные услуги</Title>
+  
+      <Suspense fallback={<LoadingFilters />}>
+        <Filters />
+      </Suspense>
 
-      <TextSearch
-        placeholder="Поиск по описанию / Текст объявления"
-        paramName="description"
-        label="Поиск по описанию / Текст объявления"
-      />
       <ProfessionalsServicesGrid
         gap="3"
         columns={{

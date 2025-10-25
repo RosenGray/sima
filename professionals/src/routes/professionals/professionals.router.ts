@@ -69,8 +69,6 @@ router.post(
  * @access Public
  */
 router.get("/", async (req: Request, res: Response) => {
-  // Add 5 second delay
-  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   const professionals = await Professional.find({});
   res.status(200).send(professionals);

@@ -105,7 +105,7 @@ class ProfessionalServiceRepository {
       const totalPages = Math.ceil(totalCount / pageSize);
 
       // Fetch paginated results
-      const professionalServices = await ProfessionalService.find(searchFilter)
+      const professionalServices = await ProfessionalService.find()
         .populate("category")
         .populate("subCategory")
         .populate("user")
