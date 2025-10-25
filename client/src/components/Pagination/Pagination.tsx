@@ -30,7 +30,7 @@ const Pagination: FC<PaginationProps> = ({ totalPages }) => {
   // Generate page numbers to display
   const generatePageNumbers = () => {
     const pages: (number | string)[] = [];
-    const maxVisiblePages = 7; // Total number of page buttons to show
+    const maxVisiblePages = 20; // Total number of page buttons to show
 
     if (totalPages <= maxVisiblePages) {
       // Show all pages if total is less than max visible
@@ -118,7 +118,7 @@ const Pagination: FC<PaginationProps> = ({ totalPages }) => {
 
         return (
           <Link key={pageNumber} href={createPageURL(pageNumber)}>
-            <PaginationButton $isActive={isActive} variant="outline">
+            <PaginationButton color="amber" $isActive={isActive} variant="outline">
               {pageNumber}
             </PaginationButton>
           </Link>

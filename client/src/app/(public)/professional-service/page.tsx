@@ -2,6 +2,7 @@ import { FC, Suspense } from "react";
 import {
   ProfessionalsPageContainer,
   ProfessionalsServicesGrid,
+  StickyPaginationWrapper,
   Title,
 } from "./page.styles";
 import Dummy from "@/components/Dummy/Dummy";
@@ -51,7 +52,9 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
       >
         <ProfessionalServiceCards professionalServices={professionalServices.data} />
       </ProfessionalsServicesGrid>
-      <Pagination totalPages={10} />
+      <StickyPaginationWrapper>
+        <Pagination totalPages={professionalServices.totalPages} />
+      </StickyPaginationWrapper>
     </ProfessionalsPageContainer>
   );
 };

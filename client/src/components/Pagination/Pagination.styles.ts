@@ -3,6 +3,7 @@ import { Button, Flex } from "@radix-ui/themes";
 
 export const PaginationContainer = styled(Flex)`
   flex-wrap: wrap;
+  padding:1em;
 `;
 
 export const PaginationButton = styled(Button)<{ $isActive?: boolean }>`
@@ -14,8 +15,8 @@ export const PaginationButton = styled(Button)<{ $isActive?: boolean }>`
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: ${props => props.$isActive ? 'var(--accent-9)' : 'var(--color-surface)'};
-  color: ${props => props.$isActive ? 'white' : 'var(--gray-12)'};
+  background: ${props => props.$isActive ? 'var(--accent-5)' : 'var(--color-surface)'};
+  color: ${props => props.$isActive ? 'var(--accent-12)' : 'var(--gray-12)'};
   border: 1px solid ${props => props.$isActive ? 'var(--accent-9)' : 'var(--gray-6)'};
   
   &:hover:not(:disabled) {

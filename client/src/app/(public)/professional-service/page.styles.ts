@@ -1,6 +1,6 @@
 "use client";
 import styled from "styled-components";
-import { Container, Grid, Heading } from "@radix-ui/themes";
+import { Container, Grid, Heading, Box } from "@radix-ui/themes";
 
 export const ProfessionalsPageContainer = styled(Container)``;
 
@@ -8,3 +8,23 @@ export const Title = styled(Heading)`
   color: red;
 `;
 export const ProfessionalsServicesGrid = styled(Grid)``;
+
+export const StickyPaginationWrapper = styled(Box)`
+  position: fixed;
+  /* bottom: 1em; */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-background);
+  padding:0;
+  /* padding: var(--space-4) 0; */
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--gray-6);
+  border-radius: 10px;
+  /* max-width: 98%;
+  margin: 0 auto;
+  border-radius: 10px; */
+  /* background: var(--color-panel-solid); */
+`;
