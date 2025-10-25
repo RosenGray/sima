@@ -107,8 +107,8 @@ const professionalServiceSchema = new mongoose.Schema(
     toJSON: {
       transform: (doc, ret: Record<string, unknown>) => {
         ret.id = ret._id;
-        ret.updatedAt = (ret.updatedAt as Date).toISOString();
-        ret.createdAt = (ret.createdAt as Date).toISOString();
+        ret.updatedAt = (ret.updatedAt as Date)?.toISOString();
+        ret.createdAt = (ret.createdAt as Date)?.toISOString();
         ret.images = (ret.images as unknown[]).map((value: unknown) => {
           const image = value as Record<string, unknown>;
           return {

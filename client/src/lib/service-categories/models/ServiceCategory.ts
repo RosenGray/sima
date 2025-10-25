@@ -40,8 +40,8 @@ const serviceCategorySchema = new mongoose.Schema({
       ret.id = ret._id;
       delete ret._id;
       delete ret.__v;
-      ret.updatedAt = (ret.updatedAt as Date).toISOString();
-      ret.createdAt = (ret.createdAt as Date).toISOString();
+      ret.updatedAt = (ret.updatedAt as Date)?.toISOString();
+      ret.createdAt = (ret.createdAt as Date)?.toISOString();
     }
   }
 });
