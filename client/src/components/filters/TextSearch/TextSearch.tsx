@@ -1,58 +1,57 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { FC, ChangeEvent } from "react";
+import { FC, ChangeEvent, useId } from "react";
 import {
   SearchContainer,
   SearchLabel,
   SearchInputRoot,
-  SearchIconContainer,
-} from "./Search.styles";
+  SearchInputSlot,
+} from "./TextSearch.styles";
 import { useDebouncedCallback } from "use-debounce";
-
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-interface SearchProps {
+interface TextSearchProps {
+  paramName: string;
   placeholder: string;
   label?: string;
-  id?: string;
+
 }
 
-const Search: FC<SearchProps> = ({ placeholder }) => {
+const TextSearch: FC<TextSearchProps> = ({ placeholder, label, paramName }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const id = useId();
 
   const handleSearch = useDebouncedCallback((term) => {
     const params = new URLSearchParams(searchParams);
-    params.set('page', '1');
+    params.set("page", "1");
     if (term) {
-      // For now, we'll use the search term for category
-      // You can extend this to handle city separately if needed
-      params.set("category", term);
+      params.set(paramName, term);
     } else {
-      params.delete("category");
+      params.delete(paramName);
     }
     replace(`${pathname}?${params.toString()}`);
   }, 300);
 
   return (
     <SearchContainer>
-      <SearchLabel htmlFor={"search"}>Search</SearchLabel>
+     {label && <SearchLabel htmlFor={id}>{label}</SearchLabel>}
       <SearchInputRoot
-        id={"search"}
+        id={id}
         placeholder={placeholder}
-        defaultValue={searchParams.get("category")?.toString()}
+        defaultValue={searchParams.get(paramName)?.toString()}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           handleSearch(e.target.value);
         }}
       >
-        <SearchIconContainer>
+        <SearchInputSlot>
           <MagnifyingGlassIcon width="16" height="16" />
-        </SearchIconContainer>
+        </SearchInputSlot>
       </SearchInputRoot>
     </SearchContainer>
   );
 };
 
-export default Search;
+export default TextSearch;

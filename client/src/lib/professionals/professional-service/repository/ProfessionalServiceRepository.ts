@@ -10,7 +10,7 @@ export interface SearchFilters {
   subCategoryId?: string;
   district?: string;
   city?: string;
-  email?: string;
+  description?: string;
 }
 
 interface PaginatedResponse {
@@ -79,9 +79,9 @@ class ProfessionalServiceRepository {
         searchFilter.city = searchFilters.city;
       }
 
-      // Add email filter
-      if (searchFilters.email) {
-        searchFilter.email = searchFilters.email;
+      // Add description filter
+      if (searchFilters.description) {
+        searchFilter.description = searchFilters.description;
       }
 
       // Calculate pagination

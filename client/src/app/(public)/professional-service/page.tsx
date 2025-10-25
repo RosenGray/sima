@@ -7,14 +7,14 @@ import {
 } from "./page.styles";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCards";
-import Search from "@/components/Serach/Search";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import Pagination from "@/components/Pagination/Pagination";
 
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
+    description?: string;
     categoryId?: string;
     city?: string;
-    email?: string;
     page?: string;
   }>;
 }
@@ -22,11 +22,9 @@ interface ProfessionalsPageProps {
 const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   const searchParams = await props.searchParams;
   const filters = {
-    email: searchParams?.email,
+    description: searchParams?.description,
     categoryId: searchParams?.categoryId,
     city: searchParams?.city || "",
-    // minPrice: searchParams?.minPrice || '',
-    // maxPrice: searchParams?.maxPrice || '',
   };
   const currentPage = Number(searchParams?.page) || 1;
   //10 sec fake await
@@ -40,7 +38,7 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   return (
     <ProfessionalsPageContainer>
       <Title align="center">Профессиональные услуги</Title>
-      <Search placeholder="Search invoices..." />
+      <TextSearch placeholder="Search invoices..." />
       <ProfessionalsServicesGrid
         gap="3"
         columns={{
