@@ -8,6 +8,7 @@ import Dummy from "@/components/Dummy/Dummy";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCards";
 import Search from "@/components/Serach/Search";
+import Pagination from "@/components/Pagination/Pagination";
 
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
@@ -50,7 +51,7 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
       >
         <ProfessionalServiceCards professionalServices={professionalServices.data} />
       </ProfessionalsServicesGrid>
-      {/* <Pagination totalPages={totalPages} /> */}
+      <Pagination totalPages={10} />
     </ProfessionalsPageContainer>
   );
 };
