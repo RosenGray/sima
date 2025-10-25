@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongo/mongodb";
 import { SerilizeProfessionalService } from "../types/professional-service.scema";
 import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
+import sanitize from "mongo-sanitize";
 
 export interface SearchFilters {
   textSearch?: string;
@@ -39,19 +40,29 @@ class ProfessionalServiceRepository {
       await connectDB();
       console.log('searchFilters',searchFilters);
 
+      // Sanitize all incoming filters to prevent NoSQL injection
+      const sanitizedFilters: SearchFilters = {
+        textSearch: sanitize(searchFilters.textSearch),
+        categoryId: sanitize(searchFilters.categoryId),
+        subCategoryId: sanitize(searchFilters.subCategoryId),
+        district: sanitize(searchFilters.district),
+        city: sanitize(searchFilters.city),
+        description: sanitize(searchFilters.description),
+      };
+
       // Build search filter using MongoDB text index and structured filters
       const searchFilter: FilterQuery<typeof ProfessionalService> = {};
 
       // Add text search using MongoDB text index (fast and efficient)
-      if (searchFilters.textSearch && searchFilters.textSearch.trim()) {
-        searchFilter.$text = { $search: searchFilters.textSearch };
+      if (sanitizedFilters.textSearch?.trim()) {
+        searchFilter.$text = { $search: sanitizedFilters.textSearch.trim() };
       }
 
       // Add category filter
-      if (searchFilters.categoryId) {
+      if (sanitizedFilters.categoryId) {
         // Validate ObjectId format before adding to filter
-        if (mongoose.Types.ObjectId.isValid(searchFilters.categoryId)) {
-          searchFilter.category = searchFilters.categoryId;
+        if (mongoose.Types.ObjectId.isValid(sanitizedFilters.categoryId)) {
+          searchFilter.category = sanitizedFilters.categoryId;
         } else {
           // Invalid ObjectId - return empty results by adding impossible filter
           searchFilter._id = new mongoose.Types.ObjectId();
@@ -59,10 +70,10 @@ class ProfessionalServiceRepository {
       }
 
       // Add subcategory filter
-      if (searchFilters.subCategoryId) {
+      if (sanitizedFilters.subCategoryId) {
         // Validate ObjectId format before adding to filter
-        if (mongoose.Types.ObjectId.isValid(searchFilters.subCategoryId)) {
-          searchFilter.subCategory = searchFilters.subCategoryId;
+        if (mongoose.Types.ObjectId.isValid(sanitizedFilters.subCategoryId)) {
+          searchFilter.subCategory = sanitizedFilters.subCategoryId;
         } else {
           // Invalid ObjectId - return empty results by adding impossible filter
           searchFilter._id = new mongoose.Types.ObjectId();
@@ -70,18 +81,18 @@ class ProfessionalServiceRepository {
       }
 
       // Add district filter
-      if (searchFilters.district) {
-        searchFilter.district = searchFilters.district;
+      if (sanitizedFilters.district?.trim()) {
+        searchFilter.district = sanitizedFilters.district.trim();
       }
 
       // Add city filter
-      if (searchFilters.city) {
-        searchFilter.city = searchFilters.city;
+      if (sanitizedFilters.city?.trim()) {
+        searchFilter.city = sanitizedFilters.city.trim();
       }
 
       // Add description filter
-      if (searchFilters.description) {
-        searchFilter.description = searchFilters.description;
+      if (sanitizedFilters.description?.trim()) {
+        searchFilter.description = sanitizedFilters.description.trim();
       }
 
       // Calculate pagination
