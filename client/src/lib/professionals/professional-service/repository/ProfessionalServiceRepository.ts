@@ -90,10 +90,12 @@ class ProfessionalServiceRepository {
         searchFilter.city = sanitizedFilters.city.trim();
       }
 
-      // Add description filter
       if (sanitizedFilters.description?.trim()) {
-        searchFilter.description = sanitizedFilters.description.trim();
+        searchFilter.description = { $regex: sanitizedFilters.description.trim(), $options: 'i' };
       }
+
+
+ 
 
       // Calculate pagination
       const skip = (currentPage - 1) * pageSize;

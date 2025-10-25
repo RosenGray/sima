@@ -12,6 +12,7 @@ import Pagination from "@/components/Pagination/Pagination";
 
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
+    textSearch?: string;
     description?: string;
     categoryId?: string;
     city?: string;
@@ -24,7 +25,8 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   const filters = {
     description: searchParams?.description,
     categoryId: searchParams?.categoryId,
-    city: searchParams?.city || "",
+    city: searchParams?.city,
+    textSearch: searchParams?.textSearch,
   };
   const currentPage = Number(searchParams?.page) || 1;
   //10 sec fake await
@@ -38,7 +40,12 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   return (
     <ProfessionalsPageContainer>
       <Title align="center">Профессиональные услуги</Title>
-      <TextSearch placeholder="Search invoices..." />
+
+      <TextSearch
+        placeholder="Поиск по описанию / Текст объявления"
+        paramName="description"
+        label="Поиск по описанию / Текст объявления"
+      />
       <ProfessionalsServicesGrid
         gap="3"
         columns={{
@@ -46,8 +53,6 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
           xs: "2",
           // sm: "2",
           md: "3",
-      
-
         }}
         width="auto"
       >
