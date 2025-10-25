@@ -10,7 +10,12 @@ import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards
 import Search from "@/components/Serach/Search";
 
 interface ProfessionalsPageProps {
-  searchParams?: Promise<{ categoryId?: string; city?: string; email?: string; page?: string }>;
+  searchParams?: Promise<{
+    categoryId?: string;
+    city?: string;
+    email?: string;
+    page?: string;
+  }>;
 }
 
 const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
@@ -18,11 +23,18 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   const filters = {
     email: searchParams?.email,
     categoryId: searchParams?.categoryId,
-    city: searchParams?.city || '',
+    city: searchParams?.city || "",
     // minPrice: searchParams?.minPrice || '',
     // maxPrice: searchParams?.maxPrice || '',
   };
   const currentPage = Number(searchParams?.page) || 1;
+  //10 sec fake await
+  const professionalServices = await professionalServiceRepository.getAll(
+    filters,
+    currentPage
+  );
+
+  console.log('professionalServices',professionalServices);
 
   return (
     <ProfessionalsPageContainer>
@@ -36,13 +48,7 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
         }}
         width="auto"
       >
-        <Suspense fallback={<div>Loading...</div>}>
-          <ProfessionalServiceCards
-            key={ currentPage}
-            filters={filters}
-            currentPage={currentPage}
-          />
-        </Suspense>
+        <ProfessionalServiceCards professionalServices={professionalServices.data} />
       </ProfessionalsServicesGrid>
       {/* <Pagination totalPages={totalPages} /> */}
     </ProfessionalsPageContainer>

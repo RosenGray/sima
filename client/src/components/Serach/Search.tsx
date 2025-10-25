@@ -25,6 +25,7 @@ const Search: FC<SearchProps> = ({ placeholder }) => {
 
   const handleSearch = useDebouncedCallback((term) => {
     const params = new URLSearchParams(searchParams);
+    params.set('page', '1');
     if (term) {
       // For now, we'll use the search term for category
       // You can extend this to handle city separately if needed

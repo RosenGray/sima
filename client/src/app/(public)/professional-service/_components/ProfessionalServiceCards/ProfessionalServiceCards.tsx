@@ -1,27 +1,21 @@
 import { Link } from "@radix-ui/themes";
 import ProfessionalServiceCard from "./ProfessionalServiceCard";
-import {
-  professionalServiceRepository,
-  SearchFilters,
-} from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
+import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 
 interface ProfessionalServiceCardsProps {
-  filters?: SearchFilters;
-  currentPage?: number;
+  professionalServices: SerilizeProfessionalService[];
 }
 export const ProfessionalServiceCards: React.FC<
   ProfessionalServiceCardsProps
-> = async ({ filters, currentPage }) => {
-  const professionalServices = await professionalServiceRepository.getAll(
-    filters,
-    currentPage
-  );
-  console.log('professionalServices',professionalServices);
+> = async ({ professionalServices }) => {
   return (
     <>
-      {professionalServices.data.map((service, index) => (
-        <Link href={`/professional-service/${service.publicId}`} key={index}>
-          <ProfessionalServiceCard key={index} service={service} />
+      {professionalServices.map((service) => (
+        <Link
+          href={`/professional-service/${service.publicId}`}
+          key={service.publicId}
+        >
+          <ProfessionalServiceCard service={service} />
         </Link>
       ))}
     </>
