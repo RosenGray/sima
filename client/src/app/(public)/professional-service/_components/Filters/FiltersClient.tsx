@@ -13,6 +13,7 @@ import {
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { ServiceCategoryMapping } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import { SearchSection, FiltersSection } from "./Filters.styles";
 
 interface FiltersClientProps {
   mappedCategories: ServiceCategoryMapping;
@@ -46,32 +47,31 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
   return (
     <>
-      <TextSearch
-        placeholder="Поиск по описанию / Текст объявления"
-        paramName="description"
-        // label="Поиск по описанию / Текст объявления"
-      />
-      <SearchSingleSelect
-        paramName="categoryId"
-        // label="Выберите категорию"
-        options={categoriesOptions}
-      />
-      <SearchSingleSelect
-        paramName="subCategoryId"
-        // label="Выберите подкатегорию"
-        options={subCategoryOptions}
-        isDisabled={!selectedCategoryId}
-      />
-      <SearchSingleSelect
-        paramName="district"
-        // label="Выберите район"
-        options={areasOptions}
-      />
-      <SearchSingleSelect
-        paramName="city"
-        // label="Выберите город"
-        options={citiesOptions}
-      />
+      <SearchSection>
+        <TextSearch
+          placeholder="Поиск по описанию / Текст объявления"
+          paramName="description"
+        />
+      </SearchSection>
+      <FiltersSection>
+        <SearchSingleSelect
+          paramName="categoryId"
+          options={categoriesOptions}
+        />
+        <SearchSingleSelect
+          paramName="subCategoryId"
+          options={subCategoryOptions}
+          isDisabled={!selectedCategoryId}
+        />
+        <SearchSingleSelect
+          paramName="district"
+          options={areasOptions}
+        />
+        <SearchSingleSelect
+          paramName="city"
+          options={citiesOptions}
+        />
+      </FiltersSection>
     </>
   );
 };

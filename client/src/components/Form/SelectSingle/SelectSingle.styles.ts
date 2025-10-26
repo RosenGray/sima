@@ -1,64 +1,134 @@
 import { GroupBase, StylesConfig } from "react-select";
 
 export const styles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
-  control: (base,state) => ({
+  control: (base, state) => ({
     ...base,
+    minHeight: '40px',
+    minWidth: '180px',
     backgroundColor: "var(--color-surface)",
-    boxShadow: state.isFocused 
-      ? "0 0 0 2px var(--color-focus)" // or whatever Radix focus ring variable you're using
-      : base.boxShadow,
-    borderColor: state.isFocused 
-      ? "var(--color-accent-8)" 
-      : "var(--color-border)",
+    borderColor: state.isFocused ? "var(--accent-9)" : "var(--gray-6)",
+    boxShadow: state.isFocused ? "0 0 0 2px var(--accent-5)" : "none",
+    transition: "all 0.2s ease",
     "&:hover": {
-      borderColor: "var(--color-accent-8)"
+      borderColor: state.isFocused ? "var(--accent-9)" : "var(--gray-8)"
     }
   }),
+  
   menu: (base) => ({
     ...base,
-    backgroundColor: "var(--mauve-1)",
-    border: '1px solid var(--white-a12)',
-    padding: '10px',
-  }),
-  menuList: (base) => ({
-    ...base,
-    '::-webkit-scrollbar': {
-      display: 'none', // Safari and Chrome
-    },
-    scrollbarWidth: 'none', // Firefox
-    msOverflowStyle: 'none', // IE 10+
+    backgroundColor: "var(--brown-1)",
+    border: '1px solid var(--gray-6)',
+    borderRadius: 'var(--radius-2)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    padding: '4px',
+    zIndex: 100,
   }),
   
-  option: (base,state) => ({
+  menuList: (base) => ({
     ...base,
-    backgroundColor: state.isFocused ? 'var(--red-9)' : 'var(--mauve)', 
-    cursor: 'pointer', 
-    color: 'var(--gray-12)',
-    "&:hover": {
-        backgroundColor: "var(--red-9)",
-        borderRadius: '4px',
-        color: 'var(--gray-12)',
-      }
+    padding: '0',
+    '::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '::-webkit-scrollbar-track': {
+      background: 'var(--gray-3)',
+      borderRadius: '4px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: 'var(--gray-8)',
+      borderRadius: '4px',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: 'var(--gray-9)',
+    },
   }),
-//   valueContainer: (base) => ({
-//     ...base,
-//     backgroundColor: 'green'
-//     // You can add other value container styles here
-//   }),
+  
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected 
+      ? 'var(--accent-9)' 
+      : state.isFocused 
+        ? 'var(--accent-4)' 
+        : 'transparent',
+    color: state.isSelected ? 'var(--accent-contrast)' : 'var(--gray-12)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+    borderRadius: 'var(--radius-1)',
+    transition: 'all 0.15s ease',
+    "&:active": {
+      backgroundColor: 'var(--accent-5)',
+    }
+  }),
+  
   placeholder: (base) => ({
     ...base,
-    color: "var(--gray-12);",
+    color: "var(--gray-11)",
+    fontSize: '14px',
   }),
+  
   singleValue: (base) => ({
     ...base,
-    color: "var(--gray-12);",
+    color: "var(--gray-12)",
+    fontSize: '14px',
   }),
+  
   input: (base) => ({
     ...base,
-    color: "var(--gray-12);",
+    color: "var(--gray-12)",
+    fontSize: '14px',
   }),
+  
+  multiValue: (base) => ({
+    ...base,
+    backgroundColor: 'var(--accent-4)',
+    borderRadius: 'var(--radius-1)',
+  }),
+  
+  multiValueLabel: (base) => ({
+    ...base,
+    color: 'var(--accent-12)',
+    fontSize: '13px',
+  }),
+  
+  multiValueRemove: (base) => ({
+    ...base,
+    color: 'var(--accent-11)',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: 'var(--accent-9)',
+      color: 'var(--accent-contrast)',
+    }
+  }),
+  
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--gray-10)',
+    cursor: 'pointer',
+    padding: '8px',
+    '&:hover': {
+      color: 'var(--gray-12)',
+    }
+  }),
+  
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--gray-10)',
+    cursor: 'pointer',
+    padding: '8px',
+    '&:hover': {
+      color: 'var(--gray-12)',
+    }
+  }),
+  
+  indicatorSeparator: (base) => ({
+    ...base,
+    backgroundColor: 'var(--gray-6)',
+  }),
+  
   noOptionsMessage: (base) => ({
     ...base,
-    color: "var(--gray-12);",
+    color: "var(--gray-11)",
+    fontSize: '14px',
+    padding: '12px',
   }),
 };

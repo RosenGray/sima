@@ -7,13 +7,11 @@ import {
 } from "./page.styles";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCards";
-import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import Pagination from "@/components/Pagination/Pagination";
-import SearchSingleSelect from "@/components/filters/TextSearch/SearchSingleSelect/SearchSingleSelect";
 import Filters from "./_components/Filters/Filters";
 import { Suspense } from "react";
 import { LoadingFilters } from "./_components/Filters/Filters.styles";
-import {  Text } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
@@ -49,7 +47,7 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
            <Suspense fallback={<LoadingFilters />}>
         <Filters />
       </Suspense>
-      <Title mt="-50px"  size="5">Услуги специалистов</Title>
+      <Title mt="6"  size="5">Услуги специалистов</Title>
  
       <Text as="p" size="2"  color="gray">{professionalServices.totalCount} результатов найдено</Text>
   
