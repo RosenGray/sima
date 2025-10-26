@@ -20,6 +20,8 @@ interface ProfessionalsPageProps {
     description?: string;
     categoryId?: string;
     city?: string;
+    subCategoryId?: string;
+    district?: string;
     page?: string;
   }>;
 }
@@ -30,6 +32,8 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
     description: searchParams?.description,
     categoryId: searchParams?.categoryId,
     city: searchParams?.city,
+    subCategoryId: searchParams?.subCategoryId,
+    district: searchParams?.district,
   };
   const currentPage = Number(searchParams?.page) || 1;
   //10 sec fake await

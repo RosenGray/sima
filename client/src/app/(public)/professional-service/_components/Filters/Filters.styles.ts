@@ -12,4 +12,6 @@ export const LoadingFilters = styled(Skeleton)`
 export const FiltersContainer = styled(Box)`
 border: 3px solid blue;
 transform: translateY(-50%);
+display: flex;
+background-color: var(--black-a12);
 `;

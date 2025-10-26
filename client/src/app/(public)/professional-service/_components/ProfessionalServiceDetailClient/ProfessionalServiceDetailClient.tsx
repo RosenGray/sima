@@ -41,7 +41,6 @@ import {
   ButtonGroup,
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import { ThisUserIsOwner } from "@/lib/auth/utils/auth.utils";
 import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
 
 interface ProfessionalServiceDetailClientProps {
@@ -55,6 +54,8 @@ const ProfessionalServiceDetailClient: React.FC<
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
+  console.log(currentUser)
+  console.log(service)
   const isOwner = thisUserIsOwner(service.user.id);
 
   const {
