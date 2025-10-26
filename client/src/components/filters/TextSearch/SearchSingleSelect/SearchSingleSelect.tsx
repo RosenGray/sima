@@ -13,7 +13,6 @@ interface Option {
 
 interface SearchSingleSelectProps extends Props {
   options: Option[];
-  defaultValue?: Option;
   label?: string;
   paramName: string;
 }
@@ -22,7 +21,6 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   label,
   paramName,
   options,
-  defaultValue,
   ...rest
 }) => {
   const searchParams = useSearchParams();
@@ -49,11 +47,13 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
       )}
 
       <Select
-        defaultValue={defaultValue}
+        menuPortalTarget={typeof document !== 'undefined' ? document.body : null} 
+        defaultValue={options.find((opt) => opt.value === searchParams.get(paramName))}
         name={`search-single-select-${paramName}`}
         instanceId={id}
         options={options}
         styles={styles}
+        isClearable
         onChange={(option) => {
           handleSearch(option as Option);
         }}

@@ -5,7 +5,7 @@ import { Container, Grid, Heading, Box } from "@radix-ui/themes";
 export const ProfessionalsPageContainer = styled(Container)``;
 
 export const Title = styled(Heading)`
-  color: red;
+
 `;
 export const ProfessionalsServicesGrid = styled(Grid)``;
 
@@ -16,7 +16,7 @@ export const StickyPaginationWrapper = styled(Box)`
   left: 0;
   right: 0;
   background: var(--color-background);
-  padding:0;
+  padding: 0;
   /* padding: var(--space-4) 0; */
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;

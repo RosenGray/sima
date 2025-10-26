@@ -13,6 +13,7 @@ import SearchSingleSelect from "@/components/filters/TextSearch/SearchSingleSele
 import Filters from "./_components/Filters/Filters";
 import { Suspense } from "react";
 import { LoadingFilters } from "./_components/Filters/Filters.styles";
+import {  Text } from "@radix-ui/themes";
 
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
@@ -41,13 +42,16 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
 
   return (
     <ProfessionalsPageContainer>
-      <Title align="center">Профессиональные услуги</Title>
-  
-      <Suspense fallback={<LoadingFilters />}>
+           <Suspense fallback={<LoadingFilters />}>
         <Filters />
       </Suspense>
+      <Title mt="-50px"  size="5">Услуги специалистов</Title>
+ 
+      <Text as="p" size="2"  color="gray">{professionalServices.totalCount} результатов найдено</Text>
+  
 
       <ProfessionalsServicesGrid
+        mt="25px"
         gap="3"
         columns={{
           initial: "1",

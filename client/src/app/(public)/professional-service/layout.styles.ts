@@ -2,18 +2,15 @@
 import styled from "styled-components";
 
 export const ProfessionalServiceLayoutSection = styled.section`
-height: 100%;
-border: 1px solid red;
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
   &:before {
     content: "";
     display: block;
     height: var(--header-height);
-    border:2px solid red;
+    border: 2px solid red;
   }
-  main{
+  main {
     flex: 1;
-    overflow: auto;
   }
 `;
