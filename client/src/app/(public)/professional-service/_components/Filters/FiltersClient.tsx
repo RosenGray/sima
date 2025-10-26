@@ -47,12 +47,12 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
   return (
     <>
-      <SearchSection>
+      {/* <SearchSection>
         <TextSearch
           placeholder="Поиск по описанию / Текст объявления"
           paramName="description"
         />
-      </SearchSection>
+      </SearchSection> */}
       <FiltersSection>
         <SearchSingleSelect
           paramName="categoryId"
@@ -62,6 +62,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           paramName="subCategoryId"
           options={subCategoryOptions}
           isDisabled={!selectedCategoryId}
+          defaultValue={subCategoryOptions[0]}
         />
         <SearchSingleSelect
           paramName="district"
@@ -70,7 +71,9 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         <SearchSingleSelect
           paramName="city"
           options={citiesOptions}
+          defaultValue={citiesOptions[0]}
         />
+        
       </FiltersSection>
     </>
   );

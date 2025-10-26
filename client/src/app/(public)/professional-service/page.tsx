@@ -44,13 +44,14 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
 
   return (
     <ProfessionalsPageContainer>
-           <Suspense fallback={<LoadingFilters />}>
+      <Suspense fallback={<LoadingFilters />}>
         <Filters />
       </Suspense>
-      <Title mt="6"  size="5">Услуги специалистов</Title>
- 
-      <Text as="p" size="2"  color="gray">{professionalServices.totalCount} результатов найдено</Text>
-  
+      <Title size="5">Услуги специалистов</Title>
+
+      <Text as="p" size="2" color="gray">
+        {professionalServices.totalCount} результатов найдено
+      </Text>
 
       <ProfessionalsServicesGrid
         mt="25px"

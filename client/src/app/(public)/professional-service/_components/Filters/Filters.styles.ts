@@ -23,8 +23,7 @@ export const FiltersContainer = styled(Box)`
   border-radius: var(--radius-3);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
-  position:relative;
-  z-index: 1000;
+
 
   &:hover {
     border-color: var(--gray-7);

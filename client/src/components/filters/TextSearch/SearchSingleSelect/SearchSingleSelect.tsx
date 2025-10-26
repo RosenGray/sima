@@ -15,10 +15,12 @@ interface SearchSingleSelectProps extends Props {
   options: Option[];
   label?: string;
   paramName: string;
+  defaultValue?: Option;
 }
 
 const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   label,
+  defaultValue,
   paramName,
   options,
   ...rest
@@ -27,7 +29,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   const pathname = usePathname();
   const { replace } = useRouter();
   const id = useId();
-
+console.log(defaultValue)
   const handleSearch = (option: Option) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", "1");
@@ -48,7 +50,8 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
 
       <Select
         menuPortalTarget={typeof document !== 'undefined' ? document.body : null} 
-        defaultValue={options.find((opt) => opt.value === searchParams.get(paramName))}
+        defaultValue={defaultValue}
+        value={options.find((opt) => opt.value === searchParams.get(paramName))}
         name={`search-single-select-${paramName}`}
         instanceId={id}
         options={options}
