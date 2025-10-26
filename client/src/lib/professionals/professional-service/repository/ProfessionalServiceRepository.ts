@@ -119,6 +119,9 @@ class ProfessionalServiceRepository {
         JSON.stringify(professionalServices)
       );
 
+      //fake await 10 seconds
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
       return {
         data: serializedServices,
         totalCount,

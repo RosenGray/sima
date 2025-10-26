@@ -7,7 +7,6 @@ import { styles } from "@/components/Form/SelectSingle/SelectSingle.styles";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useRef } from "react";
-import StateManagedSelect from "react-select";
 
 interface Option {
   value: string;
@@ -50,18 +49,16 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
     }
     replace(`${pathname}?${params.toString()}`);
   };
-  const handleClear = () => {
-    if (selectInputRef.current) {
+
+
+
+  // Clear the select when paramValue becomes null/undefined (e.g., when removed by parent dependency)
+  useEffect(() => {
+    if (!paramValue && selectInputRef.current) {
+      console.log('blaaaaaaaa')
       selectInputRef.current.clearValue();
     }
-  };
-
-  console.log(
-    paramName,
-    options.find((opt) => opt.value === paramValue)
-  );
-
-
+  }, [paramValue]);
 
   useEffect(() => {
     if (
