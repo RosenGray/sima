@@ -57,21 +57,22 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         <SearchSingleSelect
           paramName="categoryId"
           options={categoriesOptions}
+          dependencyParams={['subCategoryId']}
         />
         <SearchSingleSelect
           paramName="subCategoryId"
           options={subCategoryOptions}
           isDisabled={!selectedCategoryId}
-          defaultValue={subCategoryOptions[0]}
         />
         <SearchSingleSelect
           paramName="district"
           options={areasOptions}
+          dependencyParams={['city']}
         />
         <SearchSingleSelect
           paramName="city"
           options={citiesOptions}
-          defaultValue={citiesOptions[0]}
+
         />
         
       </FiltersSection>
