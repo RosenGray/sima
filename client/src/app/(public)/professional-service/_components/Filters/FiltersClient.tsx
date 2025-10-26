@@ -49,27 +49,27 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
       <TextSearch
         placeholder="Поиск по описанию / Текст объявления"
         paramName="description"
-        label="Поиск по описанию / Текст объявления"
+        // label="Поиск по описанию / Текст объявления"
       />
       <SearchSingleSelect
         paramName="categoryId"
-        label="Выберите категорию"
+        // label="Выберите категорию"
         options={categoriesOptions}
       />
       <SearchSingleSelect
         paramName="subCategoryId"
-        label="Выберите подкатегорию"
+        // label="Выберите подкатегорию"
         options={subCategoryOptions}
         isDisabled={!selectedCategoryId}
       />
       <SearchSingleSelect
         paramName="district"
-        label="Выберите район"
+        // label="Выберите район"
         options={areasOptions}
       />
       <SearchSingleSelect
         paramName="city"
-        label="Выберите город"
+        // label="Выберите город"
         options={citiesOptions}
       />
     </>
