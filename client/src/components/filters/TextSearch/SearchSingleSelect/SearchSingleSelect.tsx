@@ -1,12 +1,11 @@
 "use client";
-import { FC, useId } from "react";
+import { FC, useId, useState, useEffect, useRef } from "react";
 import React from "react";
 import Select, { GroupBase, Props, SelectInstance } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "@/components/Form/SelectSingle/SelectSingle.styles";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { useRef } from "react";
+import { breakpoints } from "@/globals";
 
 interface Option {
   value: string;
@@ -38,6 +37,20 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
     boolean,
     GroupBase<unknown>
   > | null>(null);
+  
+  // Detect if mobile
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < breakpoints.sm);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleSearch = (option: Option) => {
     const params = new URLSearchParams(searchParams);
@@ -92,7 +105,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
       <Select
         ref={selectInputRef}
         menuPortalTarget={
-          typeof document !== "undefined" ? document.body : null
+          !isMobile && typeof document !== "undefined" ? document.body : null
         }
         value={options.find((opt) => opt.value === paramValue)}
         name={`search-single-select-${paramName}`}

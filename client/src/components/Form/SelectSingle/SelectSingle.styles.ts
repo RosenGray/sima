@@ -48,15 +48,22 @@ export const styles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
     backgroundColor: state.isSelected 
       ? 'var(--accent-9)' 
       : state.isFocused 
-        ? 'var(--accent-4)' 
+        ? 'var(--accent-5)' 
         : 'transparent',
     color: state.isSelected ? 'var(--accent-contrast)' : 'var(--gray-12)',
     cursor: 'pointer',
     padding: '8px 12px',
     borderRadius: 'var(--radius-1)',
     transition: 'all 0.15s ease',
+    border: state.isFocused && !state.isSelected 
+      ? '1px solid var(--accent-8)' 
+      : '1px solid transparent',
+    outline: state.isFocused && !state.isSelected 
+      ? '2px solid var(--accent-6)' 
+      : 'none',
+    outlineOffset: '-1px',
     "&:active": {
-      backgroundColor: 'var(--accent-5)',
+      backgroundColor: 'var(--accent-6)',
     }
   }),
   
