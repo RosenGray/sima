@@ -12,7 +12,14 @@ import {
 } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { ServiceCategoryMapping } from "@/lib/professionals/professional-service/types/professional-service.scema";
-import { Dialog, Flex, Heading, IconButton, Button, Text } from "@radix-ui/themes";
+import {
+  Dialog,
+  Flex,
+  Heading,
+  IconButton,
+  Button,
+  Text,
+} from "@radix-ui/themes";
 import { Cross2Icon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { useFiltersModal } from "./FiltersContext";
 import {
@@ -77,21 +84,13 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
   const FiltersContent = () => (
     <>
-      <SearchSingleSelect
-        paramName="categoryId"
-        options={categoriesOptions}
-        dependencyParams={["subCategoryId"]}
-      />
+      <SearchSingleSelect paramName="categoryId" options={categoriesOptions} />
       <SearchSingleSelect
         paramName="subCategoryId"
         options={subCategoryOptions}
         isDisabled={!selectedCategoryId}
       />
-      <SearchSingleSelect
-        paramName="district"
-        options={areasOptions}
-        dependencyParams={["city"]}
-      />
+      <SearchSingleSelect paramName="district" options={areasOptions} />
       <SearchSingleSelect paramName="city" options={citiesOptions} />
     </>
   );
@@ -153,7 +152,13 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
               </Heading>
               {activeFiltersCount > 0 && (
                 <Text size="2" color="gray">
-                  {activeFiltersCount} {activeFiltersCount === 1 ? 'фильтр' : activeFiltersCount < 5 ? 'фильтра' : 'фильтров'} применено
+                  {activeFiltersCount}{" "}
+                  {activeFiltersCount === 1
+                    ? "фильтр"
+                    : activeFiltersCount < 5
+                    ? "фильтра"
+                    : "фильтров"}{" "}
+                  применено
                 </Text>
               )}
             </Flex>

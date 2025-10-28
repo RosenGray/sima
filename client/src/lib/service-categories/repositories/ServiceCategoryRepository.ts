@@ -9,9 +9,8 @@ import { SerializeServiceCategory } from "../types/service-categories.types";
 // Internal function that performs the actual database operations
 async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
   try {
-    console.log("ServiceCategoryRepository 1y");
+  
     await connectDB();
-    console.log("ServiceCategoryRepository 2y");
     // First, check if there are any existing service categories
     const existingCategories = await ServiceCategory.find({});
 

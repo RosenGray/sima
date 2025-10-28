@@ -1,7 +1,7 @@
 "use client";
-import { FC, useId, useState, useEffect, useRef } from "react";
+import { FC, useId, useState, useEffect } from "react";
 import React from "react";
-import Select, { GroupBase, Props, SelectInstance } from "react-select";
+import Select, {Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "@/components/Form/SelectSingle/SelectSingle.styles";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -16,14 +16,13 @@ interface SearchSingleSelectProps extends Props {
   options: Option[];
   label?: string;
   paramName: string;
-  dependencyParams?: string[];
 }
 
 const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   label,
   paramName,
   options,
-  dependencyParams,
+
   ...rest
 }) => {
   const searchParams = useSearchParams();
@@ -31,13 +30,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   const { replace } = useRouter();
   const id = useId();
   const paramValue = searchParams.get(paramName);
-  const previousParamValue = useRef(paramValue);
-  const selectInputRef = useRef<SelectInstance<
-    unknown,
-    boolean,
-    GroupBase<unknown>
-  > | null>(null);
-  
+
   // Detect if mobile
   const [isMobile, setIsMobile] = useState(false);
 
@@ -45,11 +38,11 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
     const checkMobile = () => {
       setIsMobile(window.innerWidth < breakpoints.sm);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const handleSearch = (option: Option) => {
@@ -63,37 +56,6 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
     replace(`${pathname}?${params.toString()}`);
   };
 
-
-
-  // Clear the select when paramValue becomes null/undefined (e.g., when removed by parent dependency)
-  // useEffect(() => {
-  //   if (!paramValue && selectInputRef.current) {
-  //     console.log('blaaaaaaaa')
-  //     selectInputRef.current.clearValue();
-  //   }
-  // }, [paramValue]);
-
-  useEffect(() => {
-    if (
-      dependencyParams &&
-      dependencyParams.length > 0 &&
-      previousParamValue.current !== paramValue
-    ) {
-      previousParamValue.current = paramValue;
-      const params = new URLSearchParams(searchParams);
-      dependencyParams.forEach((param) => {
-        params.delete(param);
-      });
-      replace(`${pathname}?${params.toString()}`);
-    }
-  }, [
-    dependencyParams,
-    paramName,
-    paramValue,
-    pathname,
-    replace,
-    searchParams,
-  ]);
   return (
     <Box>
       {label && (
@@ -103,10 +65,10 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
       )}
 
       <Select
-        ref={selectInputRef}
         menuPortalTarget={
           !isMobile && typeof document !== "undefined" ? document.body : null
         }
+    
         value={options.find((opt) => opt.value === paramValue)}
         name={`search-single-select-${paramName}`}
         instanceId={id}

@@ -29,8 +29,6 @@ const ProfessionalServiceContent: FC<ProfessionalServiceContentProps> = async ({
     currentPage
   );
 
-  console.log("professionalServices", professionalServices);
-
   return (
     <>
       <Title size="5">Услуги специалистов</Title>
@@ -62,4 +60,3 @@ const ProfessionalServiceContent: FC<ProfessionalServiceContentProps> = async ({
 };
 
 export default ProfessionalServiceContent;
-

@@ -48,8 +48,8 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
               autoplay={true}
               spaceBetween={0}
               slidesPerView={2}
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
+              // onSlideChange={() => console.log("slide change")}
+              // onSwiper={(swiper) => console.log(swiper)}
             >
               {images.map((image) => (
                 <ServiceCardSwiperSlide key={image.uniqueName}>
