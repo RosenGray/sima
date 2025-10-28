@@ -53,12 +53,12 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
 
 
   // Clear the select when paramValue becomes null/undefined (e.g., when removed by parent dependency)
-  useEffect(() => {
-    if (!paramValue && selectInputRef.current) {
-      console.log('blaaaaaaaa')
-      selectInputRef.current.clearValue();
-    }
-  }, [paramValue]);
+  // useEffect(() => {
+  //   if (!paramValue && selectInputRef.current) {
+  //     console.log('blaaaaaaaa')
+  //     selectInputRef.current.clearValue();
+  //   }
+  // }, [paramValue]);
 
   useEffect(() => {
     if (
