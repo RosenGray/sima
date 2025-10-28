@@ -32,13 +32,13 @@ class ProfessionalServiceRepository {
    * @returns Promise<PaginatedResponse> - Paginated response with data and metadata
    */
   async getAll(
-    searchFilters: SearchFilters = {}, 
-    currentPage: number = 1, 
+    searchFilters: SearchFilters = {},
+    currentPage: number = 1,
     pageSize: number = 10
   ): Promise<PaginatedResponse> {
     try {
       await connectDB();
-      console.log('searchFilters',searchFilters);
+      console.log("searchFilters", searchFilters);
 
       // Sanitize all incoming filters to prevent NoSQL injection
       const sanitizedFilters: SearchFilters = {
@@ -87,20 +87,20 @@ class ProfessionalServiceRepository {
 
       // Add city filter
       if (sanitizedFilters.city?.trim()) {
-        console.log('sanitizedFilters.city',sanitizedFilters.city);
+        console.log("sanitizedFilters.city", sanitizedFilters.city);
         searchFilter.city = sanitizedFilters.city.trim();
       }
 
       if (sanitizedFilters.description?.trim()) {
-        searchFilter.description = { $regex: sanitizedFilters.description.trim(), $options: 'i' };
+        searchFilter.description = {
+          $regex: sanitizedFilters.description.trim(),
+          $options: "i",
+        };
       }
-
-
- 
 
       // Calculate pagination
       const skip = (currentPage - 1) * pageSize;
-      
+
       // Get total count for pagination
       const totalCount = await ProfessionalService.countDocuments(searchFilter);
       const totalPages = Math.ceil(totalCount / pageSize);
@@ -118,9 +118,6 @@ class ProfessionalServiceRepository {
       const serializedServices = JSON.parse(
         JSON.stringify(professionalServices)
       );
-
-      //fake await 10 seconds
-      await new Promise((resolve) => setTimeout(resolve, 10000));
 
       return {
         data: serializedServices,

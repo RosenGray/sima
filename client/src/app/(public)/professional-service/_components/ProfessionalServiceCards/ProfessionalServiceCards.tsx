@@ -7,7 +7,7 @@ interface ProfessionalServiceCardsProps {
 }
 export const ProfessionalServiceCards: React.FC<
   ProfessionalServiceCardsProps
-> = async ({ professionalServices }) => {
+> = ({ professionalServices }) => {
   return (
     <>
       {professionalServices.map((service) => (

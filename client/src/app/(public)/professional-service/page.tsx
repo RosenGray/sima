@@ -1,17 +1,9 @@
-import { FC } from "react";
-import {
-  ProfessionalsPageContainer,
-  ProfessionalsServicesGrid,
-  StickyPaginationWrapper,
-  Title,
-} from "./page.styles";
-import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
-import { ProfessionalServiceCards } from "./_components/ProfessionalServiceCards/ProfessionalServiceCards";
-import Pagination from "@/components/Pagination/Pagination";
+import { FC, Suspense } from "react";
+import { ProfessionalsPageContainer } from "./page.styles";
 import Filters from "./_components/Filters/Filters";
-import { Suspense } from "react";
 import { LoadingFilters } from "./_components/Filters/Filters.styles";
-import { Text } from "@radix-ui/themes";
+import ProfessionalServiceContent from "./_components/ProfessionalServiceContent/ProfessionalServiceContent";
+import Loading from "./loading";
 
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
@@ -34,43 +26,18 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
     district: searchParams?.district,
   };
   const currentPage = Number(searchParams?.page) || 1;
-  //10 sec fake await
-  const professionalServices = await professionalServiceRepository.getAll(
-    filters,
-    currentPage
-  );
 
-  console.log("professionalServices", professionalServices);
+  // Create a unique key based on search params to force re-render on filter change
+  const contentKey = JSON.stringify({ ...filters, page: currentPage });
 
   return (
     <ProfessionalsPageContainer>
       <Suspense fallback={<LoadingFilters />}>
         <Filters />
       </Suspense>
-      <Title size="5">Услуги специалистов</Title>
-
-      <Text as="p" size="2" color="gray">
-        {professionalServices.totalCount} результатов найдено
-      </Text>
-
-      <ProfessionalsServicesGrid
-        mt="25px"
-        gap="3"
-        columns={{
-          initial: "1",
-          xs: "2",
-          // sm: "2",
-          md: "3",
-        }}
-        width="auto"
-      >
-        <ProfessionalServiceCards
-          professionalServices={professionalServices.data}
-        />
-      </ProfessionalsServicesGrid>
-      <StickyPaginationWrapper>
-        <Pagination totalPages={professionalServices.totalPages} />
-      </StickyPaginationWrapper>
+      <Suspense key={contentKey} fallback={<Loading />}>
+        <ProfessionalServiceContent filters={filters} currentPage={currentPage} />
+      </Suspense>
     </ProfessionalsPageContainer>
   );
 };
