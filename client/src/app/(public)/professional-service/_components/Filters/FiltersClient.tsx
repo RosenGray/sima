@@ -31,6 +31,7 @@ import {
   ModalBody,
   ModalFiltersSection,
   ModalFooter,
+  ClearFiltersButton,
 } from "./Filters.styles";
 
 interface FiltersClientProps {
@@ -57,6 +58,11 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
   // Clear all filters
   const handleClearFilters = () => {
+    router.push(pathname);
+  };
+
+  // Clear filters and close modal (for mobile)
+  const handleClearFiltersAndClose = () => {
     router.push(pathname);
     closeModal();
   };
@@ -102,6 +108,16 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         <FiltersSection>
           <FiltersContent />
         </FiltersSection>
+        {activeFiltersCount > 0 && (
+          <ClearFiltersButton
+            variant="outline"
+            color="gray"
+            onClick={handleClearFilters}
+            size="2"
+          >
+            Очистить фильтры
+          </ClearFiltersButton>
+        )}
       </DesktopFiltersWrapper>
 
       {/* Mobile Filter Button */}
@@ -183,36 +199,24 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
           <ModalFooter>
             <Flex direction="column" gap="3" width="100%">
-              {activeFiltersCount > 0 && (
-                <Button
-                  variant="outline"
-                  color="gray"
-                  onClick={handleClearFilters}
-                  size={{
-                    initial: "2",
-                    xs: "3",
-                  }}
-                  style={{ width: "100%" }}
-                >
-                  Очистить все фильтры
-                </Button>
-              )}
               <Flex gap="3" width="100%">
-                <Button
-                  variant="soft"
-                  color="gray"
-                  style={{ flex: 1 }}
-                  onClick={closeModal}
-                  size={{
-                    initial: "2",
-                    xs: "3",
-                  }}
-                >
-                  Отмена
-                </Button>
+                {activeFiltersCount > 0 && (
+                  <Button
+                    variant="outline"
+                    color="gray"
+                    onClick={handleClearFiltersAndClose}
+                    size={{
+                      initial: "2",
+                      xs: "3",
+                    }}
+                    style={{ flex: 1 }}
+                  >
+                    Очистить
+                  </Button>
+                )}
                 <Button
                   variant="solid"
-                  style={{ flex: 1 }}
+                  style={{ flex: activeFiltersCount > 0 ? 1 : undefined, width: activeFiltersCount === 0 ? "100%" : undefined }}
                   onClick={closeModal}
                   size={{
                     initial: "2",

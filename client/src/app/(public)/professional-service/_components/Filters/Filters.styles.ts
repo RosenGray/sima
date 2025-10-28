@@ -41,7 +41,16 @@ export const DesktopFiltersWrapper = styled.div`
   width: 100%;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 
+  @media (max-width: ${breakpoints.sm - 1}px) {
+    display: none;
+  }
+`;
+
+export const ClearFiltersButton = styled(Button)`
+  white-space: nowrap;
+  
   @media (max-width: ${breakpoints.sm - 1}px) {
     display: none;
   }
