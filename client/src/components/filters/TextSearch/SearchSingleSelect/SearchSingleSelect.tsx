@@ -6,6 +6,7 @@ import { Box, Text } from "@radix-ui/themes";
 import { styles } from "@/components/Form/SelectSingle/SelectSingle.styles";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { breakpoints } from "@/globals";
+import { useRef } from "react";
 
 interface Option {
   value: string;
@@ -30,9 +31,9 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   const { replace } = useRouter();
   const id = useId();
   const paramValue = searchParams.get(paramName);
-
-  // Detect if mobile
   const [isMobile, setIsMobile] = useState(false);
+  const optionValue = options.find((opt) => opt.value === paramValue);
+
 
   useEffect(() => {
     const checkMobile = () => {
@@ -55,6 +56,13 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
     }
     replace(`${pathname}?${params.toString()}`);
   };
+  useEffect(() => {
+    if(optionValue === undefined && paramValue !== null ) {
+      const params = new URLSearchParams(searchParams);
+      params.delete(paramName);
+      replace(`${pathname}?${params.toString()}`);
+    }
+  }, [optionValue, paramName, paramValue, pathname, replace, searchParams]);
 
   return (
     <Box>
@@ -69,7 +77,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
           !isMobile && typeof document !== "undefined" ? document.body : null
         }
     
-        value={options.find((opt) => opt.value === paramValue)}
+        value={optionValue}
         name={`search-single-select-${paramName}`}
         instanceId={id}
         options={options}
