@@ -6,7 +6,7 @@ export interface IServiceCategory {
   description: string;
   russianDisplayName: string;
   russianDescription: string;
-  navItem?: { label: string; href: string };
+  navItem?: { label: string; href: string; id: string };
 }
 
 export const NavItemSchema = new mongoose.Schema({
@@ -65,6 +65,7 @@ const serviceCategorySchema = new mongoose.Schema(
     timestamps: true,
     toJSON: {
       transform: (doc, ret: Record<string, unknown>) => {
+        
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
