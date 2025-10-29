@@ -1,10 +1,11 @@
 "use client";
-import { FC, useId, useEffect } from "react";
+import { FC, useId, useEffect, useState } from "react";
 import React from "react";
 import Select, {Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "@/components/Form/SelectSingle/SelectSingle.styles";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { RADIX_THEME_APP_ID } from "@/config/client";
 
 interface Option {
   value: string;
@@ -30,6 +31,13 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   const id = useId();
   const paramValue = searchParams.get(paramName);
   const optionValue = options.find((opt) => opt.value === paramValue);
+  const [menuPortalTarget, setMenuPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Get the main Radix theme container to use as portal target
+    const themeContainer = document.getElementById(RADIX_THEME_APP_ID);
+    setMenuPortalTarget(themeContainer);
+  }, []);
 
   const handleSearch = (option: Option) => {
     const params = new URLSearchParams(searchParams);
@@ -59,6 +67,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
       )}
 
       <Select
+        menuPortalTarget={menuPortalTarget}
         value={optionValue}
         name={`search-single-select-${paramName}`}
         instanceId={id}
