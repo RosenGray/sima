@@ -25,6 +25,8 @@ export const FiltersContainer = styled(Box)`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
 
+  /* min-height: 130px; */
+
   @media (max-width: ${breakpoints.sm - 1}px) {
     padding: 16px;
     justify-content: center;

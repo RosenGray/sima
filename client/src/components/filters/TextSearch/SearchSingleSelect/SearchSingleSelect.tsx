@@ -31,12 +31,20 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   const id = useId();
   const paramValue = searchParams.get(paramName);
   const optionValue = options.find((opt) => opt.value === paramValue);
-  const [menuPortalTarget, setMenuPortalTarget] = useState<HTMLElement | null>(null);
+  const [menuPortalTarget, setMenuPortalTarget] = useState<HTMLElement | null | undefined>(undefined);
 
   useEffect(() => {
-    // Get the main Radix theme container to use as portal target
-    const themeContainer = document.getElementById(RADIX_THEME_APP_ID);
-    setMenuPortalTarget(themeContainer);
+    // Check if we're on mobile
+    const isMobile = window.innerWidth < 768;
+
+    // On desktop, use the main Radix theme container to use as portal target for proper z-index
+    // On mobile, don't use portal (render inline) to avoid touch event issues
+    if (!isMobile) {
+      const themeContainer = document.getElementById(RADIX_THEME_APP_ID);
+      setMenuPortalTarget(themeContainer);
+    } else {
+      setMenuPortalTarget(undefined);
+    }
   }, []);
 
   const handleSearch = (option: Option) => {
@@ -67,7 +75,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
       )}
 
       <Select
-        menuPortalTarget={menuPortalTarget}
+        {...(menuPortalTarget !== undefined && { menuPortalTarget })}
         value={optionValue}
         name={`search-single-select-${paramName}`}
         instanceId={id}
