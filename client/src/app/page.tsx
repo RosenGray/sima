@@ -2,6 +2,7 @@
 
 import { Button, Flex, Heading, Text, Box } from '@radix-ui/themes';
 import Header from '../components/Header';
+import { serviceCategoryRepository } from '@/lib/service-categories/repositories';
 
 
 // const PageContainer = styled(Container)`
@@ -19,8 +20,11 @@ import Header from '../components/Header';
 //   max-width: 600px;
 // `;
 
-export default function Home() {
-  console.log('Home');
+export default async function Home() {
+  const mappedCategories =
+  await serviceCategoryRepository.getMappedCategories();
+
+  console.log('Home',mappedCategories);
   // const { theme, setTheme } = useTheme();
 
   // const toggleTheme = () => {
