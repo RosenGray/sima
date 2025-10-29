@@ -5,6 +5,7 @@ export interface SerializeServiceCategory extends IServiceCategory {
   id: string;
   createdAt: string;
   updatedAt: string;
+  navItem?: { label: string; href: string };
 }
 export interface SerializeServiceSubCategory extends Omit<IServiceSubCategory, "serviceCategory"> {
   id: string;

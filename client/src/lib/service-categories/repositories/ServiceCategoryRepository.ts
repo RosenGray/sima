@@ -20,6 +20,8 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
         "No service categories found. Initializing with default data..."
       );
 
+      console.log('foooo',serviceCategoriesData)
+
       // Transform the JSON data to match our model structure
       const categoriesToInsert = serviceCategoriesData.map(
         (category: {
@@ -28,12 +30,14 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
           description: string;
           russianDisplayName: string;
           russianDescription: string;
+          navItem?: { label: string; href: string };
         }) => ({
           key: category.key,
           displayName: category.displayName,
           description: category.description,
           russianDisplayName: category.russianDisplayName,
           russianDescription: category.russianDescription,
+          navItem: category.navItem,
         })
       );
 
