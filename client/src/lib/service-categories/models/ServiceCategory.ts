@@ -71,6 +71,13 @@ const serviceCategorySchema = new mongoose.Schema(
         delete ret.__v;
         ret.updatedAt = (ret.updatedAt as Date)?.toISOString();
         ret.createdAt = (ret.createdAt as Date)?.toISOString();
+        
+        // Transform navItem if it exists
+        if (ret.navItem && typeof ret.navItem === 'object') {
+          const navItem = ret.navItem as Record<string, unknown>;
+          navItem.id = navItem._id;
+          delete navItem._id;
+        }
       },
     },
   }

@@ -24,7 +24,12 @@ export default async function Home() {
   const mappedCategories =
   await serviceCategoryRepository.getMappedCategories();
 
-  console.log('Home',mappedCategories);
+ 
+  const navItems = Object.values(mappedCategories).map((category) => ({
+    ...category.category.navItem,
+    id: category.category.id,
+  }));
+  console.log('navItems',navItems);
   // const { theme, setTheme } = useTheme();
 
   // const toggleTheme = () => {
@@ -33,7 +38,7 @@ export default async function Home() {
 
   return (
     <>
-      <Header  />
+      <Header navItems={navItems} />
 
       <Box  pt="6rem">
         <Box >

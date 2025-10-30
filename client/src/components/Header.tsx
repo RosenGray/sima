@@ -26,10 +26,10 @@ const navigationItems = [
     label: "Услуги специалистов",
     subItems: [
       { label: "Все", href: "/professional-service" },
-      { label: "Electronics", href: "/products/electronics" },
-      { label: "Fashion", href: "/products/fashion" },
-      { label: "Home & Garden", href: "/products/home-garden" },
-      { label: "Sports", href: "/products/sports" },
+      { label: "Electronics", href: "/professional-service?categoryId=6902000307fc0b06bd2a4294" },
+      { label: "Fashion", href: "/professional-service?categoryId=6902000307fc0b06bd2a428a" },
+      { label: "Home & Garden", href: "/professional-service?categoryId=3" },
+      { label: "Sports", href: "/professional-service?categoryId=4" },
     ],
   },
   {
@@ -61,7 +61,11 @@ const navigationItems = [
   },
 ];
 
-export default function Header() {
+interface HeaderProps {
+  navItems: { label: string; href: string; id: string }[];
+}
+
+export default function Header({ navItems }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const {user} = useAuth();
 
