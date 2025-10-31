@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
 import {
@@ -19,6 +19,7 @@ import { MobileMenu } from "./Header/MobileMenu";
 import { ThemeToggleButton } from "./ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "./buttons/LogoutButton/LogoutButton";
+import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 
 
 const navigationItems = [
@@ -61,13 +62,19 @@ const navigationItems = [
   },
 ];
 
-interface HeaderProps {
-  navItems: { label: string; href: string; id: string }[];
-}
 
-export default function Header({ navItems }: HeaderProps) {
+export default function Header() {
+  const { serviceCategories } = useHomePage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const {user} = useAuth();
+console.log('serviceCategories', serviceCategories);
+  const serviceCategoriesNavItems = useMemo(
+    () =>
+      serviceCategories.map((category) => category.navItem),
+    [serviceCategories]
+  );
+
+  console.log('serviceCategoriesNavItems', serviceCategoriesNavItems);
 
   const toggleMobileMenu = () => {
     console.log("Toggle mobile menu, current state:", isMobileMenuOpen);

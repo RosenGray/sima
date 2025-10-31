@@ -3,6 +3,7 @@
 import { Button, Flex, Heading, Text, Box } from '@radix-ui/themes';
 import Header from '../components/Header';
 import { serviceCategoryRepository } from '@/lib/service-categories/repositories';
+import HomePageProvider from '@/providers/HomePageProvider/HomePageProvider';
 
 
 // const PageContainer = styled(Container)`
@@ -21,25 +22,12 @@ import { serviceCategoryRepository } from '@/lib/service-categories/repositories
 // `;
 
 export default async function Home() {
-  const mappedCategories =
-  await serviceCategoryRepository.getMappedCategories();
-
- 
-  const navItems = Object.values(mappedCategories).map((category) => ({
-    ...category.category.navItem,
-    id: category.category.id,
-  }));
-  console.log('navItems',navItems);
-  // const { theme, setTheme } = useTheme();
-
-  // const toggleTheme = () => {
-  //   setTheme(theme === 'dark' ? 'light' : 'dark');
-  // };
+  const serviceCategories =
+  await serviceCategoryRepository.getAll();
 
   return (
-    <>
-      {/* <Header navItems={navItems} /> */}
-
+    <HomePageProvider data={{ serviceCategories }}>
+      <Header />
       <Box  pt="6rem">
         <Box >
           <Flex direction="column" gap="6" align="center">
@@ -66,6 +54,6 @@ export default async function Home() {
           </div>
         </Box>
       </Box>
-    </>
+    </HomePageProvider>
   );
 }
