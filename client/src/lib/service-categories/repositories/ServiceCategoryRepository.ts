@@ -85,6 +85,7 @@ export class ServiceCategoryRepository {
   // Get mapped categories with their subcategories
   async getMappedCategories(): Promise<ServiceCategoryMapping> {
     const serviceCategories = await this.getAll();
+    console.log('serviceCategories', serviceCategories);
     const subcategories = await serviceSubCategoryRepository.getAll();
 
     const mapping: ServiceCategoryMapping = {};

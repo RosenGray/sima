@@ -6,19 +6,29 @@ export interface IServiceCategory {
   description: string;
   russianDisplayName: string;
   russianDescription: string;
-  navItem?: { label: string; href: string; id: string };
+  navItem: { label: string; href: string; id: string };
 }
 
-export const NavItemSchema = new mongoose.Schema({
-  label: {
-    type: String,
-    required: true,
+export const NavItemSchema = new mongoose.Schema(
+  {
+    label: {
+      type: String,
+      required: true,
+    },
+    href: {
+      type: String,
+      required: true,
+    },
   },
-  href: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    toJSON: {
+      transform: (doc, ret: Record<string, unknown>) => {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+  }
+);
 
 const serviceCategorySchema = new mongoose.Schema(
   {
@@ -58,7 +68,7 @@ const serviceCategorySchema = new mongoose.Schema(
     },
     navItem: {
       type: NavItemSchema,
-      required: false,
+      required: true,
     },
   },
   {
@@ -70,13 +80,6 @@ const serviceCategorySchema = new mongoose.Schema(
         delete ret.__v;
         ret.updatedAt = (ret.updatedAt as Date)?.toISOString();
         ret.createdAt = (ret.createdAt as Date)?.toISOString();
-
-        // Transform navItem if it exists
-        if (ret.navItem && typeof ret.navItem === "object") {
-          const navItem = ret.navItem as Record<string, unknown>;
-          navItem.id = navItem._id;
-          delete navItem._id;
-        }
       },
     },
   }
@@ -88,7 +91,7 @@ serviceCategorySchema.pre("save", function (next) {
   // Only modify href on document creation, not on updates
 
   if (this.isNew && this.navItem) {
-    this.navItem.href = `/${this.navItem.href}/${this._id.toString()}`;
+    this.navItem.href = `${this.navItem.href}?categoryId=${this._id.toString()}`;
   }
   next();
 });

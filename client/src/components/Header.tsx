@@ -68,13 +68,17 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const {user} = useAuth();
 console.log('serviceCategories', serviceCategories);
-  const serviceCategoriesNavItems = useMemo(
-    () =>
-      serviceCategories.map((category) => category.navItem),
-    [serviceCategories]
-  );
 
-  console.log('serviceCategoriesNavItems', serviceCategoriesNavItems);
+const navigationItems = useMemo(() => {
+  const services = {
+    label: "Услуги специалистов",
+    subItems:serviceCategories.map((category) => category.navItem),
+  }
+  return [services];
+
+}, [serviceCategories]);
+
+  console.log('serviceCategoriesNavItems', navigationItems);
 
   const toggleMobileMenu = () => {
     console.log("Toggle mobile menu, current state:", isMobileMenuOpen);
@@ -120,8 +124,8 @@ console.log('serviceCategories', serviceCategories);
                 </Text>
                 <DropdownMenu>
                   {item.subItems.map((subItem) => (
-                    <DropdownItem key={subItem.label} href={subItem.href}>
-                      <Text size="2">{subItem.label}</Text>
+                    <DropdownItem key={subItem?.label} href={subItem?.href}>
+                      <Text size="2">{subItem?.label}</Text>
                     </DropdownItem>
                   ))}
                 </DropdownMenu>

@@ -20,7 +20,7 @@ export default async function RootLayout({
   return (
     // <ProfessionalServiceProvider data={{ professionalServices: [] }}>
       <ProfessionalServiceLayoutSection>
-        <Header />
+        {/* <Header /> */}
         <Box style={{border: '1px solid red', height: '110px'}}>
           {/* PLACE HOLDER FOR IMAGE STRIPE */}
         </Box>
