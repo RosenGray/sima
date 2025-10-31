@@ -13,3 +13,4 @@ export interface SerializeServiceSubCategory extends Omit<IServiceSubCategory, "
   updatedAt: string;
   serviceCategory: SerializeServiceCategory;
 }
+// export interface ServiceCategoryMappingToNavItem 

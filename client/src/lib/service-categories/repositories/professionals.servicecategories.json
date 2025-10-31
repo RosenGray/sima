@@ -6,7 +6,7 @@
   "russianDescription": "Услуги, связанные со строительством, ремонтом и конструкционными работами",
   "navItem": {
     "label": "Строительство и Ремонт",
-    "href": "/construction-repair"
+    "href": "construction-repair"
   }
 },
 {
@@ -17,7 +17,7 @@
   "russianDescription": "Услуги по ремонту и обслуживанию бытовой и коммерческой техники",
   "navItem": {
     "label": "Ремонт Техники",
-    "href": "/appliance-repair"
+    "href": "appliance-repair"
   }
 },
 {
@@ -28,7 +28,7 @@
   "russianDescription": "Юридические консультации и услуги, включая документацию и представительство",
   "navItem": {
     "label": "Юридические Услуги",
-    "href": "/legal-services"
+    "href": "legal-services"
   }
 },
 {
@@ -39,7 +39,7 @@
   "russianDescription": "Услуги здравоохранения и медицинские консультации",
   "navItem": {
     "label": "Медицинские Услуги",
-    "href": "/medical-services"
+    "href": "medical-services"
   }
 },
 {
@@ -50,7 +50,7 @@
   "russianDescription": "Транспортные и логистические услуги для людей и грузов",
   "navItem": {
     "label": "Транспорт",
-    "href": "/transportation"
+    "href": "transportation"
   }
 },
 {
@@ -61,7 +61,7 @@
   "russianDescription": "Установка и обслуживание систем безопасности и оборудования",
   "navItem": {
     "label": "Установка Безопасности",
-    "href": "/security-installation"
+    "href": "security-installation"
   }
 },
 {
@@ -72,7 +72,7 @@
   "russianDescription": "IT-услуги, цифровой маркетинг и рекламные решения",
   "navItem": {
     "label": "IT и Реклама",
-    "href": "/it-advertising"
+    "href": "it-advertising"
   }
 },
 {
@@ -83,7 +83,7 @@
   "russianDescription": "Образовательные услуги, включая репетиторство и учебные программы",
   "navItem": {
     "label": "Образование",
-    "href": "/education"
+    "href": "education"
   }
 },
 {
@@ -94,7 +94,7 @@
   "russianDescription": "Бизнес-консультации и профессиональные услуги",
   "navItem": {
     "label": "Бизнес Услуги",
-    "href": "/business-services"
+    "href": "business-services"
   }
 },
 {
@@ -105,7 +105,7 @@
   "russianDescription": "Общее обслуживание дома и клининговые услуги",
   "navItem": {
     "label": "Бытовые Услуги",
-    "href": "/household-services"
+    "href": "household-services"
   }
 },
 {
@@ -116,6 +116,6 @@
   "russianDisplayName": "Другое",
   "navItem": {
     "label": "Другое",
-    "href": "/other-services"
+    "href": "other-services"
   }
 }]

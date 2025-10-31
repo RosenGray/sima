@@ -10,7 +10,7 @@ spec:
   tls:
   - hosts:
     - www.sima-board.com
-    secretName: namecheap-tls-secret
+    secretName: nextjs-tls-secret
   rules:
     - host: www.sima-board.com 
       http:

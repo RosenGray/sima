@@ -38,7 +38,7 @@ export default async function Home() {
 
   return (
     <>
-      <Header navItems={navItems} />
+      {/* <Header navItems={navItems} /> */}
 
       <Box  pt="6rem">
         <Box >

@@ -41,8 +41,8 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
         })
       );
 
-      // Insert the categories
-      const insertedCategories = await ServiceCategory.insertMany(
+      // Insert the categories using create() to trigger pre-save hooks
+      const insertedCategories = await ServiceCategory.create(
         categoriesToInsert
       );
       console.log(
@@ -103,6 +103,20 @@ export class ServiceCategoryRepository {
 
     return mapping;
   }
+
+  // async getMappingToNavItem(): Promise<unknown>   {
+  //   const serviceCategories = await this.getAll();
+  //   const mapping: ServiceCategoryMappingToNavItem = {};
+
+  //   serviceCategories.forEach((category) => {
+  //     mapping[category.key] = {
+  //       label: category.displayName,
+  //       href: category.navItem?.href || "",
+  //     };
+  //   });
+
+  //   return 1;
+  // }
 }
 
 export const serviceCategoryRepository = new ServiceCategoryRepository();

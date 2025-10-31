@@ -69,9 +69,9 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
       )
       .superRefine((files, ctx) => {
         const validFiles = files.filter(
-          (file) => file.size > 0 && file.name !== 'undefined'
+          (file) => file.size > 0 && file.name !== "undefined"
         );
-        console.log('validFiles', validFiles);
+        console.log("validFiles", validFiles);
         if (validFiles.length > 0) {
           if (files.length > MAX_FILES) {
             ctx.addIssue({
@@ -152,7 +152,7 @@ export interface SerilizeProfessionalService
 export type ServiceSubCategory = z.infer<typeof ServiceSubCategorySchema>;
 export type ServiceCategory = z.infer<typeof ServiceCategorySchema>;
 export type ProfessionalService = z.infer<
-  typeof createProfessionalServiceSchema
+  ReturnType<typeof createProfessionalServiceSchema>
 >;
 // export type ProfessionalGET = z.infer<typeof ProfessionalSchemaGET>;
 
