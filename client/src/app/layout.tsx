@@ -40,7 +40,7 @@ export default async function RootLayout({
             >
               <RadixTheme
                 className="globalContentOverflowWrapper"
-                accentColor="yellow"
+                accentColor="red"
                 id={RADIX_THEME_APP_ID}
               >
                 {user && !user.isEmailVerified && (

@@ -90,16 +90,16 @@ const LoginForm = () => {
                     onClick={onTogglePasswordView(password.name)}
                     size="3"
                     variant="ghost"
-                    color="yellow"
+      
                   >
                     <EyeOpenIcon height="16" width="16" />
                   </IconButton>
                 </>
               </AuthTextField>
               <Flex justify="between" align="center" mt="1">
-                <Text size="4" color="gray">
+                <Text size="4" >
                   вы еще не зарегистрированы?
-                  <Text weight="bold" ml="5px" color="yellow">
+                  <Text weight="bold" ml="5px" >
                     <Link
                       href="/auth/register"
                       className={isPending ? "disabled-link" : ""}
@@ -110,7 +110,7 @@ const LoginForm = () => {
                 </Text>
               </Flex>
               <SubmitButton pending={isPending} />
-              <Text weight="bold" mt="3" color="yellow">
+              <Text weight="bold" mt="3" >
                 <Link
                   className={isPending ? "disabled-link" : ""}
                   href="/auth/reset-password"
