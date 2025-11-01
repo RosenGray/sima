@@ -95,8 +95,8 @@ export async function middleware(request: NextRequest) {
       response.cookies.set(SIMA_AUTH_SESSION_CONFIG.name, "", {
         domain: SIMA_AUTH_SESSION_CONFIG.domain,
         path: "/",
+        maxAge: 0
       });
-      response.cookies.delete(SIMA_AUTH_SESSION_CONFIG.name);
       return response;
     }
   }
