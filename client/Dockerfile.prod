@@ -14,9 +14,6 @@ RUN npm install
 # Note: .env.production is included via .dockerignore configuration (public env vars only)
 COPY . .
 
-# Explicitly verify .env.production exists (for debugging)
-RUN ls -la .env.production 2>/dev/null || echo "Warning: .env.production not found"
-
 # Build the Next.js app with NODE_ENV=production to ensure .env.production is loaded
 ENV NODE_ENV=production
 RUN npm run build
