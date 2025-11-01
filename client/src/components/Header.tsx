@@ -21,14 +21,19 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "./buttons/LogoutButton/LogoutButton";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 
-
 const navigationItems = [
   {
     label: "Услуги специалистов",
     subItems: [
       { label: "Все", href: "/professional-service" },
-      { label: "Electronics", href: "/professional-service?categoryId=6902000307fc0b06bd2a4294" },
-      { label: "Fashion", href: "/professional-service?categoryId=6902000307fc0b06bd2a428a" },
+      {
+        label: "Electronics",
+        href: "/professional-service?categoryId=6902000307fc0b06bd2a4294",
+      },
+      {
+        label: "Fashion",
+        href: "/professional-service?categoryId=6902000307fc0b06bd2a428a",
+      },
       { label: "Home & Garden", href: "/professional-service?categoryId=3" },
       { label: "Sports", href: "/professional-service?categoryId=4" },
     ],
@@ -62,23 +67,27 @@ const navigationItems = [
   },
 ];
 
-
 export default function Header() {
   const { serviceCategories } = useHomePage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const {user} = useAuth();
-console.log('serviceCategories', serviceCategories);
+  const { user } = useAuth();
+  console.log("serviceCategories", serviceCategories);
 
-const navigationItems = useMemo(() => {
-  const services = {
-    label: "Услуги специалистов",
-    subItems:serviceCategories.map((category) => category.navItem),
-  }
-  return [services];
+  const navigationItems = useMemo(() => {
+    const services = {
+      label: "Услуги специалистов",
+      subItems: [
+        { label: "Все", href: "/professional-service" },
+        ...serviceCategories.map((category) => ({
+          label: category.navItem.label,
+          href: category.navItem.href,
+        })),
+      ],
+    };
+    return [services];
+  }, [serviceCategories]);
 
-}, [serviceCategories]);
-
-  console.log('serviceCategoriesNavItems', navigationItems);
+  console.log("serviceCategoriesNavItems", navigationItems);
 
   const toggleMobileMenu = () => {
     console.log("Toggle mobile menu, current state:", isMobileMenuOpen);
@@ -88,7 +97,6 @@ const navigationItems = useMemo(() => {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
-
 
   return (
     <>
@@ -135,13 +143,17 @@ const navigationItems = useMemo(() => {
 
           {/* Right-side Actions: Login + Theme Toggle */}
           <ActionsContainer>
-            {user ? <LogoutButton /> : <Link href="/auth/login">
-              <LoginButton variant="surface" size="2">
-                <Text size="2" weight="medium">
-                  Login
-                </Text>
-              </LoginButton>
-            </Link>}
+            {user ? (
+              <LogoutButton />
+            ) : (
+              <Link href="/auth/login">
+                <LoginButton variant="surface" size="2">
+                  <Text size="2" weight="medium">
+                    Login
+                  </Text>
+                </LoginButton>
+              </Link>
+            )}
             <ThemeToggleButton />
           </ActionsContainer>
         </Flex>

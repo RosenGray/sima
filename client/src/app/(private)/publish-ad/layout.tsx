@@ -25,7 +25,7 @@ export default async function RootLayout({
     <PublishAdProvider data={{ mappedCategories }}>
       <PublishAdLayoutSection>
         {/* <SimpleHeader /> */}
-        <Header />
+        {/* <Header /> */}
         <main>{children}</main>
       </PublishAdLayoutSection>
     </PublishAdProvider>
