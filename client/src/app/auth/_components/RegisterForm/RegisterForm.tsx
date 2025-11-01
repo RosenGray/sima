@@ -47,9 +47,7 @@ const RegisterPageForm = () => {
     password: "password",
     confirmPassword: "password",
   });
-  console.log(process.env);
-  console.log('process.env.NEXT_PUBLIC_API_URL', process.env.NEXT_PUBLIC_API_URL);
-  console.log('process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY', process.env.NEXT_PUBLIC_BACKBLAZEB_REGION);
+
   const [form, fields] = useForm({
     defaultValue: {},
     lastResult: formState,
@@ -207,7 +205,7 @@ const RegisterPageForm = () => {
                 <Text size="4" color="gray">
                   Уже есть аккаунт?
                   <Text ml="10px" color="blue">
-                    <Link href="/auth/login">Войти</Link>
+                    <Link className={isPending ? "disabled-link" : ""} href="/auth/login">Войти</Link>
                   </Text>
                 </Text>
               </Flex>

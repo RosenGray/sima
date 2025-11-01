@@ -7,6 +7,9 @@ import { resendVerificationEmail } from "@/lib/auth/actions/resendVerificationEm
 import {
   BannerContainer,
   BannerContent,
+  IconWrapper,
+  ContentWrapper,
+  ActionsWrapper,
 } from "./EmailVerificationBanner.styles";
 
 interface EmailVerificationBannerProps {
@@ -54,48 +57,59 @@ const EmailVerificationBanner = ({
 
   return (
     <BannerContainer>
-      <BannerContent>
+      <BannerContent align="center" justify="between">
         <Flex align="center" gap="3" style={{ flex: 1 }}>
-          <EnvelopeClosedIcon width={20} height={20} />
-          <Flex direction="column" gap="1" style={{ flex: 1 }}>
-            <Text size="2" weight="bold">
+          <IconWrapper>
+            <EnvelopeClosedIcon width={18} height={18} />
+          </IconWrapper>
+          <ContentWrapper direction="column">
+            <Text size="2" weight="medium" style={{ color: "var(--gray-12)" }}>
               Пожалуйста, подтвердите ваш email
             </Text>
-            <Text size="1" style={{ opacity: 0.8 }}>
-              Мы отправили письмо с подтверждением на {userEmail}. Проверьте
-              вашу почту.
+            <Text size="1" style={{ color: "var(--gray-11)" }}>
+              Мы отправили письмо с подтверждением на{" "}
+              <Text weight="medium" style={{ color: "var(--amber-11)" }}>
+                {userEmail}
+              </Text>
             </Text>
             {message && (
               <Text
                 size="1"
-                color={message.includes("отправлено") ? "green" : "red"}
-                style={{ marginTop: "4px" }}
+                weight="medium"
+                style={{
+                  color: message.includes("отправлено")
+                    ? "var(--green-11)"
+                    : "var(--red-11)",
+                  marginTop: "0.25rem",
+                }}
               >
                 {message}
               </Text>
             )}
-          </Flex>
+          </ContentWrapper>
         </Flex>
-        <Flex align="center" gap="2">
+        <ActionsWrapper>
           <Button
-            size="4"
-            variant="ghost"
-            color="blue"
+            size="2"
+            variant="soft"
+            color="amber"
             onClick={handleResend}
             disabled={isLoading}
+            style={{ cursor: "pointer" }}
           >
             {isLoading ? "Отправка..." : "Отправить заново"}
           </Button>
           <IconButton
-            color="blue"
-            size="4"
+            size="2"
             variant="ghost"
+            color="gray"
             onClick={handleDismiss}
             aria-label="Закрыть"
+            style={{ cursor: "pointer" }}
           >
             <Cross2Icon />
           </IconButton>
-        </Flex>
+        </ActionsWrapper>
       </BannerContent>
     </BannerContainer>
   );

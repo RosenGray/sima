@@ -25,7 +25,7 @@ export default async function Home() {
   const serviceCategories =
   await serviceCategoryRepository.getAll();
 
-
+  console.log(process.env);
   return (
     <HomePageProvider data={{ serviceCategories }}>
       <Header />
