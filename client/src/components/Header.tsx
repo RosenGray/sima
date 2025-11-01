@@ -21,51 +21,51 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "./buttons/LogoutButton/LogoutButton";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 
-const navigationItems = [
-  {
-    label: "Услуги специалистов",
-    subItems: [
-      { label: "Все", href: "/professional-service" },
-      {
-        label: "Electronics",
-        href: "/professional-service?categoryId=6902000307fc0b06bd2a4294",
-      },
-      {
-        label: "Fashion",
-        href: "/professional-service?categoryId=6902000307fc0b06bd2a428a",
-      },
-      { label: "Home & Garden", href: "/professional-service?categoryId=3" },
-      { label: "Sports", href: "/professional-service?categoryId=4" },
-    ],
-  },
-  {
-    label: "Sellers",
-    subItems: [
-      { label: "Find Sellers", href: "/sellers" },
-      { label: "Become a Seller", href: "/sellers/join" },
-      { label: "Seller Resources", href: "/sellers/resources" },
-      { label: "Success Stories", href: "/sellers/stories" },
-    ],
-  },
-  {
-    label: "Community",
-    subItems: [
-      { label: "Forums", href: "/community/forums" },
-      { label: "Events", href: "/community/events" },
-      { label: "Blog", href: "/community/blog" },
-      { label: "Support", href: "/community/support" },
-    ],
-  },
-  {
-    label: "About",
-    subItems: [
-      { label: "Our Story", href: "/about" },
-      { label: "Team", href: "/about/team" },
-      { label: "Careers", href: "/about/careers" },
-      { label: "Contact", href: "/about/contact" },
-    ],
-  },
-];
+// const navigationItems = [
+//   {
+//     label: "Услуги специалистов",
+//     subItems: [
+//       { label: "Все", href: "/professional-service" },
+//       {
+//         label: "Electronics",
+//         href: "/professional-service?categoryId=6902000307fc0b06bd2a4294",
+//       },
+//       {
+//         label: "Fashion",
+//         href: "/professional-service?categoryId=6902000307fc0b06bd2a428a",
+//       },
+//       { label: "Home & Garden", href: "/professional-service?categoryId=3" },
+//       { label: "Sports", href: "/professional-service?categoryId=4" },
+//     ],
+//   },
+//   {
+//     label: "Sellers",
+//     subItems: [
+//       { label: "Find Sellers", href: "/sellers" },
+//       { label: "Become a Seller", href: "/sellers/join" },
+//       { label: "Seller Resources", href: "/sellers/resources" },
+//       { label: "Success Stories", href: "/sellers/stories" },
+//     ],
+//   },
+//   {
+//     label: "Community",
+//     subItems: [
+//       { label: "Forums", href: "/community/forums" },
+//       { label: "Events", href: "/community/events" },
+//       { label: "Blog", href: "/community/blog" },
+//       { label: "Support", href: "/community/support" },
+//     ],
+//   },
+//   {
+//     label: "About",
+//     subItems: [
+//       { label: "Our Story", href: "/about" },
+//       { label: "Team", href: "/about/team" },
+//       { label: "Careers", href: "/about/careers" },
+//       { label: "Contact", href: "/about/contact" },
+//     ],
+//   },
+// ];
 
 export default function Header() {
   const { serviceCategories } = useHomePage();
