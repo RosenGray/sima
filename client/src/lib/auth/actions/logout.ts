@@ -8,11 +8,7 @@ import { revalidatePath } from "next/cache";
 export async function logoutUser() {
   const cookieStore = await cookies();
 
-  cookieStore.set(SIMA_AUTH_SESSION_CONFIG.name, '', {
-    domain: SIMA_AUTH_SESSION_CONFIG.domain,
-    path: '/',
-    maxAge: 0
-  });
-  revalidatePath('/', 'layout');
+  cookieStore.delete(SIMA_AUTH_SESSION_CONFIG.name);
+  revalidatePath("/", "layout");
   redirect("/");
 }
