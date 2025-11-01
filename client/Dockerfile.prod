@@ -11,30 +11,13 @@ COPY package-lock.json ./
 RUN npm install
 
 # Copy the rest of the app's source code
+# Note: .env.production is included via .dockerignore configuration (public env vars only)
 COPY . .
 
-# Declare build arguments for NEXT_PUBLIC_* variables
-# These will be inlined into the client bundle at build time
-ARG NEXT_PUBLIC_API_URL
-ARG NEXT_PUBLIC_RECAPTCHA_FRONTNED_SITE_KEY
-ARG NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME
-ARG NEXT_PUBLIC_BACKBLAZEB_ENDPOINT
-ARG NEXT_PUBLIC_BACKBLAZEB_REGION
-ARG NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
-ARG NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
-ARG NEXT_PUBLIC_BACKBLAZEB_BASE_URL
+# Explicitly verify .env.production exists (for debugging)
+RUN ls -la .env.production 2>/dev/null || echo "Warning: .env.production not found"
 
-# Make build args available as environment variables during build
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_RECAPTCHA_FRONTNED_SITE_KEY=$NEXT_PUBLIC_RECAPTCHA_FRONTNED_SITE_KEY
-ENV NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME=$NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_NAME
-ENV NEXT_PUBLIC_BACKBLAZEB_ENDPOINT=$NEXT_PUBLIC_BACKBLAZEB_ENDPOINT
-ENV NEXT_PUBLIC_BACKBLAZEB_REGION=$NEXT_PUBLIC_BACKBLAZEB_REGION
-ENV NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY=$NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_ACCESS_KEY
-ENV NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY=$NEXT_PUBLIC_BACKBLAZEB_PUBLIC_BUCKET_SECRET_KEY
-ENV NEXT_PUBLIC_BACKBLAZEB_BASE_URL=$NEXT_PUBLIC_BACKBLAZEB_BASE_URL
-
-# Build the Next.js app with NODE_ENV=production
+# Build the Next.js app with NODE_ENV=production to ensure .env.production is loaded
 ENV NODE_ENV=production
 RUN npm run build
 
@@ -59,3 +42,4 @@ EXPOSE 3000
 
 # Start the app in production mode
 CMD ["npm", "run", "start"]
+
