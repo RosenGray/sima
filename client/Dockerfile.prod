@@ -10,16 +10,34 @@ COPY package-lock.json ./
 # Install dependencies
 RUN npm install
 
+# Set NODE_ENV=production BEFORE copying files to ensure Next.js loads .env.production
+# This is critical: Next.js loads .env.production when NODE_ENV=production
+ENV NODE_ENV=production
+
+# Copy .env.production FIRST to ensure it's available during build
+# Next.js requires NEXT_PUBLIC_* variables to be available at BUILD TIME (they're inlined into the bundle)
+# IMPORTANT: This file MUST exist in the build context when running 'docker build'
+# If building from CI/CD, ensure .env.production is available or the build will fail
+# The wildcard ensures it doesn't fail silently if file doesn't exist
+COPY .env.production* ./
+
 # Copy the rest of the app's source code
 # Note: .env.production is included via .dockerignore configuration (public env vars only)
 COPY . .
 
-# Explicitly verify .env.production exists (for debugging)
-RUN ls -la .env.production 2>/dev/null || echo "Warning: .env.production not found"
+# Explicitly verify .env.production exists and show its contents (for debugging)
+RUN echo "=== Checking .env.production ===" && \
+    (ls -la .env.production 2>/dev/null && echo "✓ .env.production found" || echo "✗ .env.production NOT FOUND") && \
+    (cat .env.production 2>/dev/null | grep NEXT_PUBLIC || echo "No NEXT_PUBLIC vars found in .env.production") || true
 
-# Build the Next.js app with NODE_ENV=production to ensure .env.production is loaded
-ENV NODE_ENV=production
-RUN npm run build
+# Build the Next.js app
+# NEXT_PUBLIC_* variables from .env.production will be inlined into the JavaScript bundle at this point
+# Verify env vars are available before build
+RUN echo "=== Environment before build ===" && \
+    echo "NODE_ENV=$NODE_ENV" && \
+    (env | grep NEXT_PUBLIC || echo "No NEXT_PUBLIC vars in environment (this is OK if they're in .env.production)") && \
+    echo "=== Running build ===" && \
+    npm run build
 
 # Stage 2: Serve the app with a lightweight server
 FROM node:alpine
@@ -42,3 +60,4 @@ EXPOSE 3000
 
 # Start the app in production mode
 CMD ["npm", "run", "start"]
+
