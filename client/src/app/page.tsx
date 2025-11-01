@@ -24,7 +24,7 @@ import HomePageProvider from '@/providers/HomePageProvider/HomePageProvider';
 export default async function Home() {
   const serviceCategories =
   await serviceCategoryRepository.getAll();
-  console.log(process.env)
+
 
   return (
     <HomePageProvider data={{ serviceCategories }}>
@@ -33,7 +33,7 @@ export default async function Home() {
         <Box >
           <Flex direction="column" gap="6" align="center">
             <Heading size="9" weight="bold">
-              Hello World
+              Hello World1
             </Heading>
             
             <Text size="6" color="gray">
