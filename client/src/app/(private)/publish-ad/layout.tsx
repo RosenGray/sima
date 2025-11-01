@@ -1,5 +1,5 @@
 // import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
-import Header from "@/components/Header";
+// import Header from "@/components/Header";
 import type { Metadata } from "next";
 import { PublishAdLayoutSection } from "./layout.styles";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";

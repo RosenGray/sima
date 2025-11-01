@@ -7,7 +7,6 @@ import {
 } from "../models/ProfessionalService";
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
-import { FileManager } from "@sima-board/common";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
 
 export async function deleteProfessionalServiceAd(

@@ -2,7 +2,6 @@
 
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import AuthTextField from "@/components/Form/AuthTextField/AuthTextField";
-import Form from "@/components/Form/Form";
 import { FormCard } from "@/components/Form/FormCard/FormCard.styles";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import ValidationCheckListTooltip from "@/components/tooltips/ValidationCheckListTooltip/ValidationCheckListTooltip";

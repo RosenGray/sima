@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   return NextResponse.json(
     { message: `RECAPTCHA_SECRET_KEY: ${process.env.RECAPTCHA_SECRET_KEY}` },
     { status: 200 }

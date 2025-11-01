@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { SIMA_AUTH_SESSION_CONFIG } from "@/lib/auth/config";
-import { notFound } from "next/navigation";
 
 // Define routes that should be protected
 const protectedRoutes = [
