@@ -47,6 +47,9 @@ const RegisterPageForm = () => {
     password: "password",
     confirmPassword: "password",
   });
+  console.log(process.env);
+  console.log('process.env.NEXT_PUBLIC_API_URL', process.env.NEXT_PUBLIC_API_URL);
+  console.log('process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY', process.env.NEXT_PUBLIC_BACKBLAZEB_REGION);
   const [form, fields] = useForm({
     defaultValue: {},
     lastResult: formState,
