@@ -16,8 +16,8 @@ spec:
         - name: client
           image: rosengray/sima-client:latest
           env:
-            # Note: NEXT_PUBLIC_* vars must be set at Docker BUILD time, not runtime
-            # They are inlined into the client bundle during 'npm run build'
+            - name: NEXT_PUBLIC_API_URL
+              value: "https://www.sima-board.com"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
