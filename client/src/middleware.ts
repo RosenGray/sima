@@ -92,7 +92,11 @@ export async function middleware(request: NextRequest) {
         new URL("/auth/login", request.url)
       );
       // Clear the invalid token
-      response.cookies.delete(SIMA_AUTH_SESSION_CONFIG.name);
+      response.cookies.set(SIMA_AUTH_SESSION_CONFIG.name, '', {
+        domain: SIMA_AUTH_SESSION_CONFIG.domain,
+        path: '/',
+        maxAge: 0
+      });
       return response;
     }
   }
