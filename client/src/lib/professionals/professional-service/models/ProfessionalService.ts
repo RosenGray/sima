@@ -107,14 +107,29 @@ const professionalServiceSchema = new mongoose.Schema(
     toJSON: {
       transform: (doc, ret: Record<string, unknown>) => {
         ret.id = ret._id;
-        ret.updatedAt = (ret.updatedAt as Date).toISOString();
-        ret.createdAt = (ret.createdAt as Date).toISOString();
+        ret.updatedAt = (ret.updatedAt as Date)?.toISOString();
+        ret.createdAt = (ret.createdAt as Date)?.toISOString();
+        ret.images = (ret.images as unknown[]).map((value: unknown) => {
+          const image = value as Record<string, unknown>;
+          return {
+            ...image,
+            id: image._id,
+          };
+        });
         delete ret._id;
         delete ret.__v;
       },
     },
   }
 );
+
+// Add text index for efficient text search
+professionalServiceSchema.index({
+  description: 'text',
+  district: 'text',
+  city: 'text',
+  email: 'text'
+});
 
 export const ProfessionalService =
   mongoose.models.ProfessionalService ||

@@ -9,6 +9,8 @@ import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
+import { InterFont } from "@/fonts/fonts";
+
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = 'force-dynamic';
@@ -25,11 +27,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
-  console.log("user",   user);
-
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={InterFont.className}>
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <ThemeProvider

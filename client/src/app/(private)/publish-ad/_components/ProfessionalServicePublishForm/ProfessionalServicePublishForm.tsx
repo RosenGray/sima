@@ -1,15 +1,16 @@
 "use client";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
   MAX_FILES,
-  ProfessionalServiceSchema,
+  createProfessionalServiceSchema,
+  SerilizeProfessionalService,
 } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Box, Flex, Grid, Heading } from "@radix-ui/themes";
+import { Box, Card, Flex, Grid, Heading } from "@radix-ui/themes";
 import { useActionState } from "react";
 import { usePublishAd } from "../../_providers/PublishAdProvider";
 import {
@@ -21,36 +22,77 @@ import {
   mapAreasToSelectOptions,
 } from "@/lib/cities";
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
-import Form from "@/components/Form/Form";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
-import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
+import { EnvelopeClosedIcon, MobileIcon } from "@radix-ui/react-icons";
 import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
-import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";
 import { publishProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/publishProfessionalServiceAd";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import { ExistingImageItem } from "@/app/api/files/create/route";
+import { FormMode } from "@/lib/professionals/professional-service/types";
+import { editProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
+import Loader from "@/components/Loader";
 
 const areasOptions = mapAreasToSelectOptions();
 
-const ProfessionalServicePublishForm: FC = () => {
+interface ProfessionalServicePublishFormProps {
+  service?: SerilizeProfessionalService;
+  formMode: FormMode;
+}
+
+const ProfessionalServicePublishForm: FC<
+  ProfessionalServicePublishFormProps
+> = ({ service, formMode }) => {
+  const isCreateMode = formMode === FormMode.Create;
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishAd();
-  console.log("mappedCategories", mappedCategories);
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [formState, formAction] = useActionState(
-    publishProfessionalServiceAd,
+  const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
+    () => {
+      return (
+        service?.images.map((image) => ({
+          ...image,
+          isExisting: true,
+          toBeDeleted: false,
+        })) || []
+      );
+    }
+  );
+  const imagesToDelete = useMemo(() => {
+    return existingImages.filter((image) => image.toBeDeleted);
+  }, [existingImages]);
+
+  const allImagesShouldBeDeleted =
+    imagesToDelete.length === existingImages.length;
+
+  const updateUserWithImagesToDelete = editProfessionalServiceAd.bind(null, {
+    servicePublicId: service?.publicId as string,
+    imagesToDelete,
+    allImagesShouldBeDeleted,
+  });
+
+  const [formState, formAction, isPending] = useActionState(
+    isCreateMode ? publishProfessionalServiceAd : updateUserWithImagesToDelete,
     undefined
   );
+
   const [form, fields] = useForm({
     defaultValue: {
+      category: service?.category?.id,
+      subCategory: service?.subCategory?.id,
+      district: service?.district || Districts.Center,
+      city: service?.city,
       images: [],
       email: user?.email,
-      district: Districts.Center,
+      phoneNumber: service?.phoneNumber,
+      description: service?.description,
+      acceptTerms: service?.acceptTerms ? "on" : null,
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -74,6 +116,8 @@ const ProfessionalServicePublishForm: FC = () => {
       currentImages.forEach((file) => {
         if (
           file instanceof File &&
+          file.size > 0 &&
+          file.name !== "undefined" &&
           !selectedFiles.some((f) => f.name === file.name)
         ) {
           updatedFormData.append("images", file);
@@ -81,7 +125,9 @@ const ProfessionalServicePublishForm: FC = () => {
       });
 
       return parseWithZod(updatedFormData, {
-        schema: ProfessionalServiceSchema,
+        schema: createProfessionalServiceSchema({
+          minNumberOfImages: allImagesShouldBeDeleted ? 1 : 0,
+        }),
       });
     },
     shouldRevalidate: "onInput",
@@ -109,32 +155,51 @@ const ProfessionalServicePublishForm: FC = () => {
     description,
     email,
     phoneNumber,
-    areaCode,
     acceptTerms,
     images,
   } = fields;
-  const categoriesOptions =
-    mapServiceCategoriesToSelectOptions(mappedCategories);
-  const subCategoryOptions = mapServiceSubCategoriesToSelectOptions(
-    mappedCategories,
-    category.value
+
+ 
+  const categoriesOptions = useMemo(
+    () => mapServiceCategoriesToSelectOptions(mappedCategories),
+    [mappedCategories]
   );
-  const citiesOptions = getCitiesToSelectOptions(district.value as Districts);
+  const subCategoryOptions = useMemo(
+    () =>
+      mapServiceSubCategoriesToSelectOptions(mappedCategories, category.value),
+    [mappedCategories, category.value]
+  );
+
+  const citiesOptions = useMemo(
+    () =>
+      getCitiesToSelectOptions(
+        (district.value as Districts) || Districts.Center
+      ),
+    [district.value]
+  );
   useEffect(() => {
     if (formState) {
       setErrorModalOpen(true);
     }
   }, [formState]);
 
+  if (isPending) {
+    return (
+      <Flex justify="center" align="center" style={{ minHeight: "600px" }}>
+        <Loader size="xlarge" />
+      </Flex>
+    );
+  }
+
   return (
     <>
-      <Form
-        _key={formKey.toString()}
+      <form
+        key={formKey.toString()}
         action={formAction}
         {...getFormProps(form)}
       >
-        {({ pending }) => (
-          <Box>
+        <Box>
+          <Card>
             <Grid columns="2" gap="4" mb="4">
               {/* category */}
               <SelectSingle
@@ -142,9 +207,9 @@ const ProfessionalServicePublishForm: FC = () => {
                 field={category}
                 placeholder="Выберите доску"
                 options={categoriesOptions}
-                defaultValue={categoriesOptions[0]}
                 errors={category.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
+                defaultValue={categoriesOptions[3]}
               />
 
               {/* subCategory */}
@@ -153,9 +218,9 @@ const ProfessionalServicePublishForm: FC = () => {
                 field={subCategory}
                 placeholder="Выберите подкатегорию"
                 options={subCategoryOptions}
-                defaultValue={subCategoryOptions[0]}
                 errors={subCategory.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
+                defaultValue={subCategoryOptions[0]}
               />
 
               {/* area */}
@@ -164,9 +229,8 @@ const ProfessionalServicePublishForm: FC = () => {
                 field={district}
                 placeholder="Выберите район"
                 options={areasOptions}
-                defaultValue={areasOptions[0]}
                 errors={district.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
               />
               {/* city */}
 
@@ -174,10 +238,10 @@ const ProfessionalServicePublishForm: FC = () => {
                 label="Выберите город"
                 field={city}
                 placeholder="Выберите город"
-                defaultValue={citiesOptions[0]}
                 options={citiesOptions}
                 errors={city.errors}
-                isDisabled={pending}
+                isDisabled={isPending}
+                defaultValue={citiesOptions[0]}
               />
             </Grid>
             {/* description */}
@@ -191,7 +255,7 @@ const ProfessionalServicePublishForm: FC = () => {
               errors={description.errors}
               rows={5}
               mb="5px"
-              disabled={pending}
+              disabled={isPending}
             />
 
             <DropFilesInput
@@ -208,12 +272,17 @@ const ProfessionalServicePublishForm: FC = () => {
               onFilesDrop={setSelectedFiles}
               files={selectedFiles}
               disabled={false}
+              existingFilesLength={
+                existingImages.filter((image) => !image.toBeDeleted).length
+              }
             />
-            {selectedFiles.length > 0 && (
+            {(existingImages.length > 0 || selectedFiles.length > 0) && (
               <Box mt="4" mb="4">
                 <ImagesPreviewer
+                  existingImages={existingImages}
                   images={selectedFiles}
                   setImages={setSelectedFiles}
+                  setExistingImages={setExistingImages}
                   maxImages={MAX_FILES}
                 />
               </Box>
@@ -227,24 +296,28 @@ const ProfessionalServicePublishForm: FC = () => {
                   type="email"
                   field={email}
                   label="Email"
-                  anotherLabel="*виден только администрации сайта и не отображается публично"
+                  // anotherLabel="*виден только администрации сайта и не отображается публично"
+
                   placeholder="@ Адрес электронной почты"
                   size="3"
                   defaultValue={fields.email.initialValue}
                   dataIsValid={email.valid}
                   errors={email.errors}
-                  disabled={pending}
+                  disabled={isPending}
                 >
                   <EnvelopeClosedIcon height="16" width="16" />
                 </BasicFormField>
                 <PhoneFormField
-                  areaCodeField={areaCode}
+                  // areaCodeField={areaCode}
                   label="Телефон"
                   field={phoneNumber}
                   errors={phoneNumber.errors}
                   size="3"
-                  disabled={pending}
-                />
+                  defaultValue={phoneNumber.initialValue}
+                  disabled={isPending}
+                >
+                  <MobileIcon height="16" width="16" />
+                </PhoneFormField>
               </Grid>
             </Box>
             <Flex
@@ -258,19 +331,27 @@ const ProfessionalServicePublishForm: FC = () => {
                 field={acceptTerms}
                 label="Я согласен с условиями"
                 errors={acceptTerms.errors}
-                disabled={pending}
+                disabled={isPending}
               />
-              <SubmitButton pending={pending} text="Добавить объявление" />
 
-              {/* <ReCAPTCHA
-                  submitButtonText="Добавить объявление"
-                  isLoading={pending || isRevalidating}
-                /> */}
+              <SubmitButton
+                pending={isPending}
+                disabled={acceptTerms.value !== "on"}
+                text="Добавить объявление"
+              />
+              {/* <GoogleReCAPTCHA
+              submitButtonText="Добавить объявление"
+              isLoading={isPending}
+            /> */}
             </Flex>
-          </Box>
-        )}
-      </Form>
-      <ErrorModal open={errorModalOpen} onOpenChange={handleModalClose} />
+          </Card>
+        </Box>
+      </form>
+      <ErrorModal
+        open={errorModalOpen}
+        onOpenChange={handleModalClose}
+        errorMessage={form.errors}
+      />
     </>
   );
 };

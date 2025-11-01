@@ -28,6 +28,7 @@ interface DropFilesInputProps {
   maxFiles?: number; // Add this new prop
   errors?: string[];
   disabled?: boolean;
+  existingFilesLength?: number;
 }
 
 const DropFilesInput: React.FC<DropFilesInputProps> = ({
@@ -39,6 +40,7 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
   maxFiles,
   errors,
   disabled,
+  existingFilesLength,
 }) => {
   const { id, name, type,form   } = conformGetInputProps(field, {
     type: "file",
@@ -50,7 +52,7 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
 
       newFiles.forEach((file) => {
         // Check if we've reached the maxFiles limit
-        if (maxFiles && updatedFiles.length >= maxFiles) {
+        if (maxFiles && updatedFiles.length + (existingFilesLength || 0) >= maxFiles) {
           return; // Skip adding more files if limit reached
         }
 
@@ -67,12 +69,12 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
 
       onFilesDrop(updatedFiles);
     },
-    [files, onFilesDrop, maxFiles]
+    [files, onFilesDrop, maxFiles, existingFilesLength]
   );
 
   useEffect(() => {
     const dataTransfer = new DataTransfer();
-    if (maxFiles && files.length > maxFiles) {
+    if (maxFiles && files.length + (existingFilesLength || 0) > maxFiles) {
       files.slice(0, maxFiles).forEach((file) => {
         dataTransfer.items.add(file);
       });
@@ -85,7 +87,7 @@ const DropFilesInput: React.FC<DropFilesInputProps> = ({
     if (fileInputElement) {
       fileInputElement.files = dataTransfer.files;
     }
-  }, [files, id, maxFiles]);
+  }, [files, id, maxFiles, existingFilesLength]);
 
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

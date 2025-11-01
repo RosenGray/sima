@@ -9,9 +9,8 @@ import { SerializeServiceCategory } from "../types/service-categories.types";
 // Internal function that performs the actual database operations
 async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
   try {
-    console.log("ServiceCategoryRepository 1y");
+  
     await connectDB();
-    console.log("ServiceCategoryRepository 2y");
     // First, check if there are any existing service categories
     const existingCategories = await ServiceCategory.find({});
 
@@ -21,6 +20,8 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
         "No service categories found. Initializing with default data..."
       );
 
+      console.log('foooo',serviceCategoriesData)
+
       // Transform the JSON data to match our model structure
       const categoriesToInsert = serviceCategoriesData.map(
         (category: {
@@ -29,17 +30,19 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
           description: string;
           russianDisplayName: string;
           russianDescription: string;
+          navItem?: { label: string; href: string };
         }) => ({
           key: category.key,
           displayName: category.displayName,
           description: category.description,
           russianDisplayName: category.russianDisplayName,
           russianDescription: category.russianDescription,
+          navItem: category.navItem,
         })
       );
 
-      // Insert the categories
-      const insertedCategories = await ServiceCategory.insertMany(
+      // Insert the categories using create() to trigger pre-save hooks
+      const insertedCategories = await ServiceCategory.create(
         categoriesToInsert
       );
       console.log(
@@ -62,11 +65,16 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
 export class ServiceCategoryRepository {
   // Cached version of getAll - caches for 1 hour (3600 seconds)
   async getAll(): Promise<SerializeServiceCategory[]> {
+    // In development, skip cache to always get fresh data
+    if (process.env.NODE_ENV === 'development') {
+      return _getAllCategories();
+    }
+
     const cachedGetAll = unstable_cache(
       _getAllCategories,
       ["service-categories"], // cache key
       {
-        revalidate: 31536000, // 1 year
+        revalidate: 3600, // 1 hour in production
         tags: ["service-categories"],
       }
     );
@@ -77,6 +85,7 @@ export class ServiceCategoryRepository {
   // Get mapped categories with their subcategories
   async getMappedCategories(): Promise<ServiceCategoryMapping> {
     const serviceCategories = await this.getAll();
+    console.log('serviceCategories', serviceCategories);
     const subcategories = await serviceSubCategoryRepository.getAll();
 
     const mapping: ServiceCategoryMapping = {};
@@ -95,6 +104,20 @@ export class ServiceCategoryRepository {
 
     return mapping;
   }
+
+  // async getMappingToNavItem(): Promise<unknown>   {
+  //   const serviceCategories = await this.getAll();
+  //   const mapping: ServiceCategoryMappingToNavItem = {};
+
+  //   serviceCategories.forEach((category) => {
+  //     mapping[category.key] = {
+  //       label: category.displayName,
+  //       href: category.navItem?.href || "",
+  //     };
+  //   });
+
+  //   return 1;
+  // }
 }
 
 export const serviceCategoryRepository = new ServiceCategoryRepository();

@@ -52,6 +52,6 @@ export async function loginUser(initialState: unknown, formData: FormData) {
       formErrors: ["Неизвестная ошибка"],
     });
   }
-  revalidatePath('/', 'layout');
+  revalidatePath("/", "layout");
   redirect("/auth/success");
 }

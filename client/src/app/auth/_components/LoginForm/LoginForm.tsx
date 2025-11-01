@@ -11,18 +11,18 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { LoginSchema } from "@/lib/auth/types/auth.scema";
 import { loginUser } from "@/lib/auth/actions/login";
-import Form from "@/components/Form/Form";
-
 import AuthTextField from "@/components/Form/AuthTextField/AuthTextField";
 import { useOnTogglePasswordView } from "@/lib/auth/hooks/useOnTogglePasswordView";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { FormCard } from "@/components/Form/FormCard/FormCard.styles";
 
-
 const LoginForm = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [formState, formAction] = useActionState(loginUser, undefined);
+  const [formState, formAction, isPending] = useActionState(
+    loginUser,
+    undefined
+  );
   const { onTogglePasswordView, inputPasswordType } = useOnTogglePasswordView({
     password: "password",
   });
@@ -50,80 +50,78 @@ const LoginForm = () => {
 
   return (
     <Box width="100%" maxWidth="550px">
-      <Form action={formAction} {...getFormProps(form)} noValidate>
-        {({ pending }) => (
-          <FormCard size="4">
-            <Flex direction="column" gap="5" p="4">
-              <Heading align="center" size="7" mb="2">
-                Мы рады вас видеть
-              </Heading>
-              <Flex direction="column" gap="3">
-                {/* Email */}
-                <AuthTextField
-                  {...getInputProps(fields.email, { type: "email" })}
-                  _key={email.key}
-                  placeholder="@ Адрес электронной почты"
-                  size="3"
-                  defaultValue={fields.email.initialValue}
-                  dataIsValid={email.valid}
-                  errors={email.errors}
-                  disabled={pending}
-                >
-                  <EnvelopeClosedIcon height="16" width="16" />
-                </AuthTextField>
-                {/* Password */}
-                <AuthTextField
-                  {...getInputProps(password, {
-                    type: inputPasswordType.password,
-                  })}
-                  _key={password.key}
-                  placeholder="Пароль"
-                  size="3"
-                  defaultValue={password.initialValue}
-                  dataIsValid={password.valid}
-                  errors={password.errors}
-                  disabled={pending}
-                >
-                  <>
-                    <LockClosedIcon height="16" width="16" />
-                    <IconButton
-                      type="button"
-                      onClick={onTogglePasswordView(password.name)}
-                      size="3"
-                      variant="ghost"
-                      color="yellow"
-                    >
-                      <EyeOpenIcon height="16" width="16" />
-                    </IconButton>
-                  </>
-                </AuthTextField>
-                <Flex justify="between" align="center" mt="1">
-                  <Text size="4" color="gray">
-                    вы еще не зарегистрированы?
-                    <Text weight="bold" ml="5px" color="yellow">
-                      <Link
-                        href="/auth/register"
-                        className={pending ? "disabled-link" : ""}
-                      >
-                        Зарегистрироваться
-                      </Link>
-                    </Text>
-                  </Text>
-                </Flex>
-                <SubmitButton pending={pending} />
-                <Text weight="bold" mt="3" color="yellow">
-                  <Link
-                    className={pending ? "disabled-link" : ""}
-                    href="/auth/reset-password"
+      <form action={formAction} {...getFormProps(form)} noValidate>
+        <FormCard size="4">
+          <Flex direction="column" gap="5" p="4">
+            <Heading align="center" size="7" mb="2">
+              Мы рады вас видеть
+            </Heading>
+            <Flex direction="column" gap="3">
+              {/* Email */}
+              <AuthTextField
+                {...getInputProps(fields.email, { type: "email" })}
+                _key={email.key}
+                placeholder="@ Адрес электронной почты"
+                size="3"
+                defaultValue={fields.email.initialValue}
+                dataIsValid={email.valid}
+                errors={email.errors}
+                disabled={isPending}
+              >
+                <EnvelopeClosedIcon height="16" width="16" />
+              </AuthTextField>
+              {/* Password */}
+              <AuthTextField
+                {...getInputProps(password, {
+                  type: inputPasswordType.password,
+                })}
+                _key={password.key}
+                placeholder="Пароль"
+                size="3"
+                defaultValue={password.initialValue}
+                dataIsValid={password.valid}
+                errors={password.errors}
+                disabled={isPending}
+              >
+                <>
+                  <LockClosedIcon height="16" width="16" />
+                  <IconButton
+                    type="button"
+                    onClick={onTogglePasswordView(password.name)}
+                    size="3"
+                    variant="ghost"
+                    color="yellow"
                   >
-                    Забыли пароль?
-                  </Link>
+                    <EyeOpenIcon height="16" width="16" />
+                  </IconButton>
+                </>
+              </AuthTextField>
+              <Flex justify="between" align="center" mt="1">
+                <Text size="4" color="gray">
+                  вы еще не зарегистрированы?
+                  <Text weight="bold" ml="5px" color="yellow">
+                    <Link
+                      href="/auth/register"
+                      className={isPending ? "disabled-link" : ""}
+                    >
+                      Зарегистрироваться
+                    </Link>
+                  </Text>
                 </Text>
               </Flex>
+              <SubmitButton pending={isPending} />
+              <Text weight="bold" mt="3" color="yellow">
+                <Link
+                  className={isPending ? "disabled-link" : ""}
+                  href="/auth/reset-password"
+                >
+                  Забыли пароль?
+                </Link>
+              </Text>
             </Flex>
-          </FormCard>
-        )}
-      </Form>
+          </Flex>
+        </FormCard>
+      </form>
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}

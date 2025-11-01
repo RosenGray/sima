@@ -27,7 +27,8 @@ export const DeleteButton = styled(IconButton)`
   top: 5px;
   left: 5px;
   cursor: pointer;
-  opacity: 0;
+  opacity: 1;
+  border-radius: 50%;
   transition: opacity 0.1s ease-in-out;
   
   &:hover {

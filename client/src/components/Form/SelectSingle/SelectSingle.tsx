@@ -1,10 +1,14 @@
 "use client";
-import { FC, useLayoutEffect, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import React from "react";
 import Select, { Props } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SelectSingle.styles";
-import { FieldMetadata, useInputControl } from "@conform-to/react";
+import {
+  FieldMetadata,
+  useInputControl,
+  getSelectProps,
+} from "@conform-to/react";
 
 interface Option {
   value: string;
@@ -28,15 +32,15 @@ const SelectSingle: FC<SelectSingleProps> = ({
   defaultValue,
   ...rest
 }) => {
+  const { key, name } = getSelectProps(field);
   const control = useInputControl(field);
   const controlRef = useRef(control);
-  controlRef.current = control;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (defaultValue?.value) {
       controlRef.current.change(defaultValue.value);
     }
-  }, [defaultValue?.value]);
+  }, [defaultValue?.value, label]);
 
   return (
     <Box>
@@ -51,30 +55,22 @@ const SelectSingle: FC<SelectSingleProps> = ({
           {label}
         </Text>
       )}
+
       <Select
         defaultValue={defaultValue}
-        classNamePrefix="sima-select-single"
+        key={key}
+        name={name}
         instanceId={`select-${field.name}`}
+        options={options}
         styles={styles}
-        name={field.name}
-        // menuPortalTarget={
-        //   typeof document !== "undefined" ? document.body : undefined
-        // }
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}
         value={options.find((opt) => opt.value === control.value)}
-        options={options}
         onChange={(option) => {
-          if (
-            option &&
-            typeof option === "object" &&
-            option !== null &&
-            "value" in option
-          ) {
+          if (option) {
             controlRef.current.change((option as Option).value);
           }
         }}
-        {...rest}
       />
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}

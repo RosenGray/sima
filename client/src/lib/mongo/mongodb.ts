@@ -7,16 +7,18 @@ let isConnected = false;
 
 const connectDB = async () => {
   // Validate environment variables at runtime
-  const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD } = process.env;
+  const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD, MONGO_URI: ENV_MONGO_URI } = process.env;
 
   if (!JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
 
   const isProd = NODE_ENV === "production";
-  const MONGO_URI = isProd
+  
+  // Priority: ENV_MONGO_URI > isProd ? cloud : local
+  const MONGO_URI = ENV_MONGO_URI || (isProd
     ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/sima`
-    : "mongodb://localhost:30016/sima";
+    : "mongodb://localhost:30016/sima");
 
   if (!MONGO_URI) {
     throw new Error("MONGO_URI must be defined");
@@ -45,11 +47,11 @@ const connectDB = async () => {
     isConnected = true;
     console.log("Connected to MongoDB");
     // Optional: Test connection
-    const testCollection = mongoose.connection.db?.collection("test");
-    await testCollection?.insertOne({
-      message: "Database connected!",
-      timestamp: new Date(),
-    });
+    // const testCollection = mongoose.connection.db?.collection("test");
+    // await testCollection?.insertOne({
+    //   message: "Database connected!",
+    //   timestamp: new Date(),
+    // });
   } catch (error) {
     console.error("MongoDB connection error:", error);
     isConnected = false;

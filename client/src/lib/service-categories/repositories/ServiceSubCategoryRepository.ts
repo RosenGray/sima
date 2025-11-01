@@ -15,7 +15,6 @@ async function _getAllSubCategories(): Promise<SerializeServiceSubCategory[]> {
     // First, check if there are any existing service subcategories
     const existingSubCategories = await ServiceSubCategory.find({})
     .populate("serviceCategory");
-    console.log("existingSubCategories", existingSubCategories);
     // If no subcategories exist, initialize with the JSON data
     if (existingSubCategories.length === 0) {
       console.log('No service subcategories found. Initializing with default data...');
@@ -93,11 +92,16 @@ async function _getAllSubCategories(): Promise<SerializeServiceSubCategory[]> {
 export class ServiceSubCategoryRepository {
   // Cached version of getAll - caches for 1 hour (3600 seconds)
   async getAll(): Promise<SerializeServiceSubCategory[]> {
+    // In development, skip cache to always get fresh data
+    if (process.env.NODE_ENV === 'development') {
+      return _getAllSubCategories();
+    }
+
     const cachedGetAll = unstable_cache(
       _getAllSubCategories,
       ['service-subcategories'], // cache key
       { 
-        revalidate: 31536000, // 1 year
+        revalidate: 3600, // 1 hour in production
         tags: ['service-subcategories']
       }
     );

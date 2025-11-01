@@ -1,7 +1,7 @@
 import { Grid } from "@radix-ui/themes";
 import { TrashIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { FC, useMemo } from "react";
+import { Dispatch, FC, SetStateAction, useCallback, useMemo } from "react";
 import { MaxImages } from "./ImagesPreviewer.interface";
 import {
   ImagePreviewerContainerBox,
@@ -9,16 +9,29 @@ import {
   DeleteButton,
 } from "./ImagesPreviewer.styles";
 import { mapMaxImagesToNumberColumnsAndRows } from "./ImagesPreviewer.utils";
+import { ExistingImageItem } from "@/app/api/files/create/route";
+import { nanoid } from "nanoid";
 
 interface ImagesPreviewerProps {
   images: File | File[];
-  setImages: (images: File[]) => void;
+  existingImages: ExistingImageItem[];
+  setImages: Dispatch<SetStateAction<File[]>>;
+  setExistingImages: Dispatch<SetStateAction<ExistingImageItem[]>>;
   maxImages: MaxImages;
 }
 
+type ImageItem = {
+  id: string;
+  name: string;
+  previewUrl: string;
+  isExisting: boolean;
+};
+
 const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   images,
+  existingImages,
   setImages,
+  setExistingImages,
   maxImages,
 }) => {
   const { columns, rows } = mapMaxImagesToNumberColumnsAndRows(maxImages);
@@ -28,14 +41,65 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   const filesWithPreview = useMemo(() => {
     return files.map((file) => ({
       ...file,
+      id: nanoid(10),
       name: file.name,
       previewUrl: URL.createObjectURL(file),
+      isExisting: false,
     }));
   }, [files]);
+  const existingImagesWithPreview = useMemo(() => {
+    return existingImages
+      .filter((image) => !image.toBeDeleted)
+      .map((image) => ({
+        ...image,
+        id: image.id,
+        name: image.originalName,
+        previewUrl: image.url,
+      }));
+  }, [existingImages]);
 
-  const handleRemoveImage = (file: File) => {
-    setImages(files.filter((f) => f.name !== file.name));
+  console.log("existingImagesWithPreview", existingImagesWithPreview);
+  // Combine existing images and new files into a single array
+  const allImages = useMemo(() => {
+    return [...existingImagesWithPreview, ...filesWithPreview];
+  }, [existingImagesWithPreview, filesWithPreview]);
+
+  const handleRemoveImage = useCallback((image: ImageItem) => {
+    // setImages(files.filter((f) => f.name !== file.name));
+    {
+      if (image.isExisting) {
+        console.log("image is existing", image);
+        setExistingImages((e) => {
+          return e.map((i) =>
+            i.id === image.id ? { ...i, toBeDeleted: true } : i
+          );
+        });
+        // setExistingImages(existingImages.filter((i) => i.id !== image.id));
+      } else {
+        console.log("image is not existing", image);
+        setImages((i) => i.filter((f) => f.name !== image.name));
+        // setImages(files.filter((f) => f.name !== image.name));
+      }
+    }
+  }, [setExistingImages, setImages]);
+
+
+
+  const renderImages = () => {
+    return allImages.slice(1).map((image) => {
+      return (
+        <GridItem key={image.id} className={GridItem}>
+          <Image fill src={image.previewUrl} alt="Image" />
+          <DeleteButton type="button" color="red" onClick={() => handleRemoveImage(image)}>
+            <TrashIcon />
+          </DeleteButton>
+        </GridItem>
+      );
+    });
   };
+  if (allImages.length === 0) {
+    return null;
+  }
 
   return (
     <ImagePreviewerContainerBox
@@ -50,25 +114,13 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
     >
       <Grid height="100%" columns="2" gap="2">
         <GridItem>
-          <Image fill src={filesWithPreview[0].previewUrl} alt="Image" />
-          <DeleteButton
-            className={DeleteButton}
-            onClick={() => handleRemoveImage(filesWithPreview[0])}
-          >
+          <Image fill src={allImages[0].previewUrl} alt="Image" />
+          <DeleteButton type="button" color="red" onClick={() => handleRemoveImage(allImages[0])}>
             <TrashIcon />
           </DeleteButton>
         </GridItem>
         <Grid columns={columns} rows={rows} gap="2">
-          {filesWithPreview.slice(1).map((file) => {
-            return (
-              <GridItem key={file.name} className={GridItem}>
-                <Image fill src={file.previewUrl} alt="Image" />
-                <DeleteButton onClick={() => handleRemoveImage(file)}>
-                  <TrashIcon />
-                </DeleteButton>
-              </GridItem>
-            );
-          })}
+          {renderImages()}
         </Grid>
       </Grid>
     </ImagePreviewerContainerBox>

@@ -1,5 +1,5 @@
 import { FC, Ref, ReactNode } from "react";
-import { TextField, Text, Box, Select, Flex } from "@radix-ui/themes";
+import { TextField, Text, Box, Select } from "@radix-ui/themes";
 import {
   FieldMetadata,
   getInputProps,
@@ -13,9 +13,9 @@ interface AreaCodeSelectProps extends Select.RootProps {
 }
 
 interface PhoneFormFieldProps extends TextField.RootProps {
-  areaCodeField: FieldMetadata<
-    number | string | string[] | (string | undefined)[] | undefined
-  >;
+  // areaCodeField: FieldMetadata<
+  //   number | string | string[] | (string | undefined)[] | undefined
+  // >;
   field: FieldMetadata<
     number | string | string[] | (string | undefined)[] | undefined
   >;
@@ -57,7 +57,7 @@ const AreaCodeSelect: FC<AreaCodeSelectProps> = ({ size, areaCodeField }) => {
 
 const PhoneFormField: FC<PhoneFormFieldProps> = ({
   field,
-  areaCodeField,
+  // areaCodeField,
   placeholder,
   size,
   defaultValue,
@@ -70,6 +70,7 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
   ...rest
 }) => {
   const { mb, mt, mr, ml } = rest;
+  console.log('deffffffffff', defaultValue);
 
   return (
     <Box mb={mb} mt={mt} mr={mr} ml={ml}>
@@ -85,11 +86,11 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
           {label}
         </Text>
       )}
-      <Flex gap="2">
-        <AreaCodeSelect size={size} areaCodeField={areaCodeField} />
-        <span style={{ fontSize: "20px", alignSelf: "center" }}>-</span>
+ 
+        {/* <AreaCodeSelect size={size} areaCodeField={areaCodeField} /> */}
+        {/* <span style={{ fontSize: "20px", alignSelf: "center" }}>-</span> */}
         <TextField.Root
-          {...getInputProps(field, { type: "number" })}
+          {...getInputProps(field, { type: "tel" })}
           key={_key}
           placeholder={placeholder}
           size={size}
@@ -97,11 +98,12 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
           className={className}
           data-isvalid={field.valid}
           ref={ref}
+          autoComplete="one-time-code"
           {...rest}
         >
           <TextField.Slot>{children}</TextField.Slot>
         </TextField.Root>
-      </Flex>
+
 
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}

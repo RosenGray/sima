@@ -1,20 +1,22 @@
 "use server";
 import { parseWithZod } from "@conform-to/zod";
-import { ProfessionalServiceSchema } from "../types/professional-service.scema";
+import { createProfessionalServiceSchema } from "../types/professional-service.scema";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { ProfessionalService } from "../models/ProfessionalService";
 import connectDB from "@/lib/mongo/mongodb";
 import { FileUploadResponse } from "@/app/api/files/create/route";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
-
+import { revalidatePath } from "next/cache";
 
 export async function publishProfessionalServiceAd(
   initialState: unknown,
   formData: FormData
 ) {
   
-  const result = parseWithZod(formData, { schema: ProfessionalServiceSchema });
+  const result = parseWithZod(formData, {
+    schema: createProfessionalServiceSchema({ minNumberOfImages: 1 }),
+  });
 
   if (result.status !== "success") return result.reply();
   const user = await getCurrentUser();
@@ -74,5 +76,6 @@ export async function publishProfessionalServiceAd(
       formErrors: ["Неизвестная ошибка"],
     });
   }
+  revalidatePath("/professional-service", "layout"); // Explicitly revalidate the layout
   redirect("/professional-service");
 }

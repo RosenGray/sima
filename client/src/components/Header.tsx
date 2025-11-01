@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
 import {
@@ -19,16 +19,23 @@ import { MobileMenu } from "./Header/MobileMenu";
 import { ThemeToggleButton } from "./ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "./buttons/LogoutButton/LogoutButton";
-
+import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 
 const navigationItems = [
   {
-    label: "Products",
+    label: "Услуги специалистов",
     subItems: [
-      { label: "Electronics", href: "/products/electronics" },
-      { label: "Fashion", href: "/products/fashion" },
-      { label: "Home & Garden", href: "/products/home-garden" },
-      { label: "Sports", href: "/products/sports" },
+      { label: "Все", href: "/professional-service" },
+      {
+        label: "Electronics",
+        href: "/professional-service?categoryId=6902000307fc0b06bd2a4294",
+      },
+      {
+        label: "Fashion",
+        href: "/professional-service?categoryId=6902000307fc0b06bd2a428a",
+      },
+      { label: "Home & Garden", href: "/professional-service?categoryId=3" },
+      { label: "Sports", href: "/professional-service?categoryId=4" },
     ],
   },
   {
@@ -61,8 +68,26 @@ const navigationItems = [
 ];
 
 export default function Header() {
+  const { serviceCategories } = useHomePage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const {user} = useAuth();
+  const { user } = useAuth();
+  console.log("serviceCategories", serviceCategories);
+
+  const navigationItems = useMemo(() => {
+    const services = {
+      label: "Услуги специалистов",
+      subItems: [
+        { label: "Все", href: "/professional-service" },
+        ...serviceCategories.map((category) => ({
+          label: category.navItem.label,
+          href: category.navItem.href,
+        })),
+      ],
+    };
+    return [services];
+  }, [serviceCategories]);
+
+  console.log("serviceCategoriesNavItems", navigationItems);
 
   const toggleMobileMenu = () => {
     console.log("Toggle mobile menu, current state:", isMobileMenuOpen);
@@ -72,7 +97,6 @@ export default function Header() {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
-
 
   return (
     <>
@@ -108,8 +132,8 @@ export default function Header() {
                 </Text>
                 <DropdownMenu>
                   {item.subItems.map((subItem) => (
-                    <DropdownItem key={subItem.label} href={subItem.href}>
-                      <Text size="2">{subItem.label}</Text>
+                    <DropdownItem key={subItem?.label} href={subItem?.href}>
+                      <Text size="2">{subItem?.label}</Text>
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
@@ -119,13 +143,17 @@ export default function Header() {
 
           {/* Right-side Actions: Login + Theme Toggle */}
           <ActionsContainer>
-            {user ? <LogoutButton /> : <Link href="/auth/login">
-              <LoginButton variant="surface" size="2">
-                <Text size="2" weight="medium">
-                  Login
-                </Text>
-              </LoginButton>
-            </Link>}
+            {user ? (
+              <LogoutButton />
+            ) : (
+              <Link href="/auth/login">
+                <LoginButton variant="surface" size="2">
+                  <Text size="2" weight="medium">
+                    Login
+                  </Text>
+                </LoginButton>
+              </Link>
+            )}
             <ThemeToggleButton />
           </ActionsContainer>
         </Flex>

@@ -1,12 +1,8 @@
-// Client Component
-'use client'
-
-export default function Dummy({ posts }: { posts: unknown[] }) {
+export default async function Dummy() {
+  // await new Promise((resolve) => setTimeout(resolve, 30000));  
   return (
-    <div>
-      <h1>Dummy Component</h1>
-      <p>Posts count: {posts.length}</p>
-      <pre>{JSON.stringify(posts, null, 2)}</pre>
+    <div style={{ width: '100%', height: '100%', backgroundColor: 'red' }}>
+ dummy
     </div>
   )
 }
