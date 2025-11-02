@@ -105,6 +105,16 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     <>
       {/* Desktop Filters */}
       <DesktopFiltersWrapper>
+      <MixerHorizontalIcon
+          style={{
+            // position: "absolute",
+            left: 5,
+            top:5,
+
+          }}
+          width="18"
+          height="18"
+        />
         <FiltersSection>
           <FiltersContent />
         </FiltersSection>
@@ -216,7 +226,10 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
                 )}
                 <Button
                   variant="solid"
-                  style={{ flex: activeFiltersCount > 0 ? 1 : undefined, width: activeFiltersCount === 0 ? "100%" : undefined }}
+                  style={{
+                    flex: activeFiltersCount > 0 ? 1 : undefined,
+                    width: activeFiltersCount === 0 ? "100%" : undefined,
+                  }}
                   onClick={closeModal}
                   size={{
                     initial: "2",

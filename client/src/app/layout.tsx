@@ -9,7 +9,7 @@ import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
-import { InterFont } from "@/fonts/fonts";
+import { RubikFont } from "@/fonts/fonts";
 
 
 // Mark as dynamic because we use cookies in getCurrentUser
@@ -28,21 +28,21 @@ export default async function RootLayout({
 }>) {
   const user = await getCurrentUser();
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={InterFont.className}>
+    <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
+      <body >
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
-            <ThemeProvider
-              attribute="class"
-              enableSystem
-              enableColorScheme
-              storageKey="sima-theme"
-            >
-              <RadixTheme
-                className="globalContentOverflowWrapper"
-                accentColor="red"
-                id={RADIX_THEME_APP_ID}
+              <ThemeProvider
+                attribute="class"
+                enableSystem
+                enableColorScheme
+                storageKey="sima-theme"
               >
+                <RadixTheme
+                  className="globalContentOverflowWrapper"
+                  accentColor="red"
+                  id={RADIX_THEME_APP_ID}
+                >
                 {user && !user.isEmailVerified && (
                   <EmailVerificationBanner userEmail={user.email} />
                 )}

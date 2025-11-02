@@ -4,14 +4,14 @@ import { breakpoints } from "@/globals";
 
 export const BannerContainer = styled(Box)`
   position: fixed;
-  top: var(--header-height);
+
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 9999999;
   background: var(--color-background);
 
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-3);
+
+
   
 
 `;

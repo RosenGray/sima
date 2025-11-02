@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { ProfessionalServiceLayoutSection } from "./layout.styles";
-import { Box } from "@radix-ui/themes";
+import {
+  ProfessionalServiceLayoutSection,
+  ProfessionalServiceLayoutStripe,
+} from "./layout.styles";
+import { generateBackblazeUrl } from "@/utils/common";
 
 export const metadata: Metadata = {
   title: "Профессиональные услуги",
@@ -12,13 +15,16 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const filePath = generateBackblazeUrl("public", "professionals-stripe.jpeg");
+
   return (
     // <ProfessionalServiceProvider data={{ professionalServices: [] }}>
     <ProfessionalServiceLayoutSection>
       {/* <Header /> */}
-      <Box style={{ border: "1px solid red", height: "110px" }}>
-        {/* PLACE HOLDER FOR IMAGE STRIPE */}
-      </Box>
+      <ProfessionalServiceLayoutStripe
+        $src={filePath}
+      />
+
       <main>{children}</main>
     </ProfessionalServiceLayoutSection>
     // </ProfessionalServiceProvider>

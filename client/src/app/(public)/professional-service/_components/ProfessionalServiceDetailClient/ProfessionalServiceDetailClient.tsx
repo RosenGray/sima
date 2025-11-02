@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -42,6 +42,8 @@ import {
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
+import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
+import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 
 interface ProfessionalServiceDetailClientProps {
   service: SerilizeProfessionalService;
@@ -50,12 +52,21 @@ interface ProfessionalServiceDetailClientProps {
 const ProfessionalServiceDetailClient: React.FC<
   ProfessionalServiceDetailClientProps
 > = ({ service }) => {
+  const deleteProfessionalServiceAdByPublicId =
+    deleteProfessionalServiceAdWithRedirect.bind(null, service.publicId);
+
+  const [formState, formAction, isPending] = useActionState(
+    deleteProfessionalServiceAdByPublicId,
+    undefined
+  );
+  console.log(formState);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
-  console.log(currentUser)
-  console.log(service)
+
   const isOwner = thisUserIsOwner(service.user.id);
 
   const {
@@ -88,13 +99,15 @@ const ProfessionalServiceDetailClient: React.FC<
     });
   };
 
-  const handleEdit = () => {
-    console.log("edit");
+  const handleModalClose = () => {
+    setErrorModalOpen(false);
   };
 
-  const handleDelete = async () => {
-    await deleteProfessionalServiceAdWithRedirect(publicId);
-  };
+  useEffect(() => {
+    if (formState && !formState.success && formState.error) {
+      setErrorModalOpen(true);
+    }
+  }, [formState]);
 
   return (
     <PageContainer size="4">
@@ -105,13 +118,26 @@ const ProfessionalServiceDetailClient: React.FC<
             {subCategory.russianDisplayName}
           </PageTitle>
           <ButtonGroup>
-            <Button size="3" variant="soft" color="blue" onClick={handleEdit}>
-              <Pencil1Icon width="18" height="18" />
-              Редактировать
+            <Button disabled={isPending} asChild size="3" variant="soft">
+              <Link
+                color="yellow"
+                href={`/publish-ad/professional-service/edit/${publicId}`}
+              >
+                <Pencil1Icon width="18" height="18" />
+                Редактировать
+              </Link>
             </Button>
-            <Button size="3" variant="soft" color="red" onClick={handleDelete}>
+
+            <Button
+              style={{ cursor: "pointer", minWidth: "125px" }}
+              size="3"
+              variant="soft"
+              color="red"
+              disabled={isPending}
+              onClick={() => setDeleteConfirmationModalOpen(true)}
+            >
               <TrashIcon width="18" height="18" />
-              Удалить
+              {isPending ? <Spinner size="3" /> : "Удалить"}
             </Button>
           </ButtonGroup>
         </HeaderSection>
@@ -139,40 +165,40 @@ const ProfessionalServiceDetailClient: React.FC<
             <Image src={images[0].url} alt={images[0].originalName} fill />
           ) : (
             <ImageCarouselContainer>
-            <CarouselSwiper
-              modules={[Autoplay, Navigation, Pagination]}
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
-              navigation
-              pagination={{ clickable: true }}
-              spaceBetween={10}
-              slidesPerView={1}
-              breakpoints={{
-                640: {
-                  slidesPerView: 1,
-                },
-                768: {
-                  slidesPerView: 2,
-                },
-                1024: {
-                  slidesPerView: 2,
-                },
-              }}
-            >
-              {images.map((image, index) => (
-                <SwiperSlide key={image.uniqueName}>
-                  <ImageWrapper onClick={() => handleImageClick(index)}>
-                    <Image
-                      src={image.url}
-                      alt={image.originalName}
-                      fill
-                      style={{ objectFit: "cover" }}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
-                    />
-                  </ImageWrapper>
-                </SwiperSlide>
-              ))}
-            </CarouselSwiper>
-          </ImageCarouselContainer>
+              <CarouselSwiper
+                modules={[Autoplay, Navigation, Pagination]}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                navigation
+                pagination={{ clickable: true }}
+                spaceBetween={10}
+                slidesPerView={1}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 1,
+                  },
+                  768: {
+                    slidesPerView: 1,
+                  },
+                  1024: {
+                    slidesPerView: 1,
+                  },
+                }}
+              >
+                {images.map((image, index) => (
+                  <SwiperSlide key={image.uniqueName}>
+                    <ImageWrapper onClick={() => handleImageClick(index)}>
+                      <Image
+                        src={image.url}
+                        alt={image.originalName}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+                      />
+                    </ImageWrapper>
+                  </SwiperSlide>
+                ))}
+              </CarouselSwiper>
+            </ImageCarouselContainer>
           )}
         </ImageSection>
 
@@ -248,6 +274,17 @@ const ProfessionalServiceDetailClient: React.FC<
         open={modalOpen}
         onOpenChange={setModalOpen}
         onNavigate={setSelectedImageIndex}
+      />
+      <ErrorModal
+        open={errorModalOpen}
+        onOpenChange={handleModalClose}
+        errorMessage={formState?.error}
+      />
+      <DeleteConfirmationModalWithServerAction
+        open={deleteConfirmationModalOpen}
+        onOpenChange={setDeleteConfirmationModalOpen}
+        onConfirm={formAction}
+        isPending={isPending}
       />
     </PageContainer>
   );

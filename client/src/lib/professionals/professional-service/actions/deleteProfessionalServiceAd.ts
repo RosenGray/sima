@@ -8,6 +8,7 @@ import {
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
+import { revalidatePath } from "next/cache";
 
 export async function deleteProfessionalServiceAd(
   professionalServicePublicId: string
@@ -86,6 +87,7 @@ export async function deleteProfessionalServiceAdWithRedirect(
   const result = await deleteProfessionalServiceAd(professionalServicePublicId);
 
   if (result.success) {
+    revalidatePath("/professional-service");
     redirect("/professional-service");
   }
 

@@ -56,7 +56,8 @@ export const ContentGrid = styled(Grid)`
 export const ImageSection = styled(Section)`
   padding: 0;
   width: 100%;
-  height: 400px;
+  min-height: 200px;
+  height: 100%;
   position: relative;
 `;
 
