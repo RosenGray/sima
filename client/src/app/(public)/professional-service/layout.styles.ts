@@ -1,4 +1,5 @@
 "use client";
+import { Box } from "@radix-ui/themes";
 import styled from "styled-components";
 
 export const ProfessionalServiceLayoutSection = styled.section`
@@ -8,9 +9,18 @@ export const ProfessionalServiceLayoutSection = styled.section`
     content: "";
     display: block;
     height: var(--header-height);
-    border: 2px solid red;
   }
   main {
     flex: 1;
+    padding: 0.5rem;
   }
+`;
+
+export const ProfessionalServiceLayoutStripe = styled(Box)<{ $src: string }>` 
+  height: 270px;
+  position: relative;
+  background-image: url(${({ $src }) => $src});
+  background-size: cover;
+  background-position: 0px 35%;
+  background-repeat: no-repeat;
 `;

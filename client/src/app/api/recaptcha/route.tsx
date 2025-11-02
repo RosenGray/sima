@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   const data = await req.json();
   const { token } = data;
   const secretKey: string | undefined = process.env.RECAPTCHA_SECRET_KEY;
-  console.log(secretKey);
+
 
   if (!token) {
     return NextResponse.json({ message: "Token not found" }, { status: 400 });

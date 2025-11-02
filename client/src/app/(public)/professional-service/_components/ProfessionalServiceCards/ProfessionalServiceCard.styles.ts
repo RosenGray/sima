@@ -14,6 +14,7 @@ export const ServiceCardBox = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: inherit;
 `;
 export const ServiceCard = styled(Card)`
   height: 100%;
@@ -21,6 +22,11 @@ export const ServiceCard = styled(Card)`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  box-shadow: inset var(--shadow-4);
+    --backdrop-filter-panel: none;
+    --base-card-surface-box-shadow: none;
+    --card-background-color: #1b1d1eb3;
+
 `;
 
 export const ServiceCardImages = styled(Flex)`

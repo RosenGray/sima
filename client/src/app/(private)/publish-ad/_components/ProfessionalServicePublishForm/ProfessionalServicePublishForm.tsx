@@ -36,6 +36,7 @@ import { ExistingImageItem } from "@/app/api/files/create/route";
 import { FormMode } from "@/lib/professionals/professional-service/types";
 import { editProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
 import Loader from "@/components/Loader";
+import GoogleReCAPTCHA from "@/components/GoogleReCAPTCHA/GoogleReCAPTCHA";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -334,15 +335,15 @@ const ProfessionalServicePublishForm: FC<
                 disabled={isPending}
               />
 
-              <SubmitButton
+              {/* <SubmitButton
                 pending={isPending}
                 disabled={acceptTerms.value !== "on"}
                 text="Добавить объявление"
-              />
-              {/* <GoogleReCAPTCHA
+              /> */}
+              <GoogleReCAPTCHA
               submitButtonText="Добавить объявление"
               isLoading={isPending}
-            /> */}
+            />
             </Flex>
           </Card>
         </Box>

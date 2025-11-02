@@ -20,11 +20,11 @@ import { Districts } from "@/lib/cities/types/cities.schema";
 interface ProfessionalServiceCardProps {
   service: SerilizeProfessionalService;
 }
-
+//
 const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   service,
 }) => {
-  const { images, publicId, district, city } = service;
+  const { images, publicId, district, city, description } = service;
 
   return (
     <ServiceCardBox>
@@ -47,7 +47,7 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
               modules={[Autoplay]}
               autoplay={true}
               spaceBetween={0}
-              slidesPerView={2}
+              slidesPerView={1}
               // onSlideChange={() => console.log("slide change")}
               // onSwiper={(swiper) => console.log(swiper)}
             >
@@ -59,6 +59,7 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
                       alt={image.originalName}
                       fill
                       style={{ objectFit: "cover" }}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
                     />
                   </ServiceCardImageContainer>
                 </ServiceCardSwiperSlide>
@@ -71,30 +72,9 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
             style={{ display: "block", height: "100%" }}
             as="p"
             color="gray"
-            weight="bold"
+  
           >
-            loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos. loremp ipsum dolor sit amet consectetur adipisicing elit.
-            Quisquam, quos. loremp ipsum dolor sit amet consectetur adipisicing
-            elit. Quisquam, quos. loremp ipsum dolor sit amet consectetur
-            adipisicing elit. Quisquam, quos. loremp ipsum dolor sit amet
-            consectetur adipisicing elit. Quisquam, quos. loremp ipsum dolor sit
-            amet consectetur adipisicing elit. Quisquam, quos. loremp ipsum
-            dolor sit amet consectetur adipisicing elit. Quisquam, quos. loremp
-            ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-            loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos. loremp ipsum dolor sit amet consectetur adipisicing elit.
-            Quisquam, quos. loremp ipsum dolor sit amet consectetur adipisicing
-            elit. Quisquam, quos. loremp ipsum dolor sit amet consectetur
-            adipisicing elit. Quisquam, quos. loremp ipsum dolor sit amet
-            consectetur adipisicing elit. Quisquam, quos. loremp ipsum dolor sit
-            amet consectetur adipisicing elit. Quisquam, quos. loremp ipsum
-            dolor sit amet consectetur adipisicing elit. Quisquam, quos. loremp
-            ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-            loremp ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos. loremp ipsum dolor sit amet consectetur adipisicing elit.
-            Quisquam, quos. loremp ipsum dolor sit amet consectetur adipisicing
-            elit. Quisquam, quos. vladi vladi
+            {description}
           </Text>
         </ServiceCardFooter>
       </ServiceCard>

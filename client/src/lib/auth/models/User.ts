@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import { PasswordManager } from "../services/PasswordManager";
 
-
 export interface IUser {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
   resetToken?: string;
   resetTokenExpiresAt?: Date;
   emailVerificationToken?: string;
@@ -34,7 +34,13 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
+    },
+    googleId: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
     },
     resetToken: {
       type: String,
@@ -76,13 +82,12 @@ const userSchema = new mongoose.Schema<IUser>(
 );
 
 userSchema.pre("save", async function (done) {
-  if (this.isModified("password")) {
-    const hashed = await PasswordManager.toHash(this.get("password"));
+  if (this.isModified("password") && this.get("password")) {
+    const hashed = await PasswordManager.toHash(this.get("password") as string);
     this.set("password", hashed);
   }
   done();
 });
 
-export const User = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
-
-
+export const User =
+  mongoose.models.User || mongoose.model<IUser>("User", userSchema);

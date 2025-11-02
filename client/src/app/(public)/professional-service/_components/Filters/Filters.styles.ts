@@ -20,10 +20,11 @@ export const FiltersContainer = styled(Box)`
   margin: 0 auto;
   padding: 20px 24px;
   background: var(--accent-1);
-  border: 1px solid var(--gray-6);
+
   border-radius: var(--radius-3);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  position: relative;
 
   /* min-height: 130px; */
 
@@ -44,6 +45,8 @@ export const DesktopFiltersWrapper = styled.div`
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
+
+
 
   @media (max-width: ${breakpoints.sm - 1}px) {
     display: none;

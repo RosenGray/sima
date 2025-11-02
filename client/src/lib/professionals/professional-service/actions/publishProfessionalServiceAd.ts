@@ -66,7 +66,6 @@ export async function publishProfessionalServiceAd(
     await professionalService.save();
     // Return success response with uploaded file data
   } catch (error) {
-    console.log(error);
     if (error instanceof Error) {
       return result.reply({
         formErrors: ["Неизвестная ошибка"],

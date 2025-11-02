@@ -41,6 +41,7 @@ export default function NavMobileItem({
           {subItems.map((subItem) => (
             <NavMobileSubItem
               key={subItem.label}
+              href={subItem.href}
               onClick={() => onSubItemClick(subItem.href)}
             >
               {subItem.label}

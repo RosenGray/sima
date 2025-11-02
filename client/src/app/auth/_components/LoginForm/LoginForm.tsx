@@ -16,6 +16,7 @@ import { useOnTogglePasswordView } from "@/lib/auth/hooks/useOnTogglePasswordVie
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { FormCard } from "@/components/Form/FormCard/FormCard.styles";
+import { GoogleSignInButton } from "@/components/buttons/GoogleSignInButton/GoogleSignInButton";
 
 const LoginForm = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
@@ -110,6 +111,17 @@ const LoginForm = () => {
                 </Text>
               </Flex>
               <SubmitButton pending={isPending} />
+              
+              {/* Divider */}
+              <Flex align="center" gap="3" my="2">
+                <Box style={{ flex: 1, height: "1px", backgroundColor: "var(--gray-6)" }} />
+                <Text size="2" color="gray">или</Text>
+                <Box style={{ flex: 1, height: "1px", backgroundColor: "var(--gray-6)" }} />
+              </Flex>
+              
+              {/* Google Sign In */}
+              <GoogleSignInButton disabled={isPending} />
+              
               <Text weight="bold" mt="3" >
                 <Link
                   className={isPending ? "disabled-link" : ""}

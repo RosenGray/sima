@@ -7,6 +7,7 @@ import { styles } from "@/components/Form/SelectSingle/SelectSingle.styles";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { RADIX_THEME_APP_ID } from "@/config/client";
 
+
 interface Option {
   value: string;
   label: string;

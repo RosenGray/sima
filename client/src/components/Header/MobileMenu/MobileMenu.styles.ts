@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Link from 'next/link';
 
 export const MobileMenuOverlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;
@@ -89,12 +90,14 @@ export const NavMobileItemSubMenu = styled.div`
   animation: slideDown 0.2s ease-out;
 `;
 
-export const NavMobileSubItem = styled.div`
+export const NavMobileSubItem = styled(Link)`
+  display: block;
   padding: 0.5rem;
   cursor: pointer;
   color: var(--gray-11);
   border-radius: var(--radius-2);
   transition: all 0.2s ease;
+  text-decoration: none;
   
   &:hover {
     background-color: var(--gray-3);
