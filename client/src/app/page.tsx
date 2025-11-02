@@ -33,7 +33,7 @@ export default async function Home() {
         <Box >
           <Flex direction="column" gap="6" align="center">
             <Heading size="9" weight="bold">
-              Hello World2
+              Hello World4
             </Heading>
             
             <Text size="6" color="gray">
