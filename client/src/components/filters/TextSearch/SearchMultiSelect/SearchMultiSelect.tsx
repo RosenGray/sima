@@ -9,6 +9,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { RADIX_THEME_APP_ID } from "@/config/client";
 import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
+import CustomMenu from "./CustomMenu";
+
 
 
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
@@ -23,6 +25,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const pathname = usePathname();
   const { replace } = useRouter();
   const id = useId();
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName); // Get ALL values, not just first
   const selectedOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
@@ -87,6 +90,14 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     return selectedCount >= maxSelectedOptions;
   };
 
+  useEffect(() => {
+
+
+    return () => {
+      console.log("clean up");
+    };
+  }, []);
+
   return (
     <Box>
       {label && (
@@ -106,6 +117,9 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         isMulti
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
+        menuIsOpen={menuIsOpen}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        // onMenuClose={() => setMenuIsOpen(false)}
         // react-select calls this function for each option and passes the result
         // as `isDisabled` prop to the custom Option component (OptionWithCheckbox)
         isOptionDisabled={isOptionDisabled}
@@ -114,6 +128,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         components={{
           Option: OptionWithCheckbox,
           ValueContainer: ValueContainer,
+          Menu: CustomMenu,
         }}
         onChange={(newValue) => {
           handleSearch(newValue);
