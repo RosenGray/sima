@@ -1,6 +1,5 @@
 import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
 
-
 export const mapServiceCategoriesToSelectOptions = (
   data: ServiceCategoryMapping
 ) => {
@@ -30,3 +29,24 @@ export const mapServiceSubCategoriesToSelectOptions = (
   }));
 };
 
+export const mapServiceSubCategoriesToSelectOptionsByCategoryIds = (
+  data: ServiceCategoryMapping,
+  serviceCategoryIds?: string[] | null
+) => {
+  if (!serviceCategoryIds) {
+    return [];
+  }
+  const subCategories = serviceCategoryIds.flatMap((categoryId) => {
+    return data[categoryId].subCategories;
+  });
+  return subCategories
+    .sort((a, b) => {
+      if (a.key === "Other") return 1;
+      if (b.key === "Other") return -1;
+      return 0;
+    })
+    .map((subCategory) => ({
+      value: subCategory.id,
+      label: subCategory.russianDisplayName,
+    }));
+};

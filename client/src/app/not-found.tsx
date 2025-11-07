@@ -1,14 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import {
-
-  Heading,
-  Text,
-  Button,
-
-  Flex,
-
-} from "@radix-ui/themes";
+import { Heading, Text, Button, Flex } from "@radix-ui/themes";
 // import GoBackButton from "@/components/buttons/GoBackButton/GoBackButton";
 import { HomeIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import {

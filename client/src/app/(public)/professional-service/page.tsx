@@ -8,23 +8,30 @@ import Loading from "./loading";
 interface ProfessionalsPageProps {
   searchParams?: Promise<{
     description?: string;
-    categoryId?: string;
-    city?: string;
-    subCategoryId?: string;
-    district?: string;
+    categoryId?: string | string[];
+    city?: string | string[];
+    subCategoryId?: string | string[];
+    district?: string | string[];
     page?: string;
   }>;
 }
 
 const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
-  const searchParams = await props.searchParams;
-  const filters = {
-    description: searchParams?.description,
-    categoryId: searchParams?.categoryId,
-    city: searchParams?.city,
-    subCategoryId: searchParams?.subCategoryId,
-    district: searchParams?.district,
-  };
+  const searchParams = (await props.searchParams) || {};
+
+  const filters = Object.keys(searchParams)
+    .filter((key) => key !== "page")
+    .reduce((acc, k) => {
+      const searchParamValue = searchParams[k as keyof typeof searchParams];
+      if (!searchParamValue) return acc;
+      if (Array.isArray(searchParamValue)) {
+        acc[k] = searchParamValue;
+      } else {
+        acc[k] = [searchParamValue];
+      }
+      return acc;
+    }, {} as Record<string, string[]>);
+
   const currentPage = Number(searchParams?.page) || 1;
 
   // Create a unique key based on search params to force re-render on filter change
@@ -36,7 +43,10 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
         <Filters />
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <ProfessionalServiceContent filters={filters} currentPage={currentPage} />
+        <ProfessionalServiceContent
+          filters={filters}
+          currentPage={currentPage}
+        />
       </Suspense>
     </ProfessionalsPageContainer>
   );

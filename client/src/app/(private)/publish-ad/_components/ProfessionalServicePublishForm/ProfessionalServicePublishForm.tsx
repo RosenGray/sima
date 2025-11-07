@@ -335,15 +335,15 @@ const ProfessionalServicePublishForm: FC<
                 disabled={isPending}
               />
 
-              {/* <SubmitButton
+              <SubmitButton
                 pending={isPending}
                 disabled={acceptTerms.value !== "on"}
                 text="Добавить объявление"
-              /> */}
-              <GoogleReCAPTCHA
+              />
+              {/* <GoogleReCAPTCHA
               submitButtonText="Добавить объявление"
               isLoading={isPending}
-            />
+            /> */}
             </Flex>
           </Card>
         </Box>

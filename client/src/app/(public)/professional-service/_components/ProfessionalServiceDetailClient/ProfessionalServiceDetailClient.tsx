@@ -62,7 +62,8 @@ const ProfessionalServiceDetailClient: React.FC<
   console.log(formState);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] = useState(false);
+  const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
+    useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
@@ -162,7 +163,12 @@ const ProfessionalServiceDetailClient: React.FC<
         {/* Image Gallery Section */}
         <ImageSection>
           {images.length === 1 ? (
-            <Image src={images[0].url} alt={images[0].originalName} fill />
+            <Image
+              src={images[0].url}
+              alt={images[0].originalName}
+              fill
+              style={{ objectFit: "cover" }}
+            />
           ) : (
             <ImageCarouselContainer>
               <CarouselSwiper
@@ -237,7 +243,7 @@ const ProfessionalServiceDetailClient: React.FC<
 
             <ContactItem>
               <EnvelopeClosedIcon width="18" height="18" />
-              <Text size="3">{email}</Text>
+              <Text size="3">*** ***********</Text>
             </ContactItem>
 
             {isAuthenticated ? (

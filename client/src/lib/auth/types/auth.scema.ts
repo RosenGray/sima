@@ -47,6 +47,12 @@ export const LoginSchema = z.object({
     .min(8, { message: "Пароль должен быть не менее 8 символов" }),
 });
 
+export enum UserRole {
+  None = 1,
+  User,
+  Admin,
+}
+
 export const SerializedUserSchema = z.object({
   id: z.string(),
   email: z.string(),
@@ -54,6 +60,7 @@ export const SerializedUserSchema = z.object({
   lastName: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  role: z.nativeEnum(UserRole),
   hasPrivateProfessionalPage: z.boolean().optional(),
 });
 

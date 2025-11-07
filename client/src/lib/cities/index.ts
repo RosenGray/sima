@@ -394,6 +394,15 @@ export const getCitiesToSelectOptions = (districtId: Districts) => {
   }));
 };
 
+export const getCitiesToSelectOptionsByDistrictIds = (districtIds: Districts[]) => {
+  return districtIds.flatMap((districtId) => {
+    return israelLocations[districtId].cities.map((city) => ({
+      value: city.id,
+      label: city.nameRussian,
+    }));
+  });
+};
+
 
 // create a helper function to get the city name by id
 export const getCityById = (id: string, districtId: Districts) => {

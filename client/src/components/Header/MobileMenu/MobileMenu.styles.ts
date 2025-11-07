@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import Link from 'next/link';
+import { Button } from '@radix-ui/themes';
 
 export const MobileMenuOverlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;
@@ -56,6 +57,33 @@ export const NavMobileItemContainer = styled.div`
   margin-bottom: 0.5rem;
 `;
 
+export const MobileMenuActionsSection = styled.div`
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-6);
+`;
+
+export const MobilePublishAdButton = styled(Button)`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-3);
+  cursor: pointer;
+  padding: 0.75rem;
+  
+  &:hover {
+    background: var(--accent-10);
+  }
+`;
+
+export const NavigationItemsContainer = styled.nav`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+`;
+
 export const NavMobileItemHeader = styled.div<{ $isExpanded: boolean }>`
   display: flex;
   align-items: center;
@@ -72,6 +100,9 @@ export const NavMobileItemHeader = styled.div<{ $isExpanded: boolean }>`
 `;
 
 export const NavMobileItemTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: bold;
   font-size: 1rem;
   color: var(--accent-9);

@@ -5,7 +5,7 @@ export function LogoutButton() {
   return (
     <form action={logoutUser}>
       <Button style={{cursor: "pointer"}} type="submit" variant="surface" size="2">
-        Logout
+        Выйти
       </Button>
     </form>
   );

@@ -1,16 +1,15 @@
 "use client";
 import { FC, useMemo } from "react";
-import SearchSingleSelect from "@/components/filters/TextSearch/SearchSingleSelect/SearchSingleSelect";
+import SearchSingleSelect from "@/components/filters/TextSearch/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapServiceCategoriesToSelectOptions,
-  mapServiceSubCategoriesToSelectOptions,
+  mapServiceSubCategoriesToSelectOptionsByCategoryIds,
 } from "@/lib/service-categories/utils/professionals.utils";
 import {
-  getCitiesToSelectOptions,
+  getCitiesToSelectOptionsByDistrictIds,
   mapAreasToSelectOptions,
 } from "@/lib/cities";
-import { Districts } from "@/lib/cities/types/cities.schema";
 import { ServiceCategoryMapping } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import {
   Dialog,
@@ -33,6 +32,7 @@ import {
   ModalFooter,
   ClearFiltersButton,
 } from "./Filters.styles";
+import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface FiltersClientProps {
   mappedCategories: ServiceCategoryMapping;
@@ -43,8 +43,8 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
-  const selectedCategoryId = searchParams.get("categoryId");
-  const selectedDistrict = searchParams.get("district") as Districts | null;
+  const selectedCategoryIds = searchParams.getAll("categoryId");
+  const selectedDistricts = searchParams.getAll("district") as Districts[];
 
   // Count active filters
   const activeFiltersCount = useMemo(() => {
@@ -76,28 +76,51 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
   const subCategoryOptions = useMemo(
     () =>
-      mapServiceSubCategoriesToSelectOptions(
+      mapServiceSubCategoriesToSelectOptionsByCategoryIds(
         mappedCategories,
-        selectedCategoryId
+        selectedCategoryIds
       ),
-    [mappedCategories, selectedCategoryId]
+    [mappedCategories, selectedCategoryIds]
   );
 
   const citiesOptions = useMemo(
-    () => getCitiesToSelectOptions(selectedDistrict || Districts.Center),
-    [selectedDistrict]
+    () => getCitiesToSelectOptionsByDistrictIds(selectedDistricts),
+    [selectedDistricts]
   );
 
   const FiltersContent = () => (
     <>
-      <SearchSingleSelect paramName="categoryId" options={categoriesOptions} />
       <SearchSingleSelect
-        paramName="subCategoryId"
-        options={subCategoryOptions}
-        isDisabled={!selectedCategoryId}
+        displayName="категории"
+        placeholder="Выберите категорию"
+        paramName="categoryId"
+        options={categoriesOptions}
+        maxSelectedOptions={3}
       />
-      <SearchSingleSelect paramName="district" options={areasOptions} />
-      <SearchSingleSelect paramName="city" options={citiesOptions} />
+      <SearchSingleSelect
+        placeholder="Выберите подкатегорию"
+        paramName="subCategoryId"
+        displayName="подкатегории"
+        options={subCategoryOptions}
+        isDisabled={selectedCategoryIds.length === 0}
+        maxSelectedOptions={3}
+      />
+      <SearchSingleSelect
+        placeholder="Выберите район"
+        displayName="районы"
+        paramName="district"
+        options={areasOptions}
+        maxSelectedOptions={3}
+      />
+      <SearchSingleSelect
+        displayName="города"
+        placeholder="Выберите город"
+        paramName="city"
+        options={citiesOptions}
+        isDisabled={selectedDistricts.length === 0}
+        maxSelectedOptions={3}
+
+      />
     </>
   );
 
@@ -105,12 +128,11 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     <>
       {/* Desktop Filters */}
       <DesktopFiltersWrapper>
-      <MixerHorizontalIcon
+        <MixerHorizontalIcon
           style={{
             // position: "absolute",
             left: 5,
-            top:5,
-
+            top: 5,
           }}
           width="18"
           height="18"

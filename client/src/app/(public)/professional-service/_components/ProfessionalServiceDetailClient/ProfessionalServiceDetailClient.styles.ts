@@ -232,7 +232,9 @@ export const DescriptionBox = styled(Box)`
   background: var(--gray-2);
   border-radius: var(--radius-3);
   line-height: 1.6;
-
+  max-height: 200px;
+  overflow: hidden;
+  overflow-y: auto;
   
 
 
