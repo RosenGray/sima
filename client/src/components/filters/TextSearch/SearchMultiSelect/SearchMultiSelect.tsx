@@ -9,7 +9,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { RADIX_THEME_APP_ID } from "@/config/client";
 import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
-
+import CustomMenu from "./CustomMenu";
 
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
@@ -23,15 +23,22 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const pathname = usePathname();
   const { replace } = useRouter();
   const id = useId();
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName); // Get ALL values, not just first
-  const selectedOptions = options.filter((opt) =>
+  const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
+  const [selectedOptions, setSelectedOptions] = useState<
+  MultiValue<Option>
+>(paramSelectionOptions);
   const selectedCount = selectedOptions.length;
 
   const [menuPortalTarget, setMenuPortalTarget] = useState<
     HTMLElement | null | undefined
   >(undefined);
+
+  console.log("temporarySelection", paramSelectionOptions);
+  console.log("selectedOptions", selectedOptions);
 
   useEffect(() => {
     // Check if we're on mobile
@@ -74,6 +81,19 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     replace(`${pathname}?${params.toString()}`);
   };
 
+  const handleChange = (options: MultiValue<Option>) => {
+    let optionsToSet = options;
+    if (
+      maxSelectedOptions !== undefined &&
+      options &&
+      options.length > maxSelectedOptions
+    ) {
+      optionsToSet = options.slice(0, maxSelectedOptions);
+    }
+    setSelectedOptions(optionsToSet);
+  };
+
+
   // Disable options when maxSelectedOptions is reached (except already selected ones)
   const isOptionDisabled = (option: Option): boolean => {
     if (maxSelectedOptions === undefined) {
@@ -104,20 +124,29 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         options={options}
         styles={styles as StylesConfig<Option, true, GroupBase<Option>>}
         isMulti
+        isClearable={false}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
+        menuIsOpen={menuIsOpen}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        // onMenuClose={setMenuIsOpen}
         // react-select calls this function for each option and passes the result
         // as `isDisabled` prop to the custom Option component (OptionWithCheckbox)
         isOptionDisabled={isOptionDisabled}
-        {...({ displayName, maxSelectedOptions } as Partial<CustomSelectProps>)}
-        isClearable
+        {...({
+          displayName,
+          maxSelectedOptions,
+          paramSelectionOptions,
+          customMenuCloseHandler: () => setMenuIsOpen(false),
+          customMenuCheckHandler: handleSearch,
+        } as Partial<CustomSelectProps>)}
+
         components={{
           Option: OptionWithCheckbox,
           ValueContainer: ValueContainer,
+          Menu: CustomMenu,
         }}
-        onChange={(newValue) => {
-          handleSearch(newValue);
-        }}
+        onChange={handleChange}
       />
     </Box>
   );
