@@ -11,8 +11,6 @@ import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
 import CustomMenu from "./CustomMenu";
 
-
-
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
   paramName,
@@ -27,14 +25,20 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const id = useId();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName); // Get ALL values, not just first
-  const selectedOptions = options.filter((opt) =>
+  const temporarySelection = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
+  const [selectedOptions, setSelectedOptions] = useState<
+  MultiValue<Option>
+>(temporarySelection);
   const selectedCount = selectedOptions.length;
 
   const [menuPortalTarget, setMenuPortalTarget] = useState<
     HTMLElement | null | undefined
   >(undefined);
+
+  console.log("temporarySelection", temporarySelection);
+  console.log("selectedOptions", selectedOptions);
 
   useEffect(() => {
     // Check if we're on mobile
@@ -77,6 +81,19 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     replace(`${pathname}?${params.toString()}`);
   };
 
+  const handleChange = (options: MultiValue<Option>) => {
+    let optionsToSet = options;
+    if (
+      maxSelectedOptions !== undefined &&
+      options &&
+      options.length > maxSelectedOptions
+    ) {
+      optionsToSet = options.slice(0, maxSelectedOptions);
+    }
+    setSelectedOptions(optionsToSet);
+  };
+
+
   // Disable options when maxSelectedOptions is reached (except already selected ones)
   const isOptionDisabled = (option: Option): boolean => {
     if (maxSelectedOptions === undefined) {
@@ -89,14 +106,6 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // Disable all other options when max is reached
     return selectedCount >= maxSelectedOptions;
   };
-
-  useEffect(() => {
-
-
-    return () => {
-      console.log("clean up");
-    };
-  }, []);
 
   return (
     <Box>
@@ -119,20 +128,23 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         hideSelectedOptions={false}
         menuIsOpen={menuIsOpen}
         onMenuOpen={() => setMenuIsOpen(true)}
-        // onMenuClose={() => setMenuIsOpen(false)}
+        // onMenuClose={setMenuIsOpen}
         // react-select calls this function for each option and passes the result
         // as `isDisabled` prop to the custom Option component (OptionWithCheckbox)
         isOptionDisabled={isOptionDisabled}
-        {...({ displayName, maxSelectedOptions } as Partial<CustomSelectProps>)}
+        {...({
+          displayName,
+          maxSelectedOptions,
+          customMenuCloseHandler: () => setMenuIsOpen(false),
+          customMenuCheckHandler: handleSearch,
+        } as Partial<CustomSelectProps>)}
         isClearable
         components={{
           Option: OptionWithCheckbox,
           ValueContainer: ValueContainer,
           Menu: CustomMenu,
         }}
-        onChange={(newValue) => {
-          handleSearch(newValue);
-        }}
+        onChange={handleChange}
       />
     </Box>
   );

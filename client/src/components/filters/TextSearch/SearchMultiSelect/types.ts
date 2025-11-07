@@ -1,4 +1,4 @@
-import { Props } from "react-select";
+import { MultiValue, Props } from "react-select";
 
 export interface Option {
   value: string;
@@ -8,6 +8,8 @@ export interface Option {
 export interface CustomSelectProps {
   maxSelectedOptions?: number;
   displayName?: string;
+  customMenuCloseHandler?: () => void;
+  customMenuCheckHandler?: (options: MultiValue<Option>) => void;
 }
 
 export interface SearchMultiSelectProps
