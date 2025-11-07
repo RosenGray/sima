@@ -25,19 +25,19 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const id = useId();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName); // Get ALL values, not just first
-  const temporarySelection = options.filter((opt) =>
+  const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
   const [selectedOptions, setSelectedOptions] = useState<
   MultiValue<Option>
->(temporarySelection);
+>(paramSelectionOptions);
   const selectedCount = selectedOptions.length;
 
   const [menuPortalTarget, setMenuPortalTarget] = useState<
     HTMLElement | null | undefined
   >(undefined);
 
-  console.log("temporarySelection", temporarySelection);
+  console.log("temporarySelection", paramSelectionOptions);
   console.log("selectedOptions", selectedOptions);
 
   useEffect(() => {
@@ -124,6 +124,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         options={options}
         styles={styles as StylesConfig<Option, true, GroupBase<Option>>}
         isMulti
+        isClearable={false}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         menuIsOpen={menuIsOpen}
@@ -135,10 +136,11 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         {...({
           displayName,
           maxSelectedOptions,
+          paramSelectionOptions,
           customMenuCloseHandler: () => setMenuIsOpen(false),
           customMenuCheckHandler: handleSearch,
         } as Partial<CustomSelectProps>)}
-        isClearable
+
         components={{
           Option: OptionWithCheckbox,
           ValueContainer: ValueContainer,
