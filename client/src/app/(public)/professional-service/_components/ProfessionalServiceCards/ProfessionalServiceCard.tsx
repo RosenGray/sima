@@ -11,7 +11,7 @@ import {
   ServiceCardSwiper,
   ServiceCardSwiperSlide,
 } from "./ProfessionalServiceCard.styles";
-import { Text } from "@radix-ui/themes";
+import { Badge, Text } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { getCityById } from "@/lib/cities";
@@ -27,15 +27,12 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   const { images, publicId, district, city, description } = service;
 
   return (
-    <ServiceCardBox>
+    <ServiceCardBox id={publicId}>
       <ServiceCard variant="surface">
         <ServiceCardHeader>
-          <Text weight="bold">
-            {getCityById(city, district as Districts)?.nameRussian}
-          </Text>
-          <Text size="1" color="gray" weight="bold">
-            #{publicId}
-          </Text>
+          <Badge size="2" color="blue" variant="soft">
+          {getCityById(city, district as Districts)?.nameRussian}
+          </Badge>
         </ServiceCardHeader>
         <ServiceCardImages>
           {images.length === 1 ? (

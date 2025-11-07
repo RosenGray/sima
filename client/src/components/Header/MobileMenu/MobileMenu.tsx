@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { Flex } from '@radix-ui/themes';
-import { MobileMenuOverlay, MobileMenuContainer } from './MobileMenu.styles';
+import Link from 'next/link';
+import { Text } from '@radix-ui/themes';
+import { PlusCircledIcon } from '@radix-ui/react-icons';
+import { 
+  MobileMenuOverlay, 
+  MobileMenuContainer, 
+  NavigationItemsContainer,
+  MobileMenuActionsSection,
+  MobilePublishAdButton
+} from './MobileMenu.styles';
 import NavMobileItem from './NavMobileItem';
 
 interface NavigationItem {
@@ -49,7 +57,20 @@ export default function MobileMenu({ isOpen, navigationItems, onClose }: MobileM
 
       {/* Mobile Menu Container */}
       <MobileMenuContainer $isOpen={isOpen}>
-        <Flex direction="column" p="4">
+        {/* Publish Ad Section */}
+        <MobileMenuActionsSection>
+          <MobilePublishAdButton asChild variant="solid" size="3">
+            <Link href="/publish-ad" onClick={onClose}>
+              <PlusCircledIcon width="18" height="18" />
+              <Text size="3" weight="bold">
+                Разместить объявление
+              </Text>
+            </Link>
+          </MobilePublishAdButton>
+        </MobileMenuActionsSection>
+
+        {/* Navigation Items */}
+        <NavigationItemsContainer>
           {navigationItems.map((item) => (
             <NavMobileItem
               key={item.label}
@@ -60,7 +81,7 @@ export default function MobileMenu({ isOpen, navigationItems, onClose }: MobileM
               onSubItemClick={handleSubItemClick}
             />
           ))}
-        </Flex>
+        </NavigationItemsContainer>
       </MobileMenuContainer>
     </>
   );

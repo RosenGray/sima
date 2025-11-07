@@ -1,4 +1,5 @@
 import React from 'react';
+import { BackpackIcon } from '@radix-ui/react-icons';
 import {
   NavMobileItemContainer,
   NavMobileItemHeader,
@@ -31,7 +32,10 @@ export default function NavMobileItem({
     <NavMobileItemContainer>
       {/* Category Header - Clickable */}
       <NavMobileItemHeader $isExpanded={isExpanded} onClick={onToggle}>
-        <NavMobileItemTitle>{label}</NavMobileItemTitle>
+        <NavMobileItemTitle>
+          <BackpackIcon width="18" height="18" />
+          {label}
+        </NavMobileItemTitle>
         <NavMobileItemArrow $isExpanded={isExpanded}>▼</NavMobileItemArrow>
       </NavMobileItemHeader>
       

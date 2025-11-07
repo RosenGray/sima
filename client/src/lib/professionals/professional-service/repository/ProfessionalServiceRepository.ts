@@ -5,13 +5,11 @@ import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
 import sanitize from "mongo-sanitize";
 
-export interface SearchFilters {
-  textSearch?: string;
-  categoryId?: string;
-  subCategoryId?: string;
-  district?: string;
-  city?: string;
-  description?: string;
+export interface ProfessionalServiceSearchFilters {
+  categoryId?: string[];
+  subCategoryId?: string[];
+  district?: string[];
+  city?: string[];
 }
 
 interface PaginatedResponse {
@@ -32,7 +30,7 @@ class ProfessionalServiceRepository {
    * @returns Promise<PaginatedResponse> - Paginated response with data and metadata
    */
   async getAll(
-    searchFilters: SearchFilters = {},
+    searchFilters: ProfessionalServiceSearchFilters = {},
     currentPage: number = 1,
     pageSize: number = 10
   ): Promise<PaginatedResponse> {
@@ -41,28 +39,32 @@ class ProfessionalServiceRepository {
       console.log("searchFilters", searchFilters);
 
       // Sanitize all incoming filters to prevent NoSQL injection
-      const sanitizedFilters: SearchFilters = {
-        textSearch: sanitize(searchFilters.textSearch),
+      const sanitizedFilters: ProfessionalServiceSearchFilters = {
+        // textSearch: sanitize(searchFilters.textSearch),
         categoryId: sanitize(searchFilters.categoryId),
         subCategoryId: sanitize(searchFilters.subCategoryId),
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
-        description: sanitize(searchFilters.description),
+        // description: sanitize(searchFilters.description),
       };
 
       // Build search filter using MongoDB text index and structured filters
       const searchFilter: FilterQuery<typeof ProfessionalService> = {};
 
       // Add text search using MongoDB text index (fast and efficient)
-      if (sanitizedFilters.textSearch?.trim()) {
-        searchFilter.$text = { $search: sanitizedFilters.textSearch.trim() };
-      }
-
+      // if (sanitizedFilters.textSearch?.trim()) {
+      //   searchFilter.$text = { $search: sanitizedFilters.textSearch.trim() };
+      // }
+      const categoryIds = [
+        "6904c5eda5aa03f1f627c678",
+        "6904c5eda5aa03f1f627c684",
+      ];
       // Add category filter
       if (sanitizedFilters.categoryId) {
         // Validate ObjectId format before adding to filter
-        if (mongoose.Types.ObjectId.isValid(sanitizedFilters.categoryId)) {
-          searchFilter.category = sanitizedFilters.categoryId;
+        const isValidObjectId = sanitizedFilters.categoryId.every((id) => mongoose.Types.ObjectId.isValid(id));
+        if (isValidObjectId) {
+          searchFilter.category = { $in: categoryIds }; // sanitizedFilters.categoryId;
         } else {
           // Invalid ObjectId - return empty results by adding impossible filter
           searchFilter._id = new mongoose.Types.ObjectId();
@@ -72,31 +74,31 @@ class ProfessionalServiceRepository {
       // Add subcategory filter
       if (sanitizedFilters.subCategoryId) {
         // Validate ObjectId format before adding to filter
-        if (mongoose.Types.ObjectId.isValid(sanitizedFilters.subCategoryId)) {
+        const isValidObjectId = sanitizedFilters.subCategoryId.every((id) => mongoose.Types.ObjectId.isValid(id));
+        if (isValidObjectId) {
           searchFilter.subCategory = sanitizedFilters.subCategoryId;
         } else {
           // Invalid ObjectId - return empty results by adding impossible filter
           searchFilter._id = new mongoose.Types.ObjectId();
         }
       }
-
+      
       // Add district filter
-      if (sanitizedFilters.district?.trim()) {
-        searchFilter.district = sanitizedFilters.district.trim();
+      if (sanitizedFilters.district) {
+        searchFilter.district = { $in: sanitizedFilters.district };
       }
 
       // Add city filter
-      if (sanitizedFilters.city?.trim()) {
-        console.log("sanitizedFilters.city", sanitizedFilters.city);
-        searchFilter.city = sanitizedFilters.city.trim();
+      if (sanitizedFilters.city) {
+        searchFilter.city = { $in: sanitizedFilters.city };
       }
 
-      if (sanitizedFilters.description?.trim()) {
-        searchFilter.description = {
-          $regex: sanitizedFilters.description.trim(),
-          $options: "i",
-        };
-      }
+      // if (sanitizedFilters.description?.trim()) {
+      //   searchFilter.description = {
+      //     $regex: sanitizedFilters.description.trim(),
+      //     $options: "i",
+      //   };
+      // }
 
       // Calculate pagination
       const skip = (currentPage - 1) * pageSize;

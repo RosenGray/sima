@@ -5,10 +5,10 @@ import { User } from "@/lib/auth/models/User";
 import { jwtSignUser } from "@/lib/auth/utils/auth.utils";
 import { SIMA_AUTH_SESSION_CONFIG } from "@/lib/auth/config";
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
-const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
-const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
+const GOOGLE_CLIENT_ID="your-google-client-id-here";
+const GOOGLE_CLIENT_SECRET="your-google-client-secret-here";
+const GOOGLE_TOKEN_URL="your-random-secret-string-here";
+const GOOGLE_USERINFO_URL="http://localhost:3000";
 
 interface GoogleTokenResponse {
   access_token: string;

@@ -4,6 +4,7 @@ import {
   ProfessionalServiceLayoutStripe,
 } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
+import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
 
 export const metadata: Metadata = {
   title: "Профессиональные услуги",
@@ -20,7 +21,7 @@ export default async function RootLayout({
   return (
     // <ProfessionalServiceProvider data={{ professionalServices: [] }}>
     <ProfessionalServiceLayoutSection>
-      {/* <Header /> */}
+      <SimpleHeader />
       <ProfessionalServiceLayoutStripe
         $src={filePath}
       />

@@ -8,15 +8,15 @@ export const HeaderContainer = styled.header`
   right: 0;
   height: 4rem;
   padding:0 1em;
-  background: var(--color-background);
+  background: var(--accent-1);
   border-bottom: 1px solid var(--gray-6);
   z-index: 1000;
   backdrop-filter: blur(10px);
   min-height: var(--header-height);
   max-height: var(--header-height);
-  @supports (backdrop-filter: blur(10px)) {
+  /* @supports (backdrop-filter: blur(10px)) {
     background: var(--color-background-alpha);
-  }
+  } */
 `;
 
 export const Logo = styled.div`
@@ -169,3 +169,18 @@ export const LoginButton = styled(Button)`
   }
 `;
 
+export const PublishAdButton = styled(Button)`
+  border-radius: var(--radius-2);
+  cursor: pointer;
+  display: none;
+  
+  @media (min-width: 768px) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  &:hover {
+    background: var(--accent-10);
+  }
+`;

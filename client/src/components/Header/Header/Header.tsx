@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import {
   HeaderContainer,
   Logo,
@@ -14,11 +15,12 @@ import {
   HamburgerIcon,
   ActionsContainer,
   LoginButton,
-} from "./Header.styles";
-import { MobileMenu } from "./Header/MobileMenu";
-import { ThemeToggleButton } from "./ThemeToggleButton/ThemeToggleButton";
+  PublishAdButton,
+} from "./../Header.styles";
+import { MobileMenu } from "../MobileMenu";
+import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import { LogoutButton } from "./buttons/LogoutButton/LogoutButton";
+import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 
 // const navigationItems = [
@@ -141,18 +143,26 @@ export default function Header() {
             ))}
           </Nav>
 
-          {/* Right-side Actions: Login + Theme Toggle */}
+          {/* Right-side Actions: Publish Ad + Login + Theme Toggle */}
           <ActionsContainer>
+            <PublishAdButton asChild variant="solid" size="2">
+              <Link href="/publish-ad">
+                <PlusCircledIcon width="16" height="16" />
+                <Text size="2" weight="medium">
+                  Разместить объявление
+                </Text>
+              </Link>
+            </PublishAdButton>
             {user ? (
               <LogoutButton />
             ) : (
-              <Link href="/auth/login">
-                <LoginButton variant="surface" size="2">
+              <LoginButton asChild variant="surface" size="2">
+                <Link href="/auth/login">
                   <Text size="2" weight="medium">
-                    Login
+                    Войти
                   </Text>
-                </LoginButton>
-              </Link>
+                </Link>
+              </LoginButton>
             )}
             <ThemeToggleButton />
           </ActionsContainer>

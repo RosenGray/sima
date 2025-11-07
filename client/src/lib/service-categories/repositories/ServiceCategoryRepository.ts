@@ -9,10 +9,11 @@ import { SerializeServiceCategory } from "../types/service-categories.types";
 // Internal function that performs the actual database operations
 async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
   try {
-  
     await connectDB();
     // First, check if there are any existing service categories
-    const existingCategories = await ServiceCategory.find({});
+    const existingCategories = await ServiceCategory.find({})
+      .collation({ locale: "ru" })
+      .sort('russianDisplayName');
 
     // If no categories exist, initialize with the JSON data
     if (existingCategories.length === 0) {
@@ -20,7 +21,7 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
         "No service categories found. Initializing with default data..."
       );
 
-      console.log('foooo',serviceCategoriesData)
+      console.log("foooo", serviceCategoriesData);
 
       // Transform the JSON data to match our model structure
       const categoriesToInsert = serviceCategoriesData.map(
@@ -48,8 +49,7 @@ async function _getAllCategories(): Promise<SerializeServiceCategory[]> {
       console.log(
         `Initialized ${insertedCategories.length} service categories`
       );
-
-      return insertedCategories;
+      return JSON.parse(JSON.stringify(insertedCategories));
     }
 
     console.log(
@@ -66,7 +66,7 @@ export class ServiceCategoryRepository {
   // Cached version of getAll - caches for 1 hour (3600 seconds)
   async getAll(): Promise<SerializeServiceCategory[]> {
     // In development, skip cache to always get fresh data
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       return _getAllCategories();
     }
 
@@ -85,7 +85,6 @@ export class ServiceCategoryRepository {
   // Get mapped categories with their subcategories
   async getMappedCategories(): Promise<ServiceCategoryMapping> {
     const serviceCategories = await this.getAll();
-    console.log('serviceCategories', serviceCategories);
     const subcategories = await serviceSubCategoryRepository.getAll();
 
     const mapping: ServiceCategoryMapping = {};

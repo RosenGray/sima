@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
+import { professionalServiceRepository, ProfessionalServiceSearchFilters } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { ProfessionalServiceCards } from "../ProfessionalServiceCards/ProfessionalServiceCards";
 import Pagination from "@/components/Pagination/Pagination";
 import {
@@ -10,13 +10,7 @@ import {
 import { Text } from "@radix-ui/themes";
 
 interface ProfessionalServiceContentProps {
-  filters: {
-    description?: string;
-    categoryId?: string;
-    city?: string;
-    subCategoryId?: string;
-    district?: string;
-  };
+  filters: ProfessionalServiceSearchFilters;
   currentPage: number;
 }
 

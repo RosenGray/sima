@@ -1,10 +1,10 @@
 "use client";
 import styled from "styled-components";
 import { Box, Card, Flex } from "@radix-ui/themes";
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/autoplay';
+import "swiper/css";
+import "swiper/css/autoplay";
 
 export const ServiceCardBox = styled(Box)`
   width: 100%;
@@ -22,15 +22,13 @@ export const ServiceCard = styled(Card)`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+
   box-shadow: inset var(--shadow-4);
-    --backdrop-filter-panel: none;
-    --base-card-surface-box-shadow: none;
-    --card-background-color: #1b1d1eb3;
 
 `;
 
 export const ServiceCardImages = styled(Flex)`
-  flex:1;
+  flex: 1;
 `;
 
 export const ServiceCardImageContainer = styled(Box)`
@@ -41,17 +39,16 @@ export const ServiceCardImageContainer = styled(Box)`
 
 export const ServiceCardHeader = styled.header`
   width: 100%;
-  height: 30px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
 `;
 export const ServiceCardFooter = styled.footer`
   height: 100px;
   width: 100%;
 
-  padding: 5px 0;;
+  padding: 5px 0;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -63,5 +60,4 @@ export const ServiceCardSwiper = styled(Swiper)`
   width: 100%;
   height: 100%;
 `;
-export const ServiceCardSwiperSlide = styled(SwiperSlide)`
-`;
+export const ServiceCardSwiperSlide = styled(SwiperSlide)``;
