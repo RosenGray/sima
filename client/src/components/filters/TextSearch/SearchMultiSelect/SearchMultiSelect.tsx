@@ -5,7 +5,6 @@ import {
   Option,
   CustomSelectProps,
   SearchMultiSelectProps,
-  MultiSelectRef,
 } from "./types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
@@ -22,6 +21,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   options,
   displayName,
   maxSelectedOptions,
+  selectedOptions,
   setAllSelectedFilterOptions,
   ...rest
 }) => {
@@ -34,9 +34,9 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
-  const [selectedOptions, setSelectedOptions] = useState<MultiValue<Option>>(
-    paramSelectionOptions
-  );
+  // const [selectedOptions, setSelectedOptions] = useState<MultiValue<Option>>(
+  //   paramSelectionOptions
+  // );
   const selectedCount = selectedOptions.length;
 
   const [menuPortalTarget, setMenuPortalTarget] = useState<
@@ -101,9 +101,9 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     ) {
       optionsToSet = options.slice(0, maxSelectedOptions);
     }
-    setSelectedOptions(optionsToSet);
-    setAllSelectedFilterOptions(optionsToSet);
-  }, [maxSelectedOptions, setAllSelectedFilterOptions]);
+    // setSelectedOptions(optionsToSet);
+    setAllSelectedFilterOptions(paramName, optionsToSet);
+  }, [maxSelectedOptions, setAllSelectedFilterOptions, paramName]);
 
   // Disable options when maxSelectedOptions is reached (except already selected ones)
   const isOptionDisabled = (option: Option): boolean => {

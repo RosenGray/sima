@@ -1,4 +1,4 @@
-import { GroupBase, MultiValue, Props, SelectInstance } from "react-select";
+import { MultiValue, Props } from "react-select";
 
 export interface Option {
   value: string;
@@ -16,16 +16,16 @@ export interface CustomSelectProps {
 
 export interface SearchMultiSelectProps
   extends Omit<Props<Option, true>, "styles" | "classNames"> {
-  options: Option[];
-  setAllSelectedFilterOptions: (options: MultiValue<Option>) => void;
+  options: MultiValue<Option>;
+  selectedOptions: MultiValue<Option>;
+  setAllSelectedFilterOptions: (
+    paramName: string,
+    options: MultiValue<Option>
+  ) => void;
   maxSelectedOptions?: number;
   label?: string;
   paramName: string;
   displayName?: string;
 }
 
-export type MultiSelectRef = SelectInstance<
-  Option,
-  true,
-  GroupBase<Option>
-> | null;
+export type AllSelectedFilterOptionsMap = Map<string, MultiValue<Option>>;

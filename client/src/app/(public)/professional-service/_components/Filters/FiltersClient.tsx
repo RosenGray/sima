@@ -1,6 +1,6 @@
 "use client";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { produce } from "immer";
+import { enableMapSet, produce } from "immer";
 import SearchSingleSelect from "@/components/filters/TextSearch/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
@@ -35,7 +35,13 @@ import {
 } from "./Filters.styles";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { MultiValue } from "react-select";
-import { Option } from "@/components/filters/TextSearch/SearchMultiSelect/types";
+import {
+  AllSelectedFilterOptionsMap,
+  Option,
+} from "@/components/filters/TextSearch/SearchMultiSelect/types";
+
+enableMapSet();
+
 interface FiltersClientProps {
   mappedCategories: ServiceCategoryMapping;
 }
@@ -47,14 +53,19 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
   // const selectedCategoryIds = searchParams.getAll("categoryId");
   const selectedDistricts = searchParams.getAll("district") as Districts[];
-  const [allSelectedFilterOptions, setAllSelectedFilterOptions] = useState<
-    MultiValue<Option>
-  >([]);
-  const selectedCategoryIds = allSelectedFilterOptions
-    .filter((option) => option.fieldKey === "categoryId")
-    .map((option) => option.value);
-  console.log("selectedCategoryIds", selectedCategoryIds);
+  const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
+    useState<AllSelectedFilterOptionsMap>(
+      new Map([
+        ["categoryId", []],
+        ["subCategoryId", []],
+        ["district", []],
+        ["city", []],
+      ])
+    );
 
+  const selectedCategoryIds = allSelectedFilterOptions
+    .get("categoryId")!
+    .map((option) => option.value);
   console.log("selectedCategoryIds", selectedCategoryIds);
 
   // Count active filters
@@ -73,10 +84,11 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   };
 
   const handleSetAllSelectedFilterOptions = useCallback(
-    (options: MultiValue<Option>) => {
-      setAllSelectedFilterOptions((prevOptions) => {
-        return produce(prevOptions, (draft) => {
-          draft.push(...options);
+    (paramName: string, options: MultiValue<Option>) => {
+      setAllSelectedFilterOptions((prevOptionsMap) => {
+        return produce(prevOptionsMap, (draft) => {
+          draft.set(paramName, [...options]);
+          return draft;
         });
       });
     },
@@ -119,6 +131,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           paramName="categoryId"
           options={categoriesOptions}
           maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("categoryId")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
         <SearchSingleSelect
@@ -126,8 +139,9 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           paramName="subCategoryId"
           displayName="подкатегории"
           options={subCategoryOptions}
-          isDisabled={selectedCategoryIds.length === 0}
+          // isDisabled={selectedCategoryIds.length === 0}
           maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("subCategoryId")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
         <SearchSingleSelect
@@ -136,6 +150,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           paramName="district"
           options={areasOptions}
           maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("district")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
         <SearchSingleSelect
@@ -145,6 +160,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           options={citiesOptions}
           isDisabled={selectedDistricts.length === 0}
           maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("city")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
       </>
@@ -163,9 +179,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           width="18"
           height="18"
         />
-        <FiltersSection>
-          {renderFilters()}
-        </FiltersSection>
+        <FiltersSection>{renderFilters()}</FiltersSection>
         {/* {activeFiltersCount > 0 && ( */}
         <SubmitSearchFiltersButton
           variant="outline"
