@@ -1,9 +1,8 @@
-// import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
-// import Header from "@/components/Header";
 import type { Metadata } from "next";
 import { PublishAdLayoutSection } from "./layout.styles";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 import { PublishAdProvider } from "./_providers/PublishAdProvider";
+import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
 
 // Mark as dynamic because we fetch data from MongoDB
 export const dynamic = 'force-dynamic';
@@ -24,8 +23,7 @@ export default async function RootLayout({
   return (
     <PublishAdProvider data={{ mappedCategories }}>
       <PublishAdLayoutSection>
-        {/* <SimpleHeader /> */}
-        {/* <Header /> */}
+        <SimpleHeader />
         <main>{children}</main>
       </PublishAdLayoutSection>
     </PublishAdProvider>

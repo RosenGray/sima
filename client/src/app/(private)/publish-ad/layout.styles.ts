@@ -6,7 +6,6 @@ export const PublishAdLayoutSection = styled.section`
     content: "";
     display: block;
     height: var(--header-height);
-    border:2px solid red;
   }
 `;
 

@@ -10,7 +10,7 @@ import {
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Box, Card, Flex, Grid, Heading } from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading, Separator, Text } from "@radix-ui/themes";
 import { useActionState } from "react";
 import { usePublishAd } from "../../_providers/PublishAdProvider";
 import {
@@ -36,7 +36,12 @@ import { ExistingImageItem } from "@/app/api/files/create/route";
 import { FormMode } from "@/lib/professionals/professional-service/types";
 import { editProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
 import Loader from "@/components/Loader";
-import GoogleReCAPTCHA from "@/components/GoogleReCAPTCHA/GoogleReCAPTCHA";
+import {
+  DropzoneSurface,
+  FormShell,
+  HeroCard,
+  SectionCard,
+} from "./ProfessionalServicePublishForm.styles";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -199,154 +204,232 @@ const ProfessionalServicePublishForm: FC<
         action={formAction}
         {...getFormProps(form)}
       >
-        <Box>
-          <Card>
-            <Grid columns="2" gap="4" mb="4">
-              {/* category */}
-              <SelectSingle
-                label="Выберите доску"
-                field={category}
-                placeholder="Выберите доску"
-                options={categoriesOptions}
-                errors={category.errors}
-                isDisabled={isPending}
-                defaultValue={categoriesOptions[3]}
-              />
+        <FormShell px={{ initial: "4", sm: "6", md: "8" }} py={{ initial: "5", md: "7" }}>
+          <Flex
+            direction="column"
+            gap={{ initial: "5", md: "6" }}
+            align={{ initial: "stretch", md: "center" }}
+          >
+            <HeroCard variant="surface" size="4">
+              <Flex
+                direction={{ initial: "column", md: "row" }}
+                justify="between"
+            align={{ initial: "start", md: "center" }}
+                gap="4"
+              >
+                <Box>
+                  <Heading as="h1" size={{ initial: "6", md: "7" }}>
+                    Расскажите об услуге
+                  </Heading>
+                  <Text mt="2" size={{ initial: "3", md: "4" }} color="gray" highContrast>
+                    Поделитесь ключевыми деталями, добавьте фотографии и оставьте
+                    контакты — это займёт всего пару минут.
+                  </Text>
+                </Box>
 
-              {/* subCategory */}
-              <SelectSingle
-                label="Выберите подкатегорию"
-                field={subCategory}
-                placeholder="Выберите подкатегорию"
-                options={subCategoryOptions}
-                errors={subCategory.errors}
-                isDisabled={isPending}
-                defaultValue={subCategoryOptions[0]}
-              />
+              </Flex>
+            </HeroCard>
 
-              {/* area */}
-              <SelectSingle
-                label="Выберите район"
-                field={district}
-                placeholder="Выберите район"
-                options={areasOptions}
-                errors={district.errors}
-                isDisabled={isPending}
-              />
-              {/* city */}
+            <SectionCard variant="surface" size="4">
+              <Flex direction="column" gap={{ initial: "4", md: "5" }}>
+                <Box>
+                  <Heading as="h2" size="4">
+                    Основные параметры
+                  </Heading>
+                  <Text color="gray" size="2" mt="2">
+                    Уточните категорию и область публикации, чтобы клиенты нашли
+                    вас быстрее.
+                  </Text>
+                </Box>
+                <Grid
+                  columns={{ initial: "1", md: "2" }}
+                  gap={{ initial: "4", md: "5" }}
+                >
+                  <SelectSingle
+                    label="Выберите доску"
+                    field={category}
+                    placeholder="Выберите доску"
+                    options={categoriesOptions}
+                    errors={category.errors}
+                    isDisabled={isPending}
+                    defaultValue={categoriesOptions[3]}
+                  />
 
-              <SelectSingle
-                label="Выберите город"
-                field={city}
-                placeholder="Выберите город"
-                options={citiesOptions}
-                errors={city.errors}
-                isDisabled={isPending}
-                defaultValue={citiesOptions[0]}
-              />
-            </Grid>
-            {/* description */}
-            <TextAreaField
-              field={description}
-              label="Текст объявления:"
-              placeholder="Текст объявления:"
-              size="3"
-              defaultValue={description.initialValue}
-              dataIsValid={description.valid}
-              errors={description.errors}
-              rows={5}
-              mb="5px"
-              disabled={isPending}
-            />
+                  <SelectSingle
+                    label="Выберите подкатегорию"
+                    field={subCategory}
+                    placeholder="Выберите подкатегорию"
+                    options={subCategoryOptions}
+                    errors={subCategory.errors}
+                    isDisabled={isPending}
+                    defaultValue={subCategoryOptions[0]}
+                  />
 
-            <DropFilesInput
-              accept={{
-                "image/png": [],
-                "image/jpeg": [],
-                "image/jpg": [],
-                "image/webp": [],
-              }}
-              maxSize={MAX_FILE_SIZE}
-              maxFiles={MAX_FILES}
-              field={images}
-              errors={images.errors}
-              onFilesDrop={setSelectedFiles}
-              files={selectedFiles}
-              disabled={false}
-              existingFilesLength={
-                existingImages.filter((image) => !image.toBeDeleted).length
-              }
-            />
-            {(existingImages.length > 0 || selectedFiles.length > 0) && (
-              <Box mt="4" mb="4">
-                <ImagesPreviewer
-                  existingImages={existingImages}
-                  images={selectedFiles}
-                  setImages={setSelectedFiles}
-                  setExistingImages={setExistingImages}
-                  maxImages={MAX_FILES}
+                  <SelectSingle
+                    label="Выберите район"
+                    field={district}
+                    placeholder="Выберите район"
+                    options={areasOptions}
+                    errors={district.errors}
+                    isDisabled={isPending}
+                  />
+
+                  <SelectSingle
+                    label="Выберите город"
+                    field={city}
+                    placeholder="Выберите город"
+                    options={citiesOptions}
+                    errors={city.errors}
+                    isDisabled={isPending}
+                    defaultValue={citiesOptions[0]}
+                  />
+                </Grid>
+              </Flex>
+            </SectionCard>
+
+            <SectionCard variant="surface" size="4">
+              <Flex direction="column" gap={{ initial: "4", md: "5" }}>
+                <Box>
+                  <Heading as="h2" size="4">
+                    Описание объявления
+                  </Heading>
+                  <Text color="gray" size="2" mt="2">
+                    Подробности и уникальные особенности помогут выделиться в
+                    поиске.
+                  </Text>
+                </Box>
+                <TextAreaField
+                  field={description}
+                  label="Текст объявления:"
+                  placeholder="Текст объявления:"
+                  size="3"
+                  defaultValue={description.initialValue}
+                  dataIsValid={description.valid}
+                  errors={description.errors}
+                  rows={6}
+                  disabled={isPending}
                 />
-              </Box>
-            )}
-            <Box mt="4">
-              <Heading as="h3" size="4" mb="2">
-                Контактная информация
-              </Heading>
-              <Grid columns="2" gap="4">
-                <BasicFormField
-                  type="email"
-                  field={email}
-                  label="Email"
-                  // anotherLabel="*виден только администрации сайта и не отображается публично"
+              </Flex>
+            </SectionCard>
 
-                  placeholder="@ Адрес электронной почты"
-                  size="3"
-                  defaultValue={fields.email.initialValue}
-                  dataIsValid={email.valid}
-                  errors={email.errors}
-                  disabled={isPending}
-                >
-                  <EnvelopeClosedIcon height="16" width="16" />
-                </BasicFormField>
-                <PhoneFormField
-                  // areaCodeField={areaCode}
-                  label="Телефон"
-                  field={phoneNumber}
-                  errors={phoneNumber.errors}
-                  size="3"
-                  defaultValue={phoneNumber.initialValue}
-                  disabled={isPending}
-                >
-                  <MobileIcon height="16" width="16" />
-                </PhoneFormField>
-              </Grid>
-            </Box>
-            <Flex
-              mt="4"
-              direction="column"
-              gap="3"
-              justify="center"
-              align="center"
-            >
-              <Checkbox
-                field={acceptTerms}
-                label="Я согласен с условиями"
-                errors={acceptTerms.errors}
-                disabled={isPending}
-              />
+            <SectionCard variant="surface" size="4">
+              <Flex direction="column" gap={{ initial: "4", md: "5" }}>
+                <Box>
+                  <Heading as="h2" size="4">
+                    Фотографии
+                  </Heading>
+                  <Text color="gray" size="2" mt="2">
+                    Добавьте изображения, чтобы клиенты увидели качество ваших
+                    работ.
+                  </Text>
+                </Box>
+                <DropzoneSurface p={{ initial: "3", md: "4" }}>
+                  <DropFilesInput
+                    accept={{
+                      "image/png": [],
+                      "image/jpeg": [],
+                      "image/jpg": [],
+                      "image/webp": [],
+                    }}
+                    maxSize={MAX_FILE_SIZE}
+                    maxFiles={MAX_FILES}
+                    field={images}
+                    errors={images.errors}
+                    onFilesDrop={setSelectedFiles}
+                    files={selectedFiles}
+                    disabled={false}
+                    existingFilesLength={
+                      existingImages.filter((image) => !image.toBeDeleted).length
+                    }
+                  />
+                </DropzoneSurface>
+                {(existingImages.length > 0 || selectedFiles.length > 0) && (
+                  <Box>
+                    <ImagesPreviewer
+                      existingImages={existingImages}
+                      images={selectedFiles}
+                      setImages={setSelectedFiles}
+                      setExistingImages={setExistingImages}
+                      maxImages={MAX_FILES}
+                    />
+                  </Box>
+                )}
+              </Flex>
+            </SectionCard>
 
-              <SubmitButton
-                pending={isPending}
-                disabled={acceptTerms.value !== "on"}
-                text="Добавить объявление"
-              />
-              {/* <GoogleReCAPTCHA
-              submitButtonText="Добавить объявление"
-              isLoading={isPending}
-            /> */}
-            </Flex>
-          </Card>
-        </Box>
+            <SectionCard variant="surface" size="4">
+              <Flex
+                direction="column"
+                gap={{ initial: "4", md: "5" }}
+              >
+                <Box>
+                  <Heading as="h2" size="4">
+                    Контактные данные
+                  </Heading>
+                  <Text color="gray" size="2" mt="2">
+                    Эти данные будут использоваться для связи с вами и управления
+                    объявлением.
+                  </Text>
+                </Box>
+
+                <Grid
+                  columns={{ initial: "1", md: "2" }}
+                  gap={{ initial: "4", md: "5" }}
+                >
+                  <BasicFormField
+                    type="email"
+                    field={email}
+                    label="Email"
+                    placeholder="@ Адрес электронной почты"
+                    size="3"
+                    defaultValue={fields.email.initialValue}
+                    dataIsValid={email.valid}
+                    errors={email.errors}
+                    disabled={isPending}
+                  >
+                    <EnvelopeClosedIcon height="16" width="16" />
+                  </BasicFormField>
+                  <PhoneFormField
+                    label="Телефон"
+                    field={phoneNumber}
+                    errors={phoneNumber.errors}
+                    size="3"
+                    defaultValue={phoneNumber.initialValue}
+                    disabled={isPending}
+                  >
+                    <MobileIcon height="16" width="16" />
+                  </PhoneFormField>
+                </Grid>
+
+                <Separator size="4" />
+
+                <Flex
+                  direction={{ initial: "column", md: "row" }}
+                  align={{ initial: "stretch", md: "center" }}
+                  justify="between"
+                  gap={{ initial: "4", md: "6" }}
+                >
+                  <Checkbox
+                    field={acceptTerms}
+                    label="Я согласен с условиями"
+                    errors={acceptTerms.errors}
+                    disabled={isPending}
+                  />
+
+                  <SubmitButton
+                    pending={isPending}
+                    disabled={acceptTerms.value !== "on"}
+                    text="Добавить объявление"
+                  />
+                  {/* <GoogleReCAPTCHA
+                  submitButtonText="Добавить объявление"
+                  isLoading={isPending}
+                /> */}
+                </Flex>
+              </Flex>
+            </SectionCard>
+          </Flex>
+        </FormShell>
       </form>
       <ErrorModal
         open={errorModalOpen}
