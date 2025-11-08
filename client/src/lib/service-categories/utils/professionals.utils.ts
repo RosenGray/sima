@@ -12,6 +12,7 @@ export const mapServiceCategoriesToSelectOptions = (
     .map(([id, value]) => ({
       value: id,
       label: value.category.russianDisplayName,
+      fieldKey: 'categoryId'
     }));
 };
 
@@ -37,7 +38,7 @@ export const mapServiceSubCategoriesToSelectOptionsByCategoryIds = (
     return [];
   }
   const subCategories = serviceCategoryIds.flatMap((categoryId) => {
-    return data[categoryId].subCategories;
+    return data['bla'].subCategories;
   });
   return subCategories
     .sort((a, b) => {
@@ -48,5 +49,6 @@ export const mapServiceSubCategoriesToSelectOptionsByCategoryIds = (
     .map((subCategory) => ({
       value: subCategory.id,
       label: subCategory.russianDisplayName,
+      fieldKey: 'subCategoryId'
     }));
 };

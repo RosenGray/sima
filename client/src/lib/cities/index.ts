@@ -1,5 +1,5 @@
 import { District, Districts } from "@/lib/cities/types/cities.schema";
-
+import { Option } from "@/components/filters/TextSearch/SearchMultiSelect/types";
 export const israelLocations: Record<Districts, District> = {
   [Districts.South]: {
     id: Districts.South,
@@ -380,25 +380,28 @@ export const israelLocations: Record<Districts, District> = {
   },
 };
 
-export const mapAreasToSelectOptions = () => {
+export const mapAreasToSelectOptions = (): Option[] => {
   return Object.entries(israelLocations).map(([id, district]) => ({
     value: id,
     label: district.name,
+    fieldKey: 'district'
   }));
 };
 
-export const getCitiesToSelectOptions = (districtId: Districts) => {
+export const getCitiesToSelectOptions = (districtId: Districts): Option[] => {
   return israelLocations[districtId].cities.map((city) => ({
     value: city.id,
     label: city.nameRussian,
+    fieldKey: 'city'
   }));
 };
 
-export const getCitiesToSelectOptionsByDistrictIds = (districtIds: Districts[]) => {
+export const getCitiesToSelectOptionsByDistrictIds = (districtIds: Districts[]): Option[] => {
   return districtIds.flatMap((districtId) => {
     return israelLocations[districtId].cities.map((city) => ({
       value: city.id,
       label: city.nameRussian,
+      fieldKey: 'city'
     }));
   });
 };

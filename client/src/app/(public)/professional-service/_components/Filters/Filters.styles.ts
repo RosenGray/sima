@@ -53,7 +53,7 @@ export const DesktopFiltersWrapper = styled.div`
   }
 `;
 
-export const ClearFiltersButton = styled(Button)`
+export const SubmitSearchFiltersButton = styled(Button)`
   white-space: nowrap;
   
   @media (max-width: ${breakpoints.sm - 1}px) {

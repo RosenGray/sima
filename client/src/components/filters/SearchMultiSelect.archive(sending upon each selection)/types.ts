@@ -1,10 +1,8 @@
-import { RefObject } from "react";
-import { GroupBase, MultiValue, Props, SelectInstance } from "react-select";
+import { MultiValue, Props } from "react-select";
 
 export interface Option {
   value: string;
   label: string;
-  fieldKey?: string;
 }
 
 export interface CustomSelectProps {
@@ -18,11 +16,8 @@ export interface CustomSelectProps {
 export interface SearchMultiSelectProps
   extends Omit<Props<Option, true>, "styles" | "classNames"> {
   options: Option[];
-  selectedOptionsRef: RefObject<MultiValue<Option>>;
   maxSelectedOptions?: number;
   label?: string;
   paramName: string;
   displayName?: string;
 }
-
-export type MultiSelectRef = SelectInstance<Option, true, GroupBase<Option>> | null;

@@ -1,7 +1,7 @@
 "use client";
-import { FC, useId, useEffect, useState, useRef } from "react";
+import { FC, useId, useEffect, useState } from "react";
 import React from "react";
-import { Option, CustomSelectProps, SearchMultiSelectProps, MultiSelectRef } from "./types";
+import { Option, CustomSelectProps, SearchMultiSelectProps } from "./types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SearchMultiSelect.styles";
@@ -11,14 +11,12 @@ import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
 import CustomMenu from "./CustomMenu";
 
-
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
   paramName,
   options,
   displayName,
   maxSelectedOptions,
-  selectedOptionsRef,
   ...rest
 }) => {
   const searchParams = useSearchParams();
@@ -35,23 +33,14 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 >(paramSelectionOptions);
   const selectedCount = selectedOptions.length;
 
-
   const [menuPortalTarget, setMenuPortalTarget] = useState<
     HTMLElement | null | undefined
   >(undefined);
 
-  console.log("temporarySelection", paramSelectionOptions);
-  console.log("selectedOptions", selectedOptions);
-
-
-
-  // useClickOutsideTheComponent(selectRef.current?.menuListRef, () => {
-  //   setMenuIsOpen(false);
-  // });
 
   useEffect(() => {
     // Check if we're on mobile
-    const isMobile = window.innerWidth < 768
+    const isMobile = window.innerWidth < 768;
 
     // On desktop, use the main Radix theme container to use as portal target for proper z-index
     // On mobile, don't use portal (render inline) to avoid touch event issues
@@ -64,30 +53,30 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   }, []);
 
   const handleSearch = (options: MultiValue<Option>) => {
-    // const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams);
 
-    // params.set("page", "1");
+    params.set("page", "1");
 
-    // // Limit selection to maxSelectedOptions if specified
-    // let optionsToSet = options;
-    // if (
-    //   maxSelectedOptions !== undefined &&
-    //   options &&
-    //   options.length > maxSelectedOptions
-    // ) {
-    //   optionsToSet = options.slice(0, maxSelectedOptions);
-    // }
+    // Limit selection to maxSelectedOptions if specified
+    let optionsToSet = options;
+    if (
+      maxSelectedOptions !== undefined &&
+      options &&
+      options.length > maxSelectedOptions
+    ) {
+      optionsToSet = options.slice(0, maxSelectedOptions);
+    }
 
-    // if (optionsToSet && optionsToSet.length > 0) {
-    //   params.delete(paramName);
-    //   optionsToSet.forEach((opt) => {
-    //     params.append(paramName, opt.value);
-    //   });
-    // } else {
-    //   params.delete(paramName);
-    // }
+    if (optionsToSet && optionsToSet.length > 0) {
+      params.delete(paramName);
+      optionsToSet.forEach((opt) => {
+        params.append(paramName, opt.value);
+      });
+    } else {
+      params.delete(paramName);
+    }
 
-    // replace(`${pathname}?${params.toString()}`);
+    replace(`${pathname}?${params.toString()}`);
   };
 
   const handleChange = (options: MultiValue<Option>) => {
@@ -99,7 +88,6 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     ) {
       optionsToSet = options.slice(0, maxSelectedOptions);
     }
-    selectedOptionsRef.current = optionsToSet;
     setSelectedOptions(optionsToSet);
   };
 
@@ -116,7 +104,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // Disable all other options when max is reached
     return selectedCount >= maxSelectedOptions;
   };
-//useClickOutsideTheComponent
+
   return (
     <Box>
       {label && (
