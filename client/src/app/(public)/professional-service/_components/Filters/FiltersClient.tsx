@@ -64,9 +64,9 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   console.log("searchParams'", searchParams.size);
 
   const isSearcButtonDisabled = useMemo(() => {
-    return allSelectedFilterOptions
-      .values()
-      .every((options) => options.length === 0);
+    return Array.from(allSelectedFilterOptions.values()).every(
+      (options) => options.length === 0
+    );
   }, [allSelectedFilterOptions]);
 
   const selectedCategoryIds = allSelectedFilterOptions
@@ -125,6 +125,14 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
   // Clear filters and close modal (for mobile)
   const handleClearFiltersAndClose = () => {
+    setAllSelectedFilterOptions(
+      new Map([
+        ["categoryId", []],
+        ["subCategoryId", []],
+        ["district", []],
+        ["city", []],
+      ])
+    );
     router.push(pathname);
     closeModal();
   };
@@ -222,18 +230,8 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           <SubmitSearchFiltersButton
             variant="outline"
             color="gray"
-            disabled={searchParams.size === 0 }
-            onClick={() => {
-              setAllSelectedFilterOptions(
-                new Map([
-                  ["categoryId", []],
-                  ["subCategoryId", []],
-                  ["district", []],
-                  ["city", []],
-                ])
-              );
-              router.push(pathname);
-            }}
+            disabled={searchParams.size === 0}
+            onClick={handleClearFiltersAndClose}
             size="3"
           >
             очистить все фильтры
@@ -315,7 +313,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
           <ModalBody>
             <ModalFiltersSection>
-              {/* <FiltersContent /> */}
+              {renderFilters()}
             </ModalFiltersSection>
           </ModalBody>
 
@@ -342,13 +340,18 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
                     flex: activeFiltersCount > 0 ? 1 : undefined,
                     width: activeFiltersCount === 0 ? "100%" : undefined,
                   }}
-                  onClick={closeModal}
+                  onClick={() => {
+                    closeModal();
+                    handleSubmitAllFilters();
+                  }}
                   size={{
                     initial: "2",
-                    xs: "3",
+                    sm: "1",
                   }}
                 >
+                  <span style={{ whiteSpace: 'nowrap' }}>
                   Показать результаты
+                  </span>
                 </Button>
               </Flex>
             </Flex>
