@@ -1,7 +1,12 @@
 "use client";
 import { FC, useId, useEffect, useState, useRef } from "react";
 import React from "react";
-import { Option, CustomSelectProps, SearchMultiSelectProps, MultiSelectRef } from "./types";
+import {
+  Option,
+  CustomSelectProps,
+  SearchMultiSelectProps,
+  MultiSelectRef,
+} from "./types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SearchMultiSelect.styles";
@@ -11,14 +16,13 @@ import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
 import CustomMenu from "./CustomMenu";
 
-
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
   paramName,
   options,
   displayName,
   maxSelectedOptions,
-  selectedOptionsRef,
+  setAllSelectedFilterOptions,
   ...rest
 }) => {
   const searchParams = useSearchParams();
@@ -30,11 +34,10 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
-  const [selectedOptions, setSelectedOptions] = useState<
-  MultiValue<Option>
->(paramSelectionOptions);
+  const [selectedOptions, setSelectedOptions] = useState<MultiValue<Option>>(
+    paramSelectionOptions
+  );
   const selectedCount = selectedOptions.length;
-
 
   const [menuPortalTarget, setMenuPortalTarget] = useState<
     HTMLElement | null | undefined
@@ -43,15 +46,13 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   console.log("temporarySelection", paramSelectionOptions);
   console.log("selectedOptions", selectedOptions);
 
-
-
   // useClickOutsideTheComponent(selectRef.current?.menuListRef, () => {
   //   setMenuIsOpen(false);
   // });
 
   useEffect(() => {
     // Check if we're on mobile
-    const isMobile = window.innerWidth < 768
+    const isMobile = window.innerWidth < 768;
 
     // On desktop, use the main Radix theme container to use as portal target for proper z-index
     // On mobile, don't use portal (render inline) to avoid touch event issues
@@ -65,9 +66,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
   const handleSearch = (options: MultiValue<Option>) => {
     // const params = new URLSearchParams(searchParams);
-
     // params.set("page", "1");
-
     // // Limit selection to maxSelectedOptions if specified
     // let optionsToSet = options;
     // if (
@@ -77,7 +76,6 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // ) {
     //   optionsToSet = options.slice(0, maxSelectedOptions);
     // }
-
     // if (optionsToSet && optionsToSet.length > 0) {
     //   params.delete(paramName);
     //   optionsToSet.forEach((opt) => {
@@ -86,7 +84,6 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // } else {
     //   params.delete(paramName);
     // }
-
     // replace(`${pathname}?${params.toString()}`);
   };
 
@@ -99,10 +96,9 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     ) {
       optionsToSet = options.slice(0, maxSelectedOptions);
     }
-    selectedOptionsRef.current = optionsToSet;
     setSelectedOptions(optionsToSet);
+    setAllSelectedFilterOptions(optionsToSet);
   };
-
 
   // Disable options when maxSelectedOptions is reached (except already selected ones)
   const isOptionDisabled = (option: Option): boolean => {
@@ -116,7 +112,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // Disable all other options when max is reached
     return selectedCount >= maxSelectedOptions;
   };
-//useClickOutsideTheComponent
+  //useClickOutsideTheComponent
   return (
     <Box>
       {label && (
@@ -134,7 +130,6 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         options={options}
         styles={styles as StylesConfig<Option, true, GroupBase<Option>>}
         isMulti
-
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         menuIsOpen={menuIsOpen}
@@ -150,7 +145,6 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
           customMenuCloseHandler: () => setMenuIsOpen(false),
           customMenuCheckHandler: handleSearch,
         } as Partial<CustomSelectProps>)}
-
         components={{
           Option: OptionWithCheckbox,
           ValueContainer: ValueContainer,
@@ -162,4 +156,4 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   );
 };
 
-export default SearchMultiSelect;
+export default React.memo(SearchMultiSelect);

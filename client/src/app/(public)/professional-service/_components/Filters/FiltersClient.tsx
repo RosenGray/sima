@@ -1,5 +1,6 @@
 "use client";
-import { FC, useMemo, useRef } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
+import {produce} from "immer";
 import SearchSingleSelect from "@/components/filters/TextSearch/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
@@ -44,11 +45,17 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
-  const selectedCategoryIds = searchParams.getAll("categoryId");
+  // const selectedCategoryIds = searchParams.getAll("categoryId");
   const selectedDistricts = searchParams.getAll("district") as Districts[];
-  const selectedOptionsRef = useRef<MultiValue<Option>>([]);
+  const [allSelectedFilterOptions, setAllSelectedFilterOptions] = useState<
+    MultiValue<Option>
+  >([]);
+  const selectedCategoryIds = allSelectedFilterOptions
+    .filter((option) => option.fieldKey === "categoryId")
+    .map((option) => option.value);
+  console.log("selectedCategoryIds", selectedCategoryIds);
 
-  console.log('selectedCategoryIds',selectedCategoryIds)
+  console.log("selectedCategoryIds", selectedCategoryIds);
 
   // Count active filters
   const activeFiltersCount = useMemo(() => {
@@ -60,11 +67,18 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     return count;
   }, [searchParams]);
 
-
   const handleSubmitAllFilters = () => {
-    console.log('selectedOptionsRef.current', selectedOptionsRef.current)
+    console.log("allSelectedFilterOptions", allSelectedFilterOptions);
     // router.push(pathname);
   };
+
+  const handleSetAllSelectedFilterOptions = useCallback((options: MultiValue<Option>) => {
+    setAllSelectedFilterOptions((prevOptions) => {
+      return produce(prevOptions, (draft) => {
+        draft.push(...options);
+      });
+    });
+  }, []);
 
   // Clear filters and close modal (for mobile)
   const handleClearFiltersAndClose = () => {
@@ -101,7 +115,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         paramName="categoryId"
         options={categoriesOptions}
         maxSelectedOptions={3}
-        selectedOptionsRef={selectedOptionsRef}
+        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
       />
       <SearchSingleSelect
         placeholder="Выберите подкатегорию"
@@ -110,7 +124,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         options={subCategoryOptions}
         isDisabled={selectedCategoryIds.length === 0}
         maxSelectedOptions={3}
-        selectedOptionsRef={selectedOptionsRef}
+        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
       />
       <SearchSingleSelect
         placeholder="Выберите район"
@@ -118,7 +132,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         paramName="district"
         options={areasOptions}
         maxSelectedOptions={3}
-        selectedOptionsRef={selectedOptionsRef}
+        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
       />
       <SearchSingleSelect
         displayName="города"
@@ -127,7 +141,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         options={citiesOptions}
         isDisabled={selectedDistricts.length === 0}
         maxSelectedOptions={3}
-        selectedOptionsRef={selectedOptionsRef}
+        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
       />
     </>
   );
@@ -149,14 +163,14 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           <FiltersContent />
         </FiltersSection>
         {/* {activeFiltersCount > 0 && ( */}
-          <SubmitSearchFiltersButton
-            variant="outline"
-            color="gray"
-            onClick={handleSubmitAllFilters}
-            size="3"
-          >
-            Поиск
-          </SubmitSearchFiltersButton>
+        <SubmitSearchFiltersButton
+          variant="outline"
+          color="gray"
+          onClick={handleSubmitAllFilters}
+          size="3"
+        >
+          Поиск
+        </SubmitSearchFiltersButton>
         {/* )} */}
       </DesktopFiltersWrapper>
 

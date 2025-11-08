@@ -1,5 +1,5 @@
 import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
-
+import { Option } from "@/components/filters/TextSearch/SearchMultiSelect/types";
 export const mapServiceCategoriesToSelectOptions = (
   data: ServiceCategoryMapping
 ) => {
@@ -19,7 +19,7 @@ export const mapServiceCategoriesToSelectOptions = (
 export const mapServiceSubCategoriesToSelectOptions = (
   data: ServiceCategoryMapping,
   serviceCategoryId?: string | null
-) => {
+): Option[] => {
   if (!serviceCategoryId) {
     return [];
   }
@@ -33,12 +33,12 @@ export const mapServiceSubCategoriesToSelectOptions = (
 export const mapServiceSubCategoriesToSelectOptionsByCategoryIds = (
   data: ServiceCategoryMapping,
   serviceCategoryIds?: string[] | null
-) => {
+): Option[] => {
   if (!serviceCategoryIds) {
     return [];
   }
   const subCategories = serviceCategoryIds.flatMap((categoryId) => {
-    return data['bla'].subCategories;
+    return data[categoryId].subCategories;
   });
   return subCategories
     .sort((a, b) => {
