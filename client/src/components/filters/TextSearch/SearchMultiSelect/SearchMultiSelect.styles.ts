@@ -50,7 +50,7 @@ export const styles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
       : state.isFocused 
         ? 'var(--accent-5)' 
         : 'transparent',
-    color: state.isSelected ? 'var(--accent-contrast)' : 'var(--gray-12)',
+    color: 'var(--gray-12)',
     cursor: 'pointer',
     padding: '8px 12px',
     borderRadius: 'var(--radius-1)',

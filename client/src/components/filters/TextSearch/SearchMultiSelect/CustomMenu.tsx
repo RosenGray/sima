@@ -32,8 +32,9 @@ const CustomMenu = ({ children, ...props }: MenuProps<Option, true>) => {
       paramSelectionOptions.length > 0
     ) {
       customMenuCheckHandler?.([]);
-      customMenuCloseHandler?.();
+      // customMenuCloseHandler?.();
     }
+    customMenuCloseHandler?.();
   };
   return (
     <components.Menu {...props}>
@@ -55,14 +56,14 @@ const CustomMenu = ({ children, ...props }: MenuProps<Option, true>) => {
           onClick={onCheckHandler}
         >
           подтвердить
-          <CheckIcon />
+   
         </Button>
         <Button variant="surface" size={{
           initial: "1",
           md: "2",
         }} onClick={closeMenuHandler}>
-          закрыть
-          <Cross1Icon />
+            отменить выбор
+      
         </Button>
       </Flex>
     </components.Menu>

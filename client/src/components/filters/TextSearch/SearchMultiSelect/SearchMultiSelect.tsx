@@ -124,7 +124,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         options={options}
         styles={styles as StylesConfig<Option, true, GroupBase<Option>>}
         isMulti
-        isClearable={false}
+
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         menuIsOpen={menuIsOpen}
