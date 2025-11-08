@@ -1,5 +1,5 @@
 "use client";
-import { FC, useId, useEffect, useState, useRef } from "react";
+import { FC, useId, useEffect, useState, useRef, useCallback } from "react";
 import React from "react";
 import {
   Option,
@@ -49,7 +49,12 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   // useClickOutsideTheComponent(selectRef.current?.menuListRef, () => {
   //   setMenuIsOpen(false);
   // });
-
+  useEffect(() => {
+    console.log("mount");
+    return () => {
+      console.log("unmount");
+    };
+  }, []);
   useEffect(() => {
     // Check if we're on mobile
     const isMobile = window.innerWidth < 768;
@@ -87,7 +92,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleChange = (options: MultiValue<Option>) => {
+  const handleChange = useCallback((options: MultiValue<Option>) => {
     let optionsToSet = options;
     if (
       maxSelectedOptions !== undefined &&
@@ -98,7 +103,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     }
     setSelectedOptions(optionsToSet);
     setAllSelectedFilterOptions(optionsToSet);
-  };
+  }, [maxSelectedOptions, setAllSelectedFilterOptions]);
 
   // Disable options when maxSelectedOptions is reached (except already selected ones)
   const isOptionDisabled = (option: Option): boolean => {

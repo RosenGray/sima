@@ -1,6 +1,6 @@
 "use client";
-import { FC, useCallback, useMemo, useRef, useState } from "react";
-import {produce} from "immer";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { produce } from "immer";
 import SearchSingleSelect from "@/components/filters/TextSearch/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
@@ -72,13 +72,16 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     // router.push(pathname);
   };
 
-  const handleSetAllSelectedFilterOptions = useCallback((options: MultiValue<Option>) => {
-    setAllSelectedFilterOptions((prevOptions) => {
-      return produce(prevOptions, (draft) => {
-        draft.push(...options);
+  const handleSetAllSelectedFilterOptions = useCallback(
+    (options: MultiValue<Option>) => {
+      setAllSelectedFilterOptions((prevOptions) => {
+        return produce(prevOptions, (draft) => {
+          draft.push(...options);
+        });
       });
-    });
-  }, []);
+    },
+    []
+  );
 
   // Clear filters and close modal (for mobile)
   const handleClearFiltersAndClose = () => {
@@ -107,45 +110,46 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     [selectedDistricts]
   );
 
-  const FiltersContent = () => (
-    <>
-      <SearchSingleSelect
-        displayName="категории"
-        placeholder="Выберите категорию"
-        paramName="categoryId"
-        options={categoriesOptions}
-        maxSelectedOptions={3}
-        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-      />
-      <SearchSingleSelect
-        placeholder="Выберите подкатегорию"
-        paramName="subCategoryId"
-        displayName="подкатегории"
-        options={subCategoryOptions}
-        isDisabled={selectedCategoryIds.length === 0}
-        maxSelectedOptions={3}
-        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-      />
-      <SearchSingleSelect
-        placeholder="Выберите район"
-        displayName="районы"
-        paramName="district"
-        options={areasOptions}
-        maxSelectedOptions={3}
-        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-      />
-      <SearchSingleSelect
-        displayName="города"
-        placeholder="Выберите город"
-        paramName="city"
-        options={citiesOptions}
-        isDisabled={selectedDistricts.length === 0}
-        maxSelectedOptions={3}
-        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-      />
-    </>
-  );
-
+  const renderFilters = () => {
+    return (
+      <>
+        <SearchSingleSelect
+          displayName="категории"
+          placeholder="Выберите категорию"
+          paramName="categoryId"
+          options={categoriesOptions}
+          maxSelectedOptions={3}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        <SearchSingleSelect
+          placeholder="Выберите подкатегорию"
+          paramName="subCategoryId"
+          displayName="подкатегории"
+          options={subCategoryOptions}
+          isDisabled={selectedCategoryIds.length === 0}
+          maxSelectedOptions={3}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        <SearchSingleSelect
+          placeholder="Выберите район"
+          displayName="районы"
+          paramName="district"
+          options={areasOptions}
+          maxSelectedOptions={3}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        <SearchSingleSelect
+          displayName="города"
+          placeholder="Выберите город"
+          paramName="city"
+          options={citiesOptions}
+          isDisabled={selectedDistricts.length === 0}
+          maxSelectedOptions={3}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+      </>
+    );
+  };
   return (
     <>
       {/* Desktop Filters */}
@@ -160,7 +164,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           height="18"
         />
         <FiltersSection>
-          <FiltersContent />
+          {renderFilters()}
         </FiltersSection>
         {/* {activeFiltersCount > 0 && ( */}
         <SubmitSearchFiltersButton
@@ -247,7 +251,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
           <ModalBody>
             <ModalFiltersSection>
-              <FiltersContent />
+              {/* <FiltersContent /> */}
             </ModalFiltersSection>
           </ModalBody>
 
