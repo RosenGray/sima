@@ -7,27 +7,16 @@ import { useClickOutsideTheComponent } from "@/hooks/useClickOutsideTheComponent
 
 const CustomMenu = ({ children, ...props }: MenuProps<Option, true>) => {
   const { selectProps } = props;
-  const {
-    customMenuCloseHandler,
-    customMenuCheckHandler,
-    paramSelectionOptions,
-  } = selectProps as Partial<CustomSelectProps>;
-  const values = selectProps.value;
+  const { customMenuCloseHandler } = selectProps as Partial<CustomSelectProps>;
   const menuListRef = useRef<HTMLDivElement | null>(null);
-
 
   useClickOutsideTheComponent(menuListRef, () => {
     customMenuCloseHandler?.();
   });
 
   const onCheckHandler = () => {
-     customMenuCloseHandler?.();
-    // if (values && Array.isArray(values) && values.length > 0) {
-    //   customMenuCloseHandler?.();
-    //   customMenuCheckHandler?.(values);
-    // }
+    customMenuCloseHandler?.();
   };
-  
 
   const closeMenuHandler = () => {
     selectProps.onChange?.([], {
@@ -35,15 +24,6 @@ const CustomMenu = ({ children, ...props }: MenuProps<Option, true>) => {
       removedValues: [],
     });
     customMenuCloseHandler?.();
-    // if (
-    //   paramSelectionOptions &&
-    //   Array.isArray(paramSelectionOptions) &&
-    //   paramSelectionOptions.length > 0
-    // ) {
-    //   customMenuCheckHandler?.([]);
-    //   // customMenuCloseHandler?.();
-    // }
-    // 
   };
   return (
     <components.Menu {...props}>

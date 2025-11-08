@@ -1,11 +1,11 @@
 "use client";
-import { FC, useId, useEffect, useState, useCallback } from "react";
+import { FC, useId, useEffect, useState, useCallback, useRef } from "react";
 import React from "react";
 import { Option, CustomSelectProps, SearchMultiSelectProps } from "./types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SearchMultiSelect.styles";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { RADIX_THEME_APP_ID } from "@/config/client";
 import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
@@ -22,26 +22,19 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   ...rest
 }) => {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const router = useRouter();
   const id = useId();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const paramValues = searchParams.getAll(paramName); // Get ALL values, not just first
+  const paramValues = searchParams.getAll(paramName);
   const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
-  // const [selectedOptions, setSelectedOptions] = useState<MultiValue<Option>>(
-  //   paramSelectionOptions
-  // );
+  const hasInitialized = useRef(false);
+
   const selectedCount = selectedOptions.length;
 
   const [menuPortalTarget, setMenuPortalTarget] = useState<
     HTMLElement | null | undefined
   >(undefined);
-
-  console.log("temporarySelection", paramSelectionOptions);
-  console.log("selectedOptions", selectedOptions);
 
   useEffect(() => {
     // Check if we're on mobile
@@ -58,33 +51,11 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   }, []);
 
   useEffect(() => {
-    if (paramSelectionOptions.length > 0) {
+    if (!hasInitialized.current && paramSelectionOptions.length > 0) {
       setAllSelectedFilterOptions(paramName, paramSelectionOptions);
+      hasInitialized.current = true;
     }
-  }, []);
-
-  const handleSearch = (options: MultiValue<Option>) => {
-    // const params = new URLSearchParams(searchParams);
-    // params.set("page", "1");
-    // // Limit selection to maxSelectedOptions if specified
-    // let optionsToSet = options;
-    // if (
-    //   maxSelectedOptions !== undefined &&
-    //   options &&
-    //   options.length > maxSelectedOptions
-    // ) {
-    //   optionsToSet = options.slice(0, maxSelectedOptions);
-    // }
-    // if (optionsToSet && optionsToSet.length > 0) {
-    //   params.delete(paramName);
-    //   optionsToSet.forEach((opt) => {
-    //     params.append(paramName, opt.value);
-    //   });
-    // } else {
-    //   params.delete(paramName);
-    // }
-    // replace(`${pathname}?${params.toString()}`);
-  };
+  }, [paramName, paramSelectionOptions, setAllSelectedFilterOptions]);
 
   const handleChange = useCallback(
     (options: MultiValue<Option>) => {
@@ -114,7 +85,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // Disable all other options when max is reached
     return selectedCount >= maxSelectedOptions;
   };
-  //useClickOutsideTheComponent
+
   return (
     <Box>
       {label && (
@@ -130,22 +101,18 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         name={`search-single-select-${paramName}`}
         instanceId={id}
         options={options}
+        isClearable={false}
         styles={styles as StylesConfig<Option, true, GroupBase<Option>>}
         isMulti
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         menuIsOpen={menuIsOpen}
         onMenuOpen={() => setMenuIsOpen(true)}
-        // onMenuClose={setMenuIsOpen}
-        // react-select calls this function for each option and passes the result
-        // as `isDisabled` prop to the custom Option component (OptionWithCheckbox)
         isOptionDisabled={isOptionDisabled}
         {...({
           displayName,
           maxSelectedOptions,
-          paramSelectionOptions,
           customMenuCloseHandler: () => setMenuIsOpen(false),
-          customMenuCheckHandler: handleSearch,
         } as Partial<CustomSelectProps>)}
         components={{
           Option: OptionWithCheckbox,
