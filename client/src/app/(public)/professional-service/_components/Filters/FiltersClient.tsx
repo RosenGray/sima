@@ -88,7 +88,9 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
       setAllSelectedFilterOptions((prevOptionsMap) => {
         return produce(prevOptionsMap, (draft) => {
           draft.set(paramName, [...options]);
-          return draft;
+          if(paramName === "categoryId" && options.length === 0){
+            draft.set("subCategoryId", []);
+          }
         });
       });
     },
@@ -121,6 +123,8 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     () => getCitiesToSelectOptionsByDistrictIds(selectedDistricts),
     [selectedDistricts]
   );
+  
+
 
   const renderFilters = () => {
     return (
@@ -139,7 +143,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           paramName="subCategoryId"
           displayName="подкатегории"
           options={subCategoryOptions}
-          // isDisabled={selectedCategoryIds.length === 0}
+          isDisabled={selectedCategoryIds.length === 0}
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("subCategoryId")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
