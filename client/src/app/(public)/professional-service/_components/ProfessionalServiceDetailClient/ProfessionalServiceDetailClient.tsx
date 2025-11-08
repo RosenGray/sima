@@ -79,7 +79,6 @@ const ProfessionalServiceDetailClient: React.FC<
     user,
     category,
     subCategory,
-    email,
     phoneNumber,
     createdAt,
   } = service;
