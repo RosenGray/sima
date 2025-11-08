@@ -1,11 +1,7 @@
 "use client";
-import { FC, useId, useEffect, useState, useRef, useCallback } from "react";
+import { FC, useId, useEffect, useState, useCallback } from "react";
 import React from "react";
-import {
-  Option,
-  CustomSelectProps,
-  SearchMultiSelectProps,
-} from "./types";
+import { Option, CustomSelectProps, SearchMultiSelectProps } from "./types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SearchMultiSelect.styles";
@@ -28,6 +24,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const router = useRouter();
   const id = useId();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName); // Get ALL values, not just first
@@ -46,15 +43,6 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   console.log("temporarySelection", paramSelectionOptions);
   console.log("selectedOptions", selectedOptions);
 
-  // useClickOutsideTheComponent(selectRef.current?.menuListRef, () => {
-  //   setMenuIsOpen(false);
-  // });
-  useEffect(() => {
-    console.log("mount");
-    return () => {
-      console.log("unmount");
-    };
-  }, []);
   useEffect(() => {
     // Check if we're on mobile
     const isMobile = window.innerWidth < 768;
@@ -66,6 +54,12 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
       setMenuPortalTarget(themeContainer);
     } else {
       setMenuPortalTarget(undefined);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (paramSelectionOptions.length > 0) {
+      setAllSelectedFilterOptions(paramName, paramSelectionOptions);
     }
   }, []);
 
@@ -92,18 +86,21 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleChange = useCallback((options: MultiValue<Option>) => {
-    let optionsToSet = options;
-    if (
-      maxSelectedOptions !== undefined &&
-      options &&
-      options.length > maxSelectedOptions
-    ) {
-      optionsToSet = options.slice(0, maxSelectedOptions);
-    }
-    // setSelectedOptions(optionsToSet);
-    setAllSelectedFilterOptions(paramName, optionsToSet);
-  }, [maxSelectedOptions, setAllSelectedFilterOptions, paramName]);
+  const handleChange = useCallback(
+    (options: MultiValue<Option>) => {
+      let optionsToSet = options;
+      if (
+        maxSelectedOptions !== undefined &&
+        options &&
+        options.length > maxSelectedOptions
+      ) {
+        optionsToSet = options.slice(0, maxSelectedOptions);
+      }
+      // setSelectedOptions(optionsToSet);
+      setAllSelectedFilterOptions(paramName, optionsToSet);
+    },
+    [maxSelectedOptions, setAllSelectedFilterOptions, paramName]
+  );
 
   // Disable options when maxSelectedOptions is reached (except already selected ones)
   const isOptionDisabled = (option: Option): boolean => {

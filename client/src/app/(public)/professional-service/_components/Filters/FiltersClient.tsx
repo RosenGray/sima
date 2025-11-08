@@ -51,8 +51,6 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
-  // const selectedCategoryIds = searchParams.getAll("categoryId");
-  const selectedDistricts = searchParams.getAll("district") as Districts[];
   const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
     useState<AllSelectedFilterOptionsMap>(
       new Map([
@@ -66,7 +64,10 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   const selectedCategoryIds = allSelectedFilterOptions
     .get("categoryId")!
     .map((option) => option.value);
-  console.log("selectedCategoryIds", selectedCategoryIds);
+
+  const selectedDistricts = allSelectedFilterOptions
+    .get("district")!
+    .map((option) => option.value) as Districts[];
 
   // Count active filters
   const activeFiltersCount = useMemo(() => {
@@ -79,8 +80,22 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   }, [searchParams]);
 
   const handleSubmitAllFilters = () => {
-    console.log("allSelectedFilterOptions", allSelectedFilterOptions);
-    // router.push(pathname);
+    const _searchParams = new URLSearchParams(searchParams);
+    _searchParams.set("page", "1");
+    const params = allSelectedFilterOptions.keys();
+    params.forEach((paramName) => {
+      const options = allSelectedFilterOptions.get(paramName)!;
+      if (options.length > 0) {
+        _searchParams.delete(paramName);
+        options.forEach((option) => {
+          _searchParams.append(paramName, option.value);
+        });
+      } else {
+        _searchParams.delete(paramName);
+      }
+    });
+
+    router.replace(`${pathname}?${_searchParams.toString()}`);
   };
 
   const handleSetAllSelectedFilterOptions = useCallback(
@@ -88,8 +103,11 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
       setAllSelectedFilterOptions((prevOptionsMap) => {
         return produce(prevOptionsMap, (draft) => {
           draft.set(paramName, [...options]);
-          if(paramName === "categoryId" && options.length === 0){
+          if (paramName === "categoryId" && options.length === 0) {
             draft.set("subCategoryId", []);
+          }
+          if (paramName === "district" && options.length === 0) {
+            draft.set("city", []);
           }
         });
       });
@@ -123,8 +141,6 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     () => getCitiesToSelectOptionsByDistrictIds(selectedDistricts),
     [selectedDistricts]
   );
-  
-
 
   const renderFilters = () => {
     return (
