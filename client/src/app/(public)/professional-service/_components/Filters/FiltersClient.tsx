@@ -61,6 +61,12 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
       ])
     );
 
+  const isSearcButtonDisabled = useMemo(() => {
+    return allSelectedFilterOptions
+      .values()
+      .every((options) => options.length === 0);
+  }, [allSelectedFilterOptions]);
+
   const selectedCategoryIds = allSelectedFilterOptions
     .get("categoryId")!
     .map((option) => option.value);
@@ -201,14 +207,37 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         />
         <FiltersSection>{renderFilters()}</FiltersSection>
         {/* {activeFiltersCount > 0 && ( */}
-        <SubmitSearchFiltersButton
-          variant="outline"
-          color="gray"
-          onClick={handleSubmitAllFilters}
-          size="3"
+        <Flex
+          direction="column"
+          gap="3"
         >
-          Поиск
-        </SubmitSearchFiltersButton>
+          <SubmitSearchFiltersButton
+            variant="outline"
+            color="gray"
+            disabled={isSearcButtonDisabled}
+            onClick={handleSubmitAllFilters}
+            size="3"
+          >
+            Поиск
+          </SubmitSearchFiltersButton>
+          <SubmitSearchFiltersButton
+            variant="outline"
+            color="gray"
+            disabled={isSearcButtonDisabled}
+            onClick={() => {
+              setAllSelectedFilterOptions(new Map([
+                ["categoryId", []],
+                ["subCategoryId", []],
+                ["district", []],
+                ["city", []],
+              ]));
+              router.push(pathname);
+            }}
+            size="3"
+          >
+            очистить поиск
+          </SubmitSearchFiltersButton>
+        </Flex>
         {/* )} */}
       </DesktopFiltersWrapper>
 
