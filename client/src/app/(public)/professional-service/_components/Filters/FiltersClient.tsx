@@ -61,6 +61,8 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
       ])
     );
 
+  console.log("searchParams'", searchParams.size);
+
   const isSearcButtonDisabled = useMemo(() => {
     return allSelectedFilterOptions
       .values()
@@ -207,10 +209,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         />
         <FiltersSection>{renderFilters()}</FiltersSection>
         {/* {activeFiltersCount > 0 && ( */}
-        <Flex
-          direction="column"
-          gap="3"
-        >
+        <Flex direction="column" gap="3">
           <SubmitSearchFiltersButton
             variant="outline"
             color="gray"
@@ -223,19 +222,21 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           <SubmitSearchFiltersButton
             variant="outline"
             color="gray"
-            disabled={isSearcButtonDisabled}
+            disabled={searchParams.size === 0 }
             onClick={() => {
-              setAllSelectedFilterOptions(new Map([
-                ["categoryId", []],
-                ["subCategoryId", []],
-                ["district", []],
-                ["city", []],
-              ]));
+              setAllSelectedFilterOptions(
+                new Map([
+                  ["categoryId", []],
+                  ["subCategoryId", []],
+                  ["district", []],
+                  ["city", []],
+                ])
+              );
               router.push(pathname);
             }}
             size="3"
           >
-            очистить поиск
+            очистить все фильтры
           </SubmitSearchFiltersButton>
         </Flex>
         {/* )} */}
