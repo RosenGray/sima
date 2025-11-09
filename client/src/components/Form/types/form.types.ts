@@ -3,7 +3,7 @@ import { z } from "zod";
 export enum FormMode {
   Create = "create",
   Edit = "edit",
-  View = "view",
-}
+  View = "view"
+  
+}export const FormModeSchema = z.nativeEnum(FormMode);
 
-export const FormModeSchema = z.nativeEnum(FormMode);

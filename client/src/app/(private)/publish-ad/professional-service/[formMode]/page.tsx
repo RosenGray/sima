@@ -2,10 +2,8 @@ import { Heading } from "@radix-ui/themes";
 import { PublishAdProfessionalsPageContainer } from "./page.styles";
 import ProfessionalServicePublishForm from "../../_components/ProfessionalServicePublishForm/ProfessionalServicePublishForm";
 import { FC } from "react";
-import {
-  FormMode,
-  FormModeSchema,
-} from "@/lib/professionals/professional-service/types";
+import { FormModeSchema } from "@/components/Form/types/form.types";
+import { FormMode } from "@/components/Form/types/form.types";
 import { notFound } from "next/navigation";
 import PublishProfessionalServiceAdProvider from "../../_providers/PublishProfessionalServiceAdProvider";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
