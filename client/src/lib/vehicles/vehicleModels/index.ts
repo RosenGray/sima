@@ -6,45 +6,80 @@ import {
   VehicleModel,
 } from "../vehicleManufacturers/types/vehicleManufacturer.schema";
 
-export const mapVehicleManufacturersToSelectOptions = (): Option[] =>
-  Object.values(vehicleManufacturers).map(({ id, russianName }) => ({
+const emptyOptions: Option[] = [];
+
+const manufacturerEntries = Object.entries(vehicleManufacturers) as Array<
+  [VehicleManufacturerId, VehicleManufacturer]
+>;
+
+const manufacturerOptionsCache: Option[] = manufacturerEntries.map(
+  ([id, manufacturer]) => ({
     value: id,
-    label: russianName,
+    label: manufacturer.russianName,
     fieldKey: "manufacturer",
-  }));
+  }),
+);
 
-export const getVehicleModelsToSelectOptions = (
-  manufacturerId: VehicleManufacturerId,
-): Option[] => {
-  const manufacturer = vehicleManufacturers[manufacturerId];
+const manufacturerLookupCache = new Map<
+  VehicleManufacturerId,
+  VehicleManufacturer
+>(manufacturerEntries);
 
-  if (!manufacturer) {
-    return [];
-  }
+const modelOptionsCache = new Map<VehicleManufacturerId, Option[]>();
+const modelLookupCache = new Map<
+  VehicleManufacturerId,
+  Map<VehicleModel["id"], VehicleModel>
+>();
 
-  return manufacturer.models.map(({ id, russianName }) => ({
+manufacturerEntries.forEach(([manufacturerId, manufacturer]) => {
+  const modelOptions = manufacturer.models.map(({ id, russianName }) => ({
     value: id,
     label: russianName,
     fieldKey: "model",
   }));
-};
+
+  modelOptionsCache.set(manufacturerId, modelOptions);
+  modelLookupCache.set(
+    manufacturerId,
+    new Map(
+      manufacturer.models.map((model) => [model.id, model] as const),
+    ),
+  );
+});
+
+const multiManufacturerModelOptionsCache = new Map<string, Option[]>();
+
+export const mapVehicleManufacturersToSelectOptions = (): Option[] =>
+  manufacturerOptionsCache;
+
+export const getVehicleModelsToSelectOptions = (
+  manufacturerId: VehicleManufacturerId,
+): Option[] => modelOptionsCache.get(manufacturerId) ?? emptyOptions;
 
 export const getVehicleModelsToSelectOptionsByManufacturerIds = (
   manufacturerIds: VehicleManufacturerId[],
-): Option[] =>
-  manufacturerIds.flatMap((manufacturerId) =>
+): Option[] => {
+  const cacheKey = [...manufacturerIds].sort().join(",");
+  const cached = multiManufacturerModelOptionsCache.get(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const result = manufacturerIds.flatMap((manufacturerId) =>
     getVehicleModelsToSelectOptions(manufacturerId),
   );
+
+  multiManufacturerModelOptionsCache.set(cacheKey, result);
+
+  return result;
+};
 
 export const getVehicleModelById = (
   id: VehicleModel["id"],
   manufacturerId: VehicleManufacturerId,
-): VehicleModel | undefined => {
-  const manufacturer = vehicleManufacturers[manufacturerId];
-
-  return manufacturer?.models.find((model) => model.id === id);
-};
+): VehicleModel | undefined => modelLookupCache.get(manufacturerId)?.get(id);
 
 export const getVehicleManufacturerById = (
   id: VehicleManufacturerId,
-): VehicleManufacturer | undefined => vehicleManufacturers[id];
+): VehicleManufacturer | undefined => manufacturerLookupCache.get(id);

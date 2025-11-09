@@ -7,16 +7,33 @@ import {
 
 export { vehicleManufacturers };
 
-export const getVehicleManufacturers = (): VehicleManufacturer[] =>
-  Object.values(vehicleManufacturers);
+const manufacturersListCache: VehicleManufacturer[] = Object.values(
+  vehicleManufacturers,
+);
 
-export const getVehicleManufacturerById = (
-  id: VehicleManufacturerId,
-): VehicleManufacturer | undefined => vehicleManufacturers[id];
-
-export const mapVehicleManufacturersToSelectOptions = (): Option[] =>
-  getVehicleManufacturers().map(({ id, russianName }) => ({
+const manufacturerOptionsCache: Option[] = manufacturersListCache.map(
+  ({ id, russianName }) => ({
     value: id,
     label: russianName,
     fieldKey: "manufacturer",
-  }));
+  }),
+);
+
+const manufacturerLookupCache = new Map<
+  VehicleManufacturerId,
+  VehicleManufacturer
+>(
+  Object.entries(vehicleManufacturers) as Array<
+    [VehicleManufacturerId, VehicleManufacturer]
+  >,
+);
+
+export const getVehicleManufacturers = (): VehicleManufacturer[] =>
+  manufacturersListCache;
+
+export const getVehicleManufacturerById = (
+  id: VehicleManufacturerId,
+): VehicleManufacturer | undefined => manufacturerLookupCache.get(id);
+
+export const mapVehicleManufacturersToSelectOptions = (): Option[] =>
+  manufacturerOptionsCache;
