@@ -1,12 +1,8 @@
 import { Box, Heading, Card } from "@radix-ui/themes";
-import { PublishAdProfessionalsPageContainer } from "./page.styles";
-import ProfessionalServicePublishForm from "../../../_components/ProfessionalServicePublishForm/ProfessionalServicePublishForm";
 import { FC } from "react";
 import { FormModeSchema } from "@/components/Form/types/form.types";
 import { FormMode } from "@/components/Form/types/form.types";
 import { notFound } from "next/navigation";
-import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
-import { thisUserIsOwner } from "@/lib/auth/utils/auth.utils";
 import { PublishAdVehiclesPageContainer } from "../page.styles";
 
 interface EditPublishAdVehiclesPageProps {

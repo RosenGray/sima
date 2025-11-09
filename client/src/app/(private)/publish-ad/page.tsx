@@ -50,7 +50,7 @@ const categories: PublishAdCategory[] = [
     description:
       "Продажа автомобилей, мотоциклов и других транспортных средств",
     icon: <CubeIcon width="32" height="32" />,
-    href: "/publish-ad/vehicles/create",
+    href: "/publish-ad/vehicle/create",
   },
   {
     id: "jobs",
