@@ -8,9 +8,10 @@ import {
 } from "@/lib/professionals/professional-service/types";
 import { notFound } from "next/navigation";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
-import { PublishAdProvider } from "../../../_providers";
+
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 import { thisUserIsOwner } from "@/lib/auth/utils/auth.utils";
+import PublishProfessionalServiceAdProvider from "../../../_providers/PublishProfessionalServiceAdProvider";
 
 interface PublishAdProfessionalsPageProps {
   params: Promise<{ formMode: string; id: string }>;
@@ -35,7 +36,7 @@ const PublishAdProfessionalsPage: FC<PublishAdProfessionalsPageProps> = async ({
     await serviceCategoryRepository.getMappedCategories();
 
   return (
-    <PublishAdProvider data={{ mappedCategories }}>
+    <PublishProfessionalServiceAdProvider data={{ mappedCategories }}>
       <PublishAdProfessionalsPageContainer>
         <Box maxWidth="80%" mx="auto">
           <Heading mb="4" align="center">
@@ -49,7 +50,7 @@ const PublishAdProfessionalsPage: FC<PublishAdProfessionalsPageProps> = async ({
           </Card>
         </Box>
       </PublishAdProfessionalsPageContainer>
-    </PublishAdProvider>
+    </PublishProfessionalServiceAdProvider>
   );
 };
 

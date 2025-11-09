@@ -7,7 +7,7 @@ import {
   FormModeSchema,
 } from "@/lib/professionals/professional-service/types";
 import { notFound } from "next/navigation";
-import { PublishAdProvider } from "../../_providers";
+import PublishProfessionalServiceAdProvider from "../../_providers/PublishProfessionalServiceAdProvider";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 
 interface PublishAdProfessionalsPageProps {
@@ -26,14 +26,14 @@ const PublishAdProfessionalsPage: FC<PublishAdProfessionalsPageProps> = async ({
     await serviceCategoryRepository.getMappedCategories();
 
   return (
-    <PublishAdProvider data={{ mappedCategories }}>
+    <PublishProfessionalServiceAdProvider data={{ mappedCategories }}>
           <PublishAdProfessionalsPageContainer>
       <Heading mb="4" align="center">
         Добавление нового объявления
       </Heading>
       <ProfessionalServicePublishForm formMode={FormMode.Create} />
     </PublishAdProfessionalsPageContainer>
-    </PublishAdProvider>
+    </PublishProfessionalServiceAdProvider>
   );
 };
 

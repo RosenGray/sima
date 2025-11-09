@@ -12,7 +12,7 @@ import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Box, Flex, Grid, Heading, Separator, Text } from "@radix-ui/themes";
 import { useActionState } from "react";
-import { usePublishAd } from "../../_providers/PublishAdProvider";
+
 import {
   mapServiceCategoriesToSelectOptions,
   mapServiceSubCategoriesToSelectOptions,
@@ -42,6 +42,7 @@ import {
   HeroCard,
   SectionCard,
 } from "./ProfessionalServicePublishForm.styles";
+import { usePublishProfessionalServiceAd } from "../../_providers/PublishProfessionalServiceAdProvider";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -56,7 +57,7 @@ const ProfessionalServicePublishForm: FC<
   const isCreateMode = formMode === FormMode.Create;
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const { mappedCategories } = usePublishAd();
+  const { mappedCategories } = usePublishProfessionalServiceAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
