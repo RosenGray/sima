@@ -1,6 +1,9 @@
-import { VehicleManufacturer } from "./types/vehicleManufacturer.schema";
+import {
+  VehicleManufacturer,
+  VehicleManufacturerId,
+} from "./types/vehicleManufacturer.schema";
 
-export const vehicleManufacturers = {
+const vehicleManufacturersMap = {
   "1": {
     "id": "1",
     "name": "אאודי",
@@ -7075,4 +7078,9 @@ export const vehicleManufacturers = {
       }
     ]
   }
-} satisfies Record<string, VehicleManufacturer>;
+} satisfies Record<VehicleManufacturerId, VehicleManufacturer>;
+
+export const vehicleManufacturers: Record<
+  VehicleManufacturerId,
+  VehicleManufacturer
+> = vehicleManufacturersMap;
