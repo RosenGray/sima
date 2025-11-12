@@ -1,6 +1,5 @@
 import { FileUploadResponse } from "@/app/api/files/create/route";
 import mongoose from "mongoose";
-
 import "@/lib/auth/models/User";
 
 type UploadedFile = FileUploadResponse["files"][number];
@@ -13,13 +12,10 @@ export interface IVehicle {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
-  type: string;
   manufacturer: string;
   model: string;
   yearOfManufacture: number;
-  ownershipNumber: number;
-  transmission: "manual" | "automatic" | "tiptronic" | "robotic";
-  engineType: "gasoline" | "diesel" | "turboDiesel" | "hybrid" | "electric";
+  numberOfHand: number;
   engineCapacity?: number;
   mileage?: number;
   numberOfDoors?: number;
@@ -27,14 +23,13 @@ export interface IVehicle {
   price: number;
   description: string;
   accessories?: string;
-  region: string;
+  district: string;
   city: string;
   contactName: string;
   contactPrimaryPhone: string;
   contactSecondaryPhone?: string;
   contactEmail: string;
   acceptTerms: boolean;
-  acceptMarketing?: boolean;
   images: IVehicleImage[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -90,7 +85,7 @@ const vehicleSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    type: {
+    numberOfHand: {
       type: String,
       required: true,
     },
@@ -108,11 +103,6 @@ const vehicleSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 1900,
-    },
-    ownershipNumber: {
-      type: Number,
-      required: true,
-      min: 1,
     },
     transmission: {
       type: String,
@@ -157,7 +147,7 @@ const vehicleSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    region: {
+    district: {
       type: String,
       required: true,
       index: true,
@@ -197,10 +187,6 @@ const vehicleSchema = new mongoose.Schema(
     images: {
       type: [imageSchema],
       required: true,
-      validate: {
-        validator: (value: unknown[]) => Array.isArray(value) && value.length > 0,
-        message: "At least one image is required",
-      },
     },
   },
   {
@@ -226,5 +212,4 @@ vehicleSchema.index({
 });
 
 export const Vehicle =
-  mongoose.models.Vehicle ||
-  mongoose.model<IVehicle>("Vehicle", vehicleSchema);
+  mongoose.models.Vehicle || mongoose.model<IVehicle>("Vehicle", vehicleSchema);
