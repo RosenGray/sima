@@ -2,8 +2,8 @@
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
-  Flex,
   TextField,
+  Flex,
   Text,
   Heading,
   Card,
@@ -30,6 +30,7 @@ import {
   mapZodErrorsToValidationItems,
   passwordValidationPlaceHolderItems,
 } from "@/components/tooltips/ValidationCheckListTooltip/validationCheckListTooltip.utils";
+import Checkbox from "@/components/Form/Checkbox/Checkbox";
 
 const RegisterPageForm = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
@@ -58,7 +59,15 @@ const RegisterPageForm = () => {
     shouldValidate: "onInput",
   });
 
-  const { firstName, lastName, email, password, confirmPassword } = fields;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    confirmPassword,
+    acceptMarketing,
+  } = fields;
+  console.log('acceptMarketing', acceptMarketing.value);
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
@@ -201,11 +210,25 @@ const RegisterPageForm = () => {
                 </>
               </AuthTextField>
 
+              {/* Accept Marketing */}
+
+              <Checkbox
+                field={acceptMarketing}
+                label="Я согласен с условиями"
+                errors={acceptMarketing.errors}
+                disabled={isPending}
+              />
+
               <Flex justify="between" align="center" mt="1">
                 <Text size="4" color="gray">
                   Уже есть аккаунт?
                   <Text ml="10px" color="blue">
-                    <Link className={isPending ? "disabled-link" : ""} href="/auth/login">Войти</Link>
+                    <Link
+                      className={isPending ? "disabled-link" : ""}
+                      href="/auth/login"
+                    >
+                      Войти
+                    </Link>
                   </Text>
                 </Text>
               </Flex>
