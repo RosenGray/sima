@@ -24,8 +24,8 @@ export interface ICar {
   district: string;
   city: string;
   contactName: string;
-  contactPrimaryPhone: string;
-  contactSecondaryPhone?: string;
+  contactPrimaryPhone: number;
+  contactSecondaryPhone?: number;
   contactEmail: string;
   acceptTerms: boolean;
   images: FileUploadItem[];

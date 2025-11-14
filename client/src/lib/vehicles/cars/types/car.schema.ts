@@ -57,10 +57,10 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     contactName: z.string({
       required_error: "Введите имя контакта",
     }),
-    contactPrimaryPhone: z.string({
+    contactPrimaryPhone: z.number({
       required_error: "Введите основной телефон",
     }),
-    contactSecondaryPhone: z.string().optional(),
+    contactSecondaryPhone: z.number().optional(),
     contactEmail: z
       .string({
         required_error: "Электронная почта обязательна",
