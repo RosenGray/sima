@@ -79,7 +79,6 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
           size="3"
           weight="bold"
           style={{
-            lineHeight: "2",
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",

@@ -166,7 +166,6 @@ const ProfessionalServicePublishForm: FC<
     images,
   } = fields;
 
- 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
     [mappedCategories]
@@ -205,7 +204,10 @@ const ProfessionalServicePublishForm: FC<
         action={formAction}
         {...getFormProps(form)}
       >
-        <FormShell px={{ initial: "4", sm: "6", md: "8" }} py={{ initial: "5", md: "7" }}>
+        <FormShell
+          px={{ initial: "4", sm: "6", md: "8" }}
+          py={{ initial: "5", md: "7" }}
+        >
           <Flex
             direction="column"
             gap={{ initial: "5", md: "6" }}
@@ -215,19 +217,23 @@ const ProfessionalServicePublishForm: FC<
               <Flex
                 direction={{ initial: "column", md: "row" }}
                 justify="between"
-            align={{ initial: "start", md: "center" }}
+                align={{ initial: "start", md: "center" }}
                 gap="4"
               >
                 <Box>
                   <Heading as="h1" size={{ initial: "6", md: "7" }}>
                     Расскажите об услуге
                   </Heading>
-                  <Text mt="2" size={{ initial: "3", md: "4" }} color="gray" highContrast>
-                    Поделитесь ключевыми деталями, добавьте фотографии и оставьте
-                    контакты — это займёт всего пару минут.
+                  <Text
+                    mt="2"
+                    size={{ initial: "3", md: "4" }}
+                    color="gray"
+                    highContrast
+                  >
+                    Поделитесь ключевыми деталями, добавьте фотографии и
+                    оставьте контакты — это займёт всего пару минут.
                   </Text>
                 </Box>
-
               </Flex>
             </HeroCard>
 
@@ -254,6 +260,7 @@ const ProfessionalServicePublishForm: FC<
                     errors={category.errors}
                     isDisabled={isPending}
                     defaultValue={categoriesOptions[3]}
+                    isMandatory
                   />
 
                   <SelectSingle
@@ -264,6 +271,7 @@ const ProfessionalServicePublishForm: FC<
                     errors={subCategory.errors}
                     isDisabled={isPending}
                     defaultValue={subCategoryOptions[0]}
+                    isMandatory
                   />
 
                   <SelectSingle
@@ -273,6 +281,7 @@ const ProfessionalServicePublishForm: FC<
                     options={areasOptions}
                     errors={district.errors}
                     isDisabled={isPending}
+                    isMandatory
                   />
 
                   <SelectSingle
@@ -283,6 +292,7 @@ const ProfessionalServicePublishForm: FC<
                     errors={city.errors}
                     isDisabled={isPending}
                     defaultValue={citiesOptions[0]}
+                    isMandatory
                   />
                 </Grid>
               </Flex>
@@ -309,6 +319,7 @@ const ProfessionalServicePublishForm: FC<
                   errors={description.errors}
                   rows={6}
                   disabled={isPending}
+                  isMandatory
                 />
               </Flex>
             </SectionCard>
@@ -322,6 +333,9 @@ const ProfessionalServicePublishForm: FC<
                   <Text color="gray" size="2" mt="2">
                     Добавьте изображения, чтобы клиенты увидели качество ваших
                     работ.
+                    <Text as="span" size="5" weight="bold" color="tomato">
+                      *
+                    </Text>
                   </Text>
                 </Box>
                 <DropzoneSurface p={{ initial: "3", md: "4" }}>
@@ -340,7 +354,8 @@ const ProfessionalServicePublishForm: FC<
                     files={selectedFiles}
                     disabled={false}
                     existingFilesLength={
-                      existingImages.filter((image) => !image.toBeDeleted).length
+                      existingImages.filter((image) => !image.toBeDeleted)
+                        .length
                     }
                   />
                 </DropzoneSurface>
@@ -359,17 +374,14 @@ const ProfessionalServicePublishForm: FC<
             </SectionCard>
 
             <SectionCard variant="surface" size="4">
-              <Flex
-                direction="column"
-                gap={{ initial: "4", md: "5" }}
-              >
+              <Flex direction="column" gap={{ initial: "4", md: "5" }}>
                 <Box>
                   <Heading as="h2" size="4">
                     Контактные данные
                   </Heading>
                   <Text color="gray" size="2" mt="2">
-                    Эти данные будут использоваться для связи с вами и управления
-                    объявлением.
+                    Эти данные будут использоваться для связи с вами и
+                    управления объявлением.
                   </Text>
                 </Box>
 
@@ -387,6 +399,7 @@ const ProfessionalServicePublishForm: FC<
                     dataIsValid={email.valid}
                     errors={email.errors}
                     disabled={isPending}
+                    isMandatory
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>
@@ -396,6 +409,7 @@ const ProfessionalServicePublishForm: FC<
                     errors={phoneNumber.errors}
                     size="3"
                     defaultValue={phoneNumber.initialValue}
+                    isMandatory
                     disabled={isPending}
                   >
                     <MobileIcon height="16" width="16" />
@@ -415,12 +429,17 @@ const ProfessionalServicePublishForm: FC<
                     label="Я согласен с условиями"
                     errors={acceptTerms.errors}
                     disabled={isPending}
+                    isMandatory
                   />
 
                   <SubmitButton
                     pending={isPending}
                     disabled={acceptTerms.value !== "on"}
-                    text={isCreateMode ? "Добавить объявление" : "Обновить объявление"}
+                    text={
+                      isCreateMode
+                        ? "Добавить объявление"
+                        : "Обновить объявление"
+                    }
                   />
                   {/* <GoogleReCAPTCHA
                   submitButtonText="Добавить объявление"
