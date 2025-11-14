@@ -9,6 +9,8 @@ import {
   useInputControl,
   getSelectProps,
 } from "@conform-to/react";
+import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
+import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
 
 interface Option {
   value: string;
@@ -32,6 +34,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
   defaultValue,
   ...rest
 }) => {
+  const { portalTarget } = usePortalTarget();
   const { key, name } = getSelectProps(field);
   const control = useInputControl(field);
   const controlRef = useRef(control);
@@ -62,6 +65,9 @@ const SelectSingle: FC<SelectSingleProps> = ({
         name={name}
         instanceId={`select-${field.name}`}
         options={options}
+        menuPortalTarget={portalTarget}
+      
+        // menuPortalTarget={document.getElementById(RADIX_THEME_PORTAL_ID)}
         styles={styles}
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}

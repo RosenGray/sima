@@ -11,6 +11,7 @@ import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry"
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
 import { getNumberOfDorsOptions } from "@/lib/vehicles/utils/vehicles.utils";
+import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
@@ -28,7 +29,7 @@ export default async function RootLayout({
 }>) {
   const user = await getCurrentUser();
 
-  const m  = getNumberOfDorsOptions();;
+  const m = getNumberOfDorsOptions();
   console.log("m", m);
 
   return (
@@ -50,14 +51,12 @@ export default async function RootLayout({
                 {user && !user.isEmailVerified && (
                   <EmailVerificationBanner userEmail={user.email} />
                 )}
-                <div className="SimaApp">{children}</div>
+                <PortalProvider>
+                  <div className="SimaApp">{children}</div>
+                </PortalProvider>
+                <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="indigo" />
                 <LayoutBackground />
               </RadixTheme>
-              <RadixTheme
-                id={RADIX_THEME_PORTAL_ID}
-                style={{ height: "auto", minHeight: "auto" }}
-                accentColor="indigo"
-              />
             </ThemeProvider>
           </AuthProvider>
         </StyledComponentsRegistry>

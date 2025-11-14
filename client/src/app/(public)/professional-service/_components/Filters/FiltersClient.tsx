@@ -1,7 +1,7 @@
 "use client";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
-import SearchSingleSelect from "@/components/filters/TextSearch/SearchMultiSelect/SearchMultiSelect";
+import SearchMultiSelect from "@/components/filters/TextSearch/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapServiceCategoriesToSelectOptions,
@@ -161,7 +161,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   const renderFilters = () => {
     return (
       <>
-        <SearchSingleSelect
+        <SearchMultiSelect
           displayName="категории"
           placeholder="Выберите категорию"
           paramName="categoryId"
@@ -170,7 +170,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           selectedOptions={allSelectedFilterOptions.get("categoryId")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
-        <SearchSingleSelect
+        <SearchMultiSelect
           placeholder="Выберите подкатегорию"
           paramName="subCategoryId"
           displayName="подкатегории"
@@ -180,7 +180,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           selectedOptions={allSelectedFilterOptions.get("subCategoryId")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
-        <SearchSingleSelect
+        <SearchMultiSelect
           placeholder="Выберите район"
           displayName="районы"
           paramName="district"
@@ -189,7 +189,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           selectedOptions={allSelectedFilterOptions.get("district")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
-        <SearchSingleSelect
+        <SearchMultiSelect
           displayName="города"
           placeholder="Выберите город"
           paramName="city"
