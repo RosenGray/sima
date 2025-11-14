@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
-export interface ICar extends IVehicle {
+export interface ICar {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;

@@ -38,7 +38,7 @@ export async function publishProfessionalServiceAd(
     });
 
     // Add metadata
-    uploadFormData.append("folderName", "professionals");
+    uploadFormData.append("folderName", "professionals-service");
     uploadFormData.append("userId", user.id); // You'll need to get this from auth context
 
     // Send request to files API route
