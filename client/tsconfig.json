@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/auth/success/loadingtsx", "src/providers/StyledRegistry"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/auth/success/loadingtsx", "src/providers/StyledRegistry", "src/app/api/files/create/routets"],
   "exclude": ["node_modules"]
 }

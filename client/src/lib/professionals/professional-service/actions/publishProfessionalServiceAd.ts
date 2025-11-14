@@ -4,16 +4,15 @@ import { createProfessionalServiceSchema } from "../types/professional-service.s
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { ProfessionalService } from "../models/ProfessionalService";
 import connectDB from "@/lib/mongo/mongodb";
-import { FileUploadResponse } from "@/app/api/files/create/route";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
+import { uploadFiles } from "@/lib/files/uploadFiles";
 
 export async function publishProfessionalServiceAd(
   initialState: unknown,
   formData: FormData
 ) {
-  
   const result = parseWithZod(formData, {
     schema: createProfessionalServiceSchema({ minNumberOfImages: 1 }),
   });
@@ -37,22 +36,11 @@ export async function publishProfessionalServiceAd(
       uploadFormData.append("files", file);
     });
 
-    // Add metadata
-    uploadFormData.append("folderName", "professionals-service");
-    uploadFormData.append("userId", user.id); // You'll need to get this from auth context
-
-    // Send request to files API route
-    const response = await fetch("http://localhost:3000/api/files/create", {
-      method: "POST",
-      body: uploadFormData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to upload files");
-    }
-
-    const uploadResult: FileUploadResponse = await response.json();
+    const uploadResult = await uploadFiles(
+      "professionals-service",
+      user.id,
+      uploadFormData
+    );
 
     await connectDB();
 
