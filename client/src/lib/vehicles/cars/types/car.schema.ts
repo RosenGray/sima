@@ -34,7 +34,11 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
       required_error: "Выберите тип двигателя",
     }),
     engineCapacity: z.number().optional(),
-    mileage: z.number().optional().min(0, "Пробег не может быть отрицательным"),
+    mileage: z
+      .union([
+        z.number().min(0, "Пробег не может быть отрицательным"),
+        z.undefined(),
+      ]),
     numberOfDoors: z.number().optional(),
     color: z.string().optional(),
     price: z.number({
