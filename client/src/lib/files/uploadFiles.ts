@@ -51,9 +51,8 @@ export const uploadFiles = async (
   folderName: string,
   userId: string,
   formData: FormData
-):Promise<FileUploadResponse> => {
+): Promise<FileUploadResponse> => {
   try {
-    console.log('bla')
     console.log("Starting file upload process...");
     console.log("Metadata extracted:", { folderName, userId });
     // Get all files from form data

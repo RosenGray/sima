@@ -32,7 +32,7 @@ import { publishProfessionalServiceAd } from "@/lib/professionals/professional-s
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
-import { ExistingImageItem } from "@/app/api/files/create/route";
+import { ExistingImageItem } from "@/lib/files/uploadFiles";
 import { FormMode } from "@/components/Form/types/form.types";
 import { editProfessionalServiceAd } from "@/lib/professionals/professional-service/actions/editProfessionalServiceAd";
 import Loader from "@/components/Loader";

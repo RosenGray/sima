@@ -1,4 +1,4 @@
-import { FileUploadItem } from "@/app/api/files/create/route";
+import { FileUploadItem } from "@/lib/files/uploadFiles";
 import { EngineType, TransmissionType } from "../types/cars.types";
 import mongoose from "mongoose";
 

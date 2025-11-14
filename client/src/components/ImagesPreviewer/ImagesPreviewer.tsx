@@ -9,8 +9,8 @@ import {
   DeleteButton,
 } from "./ImagesPreviewer.styles";
 import { mapMaxImagesToNumberColumnsAndRows } from "./ImagesPreviewer.utils";
-import { ExistingImageItem } from "@/app/api/files/create/route";
 import { nanoid } from "nanoid";
+import { ExistingImageItem } from "@/lib/files/uploadFiles";
 
 interface ImagesPreviewerProps {
   images: File | File[];
