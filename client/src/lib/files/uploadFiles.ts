@@ -1,4 +1,5 @@
 import { FileManager } from "@sima-board/common";
+import { nanoid } from "nanoid";
 import { Readable } from "stream";
 
 // Route configuration for file uploads
@@ -27,7 +28,7 @@ export interface FileUploadItem {
   originalName: string;
   uniqueName: string;
   url: string;
-  fieldname: string;
+  fieldname?: string;
   versionId?: string;
   folderName: string;
 }
@@ -127,6 +128,7 @@ export const uploadFiles = async (
       success: true,
       message: `Successfully uploaded ${uploadResults.length} file(s)`,
       files: uploadResults.map((result) => ({
+        id: nanoid(10),
         originalName: result.originalName,
         uniqueName: result.uniqueName,
         versionId: result.data.VersionId,
