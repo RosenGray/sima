@@ -9,7 +9,6 @@ import {
   useInputControl,
   getSelectProps,
 } from "@conform-to/react";
-import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
 import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
 
 interface Option {
@@ -24,6 +23,7 @@ interface SelectSingleProps extends Props {
   label?: string;
   className?: string;
   errors?: string[];
+  isMandatory?: boolean;
 }
 
 const SelectSingle: FC<SelectSingleProps> = ({
@@ -32,6 +32,7 @@ const SelectSingle: FC<SelectSingleProps> = ({
   field,
   options,
   defaultValue,
+  isMandatory,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
@@ -47,18 +48,35 @@ const SelectSingle: FC<SelectSingleProps> = ({
 
   return (
     <Box>
-      {label && (
-        <Text
-          style={{ lineHeight: "2" }}
-          htmlFor={rest.id}
-          as="label"
-          size="3"
-          weight="bold"
-        >
-          {label}
-        </Text>
-      )}
-
+      <Box mb="2">
+        {label && (
+          <Text
+            as="label"
+            size="3"
+            weight="bold"
+            color="gray"
+            htmlFor={rest.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              letterSpacing: 0.1,
+            }}
+          >
+            {label}
+            {isMandatory && (
+              <Text as="span" size="3" weight="bold" color="tomato">
+                *
+              </Text>
+            )}
+          </Text>
+        )}
+        {!label && isMandatory && (
+          <Text as="span" size="3" weight="bold" color="tomato">
+            *
+          </Text>
+        )}
+      </Box>
       <Select
         defaultValue={defaultValue}
         key={key}
@@ -66,8 +84,6 @@ const SelectSingle: FC<SelectSingleProps> = ({
         instanceId={`select-${field.name}`}
         options={options}
         menuPortalTarget={portalTarget}
-      
-        // menuPortalTarget={document.getElementById(RADIX_THEME_PORTAL_ID)}
         styles={styles}
         onBlur={() => controlRef.current.blur()}
         onFocus={() => controlRef.current.focus()}
