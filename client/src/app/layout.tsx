@@ -54,7 +54,7 @@ export default async function RootLayout({
                 <PortalProvider>
                   <div className="SimaApp">{children}</div>
                 </PortalProvider>
-                <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="indigo" />
+                <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
                 <LayoutBackground />
               </RadixTheme>
             </ThemeProvider>
