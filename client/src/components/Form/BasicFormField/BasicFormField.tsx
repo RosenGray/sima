@@ -15,6 +15,7 @@ interface BasicFormFieldrops extends TextField.RootProps {
   anotherLabel?: string;
   showEmailDisclaimer?: boolean;
   _key?: string;
+  isMandatory?: boolean;
 }
 
 const BasicFormField: FC<BasicFormFieldrops> = ({
@@ -32,6 +33,7 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
   showEmailDisclaimer,
   type = "text",
   _key,
+  isMandatory,
   ...rest
 }) => {
   const { mb, mt, mr, ml } = rest;
@@ -44,10 +46,25 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
           as="label"
           size="3"
           weight="bold"
-          style={{ lineHeight: "2" }}
+          style={{
+            lineHeight: "2",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}
           className={className}
         >
           <Text as="span">{label}</Text>
+          {isMandatory && (
+            <Text as="span" size="3" weight="bold" color="tomato">
+              *
+            </Text>
+          )}
+        </Text>
+      )}
+      {!label && isMandatory && (
+        <Text as="span" size="3" weight="bold" color="tomato">
+          *
         </Text>
       )}
       <TextField.Root

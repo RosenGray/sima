@@ -13,6 +13,7 @@ interface CustomCheckboxProps extends CheckboxProps {
   label?: string;
   labelSize?: "1" | "2" | "3" | "4";
   errors?: string[];
+  isMandatory?: boolean;
 }
 
 const Checkbox: FC<CustomCheckboxProps> = ({
@@ -21,6 +22,7 @@ const Checkbox: FC<CustomCheckboxProps> = ({
   labelSize = "3",
   size = "3",
   errors,
+  isMandatory,
   ...rest
 }) => {
   const { mb, mt, mr, ml } = rest;
@@ -46,8 +48,18 @@ const Checkbox: FC<CustomCheckboxProps> = ({
             {...rest}
           />
           {label ?? label}
+          {isMandatory && (
+            <Text as="span" size={labelSize} weight="bold" color="tomato">
+              *
+            </Text>
+          )}
         </CheckboxContainer>
       </Text>
+      {!label && isMandatory && (
+        <Text as="span" size={labelSize} weight="bold" color="tomato">
+          *
+        </Text>
+      )}
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}
       </Text>

@@ -8,6 +8,7 @@ interface AuthTextFieldProps extends TextField.RootProps {
   ref?: Ref<HTMLInputElement>;
   children?: ReactNode;
   _key?: string;
+  isMandatory?: boolean;
 }
 
 const AuthTextField: FC<AuthTextFieldProps> = ({
@@ -20,6 +21,7 @@ const AuthTextField: FC<AuthTextFieldProps> = ({
   errors,
   ref,
   _key,
+  isMandatory,
   ...rest
 }) => {
   return (
@@ -31,9 +33,24 @@ const AuthTextField: FC<AuthTextFieldProps> = ({
         mb="1"
         weight="medium"
         className={className}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+        }}
       >
         {placeholder}
+        {isMandatory && (
+          <Text as="span" size="2" weight="bold" color="tomato">
+            *
+          </Text>
+        )}
       </Text>
+      {!placeholder && isMandatory && (
+        <Text as="span" size="2" weight="bold" color="tomato">
+          *
+        </Text>
+      )}
       <AuthTextFieldRoot
         {...rest}
         key={_key}
