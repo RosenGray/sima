@@ -23,32 +23,42 @@ export interface IProfessionalService {
   updatedAt?: Date;
 }
 
-const imageSchema = new mongoose.Schema({
-  originalName: {
-    type: String,
-    required: true,
+const imageSchema = new mongoose.Schema(
+  {
+    originalName: {
+      type: String,
+      required: true,
+    },
+    uniqueName: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+    fieldname: {
+      type: String,
+      required: true,
+    },
+    versionId: {
+      type: String,
+      required: false,
+    },
+    folderName: {
+      type: String,
+      required: true,
+    },
   },
-  uniqueName: {
-    type: String,
-    required: true,
-  },
-  url: {
-    type: String,
-    required: true,
-  },
-  fieldname: {
-    type: String,
-    required: true,
-  },
-  versionId: {
-    type: String,
-    required: false,
-  },
-  folderName: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    toJSON: {
+      transform: (_doc, ret: Record<string, unknown>) => {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+  }
+);
 
 const professionalServiceSchema = new mongoose.Schema(
   {
@@ -59,9 +69,9 @@ const professionalServiceSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
-      index: true  // Index for faster queries
+      index: true, // Index for faster queries
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -109,13 +119,6 @@ const professionalServiceSchema = new mongoose.Schema(
         ret.id = ret._id;
         ret.updatedAt = (ret.updatedAt as Date)?.toISOString();
         ret.createdAt = (ret.createdAt as Date)?.toISOString();
-        ret.images = (ret.images as unknown[]).map((value: unknown) => {
-          const image = value as Record<string, unknown>;
-          return {
-            ...image,
-            id: image._id,
-          };
-        });
         delete ret._id;
         delete ret.__v;
       },
@@ -125,10 +128,10 @@ const professionalServiceSchema = new mongoose.Schema(
 
 // Add text index for efficient text search
 professionalServiceSchema.index({
-  description: 'text',
-  district: 'text',
-  city: 'text',
-  email: 'text'
+  description: "text",
+  district: "text",
+  city: "text",
+  email: "text",
 });
 
 export const ProfessionalService =

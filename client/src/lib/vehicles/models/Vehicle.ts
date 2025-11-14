@@ -35,6 +35,8 @@ export interface IVehicle {
   updatedAt?: Date;
 }
 
+
+
 const imageSchema = new mongoose.Schema(
   {
     originalName: {
