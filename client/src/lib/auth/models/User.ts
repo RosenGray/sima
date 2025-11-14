@@ -17,6 +17,7 @@ export interface IUser {
   createdAt?: Date;
   updatedAt?: Date;
   hasPrivateProfessionalPage?: boolean;
+  acceptMarketing?: boolean;
   role: UserRole;
 }
 
@@ -74,6 +75,11 @@ const userSchema = new mongoose.Schema<IUser>(
       required: true,
       default: UserRole.User,
       enum: [UserRole.User, UserRole.Admin, UserRole.None],
+    },
+    acceptMarketing: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   {

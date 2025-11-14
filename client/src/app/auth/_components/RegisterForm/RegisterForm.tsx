@@ -214,9 +214,10 @@ const RegisterPageForm = () => {
 
               <Checkbox
                 field={acceptMarketing}
-                label="Я согласен с условиями"
+                label="Я хочу получать предложения и скидки по электронной почте"
                 errors={acceptMarketing.errors}
                 disabled={isPending}
+                labelSize="2"
               />
 
               <Flex justify="between" align="center" mt="1">

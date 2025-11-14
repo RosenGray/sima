@@ -30,7 +30,7 @@ export const RegisterSchema = z
         required_error: "Пожалуйста, подтвердите свой пароль",
       })
       .min(1, { message: "Пожалуйста, подтвердите свой пароль" }),
-    acceptMarketing: z.boolean().optional()
+    acceptMarketing: z.string().optional()
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Пароли не совпадают",
