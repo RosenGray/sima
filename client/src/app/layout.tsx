@@ -10,6 +10,7 @@ import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
+import { getNumberOfDorsOptions } from "@/lib/vehicles/utils/vehicles.utils";
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
@@ -26,6 +27,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+
+  const m  = getNumberOfDorsOptions();;
+  console.log("m", m);
 
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
