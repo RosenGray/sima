@@ -118,7 +118,7 @@ const PublishAdVehiclesPage = () => {
             key={category.id}
             icon={category.icon}
             title={category.title}
-            description={category.description}
+            description={""}
             href={category.href}
           />
         ))}
