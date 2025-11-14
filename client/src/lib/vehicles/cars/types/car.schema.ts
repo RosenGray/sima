@@ -1,0 +1,124 @@
+import { z } from "zod";
+import { Districts } from "@/lib/cities/types/cities.schema";
+import { EngineType, TransmissionType } from "./cars.types";
+
+export const SIZE_IN_MB = 5;
+export const MAX_FILE_SIZE = SIZE_IN_MB * 1024 * 1024;
+export const MAX_FILES = 5;
+
+export const ACCEPTED_FILE_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
+];
+
+export const createCarSchema = ({ minNumberOfImages = 1 }) => {
+  return z.object({
+    manufacturer: z.string({
+      required_error: "Выберите производителя",
+    }),
+    model: z.string({
+      required_error: "Выберите модель",
+    }),
+    yearOfManufacture: z.number({
+      required_error: "Введите год выпуска",
+    }).min(1900, "Год должен быть не менее 1900"),
+    numberOfHand: z.string({
+      required_error: "Введите количество рук",
+    }),
+    transmission: z.nativeEnum(TransmissionType, {
+      required_error: "Выберите тип коробки передач",
+    }),
+    engineType: z.nativeEnum(EngineType, {
+      required_error: "Выберите тип двигателя",
+    }),
+    engineCapacity: z.number().optional(),
+    mileage: z.number().optional().min(0, "Пробег не может быть отрицательным"),
+    numberOfDoors: z.number().optional(),
+    color: z.string().optional(),
+    price: z.number({
+      required_error: "Введите цену",
+    }).min(0, "Цена не может быть отрицательной"),
+    description: z.string({
+      required_error: "Введите описание",
+    }),
+    accessories: z.string().optional(),
+    district: z.nativeEnum(Districts, {
+      required_error: "Выберите район",
+    }),
+    city: z.string({
+      required_error: "Выберите город",
+    }),
+    contactName: z.string({
+      required_error: "Введите имя контакта",
+    }),
+    contactPrimaryPhone: z.string({
+      required_error: "Введите основной телефон",
+    }),
+    contactSecondaryPhone: z.string().optional(),
+    contactEmail: z
+      .string({
+        required_error: "Электронная почта обязательна",
+      })
+      .email("Введите корректный адрес электронной почты"),
+    acceptTerms: z
+      .string({
+        required_error: "Вы должны согласиться с условиями",
+      })
+      .optional()
+      .superRefine((value, ctx) => {
+        if (value === "on") {
+          return true;
+        }
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Вы должны согласиться с условиями",
+          fatal: true,
+        });
+        return z.NEVER;
+      }),
+    images: z
+      .array(z.instanceof(File))
+      .min(
+        minNumberOfImages,
+        `Загрузите хотя бы ${minNumberOfImages} изображений`
+      )
+      .superRefine((files, ctx) => {
+        const validFiles = files.filter(
+          (file) => file.size > 0 && file.name !== "undefined"
+        );
+        if (validFiles.length > 0) {
+          if (files.length > MAX_FILES) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Максимальное количество изображений: ${MAX_FILES}`,
+              fatal: true,
+            });
+            return z.NEVER;
+          }
+
+          validFiles.forEach((file) => {
+            if (file.size > MAX_FILE_SIZE) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Файл слишком большой. Максимальный размер файла ${SIZE_IN_MB}MB`,
+              });
+            }
+            if (!new Set(ACCEPTED_FILE_TYPES).has(file.type)) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Файл должен быть изображением (PNG, JPEG, JPG или WebP)`,
+                fatal: true,
+              });
+              return z.NEVER;
+            }
+          });
+        }
+        return true;
+      }),
+  });
+};
+
+export type CarFormData = z.infer<ReturnType<typeof createCarSchema>>;
+

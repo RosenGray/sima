@@ -1,3 +1,6 @@
+import { ICar } from "../models/Car";
+import { SerializedUser } from "@/lib/auth/types/auth.scema";
+
 export enum TransmissionType {
   MANUAL = "manual",
   AUTOMATIC = "automatic",
@@ -11,4 +14,11 @@ export enum EngineType {
   TURBO_DIESEL = "turboDiesel",
   HYBRID = "hybrid",
   ELECTRIC = "electric",
+}
+
+export interface SerializedCar
+  extends Omit<ICar, "createdAt" | "updatedAt" | "user"> {
+  updatedAt: string;
+  createdAt: string;
+  user: SerializedUser;
 }
