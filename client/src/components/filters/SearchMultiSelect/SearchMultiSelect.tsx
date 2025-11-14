@@ -1,15 +1,16 @@
 "use client";
-import { FC, useId, useEffect, useState } from "react";
+import { FC, useId, useEffect, useState, useCallback, useRef } from "react";
 import React from "react";
 import { Option, CustomSelectProps, SearchMultiSelectProps } from "./types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
 import { styles } from "./SearchMultiSelect.styles";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { RADIX_THEME_APP_ID } from "@/config/client";
 import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
 import CustomMenu from "./CustomMenu";
+import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
 
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
@@ -17,80 +18,62 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   options,
   displayName,
   maxSelectedOptions,
+  selectedOptions,
+  setAllSelectedFilterOptions,
   ...rest
 }) => {
+  const { portalTarget } = usePortalTarget();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
   const id = useId();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const paramValues = searchParams.getAll(paramName); // Get ALL values, not just first
+  const paramValues = searchParams.getAll(paramName);
   const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
-  const [selectedOptions, setSelectedOptions] = useState<
-  MultiValue<Option>
->(paramSelectionOptions);
+  const hasInitialized = useRef(false);
+console.log("portalTarget", portalTarget);
   const selectedCount = selectedOptions.length;
 
-  const [menuPortalTarget, setMenuPortalTarget] = useState<
-    HTMLElement | null | undefined
-  >(undefined);
+  // const [menuPortalTarget, setMenuPortalTarget] = useState<
+  //   HTMLElement | null | undefined
+  // >(undefined);
 
+  // useEffect(() => {
+  //   // Check if we're on mobile
+  //   const isMobile = window.innerWidth < 768;
+
+  //   // On desktop, use the main Radix theme container to use as portal target for proper z-index
+  //   // On mobile, don't use portal (render inline) to avoid touch event issues
+  //   if (!isMobile) {
+  //     const themeContainer = document.getElementById(RADIX_THEME_APP_ID);
+  //     setMenuPortalTarget(themeContainer);
+  //   } else {
+  //     setMenuPortalTarget(undefined);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    // Check if we're on mobile
-    const isMobile = window.innerWidth < 768;
-
-    // On desktop, use the main Radix theme container to use as portal target for proper z-index
-    // On mobile, don't use portal (render inline) to avoid touch event issues
-    if (!isMobile) {
-      const themeContainer = document.getElementById(RADIX_THEME_APP_ID);
-      setMenuPortalTarget(themeContainer);
-    } else {
-      setMenuPortalTarget(undefined);
+    if (!hasInitialized.current && paramSelectionOptions.length > 0) {
+      setAllSelectedFilterOptions(paramName, paramSelectionOptions);
+      hasInitialized.current = true;
     }
-  }, []);
+  }, [paramName, paramSelectionOptions, setAllSelectedFilterOptions]);
 
-  const handleSearch = (options: MultiValue<Option>) => {
-    const params = new URLSearchParams(searchParams);
-
-    params.set("page", "1");
-
-    // Limit selection to maxSelectedOptions if specified
-    let optionsToSet = options;
-    if (
-      maxSelectedOptions !== undefined &&
-      options &&
-      options.length > maxSelectedOptions
-    ) {
-      optionsToSet = options.slice(0, maxSelectedOptions);
-    }
-
-    if (optionsToSet && optionsToSet.length > 0) {
-      params.delete(paramName);
-      optionsToSet.forEach((opt) => {
-        params.append(paramName, opt.value);
-      });
-    } else {
-      params.delete(paramName);
-    }
-
-    replace(`${pathname}?${params.toString()}`);
-  };
-
-  const handleChange = (options: MultiValue<Option>) => {
-    let optionsToSet = options;
-    if (
-      maxSelectedOptions !== undefined &&
-      options &&
-      options.length > maxSelectedOptions
-    ) {
-      optionsToSet = options.slice(0, maxSelectedOptions);
-    }
-    setSelectedOptions(optionsToSet);
-  };
-
+  const handleChange = useCallback(
+    (options: MultiValue<Option>) => {
+      let optionsToSet = options;
+      if (
+        maxSelectedOptions !== undefined &&
+        options &&
+        options.length > maxSelectedOptions
+      ) {
+        optionsToSet = options.slice(0, maxSelectedOptions);
+      }
+      // setSelectedOptions(optionsToSet);
+      setAllSelectedFilterOptions(paramName, optionsToSet);
+    },
+    [maxSelectedOptions, setAllSelectedFilterOptions, paramName]
+  );
 
   // Disable options when maxSelectedOptions is reached (except already selected ones)
   const isOptionDisabled = (option: Option): boolean => {
@@ -115,30 +98,25 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
-        {...(menuPortalTarget !== undefined && { menuPortalTarget })}
+        // {...(menuPortalTarget !== undefined && { menuPortalTarget })}
         value={selectedOptions}
         name={`search-single-select-${paramName}`}
         instanceId={id}
         options={options}
+        isClearable={false}
+        menuPortalTarget={portalTarget}
         styles={styles as StylesConfig<Option, true, GroupBase<Option>>}
         isMulti
-
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         menuIsOpen={menuIsOpen}
         onMenuOpen={() => setMenuIsOpen(true)}
-        // onMenuClose={setMenuIsOpen}
-        // react-select calls this function for each option and passes the result
-        // as `isDisabled` prop to the custom Option component (OptionWithCheckbox)
         isOptionDisabled={isOptionDisabled}
         {...({
           displayName,
           maxSelectedOptions,
-          paramSelectionOptions,
           customMenuCloseHandler: () => setMenuIsOpen(false),
-          customMenuCheckHandler: handleSearch,
         } as Partial<CustomSelectProps>)}
-
         components={{
           Option: OptionWithCheckbox,
           ValueContainer: ValueContainer,
@@ -150,4 +128,4 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   );
 };
 
-export default SearchMultiSelect;
+export default React.memo(SearchMultiSelect);

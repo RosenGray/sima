@@ -1,5 +1,5 @@
 import { District, Districts } from "@/lib/cities/types/cities.schema";
-import { Option } from "@/components/filters/TextSearch/SearchMultiSelect/types";
+import { Option } from "@/components/filters/SearchMultiSelect/types";
 export const israelLocations: Record<Districts, District> = {
   [Districts.South]: {
     id: Districts.South,
