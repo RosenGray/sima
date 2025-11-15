@@ -40,7 +40,11 @@ import {
   getVehicleModelsToSelectOptions,
 } from "@/lib/vehicles/cars/vehicleModels";
 import { TransmissionType, EngineType } from "@/lib/vehicles/cars/types/cars.types";
-import { getNumberOfDorsOptions } from "@/lib/vehicles/utils/vehicles.utils";
+import {
+  getNumberOfDorsOptions,
+  getYearsOptions,
+  getNumberOfHandsOptions,
+} from "@/lib/vehicles/utils/vehicles.utils";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -84,7 +88,7 @@ const CarPublishForm: FC = () => {
     publishCarAd,
     undefined
   );
-console.log('formState',formState)
+
   const [form, fields] = useForm({
     defaultValue: {
       manufacturer: "",
@@ -203,6 +207,13 @@ console.log('formState',formState)
     []
   );
 
+  const yearsOptions = useMemo(() => getYearsOptions(), []);
+
+  const numberOfHandsOptions = useMemo(
+    () => getNumberOfHandsOptions(),
+    []
+  );
+
   useEffect(() => {
     if (formState) {
       setErrorModalOpen(true);
@@ -288,29 +299,23 @@ console.log('formState',formState)
                     isMandatory
                   />
 
-                  <BasicFormField
-                    type="number"
-                    field={yearOfManufacture}
+                  <SelectSingle
                     label="Год выпуска"
-                    placeholder="Год выпуска"
-                    size="3"
-                    defaultValue={yearOfManufacture.initialValue}
-                    dataIsValid={yearOfManufacture.valid}
+                    field={yearOfManufacture}
+                    placeholder="Выберите год выпуска"
+                    options={yearsOptions}
                     errors={yearOfManufacture.errors}
-                    disabled={isPending}
+                    isDisabled={isPending}
                     isMandatory
                   />
 
-                  <BasicFormField
-                    type="text"
-                    field={numberOfHand}
+                  <SelectSingle
                     label="Количество рук"
-                    placeholder="Количество рук"
-                    size="3"
-                    defaultValue={numberOfHand.initialValue}
-                    dataIsValid={numberOfHand.valid}
+                    field={numberOfHand}
+                    placeholder="Выберите количество рук"
+                    options={numberOfHandsOptions}
                     errors={numberOfHand.errors}
-                    disabled={isPending}
+                    isDisabled={isPending}
                     isMandatory
                   />
 
