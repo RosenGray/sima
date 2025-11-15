@@ -42,7 +42,7 @@ export async function deleteCarAd(carPublicId: string) {
       // Delete each image file
       await fileManager.deleteFiles(
         user.id,
-        "cars",
+        "vehicles/cars",
         car.images.map((image) => ({
           fileName: image.uniqueName,
           versionId: image.versionId,

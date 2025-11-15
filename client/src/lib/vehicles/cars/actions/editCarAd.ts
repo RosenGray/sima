@@ -75,7 +75,7 @@ export async function editCarAd(
         uploadFormData.append("files", file);
       });
 
-      uploadResult = await uploadFiles("cars", user.id, uploadFormData);
+      uploadResult = await uploadFiles("vehicles/cars", user.id, uploadFormData);
     }
 
     // Get existing car using repository
