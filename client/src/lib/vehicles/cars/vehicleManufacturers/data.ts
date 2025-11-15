@@ -271,7 +271,7 @@ const vehicleManufacturersMap = {
       {
         "id": "18",
         "name": "אומגה",
-        "russianName": "омега"
+        "russianName": "Омега"
       },
       {
         "id": "89277",
@@ -281,7 +281,7 @@ const vehicleManufacturersMap = {
       {
         "id": "17",
         "name": "דלתא",
-        "russianName": "дельта"
+        "russianName": "Дельта"
       },
       {
         "id": "19",
@@ -303,7 +303,7 @@ const vehicleManufacturersMap = {
       {
         "id": "22",
         "name": "מאסטרו",
-        "russianName": "маэстро"
+        "russianName": "Маэстро"
       },
       {
         "id": "23",
@@ -318,24 +318,24 @@ const vehicleManufacturersMap = {
       {
         "id": "24",
         "name": "מיני",
-        "russianName": "сексуальный"
+        "russianName": "Мини"
       }
     ]
   },
   "5": {
     "id": "5",
     "name": "אופל",
-    "russianName": "опал",
+    "russianName": "Опель",
     "models": [
       {
         "id": "89278",
         "name": "מוקה",
-        "russianName": "мокко"
+        "russianName": "Мокка"
       },
       {
         "id": "35",
         "name": "קורסה",
-        "russianName": "корса"
+        "russianName": "Корса"
       },
       {
         "id": "1556",
@@ -345,7 +345,7 @@ const vehicleManufacturersMap = {
       {
         "id": "38402",
         "name": "אדם",
-        "russianName": "человек"
+        "russianName": "Адам"
       },
       {
         "id": "90419",
@@ -360,7 +360,7 @@ const vehicleManufacturersMap = {
       {
         "id": "29",
         "name": "אומגה",
-        "russianName": "омега"
+        "russianName": "Омега"
       },
       {
         "id": "26",
@@ -380,12 +380,12 @@ const vehicleManufacturersMap = {
       {
         "id": "1481",
         "name": "ויורו",
-        "russianName": "и евро"
+        "russianName": "Вектра"
       },
       {
         "id": "28",
         "name": "וקטרה",
-        "russianName": "и Катара"
+        "russianName": "Вектра"
       },
       {
         "id": "34",
@@ -405,17 +405,17 @@ const vehicleManufacturersMap = {
       {
         "id": "38404",
         "name": "מנטה",
-        "russianName": "мята"
+        "russianName": "Манта"
       },
       {
         "id": "1483",
         "name": "מנטה",
-        "russianName": "мята"
+        "russianName": "Манта"
       },
       {
         "id": "64171",
         "name": "מריבה",
-        "russianName": "ссориться"
+        "russianName": "Мерива"
       },
       {
         "id": "91070",
@@ -425,7 +425,7 @@ const vehicleManufacturersMap = {
       {
         "id": "32",
         "name": "קדט",
-        "russianName": "кадет"
+        "russianName": "Кадет"
       },
       {
         "id": "1482",
@@ -440,12 +440,12 @@ const vehicleManufacturersMap = {
       {
         "id": "1484",
         "name": "קפיטן",
-        "russianName": "капитан"
+        "russianName": "Капитан"
       },
       {
         "id": "1328",
         "name": "רקורד",
-        "russianName": "записывать"
+        "russianName": "Рекорд"
       }
     ]
   },
@@ -489,7 +489,7 @@ const vehicleManufacturersMap = {
       {
         "id": "90988",
         "name": "ג`וניור",
-        "russianName": "младший"
+        "russianName": "Джуниор"
       },
       {
         "id": "90989",
@@ -499,7 +499,7 @@ const vehicleManufacturersMap = {
       {
         "id": "1555",
         "name": "מיטו",
-        "russianName": "его кровать"
+        "russianName": "Мито"
       },
       {
         "id": "55",
@@ -574,12 +574,12 @@ const vehicleManufacturersMap = {
       {
         "id": "1355",
         "name": "בררה",
-        "russianName": "выбор"
+        "russianName": "Брера"
       },
       {
         "id": "61",
         "name": "סוד",
-        "russianName": "секрет"
+        "russianName": "Суд"
       },
       {
         "id": "62",
@@ -928,12 +928,12 @@ const vehicleManufacturersMap = {
       {
         "id": "120",
         "name": "לה סייבר",
-        "russianName": "Ла Кибер"
+        "russianName": "ЛаСейбер"
       },
       {
         "id": "1236",
         "name": "לה קרוס",
-        "russianName": "Ла Кросс"
+        "russianName": "Лакросс"
       },
       {
         "id": "1338",
@@ -943,27 +943,27 @@ const vehicleManufacturersMap = {
       {
         "id": "1485",
         "name": "לימיטד",
-        "russianName": "Ограниченный"
+        "russianName": "Лимитед"
       },
       {
         "id": "121",
         "name": "סנצורי",
-        "russianName": "сенсорный"
+        "russianName": "Сенчури"
       },
       {
         "id": "118",
         "name": "סקיילרק",
-        "russianName": "Жаворонок"
+        "russianName": "Скайларк"
       },
       {
         "id": "122",
         "name": "פארק אבניו",
-        "russianName": "Авеню Парк"
+        "russianName": "Парк Авеню"
       },
       {
         "id": "1486",
         "name": "רוד מאסטר",
-        "russianName": "Род Мастер"
+        "russianName": "Роудмастер"
       },
       {
         "id": "1339",
@@ -973,12 +973,12 @@ const vehicleManufacturersMap = {
       {
         "id": "119",
         "name": "ריגל",
-        "russianName": "шпион"
+        "russianName": "Ригал"
       },
       {
         "id": "91090",
         "name": "רנדוו",
-        "russianName": "рандеву"
+        "russianName": "Рандеву"
       }
     ]
   },
@@ -995,7 +995,7 @@ const vehicleManufacturersMap = {
       {
         "id": "91093",
         "name": "פליינג ספור",
-        "russianName": "Летающая шпора"
+        "russianName": "Флайинг Спур"
       },
       {
         "id": "91094",
@@ -1061,7 +1061,7 @@ const vehicleManufacturersMap = {
       {
         "id": "91097",
         "name": "גלדיאטור",
-        "russianName": "гладиатор"
+        "russianName": "Гладиатор"
       },
       {
         "id": "91098",
@@ -1071,12 +1071,12 @@ const vehicleManufacturersMap = {
       {
         "id": "91101",
         "name": "וגוניר",
-        "russianName": "и Гунир"
+        "russianName": "Вагонер"
       },
       {
         "id": "91102",
         "name": "פטריוט",
-        "russianName": "патриот"
+        "russianName": "Патриот"
       },
       {
         "id": "91103",
@@ -1098,7 +1098,7 @@ const vehicleManufacturersMap = {
   "19": {
     "id": "19",
     "name": "דודג`",
-    "russianName": "Уклоняться",
+    "russianName": "Додж",
     "models": [
       {
         "id": "1487",
@@ -1118,7 +1118,7 @@ const vehicleManufacturersMap = {
       {
         "id": "1720",
         "name": "ג'רני",
-        "russianName": "Путешествие"
+        "russianName": "Джурни"
       },
       {
         "id": "91117",
@@ -1128,12 +1128,12 @@ const vehicleManufacturersMap = {
       {
         "id": "1721",
         "name": "וייפר",
-        "russianName": "Гадюка"
+        "russianName": "Вайпер"
       },
       {
         "id": "976",
         "name": "ולי",
-        "russianName": "И мне"
+        "russianName": "Уолли"
       },
       {
         "id": "91116",
@@ -1143,7 +1143,7 @@ const vehicleManufacturersMap = {
       {
         "id": "1341",
         "name": "צ'ארגר",
-        "russianName": "Зарядное устройство"
+        "russianName": "Чарджер"
       },
       {
         "id": "89307",
@@ -1165,7 +1165,7 @@ const vehicleManufacturersMap = {
       {
         "id": "154",
         "name": "אספרו",
-        "russianName": "рассказывать"
+        "russianName": "Эсперо"
       },
       {
         "id": "1343",
@@ -1175,12 +1175,12 @@ const vehicleManufacturersMap = {
       {
         "id": "155",
         "name": "לאנוס",
-        "russianName": "изнасилование"
+        "russianName": "Ланос"
       },
       {
         "id": "156",
         "name": "לגנצה",
-        "russianName": "в сад"
+        "russianName": "Леганза"
       },
       {
         "id": "157",
@@ -1210,7 +1210,7 @@ const vehicleManufacturersMap = {
       {
         "id": "161",
         "name": "סופר רייסר",
-        "russianName": "супер гонщик"
+        "russianName": "Супер Рейсер"
       },
       {
         "id": "162",
@@ -1272,12 +1272,12 @@ const vehicleManufacturersMap = {
       {
         "id": "91128",
         "name": "פרוזה",
-        "russianName": "проза"
+        "russianName": "Проза"
       },
       {
         "id": "170",
         "name": "קורה",
-        "russianName": "луч"
+        "russianName": "Кора"
       },
       {
         "id": "171",
@@ -1309,7 +1309,7 @@ const vehicleManufacturersMap = {
       {
         "id": "226",
         "name": "אקורד",
-        "russianName": "аккорд"
+        "russianName": "Аккорд"
       },
       {
         "id": "38413",
@@ -1354,7 +1354,7 @@ const vehicleManufacturersMap = {
       {
         "id": "235",
         "name": "האצ`בק",
-        "russianName": "хэтчбек"
+        "russianName": "Хэтчбек"
       },
       {
         "id": "232",
@@ -1364,7 +1364,7 @@ const vehicleManufacturersMap = {
       {
         "id": "234",
         "name": "סטרים",
-        "russianName": "транслировать"
+        "russianName": "Стрим"
       },
       {
         "id": "1495",
@@ -1419,7 +1419,7 @@ const vehicleManufacturersMap = {
       {
         "id": "91138",
         "name": "פיילוט",
-        "russianName": "пилот"
+        "russianName": "Пилот"
       },
       {
         "id": "227",
@@ -2174,7 +2174,7 @@ const vehicleManufacturersMap = {
       {
         "id": "1134",
         "name": "גטס",
-        "russianName": "получает"
+        "russianName": "Гетц"
       },
       {
         "id": "1500",
@@ -2194,17 +2194,17 @@ const vehicleManufacturersMap = {
       {
         "id": "64054",
         "name": "ולוסטר",
-        "russianName": "и блеск"
+        "russianName": "Велостер"
       },
       {
         "id": "91173",
         "name": "וניו",
-        "russianName": "и новый"
+        "russianName": "Веню"
       },
       {
         "id": "91174",
         "name": "טאראקן",
-        "russianName": "таракан"
+        "russianName": "Туксон"
       },
       {
         "id": "1711",
@@ -2234,17 +2234,17 @@ const vehicleManufacturersMap = {
       {
         "id": "91175",
         "name": "פליסדה",
-        "russianName": "частокол"
+        "russianName": "Палисейд"
       },
       {
         "id": "91170",
         "name": "קונה",
-        "russianName": "покупатель"
+        "russianName": "Кона"
       },
       {
         "id": "324",
         "name": "קופה",
-        "russianName": "Театральная касса"
+        "russianName": "Купе"
       }
     ]
   },
@@ -2266,7 +2266,7 @@ const vehicleManufacturersMap = {
       {
         "id": "91178",
         "name": "ניבה",
-        "russianName": "урожай"
+        "russianName": "Нива"
       },
       {
         "id": "381",
@@ -2345,12 +2345,12 @@ const vehicleManufacturersMap = {
       {
         "id": "388",
         "name": "דלתא",
-        "russianName": "дельта"
+        "russianName": "Дельта"
       },
       {
         "id": "392",
         "name": "פריזמה",
-        "russianName": "призма"
+        "russianName": "Призма"
       },
       {
         "id": "389",
@@ -6154,7 +6154,7 @@ const vehicleManufacturersMap = {
   "152": {
     "id": "152",
     "name": "מיני",
-    "russianName": "сексуальный",
+    "russianName": "мини",
     "models": [
       {
         "id": "38435",
