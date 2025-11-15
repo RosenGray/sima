@@ -77,12 +77,17 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     contactName: z.string({
       required_error: "Введите имя контакта",
     }),
-    contactPrimaryPhone: z.string({
-      required_error: "Введите основной телефон",
-    }),
-    contactSecondaryPhone: z.string({
-      required_error: "Введите дополнительный телефон",
-    }).optional(),
+    contactPrimaryPhone: z
+      .string({
+        required_error: "Введите основной телефон,Телефон может содержать только цифры",
+      })
+      .regex(/^[0-9]+$/, "Телефон может содержать только цифры"),
+    contactSecondaryPhone: z
+      .string({
+        required_error: "Введите дополнительный телефон",
+      })
+      .regex(/^[0-9]+$/, "Телефон может содержать только цифры ")
+      .optional(),
     contactEmail: z
       .string({
         required_error: "Электронная почта обязательна",
