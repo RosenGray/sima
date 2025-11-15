@@ -40,6 +40,7 @@ import {
   getVehicleModelsToSelectOptions,
 } from "@/lib/vehicles/cars/vehicleModels";
 import { TransmissionType, EngineType } from "@/lib/vehicles/cars/types/cars.types";
+import { getNumberOfDorsOptions } from "@/lib/vehicles/utils/vehicles.utils";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -83,7 +84,7 @@ const CarPublishForm: FC = () => {
     publishCarAd,
     undefined
   );
-
+console.log('formState',formState)
   const [form, fields] = useForm({
     defaultValue: {
       manufacturer: "",
@@ -195,6 +196,11 @@ const CarPublishForm: FC = () => {
         (district.value as Districts) || Districts.Center
       ),
     [district.value]
+  );
+
+  const numberOfDoorsOptions = useMemo(
+    () => getNumberOfDorsOptions(),
+    []
   );
 
   useEffect(() => {
@@ -352,16 +358,13 @@ const CarPublishForm: FC = () => {
                     disabled={isPending}
                   />
 
-                  <BasicFormField
-                    type="number"
-                    field={numberOfDoors}
+                  <SelectSingle
                     label="Количество дверей"
-                    placeholder="Количество дверей"
-                    size="3"
-                    defaultValue={numberOfDoors.initialValue}
-                    dataIsValid={numberOfDoors.valid}
+                    field={numberOfDoors}
+                    placeholder="Выберите количество дверей"
+                    options={numberOfDoorsOptions}
                     errors={numberOfDoors.errors}
-                    disabled={isPending}
+                    isDisabled={isPending}
                   />
 
                   <BasicFormField

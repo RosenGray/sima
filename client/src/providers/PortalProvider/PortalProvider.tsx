@@ -23,7 +23,6 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Only runs on client after mount
     const element = document.getElementById(RADIX_THEME_PORTAL_ID);
-    console.log("element", element);
     setPortalTarget(element);
   }, []);
 
