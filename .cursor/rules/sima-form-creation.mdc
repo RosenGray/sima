@@ -1,0 +1,165 @@
+---
+description: Form creation guidelines and best practices
+globs:
+alwaysApply: true
+---
+
+# Form Creation Guidelines
+
+## Component Structure
+
+- Form components should be placed in `app/(private)/publish-ad/_components/{category}/{FormName}/`
+- Component file: `{FormName}.tsx` (e.g., `CarPublishForm.tsx`)
+- Styled components file: `{FormName}.styles.ts` (e.g., `CarPublishForm.styles.ts`)
+- Always use "use client" directive at the top of form components
+- Component name should start with a capital letter and use PascalCase
+
+## Required Imports
+
+- `useForm`, `getFormProps` from `@conform-to/react`
+- `parseWithZod` from `@conform-to/zod`
+- `useActionState` from `react`
+- Radix UI components: `Box`, `Flex`, `Grid`, `Heading`, `Separator`, `Text` from `@radix-ui/themes`
+- Form components from `@/components/Form/`:
+  - `SelectSingle` for dropdowns
+  - `BasicFormField` for text/number inputs
+  - `TextAreaField` for textarea fields
+  - `PhoneFormField` for phone number inputs
+  - `Checkbox` for checkboxes
+  - `DropFilesInput` for file uploads
+- `useAuth` from `@/providers/AuthProvider/AuthProvider` for user context
+- `SubmitButton` from `@/components/buttons/SubmitButton/SubmitButton`
+- `ErrorModal` from `@/components/modals/ErrorModal/ErrorModal`
+- `Loader` from `@/components/Loader`
+- `ImagesPreviewer` from `@/components/ImagesPreviewer/ImagesPreviewer`
+
+## Form State Management
+
+- Use `useActionState` hook with your server action (e.g., `publishCarAd`)
+- Use `useForm` hook from `@conform-to/react` with:
+  - `defaultValue` object containing all form fields initialized to empty strings/arrays
+  - `lastResult: formState` to handle validation errors
+  - `onValidate` callback that merges selectedFiles with formData before validation
+  - `shouldRevalidate: "onInput"` and `shouldValidate: "onInput"` for real-time validation
+- Destructure all field objects from `fields` for use in form components
+
+## Schema Validation
+
+- Create Zod schema in `lib/{category}/types/{entity}.schema.ts`
+- Schema should be a function that accepts options (e.g., `createCarSchema({ minNumberOfImages: 1 })`)
+- For optional number fields, use `z.preprocess` to handle empty strings:
+  ```typescript
+  optionalNumberField: z.preprocess(
+    (val) => {
+      if (val === "" || val === null || val === undefined) return undefined;
+      const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+      return num !== undefined && !Number.isNaN(num) ? num : undefined;
+    },
+    z.number().optional()
+  )
+  ```
+- Use `z.nativeEnum()` for enum fields
+- Use `z.string().email()` for email validation
+- Use `z.string().optional().superRefine()` for checkbox validation (check for "on" value)
+- For file arrays, use `z.array(z.instanceof(File)).min()` with `superRefine` for file validation
+
+## Form Field Components
+
+- Use `SelectSingle` for all dropdown fields with:
+  - `label`, `field`, `placeholder`, `options`, `errors`, `isDisabled`, `isMandatory` props
+- Use `BasicFormField` for text/number inputs with:
+  - `type`, `field`, `label`, `placeholder`, `size`, `defaultValue`, `dataIsValid`, `errors`, `disabled`, `isMandatory` props
+- Use `TextAreaField` for textarea fields
+- Use `PhoneFormField` for phone number inputs
+- Use `Checkbox` for checkbox fields
+- Always pass `errors={field.errors}` to display validation errors
+- Always pass `isDisabled={isPending}` to disable fields during submission
+
+## Dependent Dropdowns
+
+- Use `useMemo` to compute dependent options based on parent field value
+- Example for manufacturer → model:
+  ```typescript
+  const modelOptions = useMemo(
+    () =>
+      manufacturer.value
+        ? getVehicleModelsToSelectOptions(manufacturer.value as string)
+        : [],
+    [manufacturer.value]
+  );
+  ```
+- Disable dependent dropdowns when parent value is empty: `isDisabled={isPending || !parentField.value}`
+
+## Image Upload Handling
+
+- Use `useState<File[]>` for `selectedFiles`
+- Use `DropFilesInput` component with:
+  - `field={images}`
+  - `onFilesSelected={(files) => setSelectedFiles(files)}`
+  - `maxFiles={MAX_FILES}`
+  - `maxFileSize={MAX_FILE_SIZE}`
+- In `onValidate`, merge `selectedFiles` with formData:
+  ```typescript
+  selectedFiles.forEach((file) => {
+    updatedFormData.append("images", file);
+  });
+  ```
+- Use `ImagesPreviewer` to display uploaded images with delete functionality
+
+## Form Layout and Styling
+
+- Use styled components from `{FormName}.styles.ts`:
+  - `FormShell` - main form container with responsive padding
+  - `HeroCard` - hero section with title and description
+  - `SectionCard` - section containers for grouped fields
+  - `DropzoneSurface` - styled dropzone for file uploads
+- Use Radix UI responsive props: `px={{ initial: "4", sm: "6", md: "8" }}`
+- Use `Grid` with responsive columns: `columns={{ initial: "1", md: "2" }}`
+- Group related fields in `SectionCard` components with descriptive headings
+- Use `Separator` between major sections
+
+## Form Submission
+
+- Server action should:
+  - Use `parseWithZod` for validation
+  - Get current user with `getCurrentUser()`
+  - Handle file uploads with `uploadFiles()` before creating entity
+  - Use repository pattern to create/update entity
+  - Call `revalidatePath()` after successful creation
+  - Use `redirect()` to navigate after success
+- Handle errors by returning `result.reply()` with `formErrors` or field-specific errors
+
+## Error Handling
+
+- Use `ErrorModal` component to display form errors
+- Show modal when `formState` has errors: `useEffect(() => { if (formState) setErrorModalOpen(true); }, [formState])`
+- Reset form on modal close: `setFormKey((prev) => prev + 1)` and clear selectedFiles
+
+## Loading States
+
+- Show `Loader` component when `isPending` is true
+- Disable all form fields and submit button when `isPending` is true
+
+## Default Values
+
+- Initialize all fields to empty strings (`""`) or empty arrays (`[]`)
+- For dropdowns with default values (e.g., district), use enum value: `district: Districts.Center`
+- Pre-fill user email: `contactEmail: user?.email || ""`
+- Initialize checkbox to `null` for unchecked state
+
+## Form Reset
+
+- Use `formKey` state to force form re-render on reset
+- Increment `formKey` when resetting: `setFormKey((prev) => prev + 1)`
+- Clear `selectedFiles` on reset: `setSelectedFiles([])`
+
+## Best Practices
+
+- Always validate on input for better UX: `shouldValidate: "onInput"`
+- Use `useMemo` for computed options to prevent unnecessary re-renders
+- Extract enum-to-options mapping outside component if static
+- Use TypeScript types from schema: `z.infer<ReturnType<typeof createSchema>>`
+- Follow the structure of existing forms (e.g., `ProfessionalServicePublishForm`) as a template
+- Ensure all required fields have `isMandatory` prop set to true
+- Use descriptive labels and placeholders in Russian (or appropriate language)
+- Group related fields logically in sections with clear headings
