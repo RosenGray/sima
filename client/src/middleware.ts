@@ -4,25 +4,25 @@ import { SIMA_AUTH_SESSION_CONFIG } from "@/lib/auth/config";
 
 // Define routes that should be protected
 const protectedRoutes = [
-  "/dashboard",
-  "/profile",
-  "/settings",
-  "/admin",
-  "/api/protected",
-  "/publish-ad",
+  // "/dashboard",
+  // "/profile",
+  // "/settings",
+  // "/admin",
+  // "/api/protected",
+  // "/publish-ad",
 ];
 
 // Define routes that should be accessible without authentication
 const publicRoutes = [
-  "/",
-  "/login",
-  "/register",
-  "/auth/login",
-  "/auth/reset-password",
-  "/auth/verify-reset-token",
-  "/about",
-  "/api/auth",
-  "/api/files",
+  // "/",
+  // "/login",
+  // "/register",
+  // "/auth/login",
+  // "/auth/reset-password",
+  // "/auth/verify-reset-token",
+  // "/about",
+  // "/api/auth",
+  // "/api/files",
 ];
 
 // Define routes that should redirect authenticated users away

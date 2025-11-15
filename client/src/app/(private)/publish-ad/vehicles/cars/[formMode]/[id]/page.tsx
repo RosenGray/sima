@@ -4,6 +4,9 @@ import { FormModeSchema } from "@/components/Form/types/form.types";
 import { FormMode } from "@/components/Form/types/form.types";
 import { notFound } from "next/navigation";
 import { PublishAdVehiclesPageContainer } from "../page.styles";
+import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
+import { thisUserIsOwner } from "@/lib/auth/utils/auth.utils";
+import CarPublishForm from "@/app/(private)/publish-ad/_components/vehicles/CarPublishForm/CarPublishForm";
 
 interface EditPublishAdVehiclesPageProps {
   params: Promise<{ formMode: string; id: string }>;
@@ -19,11 +22,11 @@ const EditPublishAdVehiclesPage: FC<EditPublishAdVehiclesPageProps> = async ({
   const validatedParams = FormModeSchema.safeParse(formMode);
   if (!validatedParams.success || isCreateMode) return notFound();
 
-  // //get service
-  // const service = await professionalServiceRepository.getByPublicId(id);
-  // if (!service) return notFound();
-  // const isOwner = await thisUserIsOwner(service.user.id);
-  // if (!isOwner) return notFound();
+  //get car
+  const car = await carRepository.getByPublicId(id);
+  if (!car) return notFound();
+  const isOwner = await thisUserIsOwner(car.user.id);
+  if (!isOwner) return notFound();
 
   return (
     <PublishAdVehiclesPageContainer>
@@ -32,10 +35,7 @@ const EditPublishAdVehiclesPage: FC<EditPublishAdVehiclesPageProps> = async ({
           Редактирование объявления
         </Heading>
         <Card>
-          {/* <ProfessionalServicePublishForm
-            service={service}
-            formMode={FormMode.Edit}
-          /> */}
+        <CarPublishForm/>
         </Card>
       </Box>
     </PublishAdVehiclesPageContainer>

@@ -44,34 +44,34 @@ export async function publishCarAd(
       uploadFormData
     );
 
-    // // Create car using repository
-    // await carRepository.create({
-    //   manufacturer: carData.manufacturer,
-    //   model: carData.model as string,
-    //   yearOfManufacture: carData.yearOfManufacture as number,
-    //   numberOfHand: Number(carData.numberOfHand),
-    //   transmission: carData.transmission,
-    //   engineType: carData.engineType as EngineType,
-    //   engineCapacity: carData.engineCapacity as number | undefined,
-    //   mileage: carData.mileage as number | undefined,
-    //   numberOfDoors: carData.numberOfDoors as number | undefined,
-    //   color: carData.color as string | undefined,
-    //   price: carData.price as number,
-    //   description: carData.description as string,
-    //   accessories: carData.accessories as string | undefined,
-    //   district: carData.district as string,
-    //   city: carData.city as string,
-    //   contactName: carData.contactName as string,
-    //   contactPrimaryPhone: carData.contactPrimaryPhone,
-    //   contactSecondaryPhone: carData.contactSecondaryPhone,
-    //   contactEmail: carData.contactEmail as string,
-    //   user: user.id as unknown as mongoose.Types.ObjectId,
-    //   publicId: nanoid(10),
-    //   acceptTerms: (carData.acceptTerms as string) === "on",
-    //   images: uploadResult.files,
-    // });
-
-    // Return success response with uploaded file data
+    // Create car using repository
+    await carRepository.create({
+      manufacturer: carData.manufacturer as string,
+      model: carData.model as string,
+      yearOfManufacture: carData.yearOfManufacture as number,
+      numberOfHand: String(carData.numberOfHand),
+      transmission: carData.transmission as TransmissionType,
+      engineType: carData.engineType as EngineType,
+      engineCapacity: carData.engineCapacity as number | undefined,
+      mileage: carData.mileage as number | undefined,
+      numberOfDoors: carData.numberOfDoors as number | undefined,
+      color: carData.color as string | undefined,
+      price: carData.price as number,
+      description: carData.description as string,
+      accessories: carData.accessories as string | undefined,
+      district: carData.district as string,
+      city: carData.city as string,
+      contactName: carData.contactName as string,
+      contactPrimaryPhone: String(carData.contactPrimaryPhone),
+      contactSecondaryPhone: carData.contactSecondaryPhone
+        ? String(carData.contactSecondaryPhone)
+        : undefined,
+      contactEmail: carData.contactEmail as string,
+      user: user.id as unknown as mongoose.Types.ObjectId,
+      publicId: nanoid(10),
+      acceptTerms: (carData.acceptTerms as string) === "on",
+      images: uploadResult.files,
+    });
   } catch (error) {
     if (error instanceof Error) {
       return result.reply({

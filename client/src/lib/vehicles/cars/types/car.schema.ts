@@ -33,13 +33,33 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     engineType: z.nativeEnum(EngineType, {
       required_error: "Выберите тип двигателя",
     }),
-    engineCapacity: z.number().optional(),
-    mileage: z
-      .union([
-        z.number().min(0, "Пробег не может быть отрицательным"),
-        z.undefined(),
-      ]),
-    numberOfDoors: z.number().optional(),
+    engineCapacity: z.preprocess(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return undefined;
+        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+        return num !== undefined && !Number.isNaN(num) ? num : undefined;
+      },
+      z.number().optional()
+    ),
+    mileage: z.preprocess(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return undefined;
+        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+        return num !== undefined && !Number.isNaN(num) ? num : undefined;
+      },
+      z
+        .number()
+        .min(0, "Пробег не может быть отрицательным")
+        .optional()
+    ),
+    numberOfDoors: z.preprocess(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return undefined;
+        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+        return num !== undefined && !Number.isNaN(num) ? num : undefined;
+      },
+      z.number().optional()
+    ),
     color: z.string().optional(),
     price: z.number({
       required_error: "Введите цену",

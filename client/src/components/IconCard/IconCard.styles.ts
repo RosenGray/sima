@@ -44,7 +44,7 @@ export const IconCardIcon = styled.div`
   width: 64px;
   height: 64px;
   border-radius: var(--radius-3);
-  background: var(--accent-3);
+  /* background: var(--accent-3); */
   color: var(--accent-11);
   margin-bottom: var(--space-2);
 
