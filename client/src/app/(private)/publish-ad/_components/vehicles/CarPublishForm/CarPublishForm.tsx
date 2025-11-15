@@ -180,7 +180,7 @@ const CarPublishForm: FC = () => {
     acceptTerms,
     images,
   } = fields;
-
+console.log(formState)
   const manufacturerOptions = useMemo(
     () => mapVehicleManufacturersToSelectOptions(),
     []

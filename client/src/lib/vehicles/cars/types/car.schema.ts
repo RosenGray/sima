@@ -24,9 +24,9 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     yearOfManufacture: z.number({
       required_error: "Введите год выпуска",
     }).min(1900, "Год должен быть не менее 1900"),
-    numberOfHand: z.string({
+    numberOfHand: z.number({
       required_error: "Введите количество рук",
-    }),
+    }).min(1, "Количество рук должно быть не менее 1"),
     transmission: z.nativeEnum(TransmissionType, {
       required_error: "Выберите тип коробки передач",
     }),
@@ -77,10 +77,12 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     contactName: z.string({
       required_error: "Введите имя контакта",
     }),
-    contactPrimaryPhone: z.number({
+    contactPrimaryPhone: z.string({
       required_error: "Введите основной телефон",
     }),
-    contactSecondaryPhone: z.number().optional(),
+    contactSecondaryPhone: z.string({
+      required_error: "Введите дополнительный телефон",
+    }).optional(),
     contactEmail: z
       .string({
         required_error: "Электронная почта обязательна",
