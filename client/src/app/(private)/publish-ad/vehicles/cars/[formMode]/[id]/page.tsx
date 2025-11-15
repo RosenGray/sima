@@ -35,7 +35,7 @@ const EditPublishAdVehiclesPage: FC<EditPublishAdVehiclesPageProps> = async ({
           Редактирование объявления
         </Heading>
         <Card>
-        <CarPublishForm/>
+          <CarPublishForm car={car} formMode={FormMode.Edit} />
         </Card>
       </Box>
     </PublishAdVehiclesPageContainer>

@@ -22,7 +22,7 @@ const PublishAdVehiclesPage: FC<PublishAdVehiclesPageProps> = async ({
       <Heading mb="4" align="center">
         Добавление нового объявления
       </Heading>
-      <CarPublishForm/>
+      <CarPublishForm formMode={FormMode.Create} />
     </PublishAdVehiclesPageContainer>
   );
 };

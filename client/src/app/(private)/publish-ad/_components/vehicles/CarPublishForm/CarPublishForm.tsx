@@ -23,9 +23,13 @@ import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";
 import { publishCarAd } from "@/lib/vehicles/cars/actions/publishCarAd";
+import { editCarAd } from "@/lib/vehicles/cars/actions/editCarAd";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import { SubmitButton } from "@/components/buttons/SubmitButton/SubmitButton";
+import { ExistingImageItem } from "@/lib/files/uploadFiles";
+import { FormMode } from "@/components/Form/types/form.types";
+import { SerializedCar } from "@/lib/vehicles/cars/types/cars.types";
 import Loader from "@/components/Loader";
 import {
   DropzoneSurface,
@@ -78,39 +82,68 @@ const engineTypeOptions = Object.values(EngineType).map((value) => ({
   fieldKey: "engineType",
 }));
 
-const CarPublishForm: FC = () => {
+interface CarPublishFormProps {
+  car?: SerializedCar;
+  formMode: FormMode;
+}
+
+const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
+  const isCreateMode = formMode === FormMode.Create;
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
+    () => {
+      return (
+        car?.images.map((image) => ({
+          ...image,
+          isExisting: true,
+          toBeDeleted: false,
+        })) || []
+      );
+    }
+  );
+  const imagesToDelete = useMemo(() => {
+    return existingImages.filter((image) => image.toBeDeleted);
+  }, [existingImages]);
+
+  const allImagesShouldBeDeleted =
+    imagesToDelete.length === existingImages.length;
+
+  const updateCarWithImagesToDelete = editCarAd.bind(null, {
+    carPublicId: car?.publicId as string,
+    imagesToDelete,
+    allImagesShouldBeDeleted,
+  });
 
   const [formState, formAction, isPending] = useActionState(
-    publishCarAd,
+    isCreateMode ? publishCarAd : updateCarWithImagesToDelete,
     undefined
   );
 
   const [form, fields] = useForm({
     defaultValue: {
-      manufacturer: "",
-      model: "",
-      yearOfManufacture: "",
-      numberOfHand: "",
-      transmission: "",
-      engineType: "",
-      engineCapacity: "",
-      mileage: "",
-      numberOfDoors: "",
-      color: "",
-      price: "",
-      description: "",
-      accessories: "",
-      district: Districts.Center,
-      city: "",
-      contactName: "",
-      contactPrimaryPhone: "",
-      contactSecondaryPhone: "",
-      contactEmail: user?.email || "",
-      acceptTerms: null,
+      manufacturer: car?.manufacturer || "",
+      model: car?.model || "",
+      yearOfManufacture: car?.yearOfManufacture?.toString() || "",
+      numberOfHand: car?.numberOfHand?.toString() || "",
+      transmission: car?.transmission || "",
+      engineType: car?.engineType || "",
+      engineCapacity: car?.engineCapacity?.toString() || "",
+      mileage: car?.mileage?.toString() || "",
+      numberOfDoors: car?.numberOfDoors?.toString() || "",
+      color: car?.color || "",
+      price: car?.price?.toString() || "",
+      description: car?.description || "",
+      accessories: car?.accessories || "",
+      district: car?.district || Districts.Center,
+      city: car?.city || "",
+      contactName: car?.contactName || "",
+      contactPrimaryPhone: car?.contactPrimaryPhone || "",
+      contactSecondaryPhone: car?.contactSecondaryPhone || "",
+      contactEmail: car?.contactEmail || user?.email || "",
+      acceptTerms: car?.acceptTerms ? "on" : null,
       images: [],
     },
     lastResult: formState,
@@ -140,7 +173,9 @@ const CarPublishForm: FC = () => {
       });
 
       return parseWithZod(updatedFormData, {
-        schema: createCarSchema({ minNumberOfImages: 1 }),
+        schema: createCarSchema({
+          minNumberOfImages: allImagesShouldBeDeleted ? 1 : 0,
+        }),
       });
     },
     shouldRevalidate: "onInput",
@@ -180,7 +215,7 @@ const CarPublishForm: FC = () => {
     acceptTerms,
     images,
   } = fields;
-console.log(formState)
+
   const manufacturerOptions = useMemo(
     () => mapVehicleManufacturersToSelectOptions(),
     []
@@ -506,16 +541,19 @@ console.log(formState)
                     onFilesDrop={setSelectedFiles}
                     files={selectedFiles}
                     disabled={false}
-                    existingFilesLength={0}
+                    existingFilesLength={
+                      existingImages.filter((image) => !image.toBeDeleted)
+                        .length
+                    }
                   />
                 </DropzoneSurface>
-                {selectedFiles.length > 0 && (
+                {(existingImages.length > 0 || selectedFiles.length > 0) && (
                   <Box>
                     <ImagesPreviewer
-                      existingImages={[]}
+                      existingImages={existingImages}
                       images={selectedFiles}
                       setImages={setSelectedFiles}
-                      setExistingImages={() => {}}
+                      setExistingImages={setExistingImages}
                       maxImages={MAX_FILES}
                     />
                   </Box>
@@ -610,7 +648,7 @@ console.log(formState)
                   <SubmitButton
                     pending={isPending}
                     disabled={acceptTerms.value !== "on"}
-                    text="Добавить объявление"
+                    text={isCreateMode ? "Добавить объявление" : "Сохранить изменения"}
                   />
                 </Flex>
               </Flex>

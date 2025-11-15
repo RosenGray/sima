@@ -58,7 +58,6 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
       }));
   }, [existingImages]);
 
-  console.log("existingImagesWithPreview", existingImagesWithPreview);
   // Combine existing images and new files into a single array
   const allImages = useMemo(() => {
     return [...existingImagesWithPreview, ...filesWithPreview];
