@@ -59,25 +59,11 @@ const formatEngineType = (type: EngineType): string => {
 
 // Helper function to format price
 const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat("ru-RU").format(price) + " ₪";
+  return new Intl.NumberFormat("il-IL", { style: "currency", currency: "ILS" }).format(price);
 };
 
 const CarCard: React.FC<CarCardProps> = ({ car }) => {
-  const {
-    images,
-    publicId,
-    district,
-    city,
-    manufacturer,
-    model,
-    yearOfManufacture,
-    numberOfHand,
-    price,
-    transmission,
-    engineType,
-    mileage,
-    numberOfDoors,
-  } = car;
+  const { images, publicId, district, city, manufacturer, model, yearOfManufacture, numberOfHand, price, transmission, engineType, mileage, numberOfDoors } = car;
 
   const location = getCityById(city, district as Districts);
   const locationName = location?.nameRussian || "";
@@ -131,9 +117,9 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
             {manufacturer} {model}
           </Heading>
           <Text size="2" color="gray">
-            {yearOfManufacture} • יד {numberOfHand}
+            {yearOfManufacture} • {numberOfHand} рук
           </Text>
-          <Text size="6" weight="bold" color="accent">
+          <Text size="6" weight="bold" color="red">
             {formatPrice(price)}
           </Text>
         </CarCardContent>
