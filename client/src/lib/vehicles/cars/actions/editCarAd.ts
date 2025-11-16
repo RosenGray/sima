@@ -39,7 +39,7 @@ export async function editCarAd(
     const fileManager = await getFileManager();
     await fileManager.deleteFiles(
       user.id,
-      "cars",
+      "vehicles/cars",
       context.imagesToDelete.map((image) => ({
         fileName: image.uniqueName,
         versionId: image.versionId,

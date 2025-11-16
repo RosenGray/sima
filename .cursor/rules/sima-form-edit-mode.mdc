@@ -1,0 +1,263 @@
+---
+description: Form edit mode implementation guidelines
+globs:
+alwaysApply: true
+---
+
+# Form Edit Mode Guidelines
+
+## Overview
+
+Forms should support both create and edit modes using the `FormMode` enum. This guide covers implementing edit functionality for existing forms.
+
+## Component Props
+
+- Add props interface to form component:
+  ```typescript
+  interface FormNameProps {
+    entity?: SerializedEntity; // e.g., SerializedCar, SerializedProfessionalService
+    formMode: FormMode;
+  }
+  ```
+- Import `FormMode` from `@/components/Form/types/form.types`
+- Import serialized entity type from appropriate types file (e.g., `SerializedCar` from `@/lib/vehicles/cars/types/cars.types`)
+- Component signature: `const FormName: FC<FormNameProps> = ({ entity, formMode }) => { ... }`
+
+## Form Mode Detection
+
+- Add mode check at the start of component:
+  ```typescript
+  const isCreateMode = formMode === FormMode.Create;
+  ```
+- Use `isCreateMode` to conditionally render UI elements, change button text, or adjust validation
+
+## Required Imports for Edit Mode
+
+- `FormMode` from `@/components/Form/types/form.types`
+- `SerializedEntity` type from appropriate types file
+- `ExistingImageItem` from `@/lib/files/uploadFiles`
+- Edit action function (e.g., `editCarAd` from `@/lib/vehicles/cars/actions/editCarAd`)
+
+## Existing Images State Management
+
+- Initialize `existingImages` state from entity data:
+  ```typescript
+  const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
+    () => {
+      return (
+        entity?.images.map((image) => ({
+          ...image,
+          isExisting: true,
+          toBeDeleted: false,
+        })) || []
+      );
+    }
+  );
+  ```
+- Track images marked for deletion:
+  ```typescript
+  const imagesToDelete = useMemo(() => {
+    return existingImages.filter((image) => image.toBeDeleted);
+  }, [existingImages]);
+  ```
+- Check if all images are being deleted:
+  ```typescript
+  const allImagesShouldBeDeleted =
+    imagesToDelete.length === existingImages.length;
+  ```
+
+## Action Binding for Edit Mode
+
+- Bind edit action with context for edit mode:
+  ```typescript
+  const updateEntityWithImagesToDelete = editEntityAd.bind(null, {
+    entityPublicId: entity?.publicId as string,
+    imagesToDelete,
+    allImagesShouldBeDeleted,
+  });
+  ```
+- Conditionally use create or edit action:
+  ```typescript
+  const [formState, formAction, isPending] = useActionState(
+    isCreateMode ? publishEntityAd : updateEntityWithImagesToDelete,
+    undefined
+  );
+  ```
+
+## Form Default Values for Edit Mode
+
+- Populate `defaultValue` object from entity data when in edit mode:
+  ```typescript
+  const [form, fields] = useForm({
+    defaultValue: {
+      // String fields
+      fieldName: entity?.fieldName || "",
+      
+      // Number fields - convert to string for form inputs
+      numericField: entity?.numericField?.toString() || "",
+      
+      // Enum fields
+      enumField: entity?.enumField || "",
+      
+      // Optional fields with defaults
+      optionalField: entity?.optionalField || "",
+      
+      // Checkbox fields
+      acceptTerms: entity?.acceptTerms ? "on" : null,
+      
+      // Arrays
+      images: [],
+    },
+    // ... rest of form config
+  });
+  ```
+- Always provide fallback values (empty strings, null, empty arrays)
+- Convert numbers to strings for form inputs (they'll be converted back by schema)
+- For checkboxes, use `"on"` if entity value is true, `null` if false/undefined
+
+## Image Handling in Edit Mode
+
+- Update `DropFilesInput` to account for existing images:
+  ```typescript
+  <DropFilesInput
+    // ... other props
+    existingFilesLength={
+      existingImages.filter((image) => !image.toBeDeleted).length
+    }
+  />
+  ```
+- Update `ImagesPreviewer` to handle existing images:
+  ```typescript
+  {(existingImages.length > 0 || selectedFiles.length > 0) && (
+    <Box>
+      <ImagesPreviewer
+        existingImages={existingImages}
+        images={selectedFiles}
+        setImages={setSelectedFiles}
+        setExistingImages={setExistingImages}
+        maxImages={MAX_FILES}
+      />
+    </Box>
+  )}
+  ```
+- Show preview when there are existing images OR new selected files
+
+## Validation Schema Adjustments
+
+- Adjust `minNumberOfImages` based on deletion state:
+  ```typescript
+  return parseWithZod(updatedFormData, {
+    schema: createEntitySchema({
+      minNumberOfImages: allImagesShouldBeDeleted ? 1 : 0,
+    }),
+  });
+  ```
+- In edit mode, if all existing images are deleted, require at least 1 new image
+- If some images remain, allow 0 new images (images are optional)
+
+## Submit Button Text
+
+- Conditionally set button text based on mode:
+  ```typescript
+  <SubmitButton
+    pending={isPending}
+    disabled={acceptTerms.value !== "on"}
+    text={isCreateMode ? "Добавить объявление" : "Сохранить изменения"}
+  />
+  ```
+
+## Page Component Updates
+
+### Create Page
+
+- Pass `formMode={FormMode.Create}` to form component:
+  ```typescript
+  <FormName formMode={FormMode.Create} />
+  ```
+
+### Edit Page
+
+- Fetch entity data using repository:
+  ```typescript
+  const entity = await entityRepository.getByPublicId(id);
+  if (!entity) return notFound();
+  ```
+- Verify ownership:
+  ```typescript
+  const isOwner = await thisUserIsOwner(entity.user.id);
+  if (!isOwner) return notFound();
+  ```
+- Pass entity and formMode to form:
+  ```typescript
+  <FormName entity={entity} formMode={FormMode.Edit} />
+  ```
+
+## Edit Action Server Function Structure
+
+- Edit action should accept context as first parameter:
+  ```typescript
+  export async function editEntityAd(
+    context: {
+      entityPublicId: string;
+      imagesToDelete: ExistingImageItem[];
+      allImagesShouldBeDeleted: boolean;
+    },
+    initialState: unknown,
+    formData: FormData
+  ) {
+    // ... implementation
+  }
+  ```
+- Handle image deletion before processing new uploads
+- Merge remaining existing images with newly uploaded images
+- Use repository pattern to update entity
+
+## Error Handling
+
+- Same error handling as create mode
+- Use `ErrorModal` component
+- Reset form on modal close (same as create mode)
+
+## Loading States
+
+- Same loading states as create mode
+- Show `Loader` when `isPending` is true
+- Disable all fields during submission
+
+## Best Practices
+
+- Always check `isCreateMode` before accessing `entity` properties
+- Use optional chaining (`entity?.property`) when accessing entity data
+- Provide sensible defaults for all fields
+- Ensure edit action properly handles partial updates
+- Test both create and edit flows
+- Verify image deletion and upload work correctly together
+- Ensure validation works correctly in both modes
+- Follow the pattern established in `ProfessionalServicePublishForm` and `CarPublishForm`
+
+## Common Patterns
+
+### Conditional Rendering Based on Mode
+
+```typescript
+{isCreateMode ? (
+  <Text>Создание нового объявления</Text>
+) : (
+  <Text>Редактирование объявления</Text>
+)}
+```
+
+### Safe Entity Property Access
+
+```typescript
+const defaultValue = entity?.property ?? fallbackValue;
+```
+
+### Number Field Conversion
+
+```typescript
+// In defaultValue
+numericField: entity?.numericField?.toString() || "",
+
+// Schema handles conversion back to number via z.preprocess or z.coerce
+```
