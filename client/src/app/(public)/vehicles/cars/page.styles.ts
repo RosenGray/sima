@@ -1,8 +1,10 @@
 "use client";
 import styled from "styled-components";
-import { Container } from "@radix-ui/themes";
+import { Container, Grid } from "@radix-ui/themes";
 
 export const CarsPageContainer = styled(Container)`
   padding-bottom: 40px;
 `;
+
+export const CarsGrid = styled(Grid)``;
 
