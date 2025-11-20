@@ -83,8 +83,9 @@ const carSchema = new mongoose.Schema(
       index: true,
     },
     numberOfHand: {
-      type: String,
+      type: Number,
       required: true,
+      min: 1,
     },
     manufacturer: {
       type: String,

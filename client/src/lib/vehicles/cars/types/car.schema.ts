@@ -21,12 +21,26 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     model: z.string({
       required_error: "Выберите модель",
     }),
-    yearOfManufacture: z.number({
-      required_error: "Введите год выпуска",
-    }).min(1900, "Год должен быть не менее 1900"),
-    numberOfHand: z.number({
-      required_error: "Введите количество рук",
-    }).min(1, "Количество рук должно быть не менее 1"),
+    yearOfManufacture: z.preprocess(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return undefined;
+        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+        return num !== undefined && !Number.isNaN(num) ? num : undefined;
+      },
+      z.number({
+        required_error: "Введите год выпуска",
+      }).min(1900, "Год должен быть не менее 1900")
+    ),
+    numberOfHand: z.preprocess(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return undefined;
+        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+        return num !== undefined && !Number.isNaN(num) ? num : undefined;
+      },
+      z.number({
+        required_error: "Введите количество рук",
+      }).min(1, "Количество рук должно быть не менее 1")
+    ),
     transmission: z.nativeEnum(TransmissionType, {
       required_error: "Выберите тип коробки передач",
     }),
