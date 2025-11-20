@@ -3,7 +3,6 @@ import { CarsPageContainer, CarsGrid } from "./page.styles";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import { CarCards } from "./_components/CarCards/CarCards";
 import { Heading, Text } from "@radix-ui/themes";
-import Filters from "../_components/Filters/Filters";
 import VehicleFilters from "../_components/Filters/VehicleFilters/VehicleFilters";
 
 interface CarsPageProps {
