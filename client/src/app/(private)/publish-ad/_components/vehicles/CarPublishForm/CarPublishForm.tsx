@@ -122,6 +122,8 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
     undefined
   );
 
+  console.log(car)
+
   const [form, fields] = useForm({
     defaultValue: {
       manufacturer: car?.manufacturer || "",
