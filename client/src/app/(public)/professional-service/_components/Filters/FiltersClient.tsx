@@ -21,7 +21,7 @@ import {
   Text,
 } from "@radix-ui/themes";
 import { Cross2Icon, MixerHorizontalIcon } from "@radix-ui/react-icons";
-import { useFiltersModal } from "./FiltersContext";
+import { useFiltersModal } from "../../../../../components/filters/FiltersContext";
 import {
   FiltersSection,
   DesktopFiltersWrapper,
@@ -32,7 +32,7 @@ import {
   ModalFiltersSection,
   ModalFooter,
   SubmitSearchFiltersButton,
-} from "./Filters.styles";
+} from "../../../../../components/filters/Filters.styles";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { MultiValue } from "react-select";
 import {

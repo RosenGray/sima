@@ -3,6 +3,14 @@ import connectDB from "@/lib/mongo/mongodb";
 import { SerializedCar } from "../types/cars.types";
 import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
+import sanitize from "mongo-sanitize";
+
+export interface CarSearchFilters {
+  manufacturer?: string[];
+  model?: string[];
+  yearFrom?: string;
+  yearTo?: string;
+}
 
 interface PaginatedResponse {
   data: SerializedCar[];
@@ -15,20 +23,65 @@ interface PaginatedResponse {
 
 class CarRepository {
   /**
-   * Get all cars with pagination
+   * Get all cars with search and pagination
+   * @param searchFilters - Object containing search criteria
    * @param currentPage - Current page number (1-based)
    * @param pageSize - Number of items per page (default: 10)
    * @returns Promise<PaginatedResponse> - Paginated response with data and metadata
    */
   async getAll(
+    searchFilters: CarSearchFilters = {},
     currentPage: number = 1,
     pageSize: number = 10
   ): Promise<PaginatedResponse> {
     try {
       await connectDB();
 
-      // Build search filter (empty for now, filters will be added later)
+      // Sanitize all incoming filters to prevent NoSQL injection
+      const sanitizedFilters: CarSearchFilters = {
+        manufacturer: sanitize(searchFilters.manufacturer),
+        model: sanitize(searchFilters.model),
+        yearFrom: sanitize(searchFilters.yearFrom),
+        yearTo: sanitize(searchFilters.yearTo),
+      };
+
+      // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Car> = {};
+
+      // Add manufacturer filter
+      if (sanitizedFilters.manufacturer) {
+        searchFilter.manufacturer = { $in: sanitizedFilters.manufacturer };
+      }
+
+      // Add model filter
+      if (sanitizedFilters.model) {
+        searchFilter.model = { $in: sanitizedFilters.model };
+      }
+
+      // Add year range filters
+      // Handle yearFrom (minimum year)
+      if (sanitizedFilters.yearFrom) {
+        const yearFromNum = Number(sanitizedFilters.yearFrom);
+        if (!Number.isNaN(yearFromNum)) {
+          searchFilter.yearOfManufacture = { $gte: yearFromNum };
+        }
+      }
+
+      // Handle yearTo (maximum year)
+      if (sanitizedFilters.yearTo) {
+        const yearToNum = Number(sanitizedFilters.yearTo);
+        if (!Number.isNaN(yearToNum)) {
+          // Combine with existing yearOfManufacture filter if exists
+          if (searchFilter.yearOfManufacture) {
+            searchFilter.yearOfManufacture = {
+              ...searchFilter.yearOfManufacture,
+              $lte: yearToNum,
+            };
+          } else {
+            searchFilter.yearOfManufacture = { $lte: yearToNum };
+          }
+        }
+      }
 
       // Calculate pagination
       const skip = (currentPage - 1) * pageSize;

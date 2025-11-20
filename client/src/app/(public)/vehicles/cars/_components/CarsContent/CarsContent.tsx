@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
+import { carRepository, CarSearchFilters } from "@/lib/vehicles/cars/repository/CarRepository";
 import { CarCards } from "../CarCards/CarCards";
 import {
   CarsGrid,
@@ -8,11 +8,6 @@ import {
 } from "../../page.styles";
 import { Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
-
-// Placeholder type for filters - will be replaced when filters are implemented
-interface CarSearchFilters {
-  // Filters will be added here later
-}
 
 interface CarsContentProps {
   filters: CarSearchFilters;
@@ -23,9 +18,7 @@ const CarsContent: FC<CarsContentProps> = async ({
   filters,
   currentPage,
 }) => {
-  //fake await 10 sec
-  // For now, getAll doesn't accept filters - will be updated when filters are implemented
-  const carsResponse = await carRepository.getAll(currentPage, 10);
+  const carsResponse = await carRepository.getAll(filters, currentPage, 10);
 
   return (
     <>

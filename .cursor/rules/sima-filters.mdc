@@ -1,0 +1,581 @@
+---
+description: Filter implementation guidelines for listing pages (business logic, database, UI)
+globs:
+alwaysApply: true
+---
+
+# Filter Implementation Guidelines
+
+## Overview
+
+This guide covers implementing filters for listing pages, including search params processing, repository filtering, database queries, and UI components. Filters should be implemented step by step: first backend/database logic, then UI components.
+
+## Implementation Steps
+
+### Step 1: Define Filter Types
+
+1. **Create filter interface in repository file:**
+   ```typescript
+   export interface EntitySearchFilters {
+     filterParam1?: string[];
+     filterParam2?: string[];
+     numericFilter?: string[]; // For range filters like yearFrom/yearTo
+   }
+   ```
+
+2. **Add filter params to page searchParams interface:**
+   ```typescript
+   interface EntityPageProps {
+     searchParams?: Promise<{
+       filterParam1?: string | string[];
+       filterParam2?: string | string[];
+       numericFilter?: string; // For single value filters like yearFrom
+       page?: string;
+     }>;
+   }
+   ```
+
+### Step 2: Process Search Params to Filters
+
+1. **Extract filters from searchParams** (handled in page component):
+   ```typescript
+   const filters = searchParamsToFilters(searchParams);
+   ```
+
+2. **Use `searchParamsToFilters` utility** from `@/utils/common`:
+   - Automatically converts `string | string[]` to `string[]`
+   - Excludes `page` by default
+   - Filters out empty/undefined values
+
+### Step 3: Update Repository getAll Method
+
+#### Method Signature
+
+```typescript
+async getAll(
+  searchFilters: EntitySearchFilters = {},
+  currentPage: number = 1,
+  pageSize: number = 10
+): Promise<PaginatedResponse>
+```
+
+#### Implementation Pattern
+
+1. **Add filter interface and update method signature**
+
+2. **Sanitize filters** (prevent NoSQL injection):
+   ```typescript
+   import sanitize from "mongo-sanitize";
+   
+   const sanitizedFilters: EntitySearchFilters = {
+     filterParam1: sanitize(searchFilters.filterParam1),
+     filterParam2: sanitize(searchFilters.filterParam2),
+   };
+   ```
+
+3. **Build MongoDB query filter:**
+   ```typescript
+   const searchFilter: FilterQuery<typeof Entity> = {};
+   ```
+
+4. **Add filter conditions:**
+   
+   **For string array filters (multiple selection):**
+   ```typescript
+   if (sanitizedFilters.filterParam1) {
+     searchFilter.filterParam1 = { $in: sanitizedFilters.filterParam1 };
+   }
+   ```
+   
+   **For ObjectId array filters (with validation):**
+   ```typescript
+   if (sanitizedFilters.categoryId) {
+     const isValidObjectId = sanitizedFilters.categoryId.every((id) => 
+       mongoose.Types.ObjectId.isValid(id)
+     );
+     if (isValidObjectId) {
+       searchFilter.category = { $in: sanitizedFilters.categoryId };
+     } else {
+       // Invalid ObjectId - return empty results
+       searchFilter._id = new mongoose.Types.ObjectId();
+     }
+   }
+   ```
+   
+   **For numeric range filters (yearFrom/yearTo):**
+   ```typescript
+   // Handle yearFrom (single value, not array)
+   if (sanitizedFilters.yearFrom) {
+     const yearFromNum = Number(sanitizedFilters.yearFrom);
+     if (!Number.isNaN(yearFromNum)) {
+       searchFilter.yearOfManufacture = { $gte: yearFromNum };
+     }
+   }
+   
+   // Handle yearTo (single value, not array)
+   if (sanitizedFilters.yearTo) {
+     const yearToNum = Number(sanitizedFilters.yearTo);
+     if (!Number.isNaN(yearToNum)) {
+       // Combine with existing yearOfManufacture filter if exists
+       searchFilter.yearOfManufacture = {
+         ...searchFilter.yearOfManufacture,
+         $lte: yearToNum,
+       };
+     }
+   }
+   ```
+   
+   **For enum filters:**
+   ```typescript
+   if (sanitizedFilters.district) {
+     searchFilter.district = { $in: sanitizedFilters.district };
+   }
+   ```
+
+5. **Use filter in query:**
+   ```typescript
+   const totalCount = await Entity.countDocuments(searchFilter);
+   const results = await Entity.find(searchFilter)
+     .populate("user")
+     .sort({ createdAt: -1 })
+     .skip(skip)
+     .limit(pageSize);
+   ```
+
+### Step 4: Update Content Component
+
+1. **Update filter interface to match repository:**
+   ```typescript
+   interface EntityContentProps {
+     filters: EntitySearchFilters;
+     currentPage: number;
+   }
+   ```
+
+2. **Pass filters to repository:**
+   ```typescript
+   const entityResponse = await entityRepository.getAll(
+     filters,
+     currentPage,
+     10
+   );
+   ```
+
+### Step 5: Update Page Component
+
+1. **Add filter params to searchParams interface**
+
+2. **Import filter type from repository:**
+   ```typescript
+   import { EntitySearchFilters } from "@/lib/{category}/{entity}/repository/{Entity}Repository";
+   ```
+
+3. **Process filters using utility:**
+   ```typescript
+   // Extract array filters using utility
+   const arrayFilters = searchParamsToFilters(searchParams);
+   
+   // Build filters object with proper types
+   const filters: EntitySearchFilters = {
+     manufacturer: arrayFilters.manufacturer,
+     model: arrayFilters.model,
+     // Add other array filters here
+   };
+   ```
+
+4. **Handle special cases (single value filters like yearFrom/yearTo):**
+   ```typescript
+   // Handle yearFrom and yearTo as single values (not arrays) for range queries
+   if (searchParams.yearFrom) {
+     filters.yearFrom = Array.isArray(searchParams.yearFrom) 
+       ? searchParams.yearFrom[0] 
+       : searchParams.yearFrom;
+   }
+   
+   if (searchParams.yearTo) {
+     filters.yearTo = Array.isArray(searchParams.yearTo) 
+       ? searchParams.yearTo[0] 
+       : searchParams.yearTo;
+   }
+   ```
+
+5. **Pass filters to content component:**
+   ```typescript
+   <EntityContent filters={filters} currentPage={currentPage} />
+   ```
+
+## Filter Types
+
+### 1. String Array Filters (Multiple Selection)
+
+**Use case:** Multiple values can be selected (e.g., manufacturer, model, district)
+
+**Example:** `manufacturer: ["Toyota", "Honda", "BMW"]`
+
+**Implementation:**
+```typescript
+// Interface
+manufacturer?: string[];
+
+// Query
+if (sanitizedFilters.manufacturer) {
+  searchFilter.manufacturer = { $in: sanitizedFilters.manufacturer };
+}
+```
+
+### 2. ObjectId Array Filters
+
+**Use case:** Filtering by referenced entities (e.g., categoryId, subCategoryId)
+
+**Example:** `categoryId: ["507f1f77bcf86cd799439011", "507f191e810c19729de860ea"]`
+
+**Implementation:**
+```typescript
+// Interface
+categoryId?: string[];
+
+// Query with validation
+if (sanitizedFilters.categoryId) {
+  const isValidObjectId = sanitizedFilters.categoryId.every((id) => 
+    mongoose.Types.ObjectId.isValid(id)
+  );
+  if (isValidObjectId) {
+    searchFilter.category = { $in: sanitizedFilters.categoryId };
+  } else {
+    // Invalid ObjectId - return empty results
+    searchFilter._id = new mongoose.Types.ObjectId();
+  }
+}
+```
+
+### 3. Numeric Range Filters (Single Value)
+
+**Use case:** Range queries for numeric fields (e.g., yearFrom, yearTo, priceFrom, priceTo)
+
+**Example:** `yearFrom: "2020"`, `yearTo: "2024"`
+
+**Implementation:**
+```typescript
+// Interface - single string value, not array
+yearFrom?: string;
+yearTo?: string;
+
+// Query - combine with $gte and $lte
+if (sanitizedFilters.yearFrom) {
+  const yearFromNum = Number(sanitizedFilters.yearFrom);
+  if (!Number.isNaN(yearFromNum)) {
+    searchFilter.yearOfManufacture = { $gte: yearFromNum };
+  }
+}
+
+if (sanitizedFilters.yearTo) {
+  const yearToNum = Number(sanitizedFilters.yearTo);
+  if (!Number.isNaN(yearToNum)) {
+    searchFilter.yearOfManufacture = {
+      ...searchFilter.yearOfManufacture,
+      $lte: yearToNum,
+    };
+  }
+}
+```
+
+### 4. Enum Filters
+
+**Use case:** Filtering by enum values (e.g., district, transmission, engineType)
+
+**Example:** `district: ["Center", "North"]`
+
+**Implementation:**
+```typescript
+// Interface
+district?: string[];
+
+// Query
+if (sanitizedFilters.district) {
+  searchFilter.district = { $in: sanitizedFilters.district };
+}
+```
+
+### 5. Text Search Filters (Future)
+
+**Use case:** Full-text search across multiple fields
+
+**Example:** Using MongoDB text index
+
+**Implementation:**
+```typescript
+if (sanitizedFilters.textSearch?.trim()) {
+  searchFilter.$text = { $search: sanitizedFilters.textSearch.trim() };
+}
+```
+
+## Security Best Practices
+
+1. **Always sanitize filters** using `mongo-sanitize` to prevent NoSQL injection
+2. **Validate ObjectIds** before using in queries
+3. **Validate numeric values** before using in range queries
+4. **Use parameterized queries** - never construct queries from user input directly
+
+## Database Indexing
+
+Ensure proper indexes exist for filtered fields:
+
+```typescript
+// In model schema
+manufacturer: {
+  type: String,
+  index: true, // For efficient filtering
+}
+
+yearOfManufacture: {
+  type: Number,
+  index: true, // For range queries
+}
+```
+
+## Filter Processing Utility
+
+The `searchParamsToFilters` utility automatically:
+- Converts `string | string[]` to `string[]`
+- Excludes `page` parameter
+- Filters out empty/undefined values
+- Handles multiple filter values consistently
+
+**Usage:**
+```typescript
+import { searchParamsToFilters } from "@/utils/common";
+
+const filters = searchParamsToFilters(searchParams);
+```
+
+## Common Patterns
+
+### Filter Interface Pattern
+
+```typescript
+export interface EntitySearchFilters {
+  // String array filters (multiple selection)
+  manufacturer?: string[];
+  model?: string[];
+  district?: string[];
+  
+  // ObjectId array filters
+  categoryId?: string[];
+  subCategoryId?: string[];
+  
+  // Numeric range filters (single values)
+  yearFrom?: string;
+  yearTo?: string;
+  priceFrom?: string;
+  priceTo?: string;
+}
+```
+
+### Repository Method Pattern
+
+```typescript
+async getAll(
+  searchFilters: EntitySearchFilters = {},
+  currentPage: number = 1,
+  pageSize: number = 10
+): Promise<PaginatedResponse> {
+  try {
+    await connectDB();
+    
+    // Sanitize filters
+    const sanitizedFilters: EntitySearchFilters = {
+      manufacturer: sanitize(searchFilters.manufacturer),
+      model: sanitize(searchFilters.model),
+      yearFrom: sanitize(searchFilters.yearFrom),
+      yearTo: sanitize(searchFilters.yearTo),
+    };
+    
+    // Build query filter
+    const searchFilter: FilterQuery<typeof Entity> = {};
+    
+    // Add filter conditions
+    if (sanitizedFilters.manufacturer) {
+      searchFilter.manufacturer = { $in: sanitizedFilters.manufacturer };
+    }
+    
+    if (sanitizedFilters.model) {
+      searchFilter.model = { $in: sanitizedFilters.model };
+    }
+    
+    // Range filters
+    if (sanitizedFilters.yearFrom) {
+      const yearFromNum = Number(sanitizedFilters.yearFrom);
+      if (!Number.isNaN(yearFromNum)) {
+        searchFilter.yearOfManufacture = { $gte: yearFromNum };
+      }
+    }
+    
+    if (sanitizedFilters.yearTo) {
+      const yearToNum = Number(sanitizedFilters.yearTo);
+      if (!Number.isNaN(yearToNum)) {
+        searchFilter.yearOfManufacture = {
+          ...searchFilter.yearOfManufacture,
+          $lte: yearToNum,
+        };
+      }
+    }
+    
+    // Calculate pagination
+    const skip = (currentPage - 1) * pageSize;
+    const totalCount = await Entity.countDocuments(searchFilter);
+    const totalPages = Math.ceil(totalCount / pageSize);
+    
+    // Fetch results
+    const results = await Entity.find(searchFilter)
+      .populate("user")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSize);
+    
+    // Serialize and return
+    const serialized = JSON.parse(JSON.stringify(results));
+    
+    return {
+      data: serialized,
+      totalCount,
+      currentPage,
+      totalPages,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    };
+  } catch (error) {
+    console.error("Error fetching entities:", error);
+    throw new Error("Failed to fetch entities");
+  }
+}
+```
+
+## UI Implementation (Future)
+
+UI components will be implemented separately:
+- Filter components in `_components/Filters/`
+- Client-side filter state management
+- URL synchronization
+- Mobile/desktop filter layouts
+
+## Implementation Example: Car Filters
+
+### Repository Filter Interface
+
+```typescript
+export interface CarSearchFilters {
+  manufacturer?: string[];
+  model?: string[];
+  yearFrom?: string; // Single value for range filter
+  yearTo?: string;   // Single value for range filter
+}
+```
+
+### Repository getAll Method
+
+```typescript
+async getAll(
+  searchFilters: CarSearchFilters = {},
+  currentPage: number = 1,
+  pageSize: number = 10
+): Promise<PaginatedResponse> {
+  try {
+    await connectDB();
+
+    // Sanitize all incoming filters
+    const sanitizedFilters: CarSearchFilters = {
+      manufacturer: sanitize(searchFilters.manufacturer),
+      model: sanitize(searchFilters.model),
+      yearFrom: sanitize(searchFilters.yearFrom),
+      yearTo: sanitize(searchFilters.yearTo),
+    };
+
+    // Build search filter
+    const searchFilter: FilterQuery<typeof Car> = {};
+
+    // Add manufacturer filter
+    if (sanitizedFilters.manufacturer) {
+      searchFilter.manufacturer = { $in: sanitizedFilters.manufacturer };
+    }
+
+    // Add model filter
+    if (sanitizedFilters.model) {
+      searchFilter.model = { $in: sanitizedFilters.model };
+    }
+
+    // Add year range filters
+    if (sanitizedFilters.yearFrom) {
+      const yearFromNum = Number(sanitizedFilters.yearFrom);
+      if (!Number.isNaN(yearFromNum)) {
+        searchFilter.yearOfManufacture = { $gte: yearFromNum };
+      }
+    }
+
+    if (sanitizedFilters.yearTo) {
+      const yearToNum = Number(sanitizedFilters.yearTo);
+      if (!Number.isNaN(yearToNum)) {
+        if (searchFilter.yearOfManufacture) {
+          searchFilter.yearOfManufacture = {
+            ...searchFilter.yearOfManufacture,
+            $lte: yearToNum,
+          };
+        } else {
+          searchFilter.yearOfManufacture = { $lte: yearToNum };
+        }
+      }
+    }
+
+    // ... rest of pagination and query logic
+  } catch (error) {
+    // ... error handling
+  }
+}
+```
+
+### Page Component Filter Processing
+
+```typescript
+import { CarSearchFilters } from "@/lib/vehicles/cars/repository/CarRepository";
+
+const CarsPage: FC<CarsPageProps> = async (props) => {
+  const searchParams = (await props.searchParams) || {};
+  const currentPage = Number(searchParams?.page) || 1;
+
+  // Extract array filters
+  const arrayFilters = searchParamsToFilters(searchParams);
+
+  // Build filters object with proper types
+  const filters: CarSearchFilters = {
+    manufacturer: arrayFilters.manufacturer,
+    model: arrayFilters.model,
+  };
+
+  // Handle single value filters (yearFrom/yearTo)
+  if (searchParams.yearFrom) {
+    filters.yearFrom = Array.isArray(searchParams.yearFrom)
+      ? searchParams.yearFrom[0]
+      : searchParams.yearFrom;
+  }
+
+  if (searchParams.yearTo) {
+    filters.yearTo = Array.isArray(searchParams.yearTo)
+      ? searchParams.yearTo[0]
+      : searchParams.yearTo;
+  }
+
+  return (
+    <CarsPageContainer>
+      <Suspense key={contentKey} fallback={<Loading />}>
+        <CarsContent filters={filters} currentPage={currentPage} />
+      </Suspense>
+    </CarsPageContainer>
+  );
+};
+```
+
+## References
+
+- Follow the pattern established in:
+  - `lib/professionals/professional-service/repository/ProfessionalServiceRepository.ts`
+  - `lib/vehicles/cars/repository/CarRepository.ts`
+  - `app/(public)/vehicles/cars/page.tsx`
