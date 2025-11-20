@@ -450,13 +450,284 @@ async getAll(
 }
 ```
 
-## UI Implementation (Future)
+## UI Implementation
 
-UI components will be implemented separately:
-- Filter components in `_components/Filters/`
-- Client-side filter state management
-- URL synchronization
-- Mobile/desktop filter layouts
+### Step 1: Create Filters Component Structure
+
+1. **Create Filters.tsx (Server Component):**
+   ```typescript
+   import { FC } from "react";
+   import { FiltersProvider } from "@/components/filters/FiltersContext";
+   import FiltersClient from "./FiltersClient";
+
+   const Filters: FC = () => {
+     return (
+       <FiltersProvider>
+         <FiltersClient />
+       </FiltersProvider>
+     );
+   };
+
+   export default Filters;
+   ```
+
+2. **Create Filters.styles.ts (Empty initially):**
+   ```typescript
+   "use client";
+   import styled from "styled-components";
+
+   // Empty styles file - will be populated later
+   ```
+
+3. **Create FiltersClient.tsx (Client Component):**
+
+### Step 2: FiltersClient Implementation Pattern
+
+#### Required Imports
+
+```typescript
+"use client";
+import { FC, useCallback, useMemo, useState } from "react";
+import { enableMapSet, produce } from "immer";
+import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { MultiValue } from "react-select";
+import {
+  AllSelectedFilterOptionsMap,
+  Option,
+} from "@/components/filters/SearchMultiSelect/types";
+```
+
+#### State Management
+
+```typescript
+const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
+  useState<AllSelectedFilterOptionsMap>(
+    new Map([
+      ["filterParam1", []],
+      ["filterParam2", []],
+    ])
+  );
+```
+
+#### Filter Dependencies
+
+```typescript
+// Extract selected values for dependent filters
+const selectedParentIds = allSelectedFilterOptions
+  .get("parentFilter")!
+  .map((option) => option.value);
+
+// Dependent filter options based on parent selection
+const dependentOptions = useMemo(
+  () => getDependentOptionsByParentIds(selectedParentIds),
+  [selectedParentIds]
+);
+```
+
+#### Handler Functions
+
+1. **handleSubmitAllFilters** - Updates URL with selected filters:
+   ```typescript
+   const handleSubmitAllFilters = () => {
+     const _searchParams = new URLSearchParams(searchParams);
+     _searchParams.set("page", "1");
+     const params = allSelectedFilterOptions.keys();
+     params.forEach((paramName) => {
+       const options = allSelectedFilterOptions.get(paramName)!;
+       if (options.length > 0) {
+         _searchParams.delete(paramName);
+         options.forEach((option) => {
+           _searchParams.append(paramName, option.value);
+         });
+       } else {
+         _searchParams.delete(paramName);
+       }
+     });
+     router.replace(`${pathname}?${_searchParams.toString()}`);
+   };
+   ```
+
+2. **handleSetAllSelectedFilterOptions** - Updates filter state:
+   ```typescript
+   const handleSetAllSelectedFilterOptions = useCallback(
+     (paramName: string, options: MultiValue<Option>) => {
+       setAllSelectedFilterOptions((prevOptionsMap) => {
+         return produce(prevOptionsMap, (draft) => {
+           draft.set(paramName, [...options]);
+           // Clear dependent filter when parent is cleared
+           if (paramName === "parentFilter" && options.length === 0) {
+             draft.set("dependentFilter", []);
+           }
+         });
+       });
+     },
+     []
+   );
+   ```
+
+3. **handleClearFiltersAndClose** - Clears all filters:
+   ```typescript
+   const handleClearFiltersAndClose = () => {
+     setAllSelectedFilterOptions(
+       new Map([
+         ["filterParam1", []],
+         ["filterParam2", []],
+       ])
+     );
+     router.push(pathname);
+   };
+   ```
+
+#### SearchMultiSelect Components
+
+```typescript
+<SearchMultiSelect
+  displayName="фильтр 1"
+  placeholder="Выберите значение"
+  paramName="filterParam1"
+  options={parentOptions}
+  maxSelectedOptions={3}
+  selectedOptions={allSelectedFilterOptions.get("filterParam1")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+/>
+
+<SearchMultiSelect
+  placeholder="Выберите зависимое значение"
+  displayName="зависимый фильтр"
+  paramName="dependentFilter"
+  options={dependentOptions}
+  isDisabled={selectedParentIds.length === 0}
+  maxSelectedOptions={3}
+  selectedOptions={allSelectedFilterOptions.get("dependentFilter")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+/>
+```
+
+### Step 3: Integration with Page
+
+1. **Import Filters component in page.tsx:**
+   ```typescript
+   import Filters from "./_components/Filters/Filters";
+   ```
+
+2. **Wrap Filters in Suspense:**
+   ```typescript
+   <Suspense fallback={<LoadingFilters />}>
+     <VehicleFilters>
+       <Filters />
+     </VehicleFilters>
+   </Suspense>
+   ```
+
+### Example: Car Filters Implementation
+
+```typescript
+"use client";
+import { FC, useCallback, useMemo, useState } from "react";
+import { enableMapSet, produce } from "immer";
+import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import {
+  mapVehicleManufacturersToSelectOptions,
+  getVehicleModelsToSelectOptionsByManufacturerIds,
+} from "@/lib/vehicles/cars/vehicleModels";
+import { VehicleManufacturerId } from "@/lib/vehicles/cars/vehicleManufacturers/types/vehicleManufacturer.schema";
+import { MultiValue } from "react-select";
+import {
+  AllSelectedFilterOptionsMap,
+  Option,
+} from "@/components/filters/SearchMultiSelect/types";
+
+enableMapSet();
+
+const FiltersClient: FC = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
+    useState<AllSelectedFilterOptionsMap>(
+      new Map([
+        ["manufacturer", []],
+        ["model", []],
+      ])
+    );
+
+  const selectedManufacturerIds = allSelectedFilterOptions
+    .get("manufacturer")!
+    .map((option) => option.value) as VehicleManufacturerId[];
+
+  const manufacturerOptions = useMemo(
+    () => mapVehicleManufacturersToSelectOptions(),
+    []
+  );
+
+  const modelOptions = useMemo(
+    () => getVehicleModelsToSelectOptionsByManufacturerIds(selectedManufacturerIds),
+    [selectedManufacturerIds]
+  );
+
+  const handleSetAllSelectedFilterOptions = useCallback(
+    (paramName: string, options: MultiValue<Option>) => {
+      setAllSelectedFilterOptions((prevOptionsMap) => {
+        return produce(prevOptionsMap, (draft) => {
+          draft.set(paramName, [...options]);
+          if (paramName === "manufacturer" && options.length === 0) {
+            draft.set("model", []);
+          }
+        });
+      });
+    },
+    []
+  );
+
+  // ... other handlers (handleSubmitAllFilters, handleClearFiltersAndClose)
+
+  return (
+    <div>
+      <SearchMultiSelect
+        displayName="производители"
+        placeholder="Выберите производителя"
+        paramName="manufacturer"
+        options={manufacturerOptions}
+        maxSelectedOptions={3}
+        selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
+        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+      />
+      
+      <SearchMultiSelect
+        placeholder="Выберите модель"
+        displayName="модели"
+        paramName="model"
+        options={modelOptions}
+        isDisabled={selectedManufacturerIds.length === 0}
+        maxSelectedOptions={3}
+        selectedOptions={allSelectedFilterOptions.get("model")!}
+        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+      />
+    </div>
+  );
+};
+```
+
+### Best Practices for FiltersClient
+
+1. **Use immer for state updates** - `produce` function for immutable updates
+2. **Use useMemo for computed options** - Prevents unnecessary recalculations
+3. **Use useCallback for handlers** - Prevents unnecessary re-renders
+4. **Initialize state with Map** - Consistent with SearchMultiSelect pattern
+5. **Clear dependent filters** - When parent filter is cleared, clear dependent filters
+6. **Disable dependent filters** - When parent is empty, disable dependent filters
+7. **Use SearchMultiSelect** - Reusable component for all multi-select filters
+8. **URL synchronization** - All filters update URL params for sharing/bookmarking
+9. **Reset page to 1** - When filters change, reset to first page
+
+### Mobile/Desktop UI (Future)
+
+- Desktop: Inline filters with buttons
+- Mobile: Modal with filters and action buttons
+- Use FiltersContext for modal state management
+- Follow pattern from `professional-service/_components/Filters/`
 
 ## Implementation Example: Car Filters
 
