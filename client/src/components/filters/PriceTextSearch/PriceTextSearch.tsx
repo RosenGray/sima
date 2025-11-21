@@ -7,6 +7,7 @@ import {
   SearchInputRoot,
   SearchInputSlot,
 } from "./PriceTextSearch.styles";
+import { formatNumberWithCommas } from "@/utils/common";
 
 interface PriceTextSearchProps
   extends TextField.RootProps,
@@ -27,20 +28,6 @@ interface PriceTextSearchProps
   label?: string;
   type?: never; // Prevent type from being passed
 }
-
-const formatNumberWithCommas = (value: string): string => {
-  // Remove all non-digit characters except commas
-  const digitsOnly = value.replace(/[^\d,]/g, "");
-
-  // Remove commas for processing
-  const withoutCommas = digitsOnly.replace(/,/g, "");
-
-  // If empty, return empty string
-  if (!withoutCommas) return "";
-
-  // Add commas for thousands
-  return withoutCommas.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
 
 const PriceTextSearch: FC<PriceTextSearchProps> = ({
   name,

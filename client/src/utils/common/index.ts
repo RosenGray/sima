@@ -24,3 +24,18 @@ export function searchParamsToFilters(
       return acc;
     }, {} as Record<string, string[]>);
 }
+
+
+export const formatNumberWithCommas = (value: string): string => {
+  // Remove all non-digit characters except commas
+  const digitsOnly = value.replace(/[^\d,]/g, "");
+
+  // Remove commas for processing
+  const withoutCommas = digitsOnly.replace(/,/g, "");
+
+  // If empty, return empty string
+  if (!withoutCommas) return "";
+
+  // Add commas for thousands
+  return withoutCommas.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

@@ -93,10 +93,18 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     }, z.number().optional()),
     color: z.string().optional(),
     price: z
-      .number({
-        required_error: "Введите цену",
-      })
-      .min(0, "Цена не может быть отрицательной"),
+    .string({
+      required_error: "Введите цену",
+    })
+    .refine((val) => /^-?\d[\d,]*$/.test(val), {
+      message: "Цена должна быть числом, содержащим запятые.",
+    })
+    .transform((val) => {
+  
+      const cleaned = val.replace(/,/g, "");
+      const num = Number(cleaned);
+      return num;
+    }),
     description: z.string({
       required_error: "Введите описание",
     }),

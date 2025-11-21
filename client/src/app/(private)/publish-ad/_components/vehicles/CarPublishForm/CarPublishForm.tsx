@@ -49,6 +49,7 @@ import {
   getYearsOptions,
   getNumberOfHandsOptions,
 } from "@/lib/vehicles/utils/vehicles.utils";
+import PriceFormField from "@/components/Form/PriceFormField/PriceFormField";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -181,7 +182,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
       });
     },
     shouldRevalidate: "onInput",
-    shouldValidate: "onInput",
+    shouldValidate: "onBlur",
   });
 
   const resetForm = () => {
@@ -264,7 +265,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
       </Flex>
     );
   }
-
+console.log(price.value)
   return (
     <>
       <form key={formKey.toString()} action={formAction} {...getFormProps(form)}>
@@ -438,11 +439,10 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                   columns={{ initial: "1", md: "2" }}
                   gap={{ initial: "4", md: "5" }}
                 >
-                  <BasicFormField
-                    type="number"
+                  <PriceFormField
                     field={price}
-                    label="Цена (₪)"
-                    placeholder="Цена"
+                    label="Цена"
+                    placeholder="0"
                     size="3"
                     defaultValue={price.initialValue}
                     dataIsValid={price.valid}
