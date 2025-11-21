@@ -262,5 +262,5 @@ const defaultValue = entity?.property ?? fallbackValue;
 // In defaultValue
 numericField: entity?.numericField?.toString() || "",
 
-// Schema handles conversion back to number via z.preprocess or z.coerce
+// Schema handles conversion back to number via z.coerce.number()
 ```

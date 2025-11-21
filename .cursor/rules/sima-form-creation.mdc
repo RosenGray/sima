@@ -48,16 +48,31 @@ alwaysApply: true
 
 - Create Zod schema in `lib/{category}/types/{entity}.schema.ts`
 - Schema should be a function that accepts options (e.g., `createCarSchema({ minNumberOfImages: 1 })`)
-- For optional number fields, use `z.preprocess` to handle empty strings:
+- For mandatory number fields, use `z.coerce.number()`:
   ```typescript
-  optionalNumberField: z.preprocess(
-    (val) => {
-      if (val === "" || val === null || val === undefined) return undefined;
-      const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
-      return num !== undefined && !Number.isNaN(num) ? num : undefined;
-    },
-    z.number().optional()
-  )
+  mandatoryNumberField: z.coerce
+    .number({
+      required_error: "Введите значение",
+      invalid_type_error: "Значение должно быть числом",
+    })
+    .min(1, "Значение должно быть не менее 1")
+  ```
+
+- For optional number fields, use `z.coerce.number().optional()`:
+  ```typescript
+  optionalNumberField: z.coerce
+    .number({
+      invalid_type_error: "Значение должно быть числом",
+    })
+    .optional()
+  
+  // With validation (e.g., min value)
+  optionalNumberFieldWithValidation: z.coerce
+    .number({
+      invalid_type_error: "Значение должно быть числом",
+    })
+    .min(0, "Значение не может быть отрицательным")
+    .optional()
   ```
 - Use `z.nativeEnum()` for enum fields
 - Use `z.string().email()` for email validation
