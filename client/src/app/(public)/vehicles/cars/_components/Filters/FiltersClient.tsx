@@ -28,6 +28,7 @@ import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import { CarFilter, CarFilterSchema } from "./filters.types";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import DialogButton from "@/components/modals/DialogButton/DialogButton";
+import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
 
 enableMapSet();
 
@@ -66,7 +67,7 @@ const FiltersClient: FC = () => {
     const formData = new FormData(formRef.current!);
     const schemaKeys = Object.keys(CarFilterSchema.shape);
     const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
-  
+
     const _searchParams = new URLSearchParams(searchParams);
     _searchParams.set("page", "1");
     const params = allSelectedFilterOptions.keys();
@@ -210,18 +211,38 @@ const FiltersClient: FC = () => {
           >
             Очистить все фильтры
           </Button>
-          <DialogButton title="hello world1" titleIsVisible={false} maxWidth="300px">
-          <PriceTextSearch
-          name="priceFrom"
-          placeholder="0"
-          defaultValue={searchParams.get("priceFrom") ?? undefined}
-        />
-        <PriceTextSearch
-          name="priceTo"
-          placeholder="0"
-          defaultValue={searchParams.get("priceTo") ?? undefined}
-        />
+          <DialogButton
+            title="hello world1"
+            titleIsVisible={false}
+            maxWidth="300px"
+          >
+            <PriceTextSearch
+              name="priceFrom"
+              placeholder="0"
+              defaultValue={searchParams.get("priceFrom") ?? undefined}
+            />
+            <PriceTextSearch
+              name="priceTo"
+              placeholder="0"
+              defaultValue={searchParams.get("priceTo") ?? undefined}
+            />
           </DialogButton>
+
+          <DialogPrimitiveButton
+            title="My Dialog"
+            showOverlay={false} // Hide overlay
+          >
+            <PriceTextSearch
+              name="priceFrom"
+              placeholder="0"
+              defaultValue={searchParams.get("priceFrom") ?? undefined}
+            />
+            <PriceTextSearch
+              name="priceTo"
+              placeholder="0"
+              defaultValue={searchParams.get("priceTo") ?? undefined}
+            />
+          </DialogPrimitiveButton>
         </div>
       </form>
     </div>
