@@ -230,7 +230,7 @@ const FiltersClient: FC = () => {
 
           <DialogPrimitiveButton
             title="My Dialog"
-            showOverlay={false} // Hide overlay
+            showOverlay={true} // Hide overlay
           >
             <PriceTextSearch
               name="priceFrom"

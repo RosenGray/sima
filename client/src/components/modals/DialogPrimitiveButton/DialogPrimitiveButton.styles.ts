@@ -1,7 +1,7 @@
 "use client";
 import styled from "styled-components";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Box, Heading } from "@radix-ui/themes";
+import { Box } from "@radix-ui/themes";
 
 // Overlay styling - matches Radix UI Themes Dialog overlay
 export const DialogPrimitiveButtonOverlay = styled(Dialog.Overlay)`
@@ -21,24 +21,31 @@ export const DialogPrimitiveButtonOverlay = styled(Dialog.Overlay)`
   }
 `;
 
-// Content styling - matches Radix UI Themes Dialog.Content
+// Content styling - matches Radix UI Themes Dialog.Content exactly
 // All padding/margin removed - styling comes from children
 export const DialogPrimitiveButtonContent = styled(Dialog.Content)`
-  background-color: var(--color-panel);
-  border-radius: var(--radius-4);
-  box-shadow: var(--shadow-5);
-  border: 1px solid var(--gray-6);
+  /* Match Radix UI Themes Dialog.Content default styles exactly */
+  /* Based on computed styles from browser inspection */
+  background-color: var(--color-panel-solid);
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 1.2rem;
+  width: 100%;
+
+  width: 400px;
+  border-radius: 12px; /* Radix UI Themes uses 12px for Dialog, not --radius-4 */
+  box-shadow: var(--shadow-6);
+  border: 0px none; /* Radix UI Themes Dialog has no border */
+  color: var(--gray-12);
+
+  /* Positioning */
   position: fixed;
   z-index: 50;
-  padding: 0 !important;
-  width: auto !important;
-  height: auto !important;
-  margin: 0 !important;
+
+  /* Transform removed to allow custom positioning */
   transform: none !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  max-width: none !important;
-  max-height: none !important;
+
+  /* Animation matches Radix UI Themes */
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
 
   @keyframes contentShow {
@@ -55,20 +62,23 @@ export const DialogPrimitiveButtonContent = styled(Dialog.Content)`
   &:focus {
     outline: none;
   }
-`;
 
-// Title styling - matches Radix UI Themes Dialog.Title
-export const DialogPrimitiveButtonTitle = styled(Dialog.Title)`
-  margin: 0;
-  font-weight: 500;
-  color: var(--gray-12);
-  font-size: var(--font-size-4);
-  line-height: var(--line-height-4);
-  margin-bottom: var(--space-2);
+  /* Match Radix UI Themes Dialog.Content typography defaults */
+  font-size: 16px;
+  line-height: 24px;
 `;
 
 // Content container - matches DialogContentContainer from DialogButton
 export const DialogContentContainer = styled(Box)`
+border:1px solid red;
   /* Additional container styling if needed */
 `;
 
+export const DialogPrimitiveButtonTitle = styled(Dialog.Title)`
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  color: var(--gray-12);
+  font-size: 20px;
+  line-height: 26px;
+  margin-bottom: 12px;
+`;

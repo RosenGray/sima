@@ -6,8 +6,8 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
   DialogPrimitiveButtonContent,
   DialogPrimitiveButtonOverlay,
-  DialogPrimitiveButtonTitle,
   DialogContentContainer,
+  DialogPrimitiveButtonTitle,
 } from "./DialogPrimitiveButton.styles";
 import { Responsive } from "@radix-ui/themes/dist/esm/props/prop-def.js";
 import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
@@ -65,7 +65,7 @@ const DialogPrimitiveButton: FC<DialogPrimitiveButtonProps> = ({
   titleIsVisible = true,
   showOverlay = true,
 }) => {
-    const { portalTarget } = usePortalTarget();
+  const { portalTarget } = usePortalTarget();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [position, setPosition] = useState({ top: 0, right: 0 });
@@ -100,14 +100,17 @@ const DialogPrimitiveButton: FC<DialogPrimitiveButtonProps> = ({
   };
 
   const renderDialogTitle = () => {
-    const titleElement = (
+    // Use Dialog.Title for accessibility, but style it to match Radix UI Themes
+    const titleElement = titleIsVisible ? (
       <DialogPrimitiveButtonTitle>{title}</DialogPrimitiveButtonTitle>
+    ) : (
+      <VisuallyHidden.Root>
+        <DialogPrimitiveButtonTitle>{title}</DialogPrimitiveButtonTitle>
+      </VisuallyHidden.Root>
     );
-    
-    if (titleIsVisible) {
-      return titleElement;
-    }
-    return <VisuallyHidden.Root>{titleElement}</VisuallyHidden.Root>;
+
+    // Also render Dialog.Title for accessibility (screen readers)
+    return titleElement;
   };
 
   // Convert maxWidth Responsive prop to CSS value
@@ -131,7 +134,7 @@ const DialogPrimitiveButton: FC<DialogPrimitiveButtonProps> = ({
         </Button>
       </Dialog.Trigger>
       <Dialog.Portal container={portalTarget}>
-        {/* {showOverlay && <DialogPrimitiveButtonOverlay />} */}
+        {showOverlay && <DialogPrimitiveButtonOverlay />}
         <DialogPrimitiveButtonContent
           style={{
             position: "fixed",
@@ -149,4 +152,3 @@ const DialogPrimitiveButton: FC<DialogPrimitiveButtonProps> = ({
 };
 
 export default DialogPrimitiveButton;
-
