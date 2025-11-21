@@ -1,6 +1,7 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { TextField } from "@radix-ui/themes";
 import { FC, useId } from "react";
 import {
   SearchContainer,
@@ -9,7 +10,18 @@ import {
   SearchInputSlot,
 } from "./TextSearch.styles";
 
-interface TextSearchProps {
+interface TextSearchProps
+  extends TextField.RootProps,
+    Omit<
+      React.ComponentPropsWithoutRef<"input">,
+      | "name"
+      | "type"
+      | "placeholder"
+      | "defaultValue"
+      | "color"
+      | "size"
+      | keyof TextField.RootProps
+    > {
   name: string;
   placeholder?: string;
   type?: "number" | "text";
@@ -23,6 +35,7 @@ const TextSearch: FC<TextSearchProps> = ({
   label,
   type = "text",
   defaultValue,
+  ...inputProps
 }) => {
   const id = useId();
 
@@ -35,6 +48,7 @@ const TextSearch: FC<TextSearchProps> = ({
         type={type}
         placeholder={placeholder}
         defaultValue={defaultValue}
+        {...inputProps}
       >
         <SearchInputSlot>
           <MagnifyingGlassIcon width="16" height="16" />

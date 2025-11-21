@@ -296,7 +296,44 @@ if (sanitizedFilters.district) {
 }
 ```
 
-### 5. Text Search Filters (Future)
+### 5. Text Input Filters (Single Value)
+
+**Use case:** Text inputs for single values (e.g., priceFrom, priceTo, color, text search)
+
+**Example:** `priceFrom: "10000"`, `priceTo: "50000"`, `color: "red"`
+
+**Implementation:**
+```typescript
+// Interface - single string value, not array
+priceFrom?: string;
+priceTo?: string;
+color?: string;
+
+// Query - use directly or convert to number for range queries
+if (sanitizedFilters.priceFrom) {
+  const priceFromNum = Number(sanitizedFilters.priceFrom);
+  if (!Number.isNaN(priceFromNum)) {
+    searchFilter.price = { $gte: priceFromNum };
+  }
+}
+
+if (sanitizedFilters.priceTo) {
+  const priceToNum = Number(sanitizedFilters.priceTo);
+  if (!Number.isNaN(priceToNum)) {
+    searchFilter.price = {
+      ...searchFilter.price,
+      $lte: priceToNum,
+    };
+  }
+}
+
+// For text/string filters
+if (sanitizedFilters.color) {
+  searchFilter.color = { $regex: sanitizedFilters.color, $options: "i" };
+}
+```
+
+### 6. Text Search Filters (Future)
 
 **Use case:** Full-text search across multiple fields
 
@@ -368,6 +405,10 @@ export interface EntitySearchFilters {
   yearTo?: string;
   priceFrom?: string;
   priceTo?: string;
+  
+  // Text input filters (single values)
+  color?: string;
+  textSearch?: string;
 }
 ```
 
@@ -402,7 +443,7 @@ async getAll(
       searchFilter.model = { $in: sanitizedFilters.model };
     }
     
-    // Range filters
+    // Range filters (numeric text inputs)
     if (sanitizedFilters.yearFrom) {
       const yearFromNum = Number(sanitizedFilters.yearFrom);
       if (!Number.isNaN(yearFromNum)) {
@@ -418,6 +459,29 @@ async getAll(
           $lte: yearToNum,
         };
       }
+    }
+    
+    // Text input filters (numeric range)
+    if (sanitizedFilters.priceFrom) {
+      const priceFromNum = Number(sanitizedFilters.priceFrom);
+      if (!Number.isNaN(priceFromNum)) {
+        searchFilter.price = { $gte: priceFromNum };
+      }
+    }
+    
+    if (sanitizedFilters.priceTo) {
+      const priceToNum = Number(sanitizedFilters.priceTo);
+      if (!Number.isNaN(priceToNum)) {
+        searchFilter.price = {
+          ...searchFilter.price,
+          $lte: priceToNum,
+        };
+      }
+    }
+    
+    // Text input filters (string/text)
+    if (sanitizedFilters.color) {
+      searchFilter.color = { $regex: sanitizedFilters.color, $options: "i" };
     }
     
     // Calculate pagination
@@ -479,23 +543,50 @@ async getAll(
    // Empty styles file - will be populated later
    ```
 
-3. **Create FiltersClient.tsx (Client Component):**
+3. **Create filters.types.ts (For Text Input Validation):**
+   ```typescript
+   import { z } from "zod";
+   import { PriceFromToSchema } from "@/lib/common/types/common.types";
+
+   // Combine multiple schemas if needed
+   export const EntityFilterSchema = z.object({
+     ...PriceFromToSchema.shape,
+     color: z.number().optional(), // or z.string().optional() for text
+     // Add other text input fields here
+   });
+
+   export type EntityFilter = z.infer<typeof EntityFilterSchema>;
+   ```
+
+4. **Create FiltersClient.tsx (Client Component):**
 
 ### Step 2: FiltersClient Implementation Pattern
+
+#### Overview
+
+FiltersClient supports two types of filters:
+
+1. **Dropdown Filters (SearchMultiSelect)**: Multi-select dropdowns managed via `allSelectedFilterOptions` Map state
+2. **Text Input Filters (TextSearch)**: Text inputs managed via form FormData with Zod validation
+
+Both types are combined in a single form and submitted together via `handleSubmitAllFilters`.
 
 #### Required Imports
 
 ```typescript
 "use client";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { parseWithZod } from "@conform-to/zod";
 import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
   Option,
 } from "@/components/filters/SearchMultiSelect/types";
+import { EntityFilter, EntityFilterSchema } from "./filters.types";
 ```
 
 #### State Management
@@ -525,13 +616,28 @@ const dependentOptions = useMemo(
 );
 ```
 
+#### Form Reference (For Text Inputs)
+
+When using text input filters, add a form reference:
+
+```typescript
+const formRef = useRef<HTMLFormElement>(null);
+```
+
 #### Handler Functions
 
-1. **handleSubmitAllFilters** - Updates URL with selected filters:
+1. **handleSubmitAllFilters** - Updates URL with selected filters (both dropdowns and text inputs):
    ```typescript
    const handleSubmitAllFilters = () => {
+     // Extract FormData for text inputs (if using form)
+     const formData = new FormData(formRef.current!);
+     const schemaKeys = Object.keys(FilterSchema.shape);
+     const parseResult = parseWithZod(formData, { schema: FilterSchema });
+
      const _searchParams = new URLSearchParams(searchParams);
      _searchParams.set("page", "1");
+     
+     // Handle dropdown filters (SearchMultiSelect)
      const params = allSelectedFilterOptions.keys();
      params.forEach((paramName) => {
        const options = allSelectedFilterOptions.get(paramName)!;
@@ -544,6 +650,34 @@ const dependentOptions = useMemo(
          _searchParams.delete(paramName);
        }
      });
+
+     // Handle text input filters (TextSearch)
+     if (parseResult.status === "success") {
+       const values = parseResult.value;
+       schemaKeys.forEach((key) => {
+         _searchParams.delete(key);
+         const value = values[key as keyof FilterType];
+         const valueString = value?.toString();
+         if (valueString && valueString !== "") {
+           _searchParams.append(key, valueString);
+         }
+       });
+     } else if (parseResult.status === "error" && parseResult.error) {
+       // Graceful degradation: add non-error fields to URL
+       const { error } = parseResult;
+       for (let i = 0; i < schemaKeys.length; i++) {
+         const key = schemaKeys[i];
+         _searchParams.delete(key);
+         const errors = error[key];
+         if (errors && errors.length > 0) continue; // Skip fields with errors
+         const value = formData.get(key);
+         const valueString = value?.toString();
+         if (valueString && valueString !== "") {
+           _searchParams.append(key, valueString);
+         }
+       }
+     }
+
      router.replace(`${pathname}?${_searchParams.toString()}`);
    };
    ```
@@ -579,6 +713,25 @@ const dependentOptions = useMemo(
    };
    ```
 
+#### Form Wrapper (For Text Inputs)
+
+When using text input filters, wrap all filters in a form:
+
+```typescript
+<form
+  ref={formRef}
+  onSubmit={(e) => e.preventDefault()}
+  style={{
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap",
+    alignItems: "center",
+  }}
+>
+  {/* Dropdown and text filters go here */}
+</form>
+```
+
 #### SearchMultiSelect Components
 
 ```typescript
@@ -604,6 +757,33 @@ const dependentOptions = useMemo(
 />
 ```
 
+#### TextSearch Components
+
+```typescript
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+
+<TextSearch
+  name="priceFrom"
+  placeholder="Цена от"
+  type="number"
+  defaultValue={searchParams.get("priceFrom")?.toString() ?? ""}
+/>
+
+<TextSearch
+  name="priceTo"
+  placeholder="Цена до"
+  type="number"
+  defaultValue={searchParams.get("priceTo")?.toString() ?? ""}
+/>
+
+<TextSearch
+  name="color"
+  placeholder="Цвет"
+  type="text"
+  defaultValue={searchParams.get("color")?.toString()}
+/>
+```
+
 ### Step 3: Integration with Page
 
 1. **Import Filters component in page.tsx:**
@@ -620,11 +800,42 @@ const dependentOptions = useMemo(
    </Suspense>
    ```
 
-### Example: Car Filters Implementation
+### Step 4: Create Filter Schema (For Text Inputs)
+
+When using text input filters, create a Zod schema for validation:
+
+1. **Create `filters.types.ts` in filters directory:**
+   ```typescript
+   import { z } from "zod";
+   import { PriceFromToSchema } from "@/lib/common/types/common.types";
+
+   // Combine multiple schemas if needed
+   export const EntityFilterSchema = z.object({
+     ...PriceFromToSchema.shape,
+     color: z.number().optional(), // or z.string().optional() for text
+     // Add other text input fields here
+   });
+
+   export type EntityFilter = z.infer<typeof EntityFilterSchema>;
+   ```
+
+2. **Import in FiltersClient:**
+   ```typescript
+   import { parseWithZod } from "@conform-to/zod";
+   import { EntityFilter, EntityFilterSchema } from "./filters.types";
+   ```
+
+### Example: Car Filters Implementation (With Dropdowns and Text Inputs)
 
 ```typescript
 "use client";
-import { FC, useCallback, useMemo, useState } from "react";
+import {
+  FC,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -638,6 +849,10 @@ import {
   AllSelectedFilterOptionsMap,
   Option,
 } from "@/components/filters/SearchMultiSelect/types";
+import { Button } from "@radix-ui/themes";
+import { parseWithZod } from "@conform-to/zod";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import { CarFilter, CarFilterSchema } from "./filters.types";
 
 enableMapSet();
 
@@ -645,6 +860,7 @@ const FiltersClient: FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const formRef = useRef<HTMLFormElement>(null);
   const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
     useState<AllSelectedFilterOptionsMap>(
       new Map([
@@ -667,6 +883,57 @@ const FiltersClient: FC = () => {
     [selectedManufacturerIds]
   );
 
+  const handleSubmitAllFilters = () => {
+    const formData = new FormData(formRef.current!);
+    const schemaKeys = Object.keys(CarFilterSchema.shape);
+    const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
+
+    const _searchParams = new URLSearchParams(searchParams);
+    _searchParams.set("page", "1");
+    
+    // Handle dropdown filters
+    const params = allSelectedFilterOptions.keys();
+    params.forEach((paramName) => {
+      const options = allSelectedFilterOptions.get(paramName)!;
+      if (options.length > 0) {
+        _searchParams.delete(paramName);
+        options.forEach((option) => {
+          _searchParams.append(paramName, option.value);
+        });
+      } else {
+        _searchParams.delete(paramName);
+      }
+    });
+
+    // Handle text input filters
+    if (parseResult.status === "success") {
+      const values = parseResult.value;
+      schemaKeys.forEach((key) => {
+        _searchParams.delete(key);
+        const value = values[key as keyof CarFilter];
+        const valueString = value?.toString();
+        if (valueString && valueString !== "") {
+          _searchParams.append(key, valueString);
+        }
+      });
+    } else if (parseResult.status === "error" && parseResult.error) {
+      const { error } = parseResult;
+      for (let i = 0; i < schemaKeys.length; i++) {
+        const key = schemaKeys[i];
+        _searchParams.delete(key);
+        const errors = error[key];
+        if (errors && errors.length > 0) continue;
+        const value = formData.get(key);
+        const valueString = value?.toString();
+        if (valueString && valueString !== "") {
+          _searchParams.append(key, valueString);
+        }
+      }
+    }
+
+    router.replace(`${pathname}?${_searchParams.toString()}`);
+  };
+
   const handleSetAllSelectedFilterOptions = useCallback(
     (paramName: string, options: MultiValue<Option>) => {
       setAllSelectedFilterOptions((prevOptionsMap) => {
@@ -681,30 +948,89 @@ const FiltersClient: FC = () => {
     []
   );
 
-  // ... other handlers (handleSubmitAllFilters, handleClearFiltersAndClose)
+  const handleClearFiltersAndClose = () => {
+    setAllSelectedFilterOptions(
+      new Map([
+        ["manufacturer", []],
+        ["model", []],
+      ])
+    );
+    router.push(pathname);
+  };
 
   return (
     <div>
-      <SearchMultiSelect
-        displayName="производители"
-        placeholder="Выберите производителя"
-        paramName="manufacturer"
-        options={manufacturerOptions}
-        maxSelectedOptions={3}
-        selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
-        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-      />
-      
-      <SearchMultiSelect
-        placeholder="Выберите модель"
-        displayName="модели"
-        paramName="model"
-        options={modelOptions}
-        isDisabled={selectedManufacturerIds.length === 0}
-        maxSelectedOptions={3}
-        selectedOptions={allSelectedFilterOptions.get("model")!}
-        setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-      />
+      <form
+        ref={formRef}
+        onSubmit={(e) => e.preventDefault()}
+        style={{
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
+        {/* Dropdown filters */}
+        <SearchMultiSelect
+          displayName="производители"
+          placeholder="Выберите производителя"
+          paramName="manufacturer"
+          options={manufacturerOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        
+        <SearchMultiSelect
+          placeholder="Выберите модель"
+          displayName="модели"
+          paramName="model"
+          options={modelOptions}
+          isDisabled={selectedManufacturerIds.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("model")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        {/* Text input filters */}
+        <TextSearch
+          name="priceFrom"
+          placeholder="Цена от"
+          type="number"
+          defaultValue={searchParams.get("priceFrom")?.toString() ?? ""}
+        />
+        <TextSearch
+          name="priceTo"
+          placeholder="Цена до"
+          type="number"
+          defaultValue={searchParams.get("priceTo")?.toString() ?? ""}
+        />
+        <TextSearch
+          name="color"
+          placeholder="Цвет"
+          type="text"
+          defaultValue={searchParams.get("color")?.toString()}
+        />
+
+        {/* Action buttons */}
+        <Button
+          variant="outline"
+          color="gray"
+          onClick={handleSubmitAllFilters}
+          size="3"
+        >
+          Поиск
+        </Button>
+        <Button
+          variant="outline"
+          color="gray"
+          disabled={searchParams.size === 0}
+          onClick={handleClearFiltersAndClose}
+          size="3"
+        >
+          Очистить все фильтры
+        </Button>
+      </form>
     </div>
   );
 };
@@ -719,8 +1045,13 @@ const FiltersClient: FC = () => {
 5. **Clear dependent filters** - When parent filter is cleared, clear dependent filters
 6. **Disable dependent filters** - When parent is empty, disable dependent filters
 7. **Use SearchMultiSelect** - Reusable component for all multi-select filters
-8. **URL synchronization** - All filters update URL params for sharing/bookmarking
-9. **Reset page to 1** - When filters change, reset to first page
+8. **Use TextSearch** - Reusable component for all text input filters
+9. **Wrap in form** - When using text inputs, wrap all filters in a `<form>` with `formRef`
+10. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation
+11. **Graceful error handling** - On validation errors, still add non-error fields to URL
+12. **Default values from URL** - Initialize text inputs with values from `searchParams.get()`
+13. **URL synchronization** - All filters update URL params for sharing/bookmarking
+14. **Reset page to 1** - When filters change, reset to first page
 
 ### Mobile/Desktop UI (Future)
 
