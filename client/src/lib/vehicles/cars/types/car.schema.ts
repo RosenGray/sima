@@ -24,22 +24,36 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     yearOfManufacture: z.preprocess(
       (val) => {
         if (val === "" || val === null || val === undefined) return undefined;
-        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+        const num =
+          typeof val === "string"
+            ? Number(val)
+            : typeof val === "number"
+            ? val
+            : undefined;
         return num !== undefined && !Number.isNaN(num) ? num : undefined;
       },
-      z.number({
-        required_error: "Введите год выпуска",
-      }).min(1900, "Год должен быть не менее 1900")
+      z
+        .number({
+          required_error: "Введите год выпуска",
+        })
+        .min(1900, "Год должен быть не менее 1900")
     ),
     numberOfHand: z.preprocess(
       (val) => {
         if (val === "" || val === null || val === undefined) return undefined;
-        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
+        const num =
+          typeof val === "string"
+            ? Number(val)
+            : typeof val === "number"
+            ? val
+            : undefined;
         return num !== undefined && !Number.isNaN(num) ? num : undefined;
       },
-      z.number({
-        required_error: "Введите количество рук",
-      }).min(1, "Количество рук должно быть не менее 1")
+      z
+        .number({
+          required_error: "Введите количество рук",
+        })
+        .min(1, "Количество рук должно быть не менее 1")
     ),
     transmission: z.nativeEnum(TransmissionType, {
       required_error: "Выберите тип коробки передач",
@@ -47,37 +61,42 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     engineType: z.nativeEnum(EngineType, {
       required_error: "Выберите тип двигателя",
     }),
-    engineCapacity: z.preprocess(
-      (val) => {
-        if (val === "" || val === null || val === undefined) return undefined;
-        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
-        return num !== undefined && !Number.isNaN(num) ? num : undefined;
-      },
-      z.number().optional()
-    ),
-    mileage: z.preprocess(
-      (val) => {
-        if (val === "" || val === null || val === undefined) return undefined;
-        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
-        return num !== undefined && !Number.isNaN(num) ? num : undefined;
-      },
-      z
-        .number()
-        .min(0, "Пробег не может быть отрицательным")
-        .optional()
-    ),
-    numberOfDoors: z.preprocess(
-      (val) => {
-        if (val === "" || val === null || val === undefined) return undefined;
-        const num = typeof val === "string" ? Number(val) : typeof val === "number" ? val : undefined;
-        return num !== undefined && !Number.isNaN(num) ? num : undefined;
-      },
-      z.number().optional()
-    ),
+    engineCapacity: z.preprocess((val) => {
+      if (val === "" || val === null || val === undefined) return undefined;
+      const num =
+        typeof val === "string"
+          ? Number(val)
+          : typeof val === "number"
+          ? val
+          : undefined;
+      return num !== undefined && !Number.isNaN(num) ? num : undefined;
+    }, z.number().optional()),
+    mileage: z.preprocess((val) => {
+      if (val === "" || val === null || val === undefined) return undefined;
+      const num =
+        typeof val === "string"
+          ? Number(val)
+          : typeof val === "number"
+          ? val
+          : undefined;
+      return num !== undefined && !Number.isNaN(num) ? num : undefined;
+    }, z.number().min(0, "Пробег не может быть отрицательным").optional()),
+    numberOfDoors: z.preprocess((val) => {
+      if (val === "" || val === null || val === undefined) return undefined;
+      const num =
+        typeof val === "string"
+          ? Number(val)
+          : typeof val === "number"
+          ? val
+          : undefined;
+      return num !== undefined && !Number.isNaN(num) ? num : undefined;
+    }, z.number().optional()),
     color: z.string().optional(),
-    price: z.number({
-      required_error: "Введите цену",
-    }).min(0, "Цена не может быть отрицательной"),
+    price: z
+      .number({
+        required_error: "Введите цену",
+      })
+      .min(0, "Цена не может быть отрицательной"),
     description: z.string({
       required_error: "Введите описание",
     }),
@@ -93,7 +112,8 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     }),
     contactPrimaryPhone: z
       .string({
-        required_error: "Введите основной телефон,Телефон может содержать только цифры",
+        required_error:
+          "Введите основной телефон,Телефон может содержать только цифры",
       })
       .regex(/^[0-9]+$/, "Телефон может содержать только цифры"),
     contactSecondaryPhone: z
@@ -166,4 +186,3 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
 };
 
 export type CarFormData = z.infer<ReturnType<typeof createCarSchema>>;
-

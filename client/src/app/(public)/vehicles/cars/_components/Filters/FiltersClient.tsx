@@ -1,5 +1,13 @@
 "use client";
-import { FC, useCallback, useMemo, useState } from "react";
+import {
+  FC,
+  FormEvent,
+  FormEventHandler,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -14,6 +22,10 @@ import {
   Option,
 } from "@/components/filters/SearchMultiSelect/types";
 import { Button } from "@radix-ui/themes";
+import { parseWithZod } from "@conform-to/zod";
+import { PriceFromToSchema } from "@/lib/common/types/common.types";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import { CarFilter, CarFilterSchema } from "./filters.types";
 
 enableMapSet();
 
@@ -28,6 +40,7 @@ const FiltersClient: FC = () => {
         ["model", []],
       ])
     );
+  const formRef = useRef<HTMLFormElement>(null);
 
   const isSearchButtonDisabled = useMemo(() => {
     return Array.from(allSelectedFilterOptions.values()).every(
@@ -48,9 +61,14 @@ const FiltersClient: FC = () => {
   }, [searchParams]);
 
   const handleSubmitAllFilters = () => {
+    const formData = new FormData(formRef.current!);
+    const schemaKeys = Object.keys(CarFilterSchema.shape);
+    const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
+
     const _searchParams = new URLSearchParams(searchParams);
     _searchParams.set("page", "1");
     const params = allSelectedFilterOptions.keys();
+
     params.forEach((paramName) => {
       const options = allSelectedFilterOptions.get(paramName)!;
       if (options.length > 0) {
@@ -62,6 +80,31 @@ const FiltersClient: FC = () => {
         _searchParams.delete(paramName);
       }
     });
+
+    if (parseResult.status === "success") {
+      const values = parseResult.value;
+      schemaKeys.forEach((key) => {
+        _searchParams.delete(key);
+        const value = values[key as keyof CarFilter];
+        const valueString = value?.toString();
+        if (valueString && valueString !== "") {
+          _searchParams.append(key, valueString);
+        }
+      });
+    } else if (parseResult.status === "error" && parseResult.error) {
+      const { error } = parseResult;
+      for (let i = 0; i < schemaKeys.length; i++) {
+        const key = schemaKeys[i];
+        _searchParams.delete(key);
+        const errors = error[key];
+        if (errors && errors.length > 0) continue;
+        const value = formData.get(key);
+        const valueString = value?.toString();
+        if (valueString && valueString !== "") {
+          _searchParams.append(key, valueString);
+        }
+      }
+    }
 
     router.replace(`${pathname}?${_searchParams.toString()}`);
   };
@@ -98,14 +141,24 @@ const FiltersClient: FC = () => {
   );
 
   const modelOptions = useMemo(
-    () => getVehicleModelsToSelectOptionsByManufacturerIds(selectedManufacturerIds),
+    () =>
+      getVehicleModelsToSelectOptionsByManufacturerIds(selectedManufacturerIds),
     [selectedManufacturerIds]
   );
 
   return (
     <div>
       {/* Dummy container - will be replaced with proper UI later */}
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+      <form
+        ref={formRef}
+        onSubmit={(e) => e.preventDefault()}
+        style={{
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
         <SearchMultiSelect
           displayName="производители"
           placeholder="Выберите производителя"
@@ -115,7 +168,7 @@ const FiltersClient: FC = () => {
           selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
-        
+
         <SearchMultiSelect
           placeholder="Выберите модель"
           displayName="модели"
@@ -125,6 +178,25 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("model")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <TextSearch
+          name="priceFrom"
+          placeholder="Цена от"
+          type="number"
+          defaultValue={searchParams.get("priceFrom")?.toString() ?? 0}
+        />
+        <TextSearch
+          name="priceTo"
+          placeholder="Цена до"
+          type="number"
+          defaultValue={searchParams.get("priceTo")?.toString() ?? 0}
+        />
+        <TextSearch
+          name="color"
+          placeholder="Цвет"
+          type="text"
+          defaultValue={searchParams.get("color")?.toString()}
         />
 
         {/* Dummy buttons - will be replaced with proper UI later */}
@@ -148,10 +220,9 @@ const FiltersClient: FC = () => {
             Очистить все фильтры
           </Button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
 
 export default FiltersClient;
-
