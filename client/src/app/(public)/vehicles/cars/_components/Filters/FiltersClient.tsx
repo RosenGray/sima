@@ -27,6 +27,7 @@ import { PriceFromToSchema } from "@/lib/common/types/common.types";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import { CarFilter, CarFilterSchema } from "./filters.types";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+import DialogButton from "@/components/modals/DialogButton/DialogButton";
 
 enableMapSet();
 
@@ -181,7 +182,7 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        <PriceTextSearch
+        {/* <PriceTextSearch
           name="priceFrom"
           placeholder="0"
           defaultValue={searchParams.get("priceFrom") ?? undefined}
@@ -196,7 +197,7 @@ const FiltersClient: FC = () => {
           placeholder="Цвет"
           type="text"
           defaultValue={searchParams.get("color")?.toString()}
-        />
+        /> */}
 
         {/* Dummy buttons - will be replaced with proper UI later */}
         <div style={{ display: "flex", gap: "8px" }}>
@@ -218,6 +219,12 @@ const FiltersClient: FC = () => {
           >
             Очистить все фильтры
           </Button>
+          <DialogButton title="hello world1">
+            <h1>hello world</h1>
+          </DialogButton>
+          <DialogButton title="hello world2">
+            <h1>hello world2</h1>
+          </DialogButton>
         </div>
       </form>
     </div>
