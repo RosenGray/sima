@@ -296,44 +296,94 @@ if (sanitizedFilters.district) {
 }
 ```
 
-### 5. Text Input Filters (Single Value)
+### 5. Price Range Filters (Single Value with Comma Formatting)
 
-**Use case:** Text inputs for single values (e.g., priceFrom, priceTo, color, text search)
+**Use case:** Price range inputs with comma formatting (e.g., priceFrom, priceTo)
 
-**Example:** `priceFrom: "10000"`, `priceTo: "50000"`, `color: "red"`
+**Example:** `priceFrom: "10,000"`, `priceTo: "50,000"` (displayed with commas, stored as numbers)
+
+**Implementation:**
+
+**Schema (in `@/lib/common/types/common.types`):**
+```typescript
+export const PriceFromToSchema = z.object({
+  priceFrom: z
+    .string()
+    .optional()
+    .refine((val) => val == null || /^-?\d[\d,]*$/.test(val), {
+      message: "Price must be a numeric string, optionally containing commas.",
+    })
+    .transform((val) => {
+      if (val == null) return undefined;
+      const cleaned = val.replace(/,/g, "");
+      const num = Number(cleaned);
+      return isNaN(num) ? undefined : num;
+    }),
+  priceTo: z
+    .string()
+    .optional()
+    .refine((val) => val == null || /^-?\d[\d,]*$/.test(val), {
+      message: "Price must be a numeric string, optionally containing commas.",
+    })
+    .transform((val) => {
+      if (val == null) return undefined;
+      const cleaned = val.replace(/,/g, "");
+      const num = Number(cleaned);
+      return isNaN(num) ? undefined : num;
+    }),
+});
+```
+
+**UI Component:**
+```typescript
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+
+<PriceTextSearch
+  name="priceFrom"
+  placeholder="0"
+  defaultValue={searchParams.get("priceFrom") ?? undefined}
+/>
+```
+
+**Repository Query:**
+```typescript
+// Interface - single string value, not array (but schema transforms to number)
+priceFrom?: number; // After schema transformation
+priceTo?: number;   // After schema transformation
+
+// Query - values are already numbers after schema transformation
+if (sanitizedFilters.priceFrom) {
+  searchFilter.price = { $gte: sanitizedFilters.priceFrom };
+}
+
+if (sanitizedFilters.priceTo) {
+  searchFilter.price = {
+    ...searchFilter.price,
+    $lte: sanitizedFilters.priceTo,
+  };
+}
+```
+
+**Note:** The schema transforms comma-formatted strings to numbers, so the repository receives numbers, not strings.
+
+### 6. Text Input Filters (Single Value)
+
+**Use case:** Text inputs for single values (e.g., color, text search)
+
+**Example:** `color: "red"`
 
 **Implementation:**
 ```typescript
 // Interface - single string value, not array
-priceFrom?: string;
-priceTo?: string;
 color?: string;
 
-// Query - use directly or convert to number for range queries
-if (sanitizedFilters.priceFrom) {
-  const priceFromNum = Number(sanitizedFilters.priceFrom);
-  if (!Number.isNaN(priceFromNum)) {
-    searchFilter.price = { $gte: priceFromNum };
-  }
-}
-
-if (sanitizedFilters.priceTo) {
-  const priceToNum = Number(sanitizedFilters.priceTo);
-  if (!Number.isNaN(priceToNum)) {
-    searchFilter.price = {
-      ...searchFilter.price,
-      $lte: priceToNum,
-    };
-  }
-}
-
-// For text/string filters
+// Query - use regex for text search
 if (sanitizedFilters.color) {
   searchFilter.color = { $regex: sanitizedFilters.color, $options: "i" };
 }
 ```
 
-### 6. Text Search Filters (Future)
+### 7. Text Search Filters (Future)
 
 **Use case:** Full-text search across multiple fields
 
@@ -550,13 +600,18 @@ async getAll(
 
    // Combine multiple schemas if needed
    export const EntityFilterSchema = z.object({
-     ...PriceFromToSchema.shape,
+     ...PriceFromToSchema.shape, // Includes priceFrom and priceTo with comma formatting
      color: z.number().optional(), // or z.string().optional() for text
      // Add other text input fields here
    });
 
    export type EntityFilter = z.infer<typeof EntityFilterSchema>;
    ```
+   
+   **Note:** `PriceFromToSchema` handles:
+   - Validation of comma-formatted numeric strings (regex: `/^-?\d[\d,]*$/`)
+   - Transformation from formatted string to number (removes commas, converts to number)
+   - Optional fields (both `priceFrom` and `priceTo` are optional)
 
 4. **Create FiltersClient.tsx (Client Component):**
 
@@ -564,12 +619,13 @@ async getAll(
 
 #### Overview
 
-FiltersClient supports two types of filters:
+FiltersClient supports three types of filters:
 
 1. **Dropdown Filters (SearchMultiSelect)**: Multi-select dropdowns managed via `allSelectedFilterOptions` Map state
 2. **Text Input Filters (TextSearch)**: Text inputs managed via form FormData with Zod validation
+3. **Price Input Filters (PriceTextSearch)**: Price inputs with comma formatting, managed via form FormData with Zod validation
 
-Both types are combined in a single form and submitted together via `handleSubmitAllFilters`.
+All types are combined in a single form and submitted together via `handleSubmitAllFilters`.
 
 #### Required Imports
 
@@ -579,6 +635,7 @@ import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { parseWithZod } from "@conform-to/zod";
 import { MultiValue } from "react-select";
@@ -763,26 +820,39 @@ When using text input filters, wrap all filters in a form:
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
 
 <TextSearch
-  name="priceFrom"
-  placeholder="Цена от"
-  type="number"
-  defaultValue={searchParams.get("priceFrom")?.toString() ?? ""}
-/>
-
-<TextSearch
-  name="priceTo"
-  placeholder="Цена до"
-  type="number"
-  defaultValue={searchParams.get("priceTo")?.toString() ?? ""}
-/>
-
-<TextSearch
   name="color"
   placeholder="Цвет"
   type="text"
   defaultValue={searchParams.get("color")?.toString()}
 />
 ```
+
+#### PriceTextSearch Components
+
+For price range filters, use `PriceTextSearch` which automatically formats numbers with commas:
+
+```typescript
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+
+<PriceTextSearch
+  name="priceFrom"
+  placeholder="0"
+  defaultValue={searchParams.get("priceFrom") ?? undefined}
+/>
+
+<PriceTextSearch
+  name="priceTo"
+  placeholder="0"
+  defaultValue={searchParams.get("priceTo") ?? undefined}
+/>
+```
+
+**Note:** `PriceTextSearch`:
+- Automatically formats numbers with commas (e.g., "1,000,000") using `formatNumberWithCommas` utility from `@/utils/common`
+- Uses `type="text"` with `pattern="[\d,]*"` and `inputMode="numeric"`
+- Displays currency symbol (₪)
+- Manages internal state for formatted display value
+- Works with `PriceFromToSchema` from `@/lib/common/types/common.types` which validates and transforms comma-formatted strings to numbers
 
 ### Step 3: Integration with Page
 
@@ -852,6 +922,7 @@ import {
 import { Button } from "@radix-ui/themes";
 import { parseWithZod } from "@conform-to/zod";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import { CarFilter, CarFilterSchema } from "./filters.types";
 
 enableMapSet();
@@ -992,19 +1063,19 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        {/* Text input filters */}
-        <TextSearch
+        {/* Price input filters */}
+        <PriceTextSearch
           name="priceFrom"
-          placeholder="Цена от"
-          type="number"
-          defaultValue={searchParams.get("priceFrom")?.toString() ?? ""}
+          placeholder="0"
+          defaultValue={searchParams.get("priceFrom") ?? undefined}
         />
-        <TextSearch
+        <PriceTextSearch
           name="priceTo"
-          placeholder="Цена до"
-          type="number"
-          defaultValue={searchParams.get("priceTo")?.toString() ?? ""}
+          placeholder="0"
+          defaultValue={searchParams.get("priceTo") ?? undefined}
         />
+        
+        {/* Text input filters */}
         <TextSearch
           name="color"
           placeholder="Цвет"
@@ -1045,8 +1116,9 @@ const FiltersClient: FC = () => {
 5. **Clear dependent filters** - When parent filter is cleared, clear dependent filters
 6. **Disable dependent filters** - When parent is empty, disable dependent filters
 7. **Use SearchMultiSelect** - Reusable component for all multi-select filters
-8. **Use TextSearch** - Reusable component for all text input filters
-9. **Wrap in form** - When using text inputs, wrap all filters in a `<form>` with `formRef`
+8. **Use TextSearch** - Reusable component for regular text input filters
+9. **Use PriceTextSearch** - Reusable component for price input filters with comma formatting
+10. **Wrap in form** - When using text inputs, wrap all filters in a `<form>` with `formRef`
 10. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation
 11. **Graceful error handling** - On validation errors, still add non-error fields to URL
 12. **Default values from URL** - Initialize text inputs with values from `searchParams.get()`

@@ -25,6 +25,7 @@ alwaysApply: true
   - `BasicFormField` for text/number inputs
   - `TextAreaField` for textarea fields
   - `PhoneFormField` for phone number inputs
+  - `PriceFormField` for price inputs with comma formatting
   - `Checkbox` for checkboxes
   - `DropFilesInput` for file uploads
 - `useAuth` from `@/providers/AuthProvider/AuthProvider` for user context
@@ -61,6 +62,21 @@ alwaysApply: true
 - Use `z.nativeEnum()` for enum fields
 - Use `z.string().email()` for email validation
 - Use `z.string().optional().superRefine()` for checkbox validation (check for "on" value)
+- For price fields, use string validation with regex and transform to number:
+  ```typescript
+  price: z
+    .string({
+      required_error: "Введите цену",
+    })
+    .refine((val) => /^-?\d[\d,]*$/.test(val), {
+      message: "Цена должна быть числом, содержащим запятые.",
+    })
+    .transform((val) => {
+      const cleaned = val.replace(/,/g, "");
+      const num = Number(cleaned);
+      return num;
+    })
+  ```
 - For file arrays, use `z.array(z.instanceof(File)).min()` with `superRefine` for file validation
 
 ## Form Field Components
@@ -71,6 +87,12 @@ alwaysApply: true
   - `type`, `field`, `label`, `placeholder`, `size`, `defaultValue`, `dataIsValid`, `errors`, `disabled`, `isMandatory` props
 - Use `TextAreaField` for textarea fields
 - Use `PhoneFormField` for phone number inputs
+- Use `PriceFormField` for price inputs with:
+  - `field`, `label`, `placeholder`, `size`, `defaultValue`, `dataIsValid`, `errors`, `disabled`, `isMandatory` props
+  - Automatically formats numbers with commas (e.g., "1,000,000") using `formatNumberWithCommas` utility from `@/utils/common`
+  - Uses `type="text"` with `pattern="[\d,]*"` and `inputMode="numeric"`
+  - Displays currency symbol (₪) as a child element
+  - Manages internal state for formatted display value
 - Use `Checkbox` for checkbox fields
 - Always pass `errors={field.errors}` to display validation errors
 - Always pass `isDisabled={isPending}` to disable fields during submission
@@ -144,6 +166,9 @@ alwaysApply: true
 
 - Initialize all fields to empty strings (`""`) or empty arrays (`[]`)
 - For dropdowns with default values (e.g., district), use enum value: `district: Districts.Center`
+- For price fields, convert number to string: `price: entity?.price?.toString() || ""`
+  - PriceFormField will automatically format with commas on display
+  - Schema will transform the formatted string back to number on submission
 - Pre-fill user email: `contactEmail: user?.email || ""`
 - Initialize checkbox to `null` for unchecked state
 

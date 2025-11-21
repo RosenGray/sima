@@ -96,6 +96,9 @@ Forms should support both create and edit modes using the `FormMode` enum. This 
       // Number fields - convert to string for form inputs
       numericField: entity?.numericField?.toString() || "",
       
+      // Price fields - convert to string (PriceFormField will format with commas)
+      price: entity?.price?.toString() || "",
+      
       // Enum fields
       enumField: entity?.enumField || "",
       
