@@ -26,6 +26,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { PriceFromToSchema } from "@/lib/common/types/common.types";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import { CarFilter, CarFilterSchema } from "./filters.types";
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 
 enableMapSet();
 
@@ -64,7 +65,7 @@ const FiltersClient: FC = () => {
     const formData = new FormData(formRef.current!);
     const schemaKeys = Object.keys(CarFilterSchema.shape);
     const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
-
+  
     const _searchParams = new URLSearchParams(searchParams);
     _searchParams.set("page", "1");
     const params = allSelectedFilterOptions.keys();
@@ -180,17 +181,15 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        <TextSearch
+        <PriceTextSearch
           name="priceFrom"
-          placeholder="Цена от"
-          type="number"
-          defaultValue={searchParams.get("priceFrom")?.toString() ?? 0}
+          placeholder="0"
+          defaultValue={searchParams.get("priceFrom") ?? undefined}
         />
-        <TextSearch
+        <PriceTextSearch
           name="priceTo"
-          placeholder="Цена до"
-          type="number"
-          defaultValue={searchParams.get("priceTo")?.toString() ?? 0}
+          placeholder="0"
+          defaultValue={searchParams.get("priceTo") ?? undefined}
         />
         <TextSearch
           name="color"
