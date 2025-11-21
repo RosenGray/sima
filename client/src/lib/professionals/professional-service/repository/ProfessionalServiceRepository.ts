@@ -55,16 +55,13 @@ class ProfessionalServiceRepository {
       // if (sanitizedFilters.textSearch?.trim()) {
       //   searchFilter.$text = { $search: sanitizedFilters.textSearch.trim() };
       // }
-      const categoryIds = [
-        "6904c5eda5aa03f1f627c678",
-        "6904c5eda5aa03f1f627c684",
-      ];
+
       // Add category filter
       if (sanitizedFilters.categoryId) {
         // Validate ObjectId format before adding to filter
         const isValidObjectId = sanitizedFilters.categoryId.every((id) => mongoose.Types.ObjectId.isValid(id));
         if (isValidObjectId) {
-          searchFilter.category = { $in: categoryIds }; // sanitizedFilters.categoryId;
+          searchFilter.category = { $in: sanitizedFilters.categoryId }; // sanitizedFilters.categoryId;
         } else {
           // Invalid ObjectId - return empty results by adding impossible filter
           searchFilter._id = new mongoose.Types.ObjectId();
@@ -76,7 +73,7 @@ class ProfessionalServiceRepository {
         // Validate ObjectId format before adding to filter
         const isValidObjectId = sanitizedFilters.subCategoryId.every((id) => mongoose.Types.ObjectId.isValid(id));
         if (isValidObjectId) {
-          searchFilter.subCategory = sanitizedFilters.subCategoryId;
+          searchFilter.subCategory = { $in: sanitizedFilters.subCategoryId };
         } else {
           // Invalid ObjectId - return empty results by adding impossible filter
           searchFilter._id = new mongoose.Types.ObjectId();

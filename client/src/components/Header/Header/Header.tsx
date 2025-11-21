@@ -73,7 +73,6 @@ export default function Header() {
   const { serviceCategories } = useHomePage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
-  console.log("serviceCategories", serviceCategories);
 
   const navigationItems = useMemo(() => {
     const services = {
@@ -86,10 +85,12 @@ export default function Header() {
         })),
       ],
     };
-    return [services];
+    const vehicles = {
+      label: "Транспорт",
+      subItems: [{ label: "Все", href: "/vehicles" }],
+    };
+    return [services, vehicles];
   }, [serviceCategories]);
-
-  console.log("serviceCategoriesNavItems", navigationItems);
 
   const toggleMobileMenu = () => {
     console.log("Toggle mobile menu, current state:", isMobileMenuOpen);

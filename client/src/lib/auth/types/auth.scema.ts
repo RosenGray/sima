@@ -30,6 +30,7 @@ export const RegisterSchema = z
         required_error: "Пожалуйста, подтвердите свой пароль",
       })
       .min(1, { message: "Пожалуйста, подтвердите свой пароль" }),
+    acceptMarketing: z.string().optional()
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Пароли не совпадают",
@@ -46,7 +47,6 @@ export const LoginSchema = z.object({
     .string({ message: "Пароль обязательно" })
     .min(8, { message: "Пароль должен быть не менее 8 символов" }),
 });
-
 export enum UserRole {
   None = 1,
   User,
@@ -62,6 +62,7 @@ export const SerializedUserSchema = z.object({
   updatedAt: z.string(),
   role: z.nativeEnum(UserRole),
   hasPrivateProfessionalPage: z.boolean().optional(),
+  isEmailVerified: z.boolean(),
 });
 
 export const ResetPasswordSchema = z.object({

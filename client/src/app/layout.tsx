@@ -10,10 +10,10 @@ import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
-
+import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 
 // Mark as dynamic because we use cookies in getCurrentUser
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sima Marketplace",
@@ -27,33 +27,32 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
-      <body >
+      <body>
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
-              <ThemeProvider
-                attribute="class"
-                enableSystem
-                enableColorScheme
-                storageKey="sima-theme"
+            <ThemeProvider
+              attribute="class"
+              enableSystem
+              enableColorScheme
+              storageKey="sima-theme"
+            >
+              <RadixTheme
+                className="globalContentOverflowWrapper"
+                accentColor="red"
+                id={RADIX_THEME_APP_ID}
               >
-                <RadixTheme
-                  className="globalContentOverflowWrapper"
-                  accentColor="red"
-                  id={RADIX_THEME_APP_ID}
-                >
                 {user && !user.isEmailVerified && (
                   <EmailVerificationBanner userEmail={user.email} />
                 )}
-                <div className="SimaApp">{children}</div>
+                <PortalProvider>
+                  <div className="SimaApp">{children}</div>
+                </PortalProvider>
+                <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
                 <LayoutBackground />
               </RadixTheme>
-              <RadixTheme
-                id={RADIX_THEME_PORTAL_ID}
-                style={{ height: "auto", minHeight: "auto" }}
-                accentColor="indigo"
-              />
             </ThemeProvider>
           </AuthProvider>
         </StyledComponentsRegistry>

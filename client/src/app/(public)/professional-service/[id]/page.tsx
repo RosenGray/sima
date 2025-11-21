@@ -15,7 +15,6 @@ const ProfessionalServicePage: FC<ProfessionalServicePageProps> = async ({
   if (!service) {
     notFound();
   }
-
   return <ProfessionalServiceDetailClient service={service} />;
 };
 

@@ -2,7 +2,9 @@
 import styled from "styled-components";
 import { Container, Grid, Heading, Box } from "@radix-ui/themes";
 
-export const ProfessionalsPageContainer = styled(Container)``;
+export const ProfessionalsPageContainer = styled(Container)`
+ padding-bottom: 40px;
+`;
 
 export const Title = styled(Heading)`
 

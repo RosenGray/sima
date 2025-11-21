@@ -1,6 +1,7 @@
 "use client";
-import { FC, useMemo } from "react";
-import SearchSingleSelect from "@/components/filters/TextSearch/SearchMultiSelect/SearchMultiSelect";
+import { FC, useCallback, useMemo, useState } from "react";
+import { enableMapSet, produce } from "immer";
+import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapServiceCategoriesToSelectOptions,
@@ -20,7 +21,7 @@ import {
   Text,
 } from "@radix-ui/themes";
 import { Cross2Icon, MixerHorizontalIcon } from "@radix-ui/react-icons";
-import { useFiltersModal } from "./FiltersContext";
+import { useFiltersModal } from "../../../../../components/filters/FiltersContext";
 import {
   FiltersSection,
   DesktopFiltersWrapper,
@@ -30,9 +31,16 @@ import {
   ModalBody,
   ModalFiltersSection,
   ModalFooter,
-  ClearFiltersButton,
-} from "./Filters.styles";
+  SubmitSearchFiltersButton,
+} from "../../../../../components/filters/Filters.styles";
 import { Districts } from "@/lib/cities/types/cities.schema";
+import { MultiValue } from "react-select";
+import {
+  AllSelectedFilterOptionsMap,
+  Option,
+} from "@/components/filters/SearchMultiSelect/types";
+
+enableMapSet();
 
 interface FiltersClientProps {
   mappedCategories: ServiceCategoryMapping;
@@ -43,8 +51,31 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
-  const selectedCategoryIds = searchParams.getAll("categoryId");
-  const selectedDistricts = searchParams.getAll("district") as Districts[];
+  const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
+    useState<AllSelectedFilterOptionsMap>(
+      new Map([
+        ["categoryId", []],
+        ["subCategoryId", []],
+        ["district", []],
+        ["city", []],
+      ])
+    );
+
+  console.log("searchParams'", searchParams.size);
+
+  const isSearcButtonDisabled = useMemo(() => {
+    return Array.from(allSelectedFilterOptions.values()).every(
+      (options) => options.length === 0
+    );
+  }, [allSelectedFilterOptions]);
+
+  const selectedCategoryIds = allSelectedFilterOptions
+    .get("categoryId")!
+    .map((option) => option.value);
+
+  const selectedDistricts = allSelectedFilterOptions
+    .get("district")!
+    .map((option) => option.value) as Districts[];
 
   // Count active filters
   const activeFiltersCount = useMemo(() => {
@@ -56,13 +87,52 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     return count;
   }, [searchParams]);
 
-  // Clear all filters
-  const handleClearFilters = () => {
-    router.push(pathname);
+  const handleSubmitAllFilters = () => {
+    const _searchParams = new URLSearchParams(searchParams);
+    _searchParams.set("page", "1");
+    const params = allSelectedFilterOptions.keys();
+    params.forEach((paramName) => {
+      const options = allSelectedFilterOptions.get(paramName)!;
+      if (options.length > 0) {
+        _searchParams.delete(paramName);
+        options.forEach((option) => {
+          _searchParams.append(paramName, option.value);
+        });
+      } else {
+        _searchParams.delete(paramName);
+      }
+    });
+
+    router.replace(`${pathname}?${_searchParams.toString()}`);
   };
+
+  const handleSetAllSelectedFilterOptions = useCallback(
+    (paramName: string, options: MultiValue<Option>) => {
+      setAllSelectedFilterOptions((prevOptionsMap) => {
+        return produce(prevOptionsMap, (draft) => {
+          draft.set(paramName, [...options]);
+          if (paramName === "categoryId" && options.length === 0) {
+            draft.set("subCategoryId", []);
+          }
+          if (paramName === "district" && options.length === 0) {
+            draft.set("city", []);
+          }
+        });
+      });
+    },
+    []
+  );
 
   // Clear filters and close modal (for mobile)
   const handleClearFiltersAndClose = () => {
+    setAllSelectedFilterOptions(
+      new Map([
+        ["categoryId", []],
+        ["subCategoryId", []],
+        ["district", []],
+        ["city", []],
+      ])
+    );
     router.push(pathname);
     closeModal();
   };
@@ -88,42 +158,50 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
     [selectedDistricts]
   );
 
-  const FiltersContent = () => (
-    <>
-      <SearchSingleSelect
-        displayName="категории"
-        placeholder="Выберите категорию"
-        paramName="categoryId"
-        options={categoriesOptions}
-        maxSelectedOptions={3}
-      />
-      <SearchSingleSelect
-        placeholder="Выберите подкатегорию"
-        paramName="subCategoryId"
-        displayName="подкатегории"
-        options={subCategoryOptions}
-        isDisabled={selectedCategoryIds.length === 0}
-        maxSelectedOptions={3}
-      />
-      <SearchSingleSelect
-        placeholder="Выберите район"
-        displayName="районы"
-        paramName="district"
-        options={areasOptions}
-        maxSelectedOptions={3}
-      />
-      <SearchSingleSelect
-        displayName="города"
-        placeholder="Выберите город"
-        paramName="city"
-        options={citiesOptions}
-        isDisabled={selectedDistricts.length === 0}
-        maxSelectedOptions={3}
-
-      />
-    </>
-  );
-
+  const renderFilters = () => {
+    return (
+      <>
+        <SearchMultiSelect
+          displayName="категории"
+          placeholder="Выберите категорию"
+          paramName="categoryId"
+          options={categoriesOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("categoryId")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        <SearchMultiSelect
+          placeholder="Выберите подкатегорию"
+          paramName="subCategoryId"
+          displayName="подкатегории"
+          options={subCategoryOptions}
+          isDisabled={selectedCategoryIds.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("subCategoryId")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        <SearchMultiSelect
+          placeholder="Выберите район"
+          displayName="районы"
+          paramName="district"
+          options={areasOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("district")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        <SearchMultiSelect
+          displayName="города"
+          placeholder="Выберите город"
+          paramName="city"
+          options={citiesOptions}
+          isDisabled={selectedDistricts.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("city")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+      </>
+    );
+  };
   return (
     <>
       {/* Desktop Filters */}
@@ -137,19 +215,29 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           width="18"
           height="18"
         />
-        <FiltersSection>
-          <FiltersContent />
-        </FiltersSection>
-        {activeFiltersCount > 0 && (
-          <ClearFiltersButton
+        <FiltersSection>{renderFilters()}</FiltersSection>
+        {/* {activeFiltersCount > 0 && ( */}
+        <Flex direction="column" gap="3">
+          <SubmitSearchFiltersButton
             variant="outline"
             color="gray"
-            onClick={handleClearFilters}
-            size="2"
+            disabled={isSearcButtonDisabled}
+            onClick={handleSubmitAllFilters}
+            size="3"
           >
-            Очистить фильтры
-          </ClearFiltersButton>
-        )}
+            Поиск
+          </SubmitSearchFiltersButton>
+          <SubmitSearchFiltersButton
+            variant="outline"
+            color="gray"
+            disabled={searchParams.size === 0}
+            onClick={handleClearFiltersAndClose}
+            size="3"
+          >
+            очистить все фильтры
+          </SubmitSearchFiltersButton>
+        </Flex>
+        {/* )} */}
       </DesktopFiltersWrapper>
 
       {/* Mobile Filter Button */}
@@ -225,7 +313,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
 
           <ModalBody>
             <ModalFiltersSection>
-              <FiltersContent />
+              {renderFilters()}
             </ModalFiltersSection>
           </ModalBody>
 
@@ -252,13 +340,18 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
                     flex: activeFiltersCount > 0 ? 1 : undefined,
                     width: activeFiltersCount === 0 ? "100%" : undefined,
                   }}
-                  onClick={closeModal}
+                  onClick={() => {
+                    closeModal();
+                    handleSubmitAllFilters();
+                  }}
                   size={{
                     initial: "2",
-                    xs: "3",
+                    sm: "1",
                   }}
                 >
+                  <span style={{ whiteSpace: 'nowrap' }}>
                   Показать результаты
+                  </span>
                 </Button>
               </Flex>
             </Flex>

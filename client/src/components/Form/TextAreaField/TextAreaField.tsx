@@ -8,6 +8,7 @@ interface TextAreaFieldProps extends TextAreaProps {
   errors?: string[];
   ref?: Ref<HTMLTextAreaElement>;
   label?: string;
+  isMandatory?: boolean;
 }
 
 const TextAreaField: FC<TextAreaFieldProps> = ({
@@ -20,6 +21,7 @@ const TextAreaField: FC<TextAreaFieldProps> = ({
   errors,
   ref,
   label,
+  isMandatory,
   ...rest
 }) => {
   return (
@@ -31,11 +33,24 @@ const TextAreaField: FC<TextAreaFieldProps> = ({
           size="3"
           weight="bold"
           style={{
-            lineHeight: "2",
+
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
           }}
           className={className}
         >
           {label}
+          {isMandatory && (
+            <Text as="span" size="3" weight="bold" color="tomato">
+              *
+            </Text>
+          )}
+        </Text>
+      )}
+      {!label && isMandatory && (
+        <Text as="span" size="3" weight="bold" color="tomato">
+          *
         </Text>
       )}
       <TextArea

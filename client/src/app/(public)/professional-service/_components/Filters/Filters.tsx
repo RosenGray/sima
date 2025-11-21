@@ -1,8 +1,8 @@
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
-import { FiltersContainer } from "./Filters.styles";
+import { FiltersContainer } from "../../../../../components/filters/Filters.styles";
 import { FC } from "react";
 import FiltersClient from "./FiltersClient";
-import { FiltersProvider } from "./FiltersContext";
+import { FiltersProvider } from "../../../../../components/filters/FiltersContext";
 
 const Filters: FC = async () => {
   const mappedCategories =

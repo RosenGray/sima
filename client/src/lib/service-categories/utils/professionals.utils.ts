@@ -1,5 +1,5 @@
 import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
-
+import { Option } from "@/components/filters/SearchMultiSelect/types";
 export const mapServiceCategoriesToSelectOptions = (
   data: ServiceCategoryMapping
 ) => {
@@ -12,13 +12,14 @@ export const mapServiceCategoriesToSelectOptions = (
     .map(([id, value]) => ({
       value: id,
       label: value.category.russianDisplayName,
+      fieldKey: 'categoryId'
     }));
 };
 
 export const mapServiceSubCategoriesToSelectOptions = (
   data: ServiceCategoryMapping,
   serviceCategoryId?: string | null
-) => {
+): Option[] => {
   if (!serviceCategoryId) {
     return [];
   }
@@ -32,7 +33,7 @@ export const mapServiceSubCategoriesToSelectOptions = (
 export const mapServiceSubCategoriesToSelectOptionsByCategoryIds = (
   data: ServiceCategoryMapping,
   serviceCategoryIds?: string[] | null
-) => {
+): Option[] => {
   if (!serviceCategoryIds) {
     return [];
   }
@@ -48,5 +49,6 @@ export const mapServiceSubCategoriesToSelectOptionsByCategoryIds = (
     .map((subCategory) => ({
       value: subCategory.id,
       label: subCategory.russianDisplayName,
+      fieldKey: 'subCategoryId'
     }));
 };

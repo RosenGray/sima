@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Профессиональные услуги",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -19,15 +19,10 @@ export default async function RootLayout({
   const filePath = generateBackblazeUrl("public", "professionals-stripe.jpeg");
 
   return (
-    // <ProfessionalServiceProvider data={{ professionalServices: [] }}>
     <ProfessionalServiceLayoutSection>
       <SimpleHeader />
-      <ProfessionalServiceLayoutStripe
-        $src={filePath}
-      />
-
+      <ProfessionalServiceLayoutStripe $src={filePath} />
       <main>{children}</main>
     </ProfessionalServiceLayoutSection>
-    // </ProfessionalServiceProvider>
   );
 }

@@ -20,6 +20,7 @@ interface PhoneFormFieldProps extends TextField.RootProps {
   children?: ReactNode;
   label?: string;
   _key?: string;
+  isMandatory?: boolean;
 }
 
 // const AreaCodeSelect: FC<AreaCodeSelectProps> = ({ size, areaCodeField }) => {
@@ -63,10 +64,10 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
   ref,
   label,
   _key,
+  isMandatory,
   ...rest
 }) => {
   const { mb, mt, mr, ml } = rest;
-  console.log("deffffffffff", defaultValue);
 
   return (
     <Box mb={mb} mt={mt} mr={mr} ml={ml}>
@@ -76,10 +77,24 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
           as="label"
           size="3"
           weight="bold"
-          style={{ lineHeight: "2" }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}
           className={className}
         >
           {label}
+          {isMandatory && (
+            <Text as="span" size="3" weight="bold" color="tomato">
+              *
+            </Text>
+          )}
+        </Text>
+      )}
+      {!label && isMandatory && (
+        <Text as="span" size="3" weight="bold" color="tomato">
+          *
         </Text>
       )}
 

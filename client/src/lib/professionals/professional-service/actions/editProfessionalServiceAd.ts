@@ -7,7 +7,8 @@ import connectDB from "@/lib/mongo/mongodb";
 import {
   ExistingImageItem,
   FileUploadResponse,
-} from "@/app/api/files/create/route";
+  uploadFiles,
+} from "@/lib/files/uploadFiles";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
@@ -39,7 +40,7 @@ export async function editProfessionalServiceAd(
     const fileManager = await getFileManager();
     await fileManager.deleteFiles(
       user.id,
-      "professionals",
+      "professionals-service",
       context.imagesToDelete.map((image) => ({
         fileName: image.uniqueName,
         versionId: image.versionId,
@@ -54,15 +55,13 @@ export async function editProfessionalServiceAd(
       (file: File) => file.size > 0 && file.name !== "undefined"
     );
 
-    console.log('validImages', validImages);
-
     let uploadResult: FileUploadResponse = {
       success: true,
       message: "No new files to upload",
       files: [],
       metadata: {
         totalFiles: 0,
-        folderName: "professionals",
+        folderName: "professionals-service",
         userId: user.id,
       },
     };
@@ -77,22 +76,11 @@ export async function editProfessionalServiceAd(
         uploadFormData.append("files", file);
       });
 
-      // Add metadata
-      uploadFormData.append("folderName", "professionals");
-      uploadFormData.append("userId", user.id);
-
-      // Send request to files API route
-      const response = await fetch("http://localhost:3000/api/files/create", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to upload files");
-      }
-
-      uploadResult = await response.json();
+      uploadResult = await uploadFiles(
+        "professionals-service",
+        user.id,
+        uploadFormData
+      );
     }
 
     await connectDB();

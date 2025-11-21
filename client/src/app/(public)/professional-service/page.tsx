@@ -1,7 +1,7 @@
 import { FC, Suspense } from "react";
 import { ProfessionalsPageContainer } from "./page.styles";
 import Filters from "./_components/Filters/Filters";
-import { LoadingFilters } from "./_components/Filters/Filters.styles";
+import { LoadingFilters } from "../../../components/filters/Filters.styles";
 import ProfessionalServiceContent from "./_components/ProfessionalServiceContent/ProfessionalServiceContent";
 import Loading from "./loading";
 

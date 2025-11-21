@@ -100,7 +100,7 @@ const LoginForm = () => {
               <Flex justify="between" align="center" mt="1">
                 <Text size="4" >
                   вы еще не зарегистрированы?
-                  <Text weight="bold" ml="5px" >
+                  <Text weight="bold" ml="5px" color="red">
                     <Link
                       href="/auth/register"
                       className={isPending ? "disabled-link" : ""}

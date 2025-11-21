@@ -1,15 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { Heading, Text } from "@radix-ui/themes";
 import {
   PublishAdPageContainer,
   PublishAdGrid,
-  PublishAdCard,
-  PublishAdCardContent,
-  PublishAdCardIcon,
-  PublishAdCardTitle,
-  PublishAdCardDescription,
 } from "./page.styles";
 import {
   PersonIcon,
@@ -19,6 +13,7 @@ import {
   HeartFilledIcon,
   CameraIcon,
 } from "@radix-ui/react-icons";
+import IconCard from "@/components/IconCard/IconCard";
 
 interface PublishAdCategory {
   id: string;
@@ -105,23 +100,13 @@ const PublishAdPage = () => {
         }}
       >
         {categories.map((category) => (
-          <Link key={category.id} href={category.href}>
-            <PublishAdCard variant="surface">
-              <PublishAdCardContent>
-                <PublishAdCardIcon>{category.icon}</PublishAdCardIcon>
-                <PublishAdCardTitle>
-                  <Text size="5" weight="bold">
-                    {category.title}
-                  </Text>
-                </PublishAdCardTitle>
-                <PublishAdCardDescription>
-                  <Text size="3" color="gray">
-                    {category.description}
-                  </Text>
-                </PublishAdCardDescription>
-              </PublishAdCardContent>
-            </PublishAdCard>
-          </Link>
+          <IconCard
+            key={category.id}
+            icon={category.icon}
+            title={category.title}
+            description={category.description}
+            href={category.href}
+          />
         ))}
       </PublishAdGrid>
     </PublishAdPageContainer>

@@ -83,7 +83,7 @@ Say: **"Use Studio Coach to [your request]"** to begin orchestrated development.
 ```mermaid
 graph TD
   SC[Studio Coach]
-  style SC fill:#f9f,stroke:#333,stroke-width:4px
+  style SC fill:#f9f,stroke:#333,strokeWidth:4px
   AI[Ai Ml Engineer]
   SC --> AI
   BA[Backend System Architect]

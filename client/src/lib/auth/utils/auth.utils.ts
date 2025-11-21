@@ -4,6 +4,7 @@ import { IUser, User } from "../models/User";
 import jwt from "jsonwebtoken";
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
+import { SerializedUser } from "../types/auth.scema";
 
 
 export const jwtSignUser = (user: IUser) => {
@@ -22,7 +23,7 @@ export const jwtSignUser = (user: IUser) => {
   );
 };
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<SerializedUser | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(SIMA_AUTH_SESSION_CONFIG.name)?.value;
@@ -35,9 +36,9 @@ export async function getCurrentUser() {
     if (!decoded) return null;
 
     await connectDB();
-    const user = await User.findOne<IUser>({ email: decoded.email });
+    const user = await User.findOne<SerializedUser>({ email: decoded.email });
     if(!user) return null;
-    return JSON.parse(JSON.stringify(user));
+    return JSON.parse(JSON.stringify(user)) as SerializedUser;
   } catch (_error) {
     console.log("error", _error);
     return null;
@@ -54,6 +55,8 @@ export async function requireAuthOrRedirectTo(redirectTo: string = "/auth/login"
 }
 
 
-export const thisUserIsOwner = (userId: string, ownerId: string) => {
-  return userId === ownerId;
+export const thisUserIsOwner = async ( ownerId: string) => {
+  const user = await getCurrentUser();
+  if (!user) return false;
+  return user.id === ownerId;
 }
