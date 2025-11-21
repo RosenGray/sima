@@ -21,90 +21,53 @@ export const createCarSchema = ({ minNumberOfImages = 1 }) => {
     model: z.string({
       required_error: "Выберите модель",
     }),
-    yearOfManufacture: z.preprocess(
-      (val) => {
-        if (val === "" || val === null || val === undefined) return undefined;
-        const num =
-          typeof val === "string"
-            ? Number(val)
-            : typeof val === "number"
-            ? val
-            : undefined;
-        return num !== undefined && !Number.isNaN(num) ? num : undefined;
-      },
-      z
-        .number({
-          required_error: "Введите год выпуска",
-        })
-        .min(1900, "Год должен быть не менее 1900")
-    ),
-    numberOfHand: z.preprocess(
-      (val) => {
-        if (val === "" || val === null || val === undefined) return undefined;
-        const num =
-          typeof val === "string"
-            ? Number(val)
-            : typeof val === "number"
-            ? val
-            : undefined;
-        return num !== undefined && !Number.isNaN(num) ? num : undefined;
-      },
-      z
-        .number({
-          required_error: "Введите количество рук",
-        })
-        .min(1, "Количество рук должно быть не менее 1")
-    ),
+    yearOfManufacture: z.coerce
+      .number({
+        required_error: "Введите год выпуска",
+        invalid_type_error: "Год должен быть числом",
+      })
+      .min(1900, "Год должен быть не менее 1900"),
+    numberOfHand: z.coerce
+      .number({
+        required_error: "Введите количество рук",
+        invalid_type_error: "Количество рук должно быть числом",
+      })
+      .min(1, "Количество рук должно быть не менее 1"),
     transmission: z.nativeEnum(TransmissionType, {
       required_error: "Выберите тип коробки передач",
     }),
     engineType: z.nativeEnum(EngineType, {
       required_error: "Выберите тип двигателя",
     }),
-    engineCapacity: z.preprocess((val) => {
-      if (val === "" || val === null || val === undefined) return undefined;
-      const num =
-        typeof val === "string"
-          ? Number(val)
-          : typeof val === "number"
-          ? val
-          : undefined;
-      return num !== undefined && !Number.isNaN(num) ? num : undefined;
-    }, z.number().optional()),
-    mileage: z.preprocess((val) => {
-      if (val === "" || val === null || val === undefined) return undefined;
-      const num =
-        typeof val === "string"
-          ? Number(val)
-          : typeof val === "number"
-          ? val
-          : undefined;
-      return num !== undefined && !Number.isNaN(num) ? num : undefined;
-    }, z.number().min(0, "Пробег не может быть отрицательным").optional()),
-    numberOfDoors: z.preprocess((val) => {
-      if (val === "" || val === null || val === undefined) return undefined;
-      const num =
-        typeof val === "string"
-          ? Number(val)
-          : typeof val === "number"
-          ? val
-          : undefined;
-      return num !== undefined && !Number.isNaN(num) ? num : undefined;
-    }, z.number().optional()),
+    engineCapacity: z.coerce
+      .number({
+        invalid_type_error: "Объем двигателя должен быть числом",
+      })
+      .optional(),
+    mileage: z.coerce
+      .number({
+        invalid_type_error: "Пробег должен быть числом",
+      })
+      .min(0, "Пробег не может быть отрицательным")
+      .optional(),
+    numberOfDoors: z.coerce
+      .number({
+        invalid_type_error: "Количество дверей должно быть числом",
+      })
+      .optional(),
     color: z.string().optional(),
     price: z
-    .string({
-      required_error: "Введите цену",
-    })
-    .refine((val) => /^-?\d[\d,]*$/.test(val), {
-      message: "Цена должна быть числом, содержащим запятые.",
-    })
-    .transform((val) => {
-  
-      const cleaned = val.replace(/,/g, "");
-      const num = Number(cleaned);
-      return num;
-    }),
+      .string({
+        required_error: "Введите цену",
+      })
+      .refine((val) => /^-?\d[\d,]*$/.test(val), {
+        message: "Цена должна быть числом, содержащим запятые.",
+      })
+      .transform((val) => {
+        const cleaned = val.replace(/,/g, "");
+        const num = Number(cleaned);
+        return num;
+      }),
     description: z.string({
       required_error: "Введите описание",
     }),

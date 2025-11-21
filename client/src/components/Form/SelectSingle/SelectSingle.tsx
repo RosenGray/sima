@@ -17,7 +17,15 @@ interface Option {
 }
 
 interface SelectSingleProps extends Props {
-  field: FieldMetadata<string | string[] | (string | undefined)[] | undefined>;
+  field: FieldMetadata<
+    | string
+    | string[]
+    | number
+    | number[]
+    | (string | undefined)[]
+    | (number | undefined)[]
+    | undefined
+  >;
   options: Option[];
   defaultValue?: Option;
   label?: string;

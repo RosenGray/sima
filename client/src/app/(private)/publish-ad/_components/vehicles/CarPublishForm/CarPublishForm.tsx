@@ -265,7 +265,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
       </Flex>
     );
   }
-console.log(price.value)
+
   return (
     <>
       <form key={formKey.toString()} action={formAction} {...getFormProps(form)}>
