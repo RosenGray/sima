@@ -182,16 +182,7 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        {/* <PriceTextSearch
-          name="priceFrom"
-          placeholder="0"
-          defaultValue={searchParams.get("priceFrom") ?? undefined}
-        />
-        <PriceTextSearch
-          name="priceTo"
-          placeholder="0"
-          defaultValue={searchParams.get("priceTo") ?? undefined}
-        />
+        {/* 
         <TextSearch
           name="color"
           placeholder="Цвет"
@@ -219,11 +210,17 @@ const FiltersClient: FC = () => {
           >
             Очистить все фильтры
           </Button>
-          <DialogButton title="hello world1">
-            <h1>hello world</h1>
-          </DialogButton>
-          <DialogButton title="hello world2">
-            <h1>hello world2</h1>
+          <DialogButton title="hello world1" titleIsVisible={false} maxWidth="300px">
+          <PriceTextSearch
+          name="priceFrom"
+          placeholder="0"
+          defaultValue={searchParams.get("priceFrom") ?? undefined}
+        />
+        <PriceTextSearch
+          name="priceTo"
+          placeholder="0"
+          defaultValue={searchParams.get("priceTo") ?? undefined}
+        />
           </DialogButton>
         </div>
       </form>
