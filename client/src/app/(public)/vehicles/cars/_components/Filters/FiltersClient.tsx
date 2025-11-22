@@ -1,13 +1,5 @@
 "use client";
-import {
-  FC,
-  FormEvent,
-  FormEventHandler,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -24,13 +16,10 @@ import {
 } from "@/components/filters/select/types";
 import { Button } from "@radix-ui/themes";
 import { parseWithZod } from "@conform-to/zod";
-import { PriceFromToSchema } from "@/lib/common/types/common.types";
-import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import { CarFilter, CarFilterSchema } from "./filters.types";
-import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
-import DialogButton from "@/components/modals/DialogButton/DialogButton";
 import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+import { getYearDialogButtonTitle } from "./Filters.utils";
 
 enableMapSet();
 
@@ -157,13 +146,9 @@ const FiltersClient: FC = () => {
 
   const yearsOptions = useMemo(() => getYearsOptions(), []);
 
-  let yearDialogButtonTitle = "Год";
-  if (allSelectedFilterOptions.get("yearFrom")!.length > 0) {
-    yearDialogButtonTitle = `Год от ${allSelectedFilterOptions.get("yearFrom")?.[0].label}`;
-  }
-  if (allSelectedFilterOptions.get("yearTo")!.length > 0) {
-    yearDialogButtonTitle = `Год до ${allSelectedFilterOptions.get("yearTo")?.[0].label}`;
-  }
+  const yearDialogButtonTitle = getYearDialogButtonTitle(
+    allSelectedFilterOptions
+  );
 
   return (
     <div>
@@ -199,13 +184,28 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        {/* 
-        <TextSearch
-          name="color"
-          placeholder="Цвет"
-          type="text"
-          defaultValue={searchParams.get("color")?.toString()}
-        /> */}
+        <DialogPrimitiveButton
+          title={yearDialogButtonTitle}
+          showOverlay={true} // Hide overlay
+        >
+          <SearchSingleSelect
+            placeholder="Год от"
+            displayName="год от"
+            paramName="yearFrom"
+            options={yearsOptions}
+            selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          />
+
+          <SearchSingleSelect
+            placeholder="Год до"
+            displayName="год до"
+            paramName="yearTo"
+            options={yearsOptions}
+            selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          />
+        </DialogPrimitiveButton>
 
         {/* Dummy buttons - will be replaced with proper UI later */}
         <div style={{ display: "flex", gap: "8px" }}>
@@ -227,46 +227,6 @@ const FiltersClient: FC = () => {
           >
             Очистить все фильтры
           </Button>
-          <DialogButton
-            title="hello world1"
-            titleIsVisible={false}
-            maxWidth="300px"
-          >
-            <PriceTextSearch
-              name="priceFrom"
-              placeholder="0"
-              defaultValue={searchParams.get("priceFrom") ?? undefined}
-            />
-            <PriceTextSearch
-              name="priceTo"
-              placeholder="0"
-              defaultValue={searchParams.get("priceTo") ?? undefined}
-            />
-          </DialogButton>
-
-          <DialogPrimitiveButton
-            title={yearDialogButtonTitle}
-            showOverlay={true} // Hide overlay
-          >
-            <SearchSingleSelect
-              placeholder="Год от"
-              displayName="год от"
-              paramName="yearFrom"
-              options={yearsOptions}
-              selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
-              setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-            />
-
-            {/* <SearchMultiSelect
-              placeholder="Год до"
-              displayName="год до"
-              paramName="yearTo"
-              options={yearsOptions}
-              maxSelectedOptions={1}
-              selectedOptions={allSelectedFilterOptions.get("yearTo")!}
-              setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-            /> */}
-          </DialogPrimitiveButton>
         </div>
       </form>
     </div>

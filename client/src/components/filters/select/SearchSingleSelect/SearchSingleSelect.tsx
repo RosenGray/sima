@@ -69,11 +69,12 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
     }
   }, [paramName, paramSelectionOption, setAllSelectedFilterOptions]);
 
-  // );
   const handleChange = useCallback(
     (option: SingleValue<Option>) => {
       if (option) {
         setAllSelectedFilterOptions(paramName, [option]);
+      } else {
+        setAllSelectedFilterOptions(paramName, []);
       }
     },
     [paramName, setAllSelectedFilterOptions]
@@ -90,7 +91,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
       <Select
         {...rest}
         menuPortalTarget={isPortalTarget ? menuPortalTarget : undefined}
-        value={selectedOptions}
+        value={selectedOptions.length > 0 ? selectedOptions[0] : null}
         name={`search-single-select-${paramName}`}
         instanceId={id}
         options={options as OptionsOrGroups<Option, GroupBase<Option>>}
