@@ -1,4 +1,4 @@
-import { MultiValue, Props } from "react-select";
+import { MultiValue, Props, SingleValue } from "react-select";
 
 export interface Option {
   value: string;

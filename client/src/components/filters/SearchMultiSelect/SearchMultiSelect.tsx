@@ -101,6 +101,8 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     return selectedCount >= maxSelectedOptions;
   };
 
+  console.log('menuPortalTarget',menuPortalTarget)
+
   return (
     <Box>
       {label && (
@@ -111,7 +113,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
-        // {...(menuPortalTarget !== undefined && { menuPortalTarget })}
+        menuPortalTarget={menuPortalTarget}
         value={selectedOptions}
         name={`search-single-select-${paramName}`}
         instanceId={id}
