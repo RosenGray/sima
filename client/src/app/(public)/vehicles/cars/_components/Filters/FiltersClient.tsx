@@ -1,5 +1,5 @@
 "use client";
-import { FC, useCallback, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -17,16 +17,26 @@ import {
 import { Button } from "@radix-ui/themes";
 import { parseWithZod } from "@conform-to/zod";
 import { CarFilter, CarFilterSchema } from "./filters.types";
-import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
-import { getYearDialogButtonTitle } from "./Filters.utils";
+import MoreFiltersModal from "../modals/MoreFiltersModal/MoreFiltersModal";
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import {
+  DesktopFiltersWrapper,
+  ModalFiltersSection,
+} from "@/components/filters/Filters.styles";
 
 enableMapSet();
 
-const FiltersClient: FC = () => {
+interface FiltersClientProps {
+  formRef: React.RefObject<HTMLFormElement>;
+}
+
+const FiltersClient: FC<FiltersClientProps> = ({ formRef }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const [isMoreFiltersModalOpen, setIsMoreFiltersModalOpen] = useState(false);
   const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
     useState<AllSelectedFilterOptionsMap>(
       new Map([
@@ -36,7 +46,6 @@ const FiltersClient: FC = () => {
         ["yearTo", []],
       ])
     );
-  const formRef = useRef<HTMLFormElement>(null);
 
   const isSearchButtonDisabled = useMemo(() => {
     return Array.from(allSelectedFilterOptions.values()).every(
@@ -48,13 +57,6 @@ const FiltersClient: FC = () => {
     .get("manufacturer")!
     .map((option) => option.value) as VehicleManufacturerId[];
 
-  // Count active filters (only manufacturer and model for now)
-  const activeFiltersCount = useMemo(() => {
-    let count = 0;
-    if (searchParams.get("manufacturer")) count++;
-    if (searchParams.get("model")) count++;
-    return count;
-  }, [searchParams]);
 
   const handleSubmitAllFilters = () => {
     const formData = new FormData(formRef.current!);
@@ -146,23 +148,9 @@ const FiltersClient: FC = () => {
 
   const yearsOptions = useMemo(() => getYearsOptions(), []);
 
-  const yearDialogButtonTitle = getYearDialogButtonTitle(
-    allSelectedFilterOptions
-  );
-
-  return (
-    <div>
-      {/* Dummy container - will be replaced with proper UI later */}
-      <form
-        ref={formRef}
-        onSubmit={(e) => e.preventDefault()}
-        style={{
-          display: "flex",
-          gap: "12px",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
+  const renderFilters = () => {
+    return (
+      <>
         <SearchMultiSelect
           displayName="производители"
           placeholder="Выберите производителя"
@@ -184,31 +172,75 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        <DialogPrimitiveButton
-          title={yearDialogButtonTitle}
-          showOverlay={true} // Hide overlay
-        >
-          <SearchSingleSelect
-            placeholder="Год от"
-            displayName="год от"
-            paramName="yearFrom"
-            options={yearsOptions}
-            selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
-            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-          />
+        <SearchSingleSelect
+          placeholder="Год от"
+          displayName="год от"
+          paramName="yearFrom"
+          options={yearsOptions}
+          selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
 
-          <SearchSingleSelect
-            placeholder="Год до"
-            displayName="год до"
-            paramName="yearTo"
-            options={yearsOptions}
-            selectedOptions={allSelectedFilterOptions.get("yearTo")!}
-            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-          />
-        </DialogPrimitiveButton>
+        <SearchSingleSelect
+          placeholder="Год до"
+          displayName="год до"
+          paramName="yearTo"
+          options={yearsOptions}
+          selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+      </>
+    );
+  };
 
-        {/* Dummy buttons - will be replaced with proper UI later */}
-        <div style={{ display: "flex", gap: "8px" }}>
+  const renderMoreFilters = () => {
+    return (
+      <ModalFiltersSection>
+        <PriceTextSearch
+          name="priceFrom"
+          placeholder="0"
+          defaultValue={searchParams.get("priceFrom") ?? undefined}
+        />
+        <PriceTextSearch
+          name="priceTo"
+          placeholder="0"
+          defaultValue={searchParams.get("priceTo") ?? undefined}
+        />
+        <TextSearch
+          name="color"
+          placeholder="Цвет"
+          type="text"
+          defaultValue={searchParams.get("color")?.toString()}
+        />
+      </ModalFiltersSection>
+    );
+  };
+
+  return (
+    <>
+      <form
+        ref={formRef}
+        onSubmit={(e) => e.preventDefault()}
+        style={{
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
+        {/* Desktop Filters */}
+        <DesktopFiltersWrapper>
+          {renderFilters()}
+
+          <Button
+            variant="outline"
+            color="gray"
+            onClick={() => setIsMoreFiltersModalOpen(true)}
+            size="3"
+          >
+            Больше фильтров
+          </Button>
+
           <Button
             variant="outline"
             color="gray"
@@ -227,9 +259,28 @@ const FiltersClient: FC = () => {
           >
             Очистить все фильтры
           </Button>
-        </div>
+        </DesktopFiltersWrapper>
       </form>
-    </div>
+
+      {/* More Filters Modal (Desktop) */}
+      <MoreFiltersModal
+        open={isMoreFiltersModalOpen}
+        onOpenChange={setIsMoreFiltersModalOpen}
+      >
+        {renderMoreFilters()}
+      </MoreFiltersModal>
+
+      {/* Mobile Filters - rendered inside VehicleFilters modal */}
+      <div
+        style={{
+          display: "contents",
+        }}
+        className="mobile-filters-content"
+      >
+        {renderFilters()}
+        {renderMoreFilters()}
+      </div>
+    </>
   );
 };
 
