@@ -6,7 +6,7 @@ export const MoreFiltersModalContent = styled(Dialog.Content)`
   max-width: 600px !important;
   width: 90vw;
   max-height: 80vh;
-  background: var(--accent-7);
+  background: var(--accent-1);
   border-radius: var(--radius-4);
   padding: 0 !important;
   display: flex;
@@ -28,7 +28,7 @@ export const MoreFiltersModalHeader = styled(Box)`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  background: var(--accent-8);
+  background: var(--accent-2);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   gap: var(--space-3);
 `;
@@ -38,7 +38,6 @@ export const MoreFiltersModalBody = styled(Box)`
   overflow-y: auto;
   padding: var(--space-5);
   -webkit-overflow-scrolling: touch;
-  background: var(--accent-7);
 `;
 
 export const MoreFiltersModalFooter = styled(Box)`
@@ -46,7 +45,7 @@ export const MoreFiltersModalFooter = styled(Box)`
   border-top: 1px solid var(--gray-6);
   display: flex;
   justify-content: flex-end;
-  background: var(--accent-8);
+  background: var(--accent-2);
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
 `;
 
