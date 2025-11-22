@@ -111,7 +111,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
-        {...(menuPortalTarget !== undefined && { menuPortalTarget })}
+        // {...(menuPortalTarget !== undefined && { menuPortalTarget })}
         value={selectedOptions}
         name={`search-single-select-${paramName}`}
         instanceId={id}

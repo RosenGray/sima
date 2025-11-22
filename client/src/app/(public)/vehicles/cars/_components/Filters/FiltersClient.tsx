@@ -190,25 +190,7 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        <SearchMultiSelect
-          placeholder="Год от"
-          displayName="год от"
-          paramName="yearFrom"
-          options={yearsOptions}
-          maxSelectedOptions={1}
-          selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-        />
 
-        <SearchMultiSelect
-          placeholder="Год до"
-          displayName="год до"
-          paramName="yearTo"
-          options={yearsOptions}
-          maxSelectedOptions={1}
-          selectedOptions={allSelectedFilterOptions.get("yearTo")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-        />
 
         {/* 
         <TextSearch
