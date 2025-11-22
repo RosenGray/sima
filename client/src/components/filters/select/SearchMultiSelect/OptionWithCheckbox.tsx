@@ -1,5 +1,5 @@
 import { components } from "react-select";
-import { Option } from "./types";
+import { Option } from "../types";
 // Custom Option component with checkbox
 // Note: react-select automatically passes `isDisabled` prop here based on the
 // `isOptionDisabled` function result (react-select calls isOptionDisabled for each

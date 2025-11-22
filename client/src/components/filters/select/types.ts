@@ -1,4 +1,10 @@
-import { MultiValue, Props, SingleValue } from "react-select";
+import {
+  GroupBase,
+  MultiValue,
+  OptionsOrGroups,
+  Props,
+  SingleValue,
+} from "react-select";
 
 export interface Option {
   value: string;
@@ -25,5 +31,21 @@ export interface SearchMultiSelectProps
   paramName: string;
   displayName?: string;
 }
+
+export interface SearchSingleSelectProps
+  extends Omit<Props<Option, false>, "styles" | "classNames" | "options"> {
+  options: SingleValue<Option>[];
+  selectedOptions: MultiValue<Option>;
+  setAllSelectedFilterOptions: (
+    paramName: string,
+    options: MultiValue<Option>
+  ) => void;
+  label?: string;
+  paramName: string;
+  displayName?: string;
+  isPortalTarget?: boolean;
+}
+
+
 
 export type AllSelectedFilterOptionsMap = Map<string, MultiValue<Option>>;

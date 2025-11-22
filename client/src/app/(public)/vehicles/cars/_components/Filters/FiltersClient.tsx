@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { enableMapSet, produce } from "immer";
-import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapVehicleManufacturersToSelectOptions,
@@ -21,7 +21,7 @@ import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
   Option,
-} from "@/components/filters/SearchMultiSelect/types";
+} from "@/components/filters/select/types";
 import { Button } from "@radix-ui/themes";
 import { parseWithZod } from "@conform-to/zod";
 import { PriceFromToSchema } from "@/lib/common/types/common.types";
@@ -30,6 +30,7 @@ import { CarFilter, CarFilterSchema } from "./filters.types";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import DialogButton from "@/components/modals/DialogButton/DialogButton";
 import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
 
 enableMapSet();
 
@@ -190,8 +191,6 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-
-
         {/* 
         <TextSearch
           name="color"
@@ -241,17 +240,16 @@ const FiltersClient: FC = () => {
             title="My Dialog"
             showOverlay={true} // Hide overlay
           >
-            <SearchMultiSelect
+            <SearchSingleSelect
               placeholder="Год от"
               displayName="год от"
               paramName="yearFrom"
               options={yearsOptions}
-              maxSelectedOptions={1}
               selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
               setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
             />
 
-            <SearchMultiSelect
+            {/* <SearchMultiSelect
               placeholder="Год до"
               displayName="год до"
               paramName="yearTo"
@@ -259,7 +257,7 @@ const FiltersClient: FC = () => {
               maxSelectedOptions={1}
               selectedOptions={allSelectedFilterOptions.get("yearTo")!}
               setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-            />
+            /> */}
           </DialogPrimitiveButton>
         </div>
       </form>

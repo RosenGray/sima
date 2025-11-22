@@ -1,5 +1,5 @@
 import { Props, ValueContainerProps } from "react-select";
-import { Option, CustomSelectProps } from "./types";
+import { Option, CustomSelectProps } from "../types";
 import { components } from "react-select";
 import React from "react";
 

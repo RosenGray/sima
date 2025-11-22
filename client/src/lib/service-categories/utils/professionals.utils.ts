@@ -1,5 +1,5 @@
 import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
-import { Option } from "@/components/filters/SearchMultiSelect/types";
+import { Option } from "@/components/filters/select/types";
 export const mapServiceCategoriesToSelectOptions = (
   data: ServiceCategoryMapping
 ) => {
