@@ -86,9 +86,9 @@ export const FiltersSection = styled.div`
 
 export const FiltersModalContent = styled(Dialog.Content)`
   max-width: 100vw !important;
-  max-height: 100vh !important;
+  max-height: 100dvh !important;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   padding: 0 !important;
   display: flex;
   flex-direction: column;
@@ -128,9 +128,12 @@ export const ModalHeader = styled(Box)`
 
 export const ModalBody = styled(Box)`
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: var(--space-5);
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const ModalFiltersSection = styled.div`

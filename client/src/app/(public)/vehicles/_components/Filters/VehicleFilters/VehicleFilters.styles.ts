@@ -30,6 +30,7 @@ export const VehicleFiltersContainer = styled.div`
 
 export const VehicleFiltersHeader = styled.header`
   height: 60px;
+  flex-shrink: 0;
   border-bottom: 0.5px solid var(--gray-6);
   display: flex;
   align-items: center;
@@ -44,6 +45,9 @@ export const VehicleFiltersHeader = styled.header`
 export const VehicleFiltersContent = styled.div`
   flex: 1;
   padding: 20px;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
   @media (max-width: ${breakpoints.sm - 1}px) {
     padding: var(--space-5);
@@ -81,9 +85,9 @@ export const MobileFilterButton = styled(Button)`
 
 export const MobileFiltersModal = styled(Dialog.Content)`
   max-width: 100vw !important;
-  max-height: 100vh !important;
+  max-height: 100dvh !important;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   padding: 0 !important;
   display: flex;
   flex-direction: column;
@@ -123,9 +127,12 @@ export const ModalHeader = styled(Box)`
 
 export const ModalBody = styled(Box)`
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: var(--space-5);
+  padding: 0;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const ModalFooter = styled(Box)`
