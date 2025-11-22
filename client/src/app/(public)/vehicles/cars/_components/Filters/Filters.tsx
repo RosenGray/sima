@@ -15,7 +15,7 @@ const Filters: FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const formRef = useRef<HTMLFormElement>(null);
-  const [submitHandler, setSubmitHandler] = useState<(() => void) | null>(null);
+  const submitHandlerRef = useRef<(() => void) | null>(null);
   const [isSearchButtonDisabled, setIsSearchButtonDisabled] = useState(false);
 
   // Count active filters including all types
@@ -33,8 +33,8 @@ const Filters: FC = () => {
 
   // Use the submit handler from FiltersClient if available, otherwise fallback
   const handleSubmitAllFilters = () => {
-    if (submitHandler) {
-      submitHandler();
+    if (submitHandlerRef.current) {
+      submitHandlerRef.current();
     } else {
       // Fallback: only handle text inputs (for backward compatibility)
       const formData = new FormData(formRef.current!);
@@ -87,7 +87,10 @@ const Filters: FC = () => {
       >
         <FiltersClient 
           formRef={formRef} 
-          onSubmitHandlerReady={setSubmitHandler}
+          onSubmitHandlerReady={(handler) => {
+            // Store handler in ref to avoid state updates during render
+            submitHandlerRef.current = handler;
+          }}
           onSearchButtonDisabledChange={setIsSearchButtonDisabled}
         />
       </VehicleFilters>

@@ -1,5 +1,5 @@
 "use client";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -51,6 +51,21 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
       ])
     );
 
+  // Use ref to access current state in callback without adding to dependencies
+  const allSelectedFilterOptionsRef = useRef(allSelectedFilterOptions);
+  useEffect(() => {
+    allSelectedFilterOptionsRef.current = allSelectedFilterOptions;
+  }, [allSelectedFilterOptions]);
+
+  // Use ref to store the handler to avoid re-renders when exposing to parent
+  const submitHandlerRef = useRef<(() => void) | null>(null);
+  
+  // Use ref to store the callback to avoid dependency issues
+  const onSubmitHandlerReadyRef = useRef(onSubmitHandlerReady);
+  useEffect(() => {
+    onSubmitHandlerReadyRef.current = onSubmitHandlerReady;
+  }, [onSubmitHandlerReady]);
+
   const isSearchButtonDisabled = useMemo(() => {
     return Array.from(allSelectedFilterOptions.values()).every(
       (options) => options.length === 0
@@ -69,10 +84,13 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
 
     const _searchParams = new URLSearchParams(searchParams);
     _searchParams.set("page", "1");
-    const params = allSelectedFilterOptions.keys();
+    
+    // Access current state value from ref (not from dependency)
+    const currentOptions = allSelectedFilterOptionsRef.current;
+    const params = currentOptions.keys();
 
     params.forEach((paramName) => {
-      const options = allSelectedFilterOptions.get(paramName)!;
+      const options = currentOptions.get(paramName)!;
       if (options.length > 0) {
         _searchParams.delete(paramName);
         options.forEach((option) => {
@@ -109,14 +127,25 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
     }
 
     router.replace(`${pathname}?${_searchParams.toString()}`);
-  }, [formRef, searchParams, router, pathname, allSelectedFilterOptions]);
+  }, [formRef, searchParams, router, pathname]);
 
-  // Expose submit handler to parent component
+  // Update ref whenever handler changes
   useEffect(() => {
-    if (onSubmitHandlerReady) {
-      onSubmitHandlerReady(handleSubmitAllFilters);
+    submitHandlerRef.current = handleSubmitAllFilters;
+    
+    // Expose handler to parent whenever it changes
+    // Use a stable wrapper that always calls the latest handler from ref
+    const stableWrapper = () => {
+      if (submitHandlerRef.current) {
+        submitHandlerRef.current();
+      }
+    };
+    
+    // Call the callback from ref to avoid calling setState during render
+    if (onSubmitHandlerReadyRef.current) {
+      onSubmitHandlerReadyRef.current(stableWrapper);
     }
-  }, [onSubmitHandlerReady, handleSubmitAllFilters]);
+  }, [handleSubmitAllFilters]);
 
   // Expose search button disabled state to parent component
   useEffect(() => {
