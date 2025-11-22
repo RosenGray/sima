@@ -16,6 +16,7 @@ import {
   getVehicleModelsToSelectOptionsByManufacturerIds,
 } from "@/lib/vehicles/cars/vehicleModels";
 import { VehicleManufacturerId } from "@/lib/vehicles/cars/vehicleManufacturers/types/vehicleManufacturer.schema";
+import { getYearsOptions } from "@/lib/vehicles/utils/vehicles.utils";
 import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
@@ -41,6 +42,8 @@ const FiltersClient: FC = () => {
       new Map([
         ["manufacturer", []],
         ["model", []],
+        ["yearFrom", []],
+        ["yearTo", []],
       ])
     );
   const formRef = useRef<HTMLFormElement>(null);
@@ -133,6 +136,8 @@ const FiltersClient: FC = () => {
       new Map([
         ["manufacturer", []],
         ["model", []],
+        ["yearFrom", []],
+        ["yearTo", []],
       ])
     );
     router.push(pathname);
@@ -148,6 +153,8 @@ const FiltersClient: FC = () => {
       getVehicleModelsToSelectOptionsByManufacturerIds(selectedManufacturerIds),
     [selectedManufacturerIds]
   );
+
+  const yearsOptions = useMemo(() => getYearsOptions(), []);
 
   return (
     <div>
@@ -180,6 +187,26 @@ const FiltersClient: FC = () => {
           isDisabled={selectedManufacturerIds.length === 0}
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("model")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          placeholder="Год от"
+          displayName="год от"
+          paramName="yearFrom"
+          options={yearsOptions}
+          maxSelectedOptions={1}
+          selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          placeholder="Год до"
+          displayName="год до"
+          paramName="yearTo"
+          options={yearsOptions}
+          maxSelectedOptions={1}
+          selectedOptions={allSelectedFilterOptions.get("yearTo")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
@@ -232,15 +259,24 @@ const FiltersClient: FC = () => {
             title="My Dialog"
             showOverlay={true} // Hide overlay
           >
-            <PriceTextSearch
-              name="priceFrom"
-              placeholder="0"
-              defaultValue={searchParams.get("priceFrom") ?? undefined}
+            <SearchMultiSelect
+              placeholder="Год от"
+              displayName="год от"
+              paramName="yearFrom"
+              options={yearsOptions}
+              maxSelectedOptions={1}
+              selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+              setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
             />
-            <PriceTextSearch
-              name="priceTo"
-              placeholder="0"
-              defaultValue={searchParams.get("priceTo") ?? undefined}
+
+            <SearchMultiSelect
+              placeholder="Год до"
+              displayName="год до"
+              paramName="yearTo"
+              options={yearsOptions}
+              maxSelectedOptions={1}
+              selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+              setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
             />
           </DialogPrimitiveButton>
         </div>
