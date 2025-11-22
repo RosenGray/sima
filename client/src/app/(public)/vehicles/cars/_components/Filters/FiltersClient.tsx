@@ -21,6 +21,8 @@ import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/S
 import MoreFiltersModal from "../modals/MoreFiltersModal/MoreFiltersModal";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
+import { getYearDialogButtonTitle } from "./Filters.utils";
 import {
   DesktopFiltersWrapper,
   ModalFiltersSection,
@@ -148,7 +150,63 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef }) => {
 
   const yearsOptions = useMemo(() => getYearsOptions(), []);
 
-  const renderFilters = () => {
+  const yearDialogButtonTitle = getYearDialogButtonTitle(
+    allSelectedFilterOptions
+  );
+
+  // Render filters for desktop (with DialogPrimitiveButton for years)
+  const renderDesktopFilters = () => {
+    return (
+      <>
+        <SearchMultiSelect
+          displayName="производители"
+          placeholder="Выберите производителя"
+          paramName="manufacturer"
+          options={manufacturerOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          placeholder="Выберите модель"
+          displayName="модели"
+          paramName="model"
+          options={modelOptions}
+          isDisabled={selectedManufacturerIds.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("model")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <DialogPrimitiveButton
+          title={yearDialogButtonTitle}
+          showOverlay={true}
+        >
+          <SearchSingleSelect
+            placeholder="Год от"
+            displayName="год от"
+            paramName="yearFrom"
+            options={yearsOptions}
+            selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          />
+
+          <SearchSingleSelect
+            placeholder="Год до"
+            displayName="год до"
+            paramName="yearTo"
+            options={yearsOptions}
+            selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          />
+        </DialogPrimitiveButton>
+      </>
+    );
+  };
+
+  // Render filters for mobile (without DialogPrimitiveButton for years)
+  const renderMobileFilters = () => {
     return (
       <>
         <SearchMultiSelect
@@ -230,7 +288,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef }) => {
       >
         {/* Desktop Filters */}
         <DesktopFiltersWrapper>
-          {renderFilters()}
+          {renderDesktopFilters()}
 
           <Button
             variant="outline"
@@ -277,7 +335,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef }) => {
         }}
         className="mobile-filters-content"
       >
-        {renderFilters()}
+        {renderMobileFilters()}
         {renderMoreFilters()}
       </div>
     </>

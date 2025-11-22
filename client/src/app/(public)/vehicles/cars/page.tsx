@@ -49,7 +49,7 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
   return (
     <CarsPageContainer>
       <Suspense fallback={<LoadingFilters />}>
-        <Filters />
+          <Filters />
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
         <CarsContent filters={filters} currentPage={currentPage} />

@@ -127,15 +127,15 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
           </ModalHeader>
 
           <ModalBody>
-            <VehicleFiltersHeader>
+    <VehicleFiltersHeader>
               <Heading size="4">Фильтры</Heading>
-            </VehicleFiltersHeader>
-            <VehicleFiltersContent>
+    </VehicleFiltersHeader>
+    <VehicleFiltersContent>
               <ModalFiltersSection>
                 {/* Mobile filters will be rendered here via children */}
-                {children}
+      {children}
               </ModalFiltersSection>
-            </VehicleFiltersContent>
+    </VehicleFiltersContent>
           </ModalBody>
 
           <ModalFooter>
