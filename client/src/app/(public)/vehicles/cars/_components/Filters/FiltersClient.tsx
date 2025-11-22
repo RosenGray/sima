@@ -1,5 +1,5 @@
 "use client";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -32,9 +32,11 @@ enableMapSet();
 
 interface FiltersClientProps {
   formRef: React.RefObject<HTMLFormElement>;
+  onSubmitHandlerReady?: (handler: () => void) => void;
+  onSearchButtonDisabledChange?: (disabled: boolean) => void;
 }
 
-const FiltersClient: FC<FiltersClientProps> = ({ formRef }) => {
+const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, onSearchButtonDisabledChange }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -60,7 +62,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef }) => {
     .map((option) => option.value) as VehicleManufacturerId[];
 
 
-  const handleSubmitAllFilters = () => {
+  const handleSubmitAllFilters = useCallback(() => {
     const formData = new FormData(formRef.current!);
     const schemaKeys = Object.keys(CarFilterSchema.shape);
     const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
@@ -107,7 +109,21 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef }) => {
     }
 
     router.replace(`${pathname}?${_searchParams.toString()}`);
-  };
+  }, [formRef, searchParams, router, pathname, allSelectedFilterOptions]);
+
+  // Expose submit handler to parent component
+  useEffect(() => {
+    if (onSubmitHandlerReady) {
+      onSubmitHandlerReady(handleSubmitAllFilters);
+    }
+  }, [onSubmitHandlerReady, handleSubmitAllFilters]);
+
+  // Expose search button disabled state to parent component
+  useEffect(() => {
+    if (onSearchButtonDisabledChange) {
+      onSearchButtonDisabledChange(isSearchButtonDisabled);
+    }
+  }, [onSearchButtonDisabledChange, isSearchButtonDisabled]);
 
   const handleSetAllSelectedFilterOptions = useCallback(
     (paramName: string, options: MultiValue<Option>) => {
