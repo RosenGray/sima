@@ -96,6 +96,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
         options={options as OptionsOrGroups<Option, GroupBase<Option>>}
         styles={styles as StylesConfig<Option, false, GroupBase<Option>>}
         onChange={handleChange}
+        isClearable={true}
       />
     </Box>
   );

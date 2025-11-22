@@ -157,6 +157,14 @@ const FiltersClient: FC = () => {
 
   const yearsOptions = useMemo(() => getYearsOptions(), []);
 
+  let yearDialogButtonTitle = "Год";
+  if (allSelectedFilterOptions.get("yearFrom")!.length > 0) {
+    yearDialogButtonTitle = `Год от ${allSelectedFilterOptions.get("yearFrom")?.[0].label}`;
+  }
+  if (allSelectedFilterOptions.get("yearTo")!.length > 0) {
+    yearDialogButtonTitle = `Год до ${allSelectedFilterOptions.get("yearTo")?.[0].label}`;
+  }
+
   return (
     <div>
       {/* Dummy container - will be replaced with proper UI later */}
@@ -237,7 +245,7 @@ const FiltersClient: FC = () => {
           </DialogButton>
 
           <DialogPrimitiveButton
-            title="My Dialog"
+            title={yearDialogButtonTitle}
             showOverlay={true} // Hide overlay
           >
             <SearchSingleSelect
