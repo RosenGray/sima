@@ -1,4 +1,4 @@
-import { Option } from "@/components/filters/SearchMultiSelect/types";
+import { Option } from "@/components/filters/select/types";
 import { vehicleManufacturers } from "../vehicleManufacturers/data";
 import {
   VehicleManufacturer,

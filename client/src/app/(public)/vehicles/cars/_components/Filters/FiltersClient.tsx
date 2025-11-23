@@ -1,47 +1,71 @@
 "use client";
-import {
-  FC,
-  FormEvent,
-  FormEventHandler,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
-import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapVehicleManufacturersToSelectOptions,
   getVehicleModelsToSelectOptionsByManufacturerIds,
 } from "@/lib/vehicles/cars/vehicleModels";
 import { VehicleManufacturerId } from "@/lib/vehicles/cars/vehicleManufacturers/types/vehicleManufacturer.schema";
+import { getYearsOptions } from "@/lib/vehicles/utils/vehicles.utils";
 import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
   Option,
-} from "@/components/filters/SearchMultiSelect/types";
+} from "@/components/filters/select/types";
 import { Button } from "@radix-ui/themes";
 import { parseWithZod } from "@conform-to/zod";
-import { PriceFromToSchema } from "@/lib/common/types/common.types";
-import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import { CarFilter, CarFilterSchema } from "./filters.types";
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+import MoreFiltersModal from "../modals/MoreFiltersModal/MoreFiltersModal";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
+import { getYearDialogButtonTitle } from "./Filters.utils";
+import {
+  DesktopFiltersWrapper,
+  ModalFiltersSection,
+} from "@/components/filters/Filters.styles";
 
 enableMapSet();
 
-const FiltersClient: FC = () => {
+interface FiltersClientProps {
+  formRef: React.RefObject<HTMLFormElement>;
+  onSubmitHandlerReady?: (handler: () => void) => void;
+  onSearchButtonDisabledChange?: (disabled: boolean) => void;
+  onClearHandlerReady?: (handler: () => void) => void;
+}
+
+const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, onSearchButtonDisabledChange, onClearHandlerReady }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const [isMoreFiltersModalOpen, setIsMoreFiltersModalOpen] = useState(false);
   const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
     useState<AllSelectedFilterOptionsMap>(
       new Map([
         ["manufacturer", []],
         ["model", []],
+        ["yearFrom", []],
+        ["yearTo", []],
       ])
     );
-  const formRef = useRef<HTMLFormElement>(null);
+
+  // Use ref to access current state in callback without adding to dependencies
+  const allSelectedFilterOptionsRef = useRef(allSelectedFilterOptions);
+  useEffect(() => {
+    allSelectedFilterOptionsRef.current = allSelectedFilterOptions;
+  }, [allSelectedFilterOptions]);
+
+  // Use ref to store the handler to avoid re-renders when exposing to parent
+  const submitHandlerRef = useRef<(() => void) | null>(null);
+  
+  // Use ref to store the callback to avoid dependency issues
+  const onSubmitHandlerReadyRef = useRef(onSubmitHandlerReady);
+  useEffect(() => {
+    onSubmitHandlerReadyRef.current = onSubmitHandlerReady;
+  }, [onSubmitHandlerReady]);
 
   const isSearchButtonDisabled = useMemo(() => {
     return Array.from(allSelectedFilterOptions.values()).every(
@@ -53,25 +77,21 @@ const FiltersClient: FC = () => {
     .get("manufacturer")!
     .map((option) => option.value) as VehicleManufacturerId[];
 
-  // Count active filters (only manufacturer and model for now)
-  const activeFiltersCount = useMemo(() => {
-    let count = 0;
-    if (searchParams.get("manufacturer")) count++;
-    if (searchParams.get("model")) count++;
-    return count;
-  }, [searchParams]);
 
-  const handleSubmitAllFilters = () => {
+  const handleSubmitAllFilters = useCallback(() => {
     const formData = new FormData(formRef.current!);
     const schemaKeys = Object.keys(CarFilterSchema.shape);
     const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
-  
+
     const _searchParams = new URLSearchParams(searchParams);
     _searchParams.set("page", "1");
-    const params = allSelectedFilterOptions.keys();
+    
+    // Access current state value from ref (not from dependency)
+    const currentOptions = allSelectedFilterOptionsRef.current;
+    const params = currentOptions.keys();
 
     params.forEach((paramName) => {
-      const options = allSelectedFilterOptions.get(paramName)!;
+      const options = currentOptions.get(paramName)!;
       if (options.length > 0) {
         _searchParams.delete(paramName);
         options.forEach((option) => {
@@ -108,7 +128,32 @@ const FiltersClient: FC = () => {
     }
 
     router.replace(`${pathname}?${_searchParams.toString()}`);
-  };
+  }, [formRef, searchParams, router, pathname]);
+
+  // Update ref whenever handler changes
+  useEffect(() => {
+    submitHandlerRef.current = handleSubmitAllFilters;
+    
+    // Expose handler to parent whenever it changes
+    // Use a stable wrapper that always calls the latest handler from ref
+    const stableWrapper = () => {
+      if (submitHandlerRef.current) {
+        submitHandlerRef.current();
+      }
+    };
+    
+    // Call the callback from ref to avoid calling setState during render
+    if (onSubmitHandlerReadyRef.current) {
+      onSubmitHandlerReadyRef.current(stableWrapper);
+    }
+  }, [handleSubmitAllFilters]);
+
+  // Expose search button disabled state to parent component
+  useEffect(() => {
+    if (onSearchButtonDisabledChange) {
+      onSearchButtonDisabledChange(isSearchButtonDisabled);
+    }
+  }, [onSearchButtonDisabledChange, isSearchButtonDisabled]);
 
   const handleSetAllSelectedFilterOptions = useCallback(
     (paramName: string, options: MultiValue<Option>) => {
@@ -126,15 +171,29 @@ const FiltersClient: FC = () => {
   );
 
   // Clear filters
-  const handleClearFiltersAndClose = () => {
+  const handleClearFiltersAndClose = useCallback(() => {
+    // Clear dropdown filter state
     setAllSelectedFilterOptions(
       new Map([
         ["manufacturer", []],
         ["model", []],
+        ["yearFrom", []],
+        ["yearTo", []],
       ])
     );
+    // Clear text input fields (priceFrom, priceTo, color)
+    if (formRef.current) {
+      formRef.current.reset();
+    }
     router.push(pathname);
-  };
+  }, [router, pathname, formRef]);
+
+  // Expose clear handler to parent component
+  useEffect(() => {
+    if (onClearHandlerReady) {
+      onClearHandlerReady(handleClearFiltersAndClose);
+    }
+  }, [onClearHandlerReady, handleClearFiltersAndClose]);
 
   const manufacturerOptions = useMemo(
     () => mapVehicleManufacturersToSelectOptions(),
@@ -147,19 +206,16 @@ const FiltersClient: FC = () => {
     [selectedManufacturerIds]
   );
 
-  return (
-    <div>
-      {/* Dummy container - will be replaced with proper UI later */}
-      <form
-        ref={formRef}
-        onSubmit={(e) => e.preventDefault()}
-        style={{
-          display: "flex",
-          gap: "12px",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
+  const yearsOptions = useMemo(() => getYearsOptions(), []);
+
+  const yearDialogButtonTitle = getYearDialogButtonTitle(
+    allSelectedFilterOptions
+  );
+
+  // Render filters for desktop (with DialogPrimitiveButton for years)
+  const renderDesktopFilters = () => {
+    return (
+      <>
         <SearchMultiSelect
           displayName="производители"
           placeholder="Выберите производителя"
@@ -181,6 +237,81 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
+        <DialogPrimitiveButton
+          title={yearDialogButtonTitle}
+          showOverlay={true}
+        >
+          <SearchSingleSelect
+            placeholder="Год от"
+            displayName="год от"
+            paramName="yearFrom"
+            options={yearsOptions}
+            selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          />
+
+          <SearchSingleSelect
+            placeholder="Год до"
+            displayName="год до"
+            paramName="yearTo"
+            options={yearsOptions}
+            selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+            setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          />
+        </DialogPrimitiveButton>
+      </>
+    );
+  };
+
+  // Render filters for mobile (without DialogPrimitiveButton for years)
+  const renderMobileFilters = () => {
+    return (
+      <>
+        <SearchMultiSelect
+          displayName="производители"
+          placeholder="Выберите производителя"
+          paramName="manufacturer"
+          options={manufacturerOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          placeholder="Выберите модель"
+          displayName="модели"
+          paramName="model"
+          options={modelOptions}
+          isDisabled={selectedManufacturerIds.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("model")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchSingleSelect
+          placeholder="Год от"
+          displayName="год от"
+          paramName="yearFrom"
+          options={yearsOptions}
+          selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchSingleSelect
+          placeholder="Год до"
+          displayName="год до"
+          paramName="yearTo"
+          options={yearsOptions}
+          selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+      </>
+    );
+  };
+
+  const renderMoreFilters = () => {
+    return (
+      <ModalFiltersSection>
         <PriceTextSearch
           name="priceFrom"
           placeholder="0"
@@ -197,9 +328,35 @@ const FiltersClient: FC = () => {
           type="text"
           defaultValue={searchParams.get("color")?.toString()}
         />
+      </ModalFiltersSection>
+    );
+  };
 
-        {/* Dummy buttons - will be replaced with proper UI later */}
-        <div style={{ display: "flex", gap: "8px" }}>
+  return (
+    <>
+      <form
+        ref={formRef}
+        onSubmit={(e) => e.preventDefault()}
+        style={{
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
+        {/* Desktop Filters */}
+        <DesktopFiltersWrapper>
+          {renderDesktopFilters()}
+
+          <Button
+            variant="outline"
+            color="gray"
+            onClick={() => setIsMoreFiltersModalOpen(true)}
+            size="3"
+          >
+            Больше фильтров
+          </Button>
+
           <Button
             variant="outline"
             color="gray"
@@ -218,9 +375,28 @@ const FiltersClient: FC = () => {
           >
             Очистить все фильтры
           </Button>
-        </div>
+        </DesktopFiltersWrapper>
       </form>
-    </div>
+
+      {/* More Filters Modal (Desktop) */}
+      <MoreFiltersModal
+        open={isMoreFiltersModalOpen}
+        onOpenChange={setIsMoreFiltersModalOpen}
+      >
+        {renderMoreFilters()}
+      </MoreFiltersModal>
+
+      {/* Mobile Filters - rendered inside VehicleFilters modal */}
+      <div
+        style={{
+          display: "contents",
+        }}
+        className="mobile-filters-content"
+      >
+        {renderMobileFilters()}
+        {renderMoreFilters()}
+      </div>
+    </>
   );
 };
 

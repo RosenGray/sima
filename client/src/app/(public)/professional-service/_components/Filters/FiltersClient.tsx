@@ -1,7 +1,7 @@
 "use client";
 import { FC, useCallback, useMemo, useState } from "react";
 import { enableMapSet, produce } from "immer";
-import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapServiceCategoriesToSelectOptions,
@@ -38,7 +38,7 @@ import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
   Option,
-} from "@/components/filters/SearchMultiSelect/types";
+} from "@/components/filters/select/types";
 
 enableMapSet();
 

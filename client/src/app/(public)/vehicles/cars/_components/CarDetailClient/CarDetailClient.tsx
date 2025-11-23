@@ -11,13 +11,16 @@ import {
   IdCardIcon,
   Pencil1Icon,
   TrashIcon,
+  GearIcon,
+  LightningBoltIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
-import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
+import { SerializedCar } from "@/lib/vehicles/cars/types/cars.types";
+import { TransmissionType, EngineType } from "@/lib/vehicles/cars/types/cars.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
-import ImageModal from "../../../../../components/modals/ImageModal/ImageModal";
+import ImageModal from "@/components/modals/ImageModal/ImageModal";
 
 import {
   PageContainer,
@@ -39,27 +42,62 @@ import {
   MetaItem,
   HeaderSection,
   ButtonGroup,
-} from "./ProfessionalServiceDetailClient.styles";
+} from "./CarDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
+import { deleteCarAdWithRedirect } from "@/lib/vehicles/cars/actions/deleteCarAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 
-interface ProfessionalServiceDetailClientProps {
-  service: SerilizeProfessionalService;
+interface CarDetailClientProps {
+  car: SerializedCar;
 }
 
-const ProfessionalServiceDetailClient: React.FC<
-  ProfessionalServiceDetailClientProps
-> = ({ service }) => {
-  const deleteProfessionalServiceAdByPublicId =
-    deleteProfessionalServiceAdWithRedirect.bind(null, service.publicId);
+// Helper function to format transmission type
+const formatTransmissionType = (type: TransmissionType): string => {
+  switch (type) {
+    case TransmissionType.MANUAL:
+      return "Механическая";
+    case TransmissionType.AUTOMATIC:
+      return "Автоматическая";
+    case TransmissionType.TIPTRONIC:
+      return "Типтроник";
+    case TransmissionType.ROBOTIC:
+      return "Роботизированная";
+    default:
+      return type;
+  }
+};
+
+// Helper function to format engine type
+const formatEngineType = (type: EngineType): string => {
+  switch (type) {
+    case EngineType.GASOLINE:
+      return "Бензин";
+    case EngineType.DIESEL:
+      return "Дизель";
+    case EngineType.TURBO_DIESEL:
+      return "Турбодизель";
+    case EngineType.HYBRID:
+      return "Гибрид";
+    case EngineType.ELECTRIC:
+      return "Электрический";
+    default:
+      return type;
+  }
+};
+
+// Helper function to format price
+const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat("il-IL", { style: "currency", currency: "ILS" }).format(price);
+};
+
+const CarDetailClient: React.FC<CarDetailClientProps> = ({ car }) => {
+  const deleteCarAdByPublicId = deleteCarAdWithRedirect.bind(null, car.publicId);
 
   const [formState, formAction, isPending] = useActionState(
-    deleteProfessionalServiceAdByPublicId,
+    deleteCarAdByPublicId,
     undefined
   );
-  console.log(formState);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
@@ -68,20 +106,32 @@ const ProfessionalServiceDetailClient: React.FC<
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
 
-  const isOwner = thisUserIsOwner(service.user.id);
+  const isOwner = thisUserIsOwner(car.user.id);
 
   const {
     images,
     publicId,
     district,
     city,
+    manufacturer,
+    model,
+    yearOfManufacture,
+    numberOfHand,
+    price,
+    transmission,
+    engineType,
+    engineCapacity,
+    mileage,
+    numberOfDoors,
+    color,
+    accessories,
     description,
-    user,
-    category,
-    subCategory,
-    phoneNumber,
+    contactName,
+    contactPrimaryPhone,
+    contactSecondaryPhone,
+    contactEmail,
     createdAt,
-  } = service;
+  } = car;
 
   const cityInfo = getCityById(city, district as Districts);
 
@@ -112,16 +162,16 @@ const ProfessionalServiceDetailClient: React.FC<
   return (
     <PageContainer size="4">
       {/* Header Section */}
-      {isOwner && (
-        <HeaderSection>
-          <PageTitle size="8" weight="bold">
-            {subCategory.russianDisplayName}
-          </PageTitle>
+      <HeaderSection>
+        <PageTitle size="8" weight="bold">
+          {manufacturer} {model}
+        </PageTitle>
+        {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
               <Link
                 color="yellow"
-                href={`/publish-ad/professional-service/edit/${publicId}`}
+                href={`/publish-ad/vehicles/cars/edit/${publicId}`}
               >
                 <Pencil1Icon width="18" height="18" />
                 Редактировать
@@ -140,12 +190,9 @@ const ProfessionalServiceDetailClient: React.FC<
               {isPending ? <Spinner size="3" /> : "Удалить"}
             </Button>
           </ButtonGroup>
-        </HeaderSection>
-      )}
+        )}
+      </HeaderSection>
       <BadgeContainer>
-        <Badge size="2" color="blue" variant="soft">
-          {category.russianDisplayName}
-        </Badge>
         <Badge size="2" color="green" variant="soft">
           {cityInfo?.nameRussian || "Неизвестный город"}
         </Badge>
@@ -162,12 +209,17 @@ const ProfessionalServiceDetailClient: React.FC<
         {/* Image Gallery Section */}
         <ImageSection>
           {images.length === 1 ? (
-            <Image
-              src={images[0].url}
-              alt={images[0].originalName}
-              fill
-              style={{ objectFit: "cover" }}
-            />
+            <ImageCarouselContainer>
+              <ImageWrapper onClick={() => handleImageClick(0)} style={{ cursor: "pointer" }}>
+                <Image
+                  src={images[0].url}
+                  alt={images[0].originalName}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+                />
+              </ImageWrapper>
+            </ImageCarouselContainer>
           ) : (
             <ImageCarouselContainer>
               <CarouselSwiper
@@ -209,19 +261,107 @@ const ProfessionalServiceDetailClient: React.FC<
 
         {/* Information Section */}
         <InfoCard>
-          {/* Provider Information */}
+          {/* Basic Car Information */}
           <InfoSection>
             <InfoTitle size="5">
-              <PersonIcon width="20" height="20" />
-              Исполнитель
+              <IdCardIcon width="20" height="20" />
+              Информация об автомобиле
             </InfoTitle>
             <InfoRow>
-              <IdCardIcon width="18" height="18" />
-              <Text size="3" weight="medium">
-                {user.firstName} {user.lastName}
+              <Text size="3" weight="bold">
+                {manufacturer} {model}
+              </Text>
+            </InfoRow>
+            <InfoRow>
+              <Text size="3" color="gray">
+                {yearOfManufacture} год • {numberOfHand} рук
+              </Text>
+            </InfoRow>
+            <InfoRow>
+              <Text size="6" weight="bold" color="red">
+                {formatPrice(price)}
               </Text>
             </InfoRow>
           </InfoSection>
+
+          {/* Technical Specifications */}
+          <InfoSection>
+            <InfoTitle size="5">
+              <GearIcon width="20" height="20" />
+              Технические характеристики
+            </InfoTitle>
+            <InfoRow>
+              <Text size="3" color="gray">
+                Коробка передач:
+              </Text>
+              <Text size="3" weight="medium">
+                {formatTransmissionType(transmission)}
+              </Text>
+            </InfoRow>
+            <InfoRow>
+              <Text size="3" color="gray">
+                Двигатель:
+              </Text>
+              <Text size="3" weight="medium">
+                {formatEngineType(engineType)}
+              </Text>
+            </InfoRow>
+            {engineCapacity && (
+              <InfoRow>
+                <Text size="3" color="gray">
+                  Объем двигателя:
+                </Text>
+                <Text size="3" weight="medium">
+                  {engineCapacity} л
+                </Text>
+              </InfoRow>
+            )}
+            {mileage && (
+              <InfoRow>
+                <Text size="3" color="gray">
+                  Пробег:
+                </Text>
+                <Text size="3" weight="medium">
+                  {new Intl.NumberFormat("ru-RU").format(mileage)} км
+                </Text>
+              </InfoRow>
+            )}
+            {numberOfDoors && (
+              <InfoRow>
+                <Text size="3" color="gray">
+                  Количество дверей:
+                </Text>
+                <Text size="3" weight="medium">
+                  {numberOfDoors} дверей
+                </Text>
+              </InfoRow>
+            )}
+            {color && (
+              <InfoRow>
+                <Text size="3" color="gray">
+                  Цвет:
+                </Text>
+                <Text size="3" weight="medium">
+                  {color}
+                </Text>
+              </InfoRow>
+            )}
+          </InfoSection>
+
+          {/* Accessories */}
+          {accessories && (
+            <InfoSection>
+              <InfoTitle size="5">
+                <LightningBoltIcon width="20" height="20" />
+                Комплектация
+              </InfoTitle>
+              <DescriptionBox>
+                <Text size="3" style={{ whiteSpace: "pre-wrap" }}>
+                  {accessories}
+                </Text>
+              </DescriptionBox>
+            </InfoSection>
+          )}
 
           {/* Description */}
           <InfoSection>
@@ -241,17 +381,34 @@ const ProfessionalServiceDetailClient: React.FC<
             <InfoTitle size="5">Контактная информация</InfoTitle>
 
             <ContactItem>
+              <PersonIcon width="18" height="18" />
+              <Text size="3" weight="medium">
+                {contactName}
+              </Text>
+            </ContactItem>
+
+            <ContactItem>
               <EnvelopeClosedIcon width="18" height="18" />
               <Text size="3">*** ***********</Text>
             </ContactItem>
 
             {isAuthenticated ? (
-              <ContactItem>
-                <MobileIcon width="18" height="18" />
-                <Text size="3" weight="bold">
-                  {phoneNumber}
-                </Text>
-              </ContactItem>
+              <>
+                <ContactItem>
+                  <MobileIcon width="18" height="18" />
+                  <Text size="3" weight="bold">
+                    {contactPrimaryPhone}
+                  </Text>
+                </ContactItem>
+                {contactSecondaryPhone && (
+                  <ContactItem>
+                    <MobileIcon width="18" height="18" />
+                    <Text size="3" weight="bold">
+                      {contactSecondaryPhone}
+                    </Text>
+                  </ContactItem>
+                )}
+              </>
             ) : (
               <ContactItem>
                 <MobileIcon width="18" height="18" />
@@ -295,4 +452,5 @@ const ProfessionalServiceDetailClient: React.FC<
   );
 };
 
-export default ProfessionalServiceDetailClient;
+export default CarDetailClient;
+

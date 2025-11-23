@@ -1,5 +1,5 @@
 import { MenuProps } from "react-select";
-import { Option, CustomSelectProps } from "./types";
+import { Option, CustomSelectProps } from "../types";
 import { components } from "react-select";
 import React, { useRef } from "react";
 import { Box, Button, Flex } from "@radix-ui/themes";

@@ -1,10 +1,10 @@
 "use client";
 import { FC, useId, useEffect, useState, useCallback, useRef } from "react";
 import React from "react";
-import { Option, CustomSelectProps, SearchMultiSelectProps } from "./types";
+import { Option, CustomSelectProps, SearchMultiSelectProps } from "../types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
 import { Box, Text } from "@radix-ui/themes";
-import { styles } from "./SearchMultiSelect.styles";
+import { styles } from "../select.styles";
 import { useSearchParams } from "next/navigation";
 import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
@@ -111,9 +111,9 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
-        {...(menuPortalTarget !== undefined && { menuPortalTarget })}
+        menuPortalTarget={menuPortalTarget}
         value={selectedOptions}
-        name={`search-single-select-${paramName}`}
+        name={`search-multi-select-${paramName}`}
         instanceId={id}
         options={options}
         isClearable={false}

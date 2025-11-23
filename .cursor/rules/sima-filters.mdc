@@ -255,11 +255,16 @@ if (sanitizedFilters.categoryId) {
 **Example:** `yearFrom: "2020"`, `yearTo: "2024"`
 
 **Implementation:**
+
+**Repository Interface:**
 ```typescript
 // Interface - single string value, not array
 yearFrom?: string;
 yearTo?: string;
+```
 
+**Repository Query:**
+```typescript
 // Query - combine with $gte and $lte
 if (sanitizedFilters.yearFrom) {
   const yearFromNum = Number(sanitizedFilters.yearFrom);
@@ -278,6 +283,25 @@ if (sanitizedFilters.yearTo) {
   }
 }
 ```
+
+**UI Component (Using SearchSingleSelect):**
+```typescript
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+
+// Generate year options
+const yearsOptions = useMemo(() => getYearsOptions(), []);
+
+<SearchSingleSelect
+  placeholder="Год от"
+  displayName="год от"
+  paramName="yearFrom"
+  options={yearsOptions}
+  selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+/>
+```
+
+**Note:** For single-select dropdowns like yearFrom/yearTo, use `SearchSingleSelect` instead of text inputs. The component handles URL param synchronization and state management automatically.
 
 ### 4. Enum Filters
 
@@ -619,11 +643,12 @@ async getAll(
 
 #### Overview
 
-FiltersClient supports three types of filters:
+FiltersClient supports four types of filters:
 
-1. **Dropdown Filters (SearchMultiSelect)**: Multi-select dropdowns managed via `allSelectedFilterOptions` Map state
-2. **Text Input Filters (TextSearch)**: Text inputs managed via form FormData with Zod validation
-3. **Price Input Filters (PriceTextSearch)**: Price inputs with comma formatting, managed via form FormData with Zod validation
+1. **Multi-Select Dropdown Filters (SearchMultiSelect)**: Multi-select dropdowns managed via `allSelectedFilterOptions` Map state
+2. **Single-Select Dropdown Filters (SearchSingleSelect)**: Single-select dropdowns managed via `allSelectedFilterOptions` Map state (wraps single value in array)
+3. **Text Input Filters (TextSearch)**: Text inputs managed via form FormData with Zod validation
+4. **Price Input Filters (PriceTextSearch)**: Price inputs with comma formatting, managed via form FormData with Zod validation
 
 All types are combined in a single form and submitted together via `handleSubmitAllFilters`.
 
@@ -633,7 +658,8 @@ All types are combined in a single form and submitted together via `handleSubmit
 "use client";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
-import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -642,7 +668,7 @@ import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
   Option,
-} from "@/components/filters/SearchMultiSelect/types";
+} from "@/components/filters/select/types";
 import { EntityFilter, EntityFilterSchema } from "./filters.types";
 ```
 
@@ -652,11 +678,15 @@ import { EntityFilter, EntityFilterSchema } from "./filters.types";
 const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
   useState<AllSelectedFilterOptionsMap>(
     new Map([
-      ["filterParam1", []],
-      ["filterParam2", []],
+      ["filterParam1", []], // Multi-select filter
+      ["filterParam2", []], // Multi-select filter
+      ["yearFrom", []],     // Single-select filter (still uses array internally)
+      ["yearTo", []],       // Single-select filter (still uses array internally)
     ])
   );
 ```
+
+**Note:** Both `SearchMultiSelect` and `SearchSingleSelect` use the same state management pattern. `SearchSingleSelect` internally wraps the single selected option in an array to match the `MultiValue<Option>` interface.
 
 #### Filter Dependencies
 
@@ -814,6 +844,42 @@ When using text input filters, wrap all filters in a form:
 />
 ```
 
+#### SearchSingleSelect Components
+
+For single-select dropdowns (e.g., yearFrom, yearTo, single category selection):
+
+```typescript
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+
+<SearchSingleSelect
+  placeholder="Год от"
+  displayName="год от"
+  paramName="yearFrom"
+  options={yearsOptions}
+  selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  isPortalTarget={false} // Optional: use portal for z-index control
+/>
+```
+
+**Key differences from SearchMultiSelect:**
+- **Single selection only**: User can select only one option at a time
+- **Same state management**: Uses the same `allSelectedFilterOptions` Map and `handleSetAllSelectedFilterOptions` handler
+- **Internal conversion**: Component internally wraps `SingleValue<Option>` in an array `[option]` to match `MultiValue<Option>` interface
+- **URL param handling**: Uses `searchParams.get(paramName)` instead of `searchParams.getAll(paramName)` for initialization
+- **Portal support**: Has optional `isPortalTarget` prop for controlling menu portal rendering (useful for z-index issues)
+- **No maxSelectedOptions**: Single-select doesn't need `maxSelectedOptions` prop (always 1)
+
+**When to use SearchSingleSelect:**
+- Single value selection (e.g., yearFrom, yearTo, single category)
+- When only one option should be selectable at a time
+- For filters that represent a single choice rather than multiple choices
+
+**When to use SearchMultiSelect:**
+- Multiple value selection (e.g., manufacturer, model, district)
+- When multiple options can be selected simultaneously
+- For filters that represent multiple choices
+
 #### TextSearch Components
 
 ```typescript
@@ -907,7 +973,8 @@ import {
   useState,
 } from "react";
 import { enableMapSet, produce } from "immer";
-import SearchMultiSelect from "@/components/filters/SearchMultiSelect/SearchMultiSelect";
+import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapVehicleManufacturersToSelectOptions,
@@ -918,7 +985,7 @@ import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
   Option,
-} from "@/components/filters/SearchMultiSelect/types";
+} from "@/components/filters/select/types";
 import { Button } from "@radix-ui/themes";
 import { parseWithZod } from "@conform-to/zod";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
@@ -937,6 +1004,7 @@ const FiltersClient: FC = () => {
       new Map([
         ["manufacturer", []],
         ["model", []],
+        ["yearFrom", []], // Single-select filter
       ])
     );
 
@@ -1024,6 +1092,7 @@ const FiltersClient: FC = () => {
       new Map([
         ["manufacturer", []],
         ["model", []],
+        ["yearFrom", []], // Single-select filter
       ])
     );
     router.push(pathname);
@@ -1060,6 +1129,16 @@ const FiltersClient: FC = () => {
           isDisabled={selectedManufacturerIds.length === 0}
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("model")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        {/* Single-select filters */}
+        <SearchSingleSelect
+          placeholder="Год от"
+          displayName="год от"
+          paramName="yearFrom"
+          options={yearsOptions}
+          selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
@@ -1116,14 +1195,17 @@ const FiltersClient: FC = () => {
 5. **Clear dependent filters** - When parent filter is cleared, clear dependent filters
 6. **Disable dependent filters** - When parent is empty, disable dependent filters
 7. **Use SearchMultiSelect** - Reusable component for all multi-select filters
-8. **Use TextSearch** - Reusable component for regular text input filters
-9. **Use PriceTextSearch** - Reusable component for price input filters with comma formatting
-10. **Wrap in form** - When using text inputs, wrap all filters in a `<form>` with `formRef`
-10. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation
-11. **Graceful error handling** - On validation errors, still add non-error fields to URL
-12. **Default values from URL** - Initialize text inputs with values from `searchParams.get()`
-13. **URL synchronization** - All filters update URL params for sharing/bookmarking
-14. **Reset page to 1** - When filters change, reset to first page
+8. **Use SearchSingleSelect** - Reusable component for single-select filters (e.g., yearFrom, yearTo)
+9. **Use TextSearch** - Reusable component for regular text input filters
+10. **Use PriceTextSearch** - Reusable component for price input filters with comma formatting
+11. **Wrap in form** - When using text inputs, wrap all filters in a `<form>` with `formRef`
+12. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation
+13. **Graceful error handling** - On validation errors, still add non-error fields to URL
+14. **Default values from URL** - Initialize text inputs with values from `searchParams.get()`
+15. **URL synchronization** - All filters update URL params for sharing/bookmarking
+16. **Reset page to 1** - When filters change, reset to first page
+17. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
+18. **Portal rendering** - Use `isPortalTarget` prop on SearchSingleSelect when z-index issues occur with dropdown menus
 
 ### Mobile/Desktop UI (Future)
 
