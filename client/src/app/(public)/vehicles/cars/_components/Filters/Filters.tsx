@@ -16,6 +16,7 @@ const Filters: FC = () => {
   const pathname = usePathname();
   const formRef = useRef<HTMLFormElement>(null);
   const submitHandlerRef = useRef<(() => void) | null>(null);
+  const clearHandlerRef = useRef<(() => void) | null>(null);
   const [isSearchButtonDisabled, setIsSearchButtonDisabled] = useState(false);
 
   // Count active filters including all types
@@ -74,7 +75,12 @@ const Filters: FC = () => {
   };
 
   const handleClearFiltersAndClose = () => {
-    router.push(pathname);
+    if (clearHandlerRef.current) {
+      clearHandlerRef.current();
+    } else {
+      // Fallback: only clear URL
+      router.push(pathname);
+    }
   };
 
   return (
@@ -90,6 +96,10 @@ const Filters: FC = () => {
           onSubmitHandlerReady={(handler) => {
             // Store handler in ref to avoid state updates during render
             submitHandlerRef.current = handler;
+          }}
+          onClearHandlerReady={(handler) => {
+            // Store handler in ref to avoid state updates during render
+            clearHandlerRef.current = handler;
           }}
           onSearchButtonDisabledChange={setIsSearchButtonDisabled}
         />

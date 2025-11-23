@@ -34,9 +34,10 @@ interface FiltersClientProps {
   formRef: React.RefObject<HTMLFormElement>;
   onSubmitHandlerReady?: (handler: () => void) => void;
   onSearchButtonDisabledChange?: (disabled: boolean) => void;
+  onClearHandlerReady?: (handler: () => void) => void;
 }
 
-const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, onSearchButtonDisabledChange }) => {
+const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, onSearchButtonDisabledChange, onClearHandlerReady }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -170,7 +171,8 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
   );
 
   // Clear filters
-  const handleClearFiltersAndClose = () => {
+  const handleClearFiltersAndClose = useCallback(() => {
+    // Clear dropdown filter state
     setAllSelectedFilterOptions(
       new Map([
         ["manufacturer", []],
@@ -179,8 +181,19 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
         ["yearTo", []],
       ])
     );
+    // Clear text input fields (priceFrom, priceTo, color)
+    if (formRef.current) {
+      formRef.current.reset();
+    }
     router.push(pathname);
-  };
+  }, [router, pathname, formRef]);
+
+  // Expose clear handler to parent component
+  useEffect(() => {
+    if (onClearHandlerReady) {
+      onClearHandlerReady(handleClearFiltersAndClose);
+    }
+  }, [onClearHandlerReady, handleClearFiltersAndClose]);
 
   const manufacturerOptions = useMemo(
     () => mapVehicleManufacturersToSelectOptions(),
