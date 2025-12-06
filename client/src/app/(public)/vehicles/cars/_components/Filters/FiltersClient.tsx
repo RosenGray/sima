@@ -14,7 +14,7 @@ import {
   AllSelectedFilterOptionsMap,
   Option,
 } from "@/components/filters/select/types";
-import { Button } from "@radix-ui/themes";
+import { Button, Text } from "@radix-ui/themes";
 import { parseWithZod } from "@conform-to/zod";
 import { CarFilter, CarFilterSchema } from "./filters.types";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
@@ -25,13 +25,18 @@ import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/Dia
 import { getYearDialogButtonTitle } from "./Filters.utils";
 import {
   DesktopFiltersWrapper,
+  MobileFilterFooter,
+  MobileFiltersContent,
   MobileFiltersWrapper,
   ModalFiltersSection,
 } from "./Filters.styles";
+import { useFiltersModal } from "@/components/filters/FiltersContext";
 
 enableMapSet();
 
 const FiltersClient: FC = () => {
+  const { closeModal } = useFiltersModal();
+  console.log('closeModal', closeModal);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -133,7 +138,7 @@ const FiltersClient: FC = () => {
     []
   );
 
-  const handleClearFiltersAndClose = useCallback(() => {
+  const handleClearFilters = useCallback(() => {
     setAllSelectedFilterOptions(
       new Map([
         ["manufacturer", []],
@@ -191,7 +196,7 @@ const FiltersClient: FC = () => {
       <>
         <SearchMultiSelect
           displayName="производители"
-          placeholder="Выберите производителя"
+          placeholder="Производитель"
           paramName="manufacturer"
           options={manufacturerOptions}
           maxSelectedOptions={3}
@@ -238,7 +243,7 @@ const FiltersClient: FC = () => {
       <>
         <SearchMultiSelect
           displayName="производители"
-          placeholder="Выберите производителя"
+          placeholder="Производитель"
           paramName="manufacturer"
           options={manufacturerOptions}
           maxSelectedOptions={3}
@@ -308,14 +313,13 @@ const FiltersClient: FC = () => {
     <>
       <DesktopFiltersWrapper>
         {renderFilters()}
-
         <Button
           variant="outline"
           color="gray"
           onClick={() => setIsMoreFiltersModalOpen(true)}
           size="3"
         >
-          Больше фильтров
+          <Text size="2">Больше фильтров</Text>
         </Button>
 
         <Button
@@ -325,13 +329,13 @@ const FiltersClient: FC = () => {
           onClick={handleSubmitAllFilters}
           size="3"
         >
-          Поиск
+          <Text size="3">Поиск</Text>
         </Button>
         <Button
           variant="outline"
           color="gray"
           disabled={searchParams.size === 0}
-          onClick={handleClearFiltersAndClose}
+          onClick={handleClearFilters}
           size="3"
         >
           Очистить все фильтры
@@ -349,8 +353,34 @@ const FiltersClient: FC = () => {
 
       {/* Mobile Filters - rendered inside VehicleFilters modal */}
       <MobileFiltersWrapper>
-        {renderMobileFilters()}
-        {renderMoreFilters()}
+        <MobileFiltersContent>
+          {renderMobileFilters()}
+          {renderMoreFilters()}
+        </MobileFiltersContent>
+
+        <MobileFilterFooter>
+          <Button
+            variant="outline"
+            color="gray"
+            disabled={isSearchButtonDisabled}
+            onClick={() => {
+              handleSubmitAllFilters();
+              closeModal();
+            }}
+            size="3"
+          >
+            <Text size="3">Поиск</Text>
+          </Button>
+          <Button
+            variant="outline"
+            color="gray"
+            disabled={searchParams.size === 0}
+            onClick={handleClearFilters}
+            size="3"
+          >
+            Очистить все фильтры
+          </Button>
+        </MobileFilterFooter>
       </MobileFiltersWrapper>
     </>
   );

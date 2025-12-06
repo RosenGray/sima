@@ -6,8 +6,7 @@ import { breakpoints } from "@/globals";
 export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
   transform: translateY(-50%);
   background: var(--accent-1);
-  min-height: 130px;
-  border-radius: var(--radius-3);
+  min-height: 130px; 
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--gray-6);
   display: flex;
@@ -15,16 +14,17 @@ export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
   margin: 0 auto;
   transition: all 0.2s ease;
   position: relative;
-  border: 1px solid red;
+
 
   @media (max-width: ${breakpoints.sm - 1}px) {
     position: fixed;
     inset: 0;
-    top: var(--header-height);
+    /* top: var(--header-height); */
     transform: translateY(0);
     opacity: ${({ $isModalOpen }) => ($isModalOpen ? 1 : 0)};
     z-index: ${({ $isModalOpen }) => ($isModalOpen ? 1000 : -1)};
     transition: all 0.2s ease;
+    border:2px solid red;
   }
 
   &:hover {
@@ -34,11 +34,12 @@ export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
 `;
 
 export const VehicleFiltersHeader = styled.header`
-  height: 60px;
+  height: 50px;
   flex-shrink: 0;
   border-bottom: 0.5px solid var(--gray-6);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 var(--space-4);
   background: var(--accent-2);
 
@@ -48,7 +49,7 @@ export const VehicleFiltersHeader = styled.header`
 `;
 
 export const VehicleFiltersContent = styled.div`
-  border: 1px solid blue;
+
   flex: 1;
   display: flex;
   flex-direction: column;

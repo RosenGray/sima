@@ -5,6 +5,7 @@ export const styles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
     ...base,
     minHeight: '40px',
     minWidth: '280px',
+    padding: '0 5px',
     backgroundColor: "var(--color-surface)",
     borderColor: state.isFocused ? "var(--accent-9)" : "var(--gray-6)",
     boxShadow: state.isFocused ? "0 0 0 2px var(--accent-5)" : "none",

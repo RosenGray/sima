@@ -4,10 +4,6 @@ import FiltersClient from "./FiltersClient";
 import VehicleFilters from "../../../_components/Filters/VehicleFilters/VehicleFilters";
 import { useSearchParams } from "next/navigation";
 
-import { enableMapSet } from "immer";
-
-enableMapSet();
-
 const Filters: FC = () => {
   const searchParams = useSearchParams();
 

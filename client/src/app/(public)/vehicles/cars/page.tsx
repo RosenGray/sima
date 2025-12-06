@@ -5,6 +5,7 @@ import Loading from "./loading";
 import { searchParamsToFilters } from "@/utils/common";
 import { LoadingFilters } from "@/components/filters/Filters.styles";
 import Filters from "./_components/Filters/Filters";
+import { FiltersProvider } from "@/components/filters/FiltersContext";
 
 interface CarsPageProps {
   searchParams?: Promise<{
@@ -27,7 +28,9 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
   return (
     <CarsPageContainer>
       <Suspense fallback={<LoadingFilters />}>
-        <Filters />
+        <FiltersProvider>
+          <Filters />
+        </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
         <CarsContent filters={filters} currentPage={currentPage} />
