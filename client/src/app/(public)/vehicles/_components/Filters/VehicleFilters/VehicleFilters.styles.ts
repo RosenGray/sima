@@ -14,7 +14,7 @@ export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
   margin: 0 auto;
   transition: all 0.2s ease;
   position: relative;
-
+  border-radius: var(--radius-4);
 
   @media (max-width: ${breakpoints.sm - 1}px) {
     position: fixed;
@@ -24,7 +24,7 @@ export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
     opacity: ${({ $isModalOpen }) => ($isModalOpen ? 1 : 0)};
     z-index: ${({ $isModalOpen }) => ($isModalOpen ? 1000 : -1)};
     transition: all 0.2s ease;
-    border:2px solid red;
+
   }
 
   &:hover {
@@ -42,9 +42,11 @@ export const VehicleFiltersHeader = styled.header`
   justify-content: space-between;
   padding: 0 var(--space-4);
   background: var(--accent-2);
+  display: none;
 
   @media (max-width: ${breakpoints.sm - 1}px) {
     padding: var(--space-4) var(--space-5);
+    display: flex;
   }
 `;
 
