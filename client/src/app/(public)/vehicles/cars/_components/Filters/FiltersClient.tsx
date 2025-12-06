@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useMemo, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -25,19 +25,13 @@ import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/Dia
 import { getYearDialogButtonTitle } from "./Filters.utils";
 import {
   DesktopFiltersWrapper,
+  MobileFiltersWrapper,
   ModalFiltersSection,
-} from "@/components/filters/Filters.styles";
+} from "./Filters.styles";
 
 enableMapSet();
 
-interface FiltersClientProps {
-  formRef: React.RefObject<HTMLFormElement>;
-  onSubmitHandlerReady?: (handler: () => void) => void;
-  onSearchButtonDisabledChange?: (disabled: boolean) => void;
-  onClearHandlerReady?: (handler: () => void) => void;
-}
-
-const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, onSearchButtonDisabledChange, onClearHandlerReady }) => {
+const FiltersClient: FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -51,47 +45,41 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
         ["yearTo", []],
       ])
     );
-
-  // Use ref to access current state in callback without adding to dependencies
-  const allSelectedFilterOptionsRef = useRef(allSelectedFilterOptions);
-  useEffect(() => {
-    allSelectedFilterOptionsRef.current = allSelectedFilterOptions;
-  }, [allSelectedFilterOptions]);
-
-  // Use ref to store the handler to avoid re-renders when exposing to parent
-  const submitHandlerRef = useRef<(() => void) | null>(null);
-  
-  // Use ref to store the callback to avoid dependency issues
-  const onSubmitHandlerReadyRef = useRef(onSubmitHandlerReady);
-  useEffect(() => {
-    onSubmitHandlerReadyRef.current = onSubmitHandlerReady;
-  }, [onSubmitHandlerReady]);
+  const [moreFilters, setMoreFilters] = useState({
+    priceFrom: searchParams.get("priceFrom") ?? "",
+    priceTo: searchParams.get("priceTo") ?? "",
+    color: searchParams.get("color") ?? "",
+  });
 
   const isSearchButtonDisabled = useMemo(() => {
-    return Array.from(allSelectedFilterOptions.values()).every(
-      (options) => options.length === 0
+    const optionsFiltersAreDisabled = Array.from(
+      allSelectedFilterOptions.values()
+    ).every((options) => options.length === 0);
+    const moreFiltersAreDisabled = Object.values(moreFilters).every(
+      (value) => value === undefined || value === "" || value === null
     );
-  }, [allSelectedFilterOptions]);
+    return optionsFiltersAreDisabled && moreFiltersAreDisabled;
+  }, [allSelectedFilterOptions, moreFilters]);
 
   const selectedManufacturerIds = allSelectedFilterOptions
     .get("manufacturer")!
     .map((option) => option.value) as VehicleManufacturerId[];
 
-
   const handleSubmitAllFilters = useCallback(() => {
-    const formData = new FormData(formRef.current!);
-    const schemaKeys = Object.keys(CarFilterSchema.shape);
+    const formData = new FormData();
+    Object.entries(moreFilters).forEach(([key, value]) => {
+      formData.append(key, value?.toString() ?? "");
+    });
     const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
+    const schemaKeys = Object.keys(CarFilterSchema.shape);
 
     const _searchParams = new URLSearchParams(searchParams);
     _searchParams.set("page", "1");
-    
-    // Access current state value from ref (not from dependency)
-    const currentOptions = allSelectedFilterOptionsRef.current;
-    const params = currentOptions.keys();
+
+    const params = allSelectedFilterOptions.keys();
 
     params.forEach((paramName) => {
-      const options = currentOptions.get(paramName)!;
+      const options = allSelectedFilterOptions.get(paramName)!;
       if (options.length > 0) {
         _searchParams.delete(paramName);
         options.forEach((option) => {
@@ -128,32 +116,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
     }
 
     router.replace(`${pathname}?${_searchParams.toString()}`);
-  }, [formRef, searchParams, router, pathname]);
-
-  // Update ref whenever handler changes
-  useEffect(() => {
-    submitHandlerRef.current = handleSubmitAllFilters;
-    
-    // Expose handler to parent whenever it changes
-    // Use a stable wrapper that always calls the latest handler from ref
-    const stableWrapper = () => {
-      if (submitHandlerRef.current) {
-        submitHandlerRef.current();
-      }
-    };
-    
-    // Call the callback from ref to avoid calling setState during render
-    if (onSubmitHandlerReadyRef.current) {
-      onSubmitHandlerReadyRef.current(stableWrapper);
-    }
-  }, [handleSubmitAllFilters]);
-
-  // Expose search button disabled state to parent component
-  useEffect(() => {
-    if (onSearchButtonDisabledChange) {
-      onSearchButtonDisabledChange(isSearchButtonDisabled);
-    }
-  }, [onSearchButtonDisabledChange, isSearchButtonDisabled]);
+  }, [moreFilters, searchParams, allSelectedFilterOptions, router, pathname]);
 
   const handleSetAllSelectedFilterOptions = useCallback(
     (paramName: string, options: MultiValue<Option>) => {
@@ -170,9 +133,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
     []
   );
 
-  // Clear filters
   const handleClearFiltersAndClose = useCallback(() => {
-    // Clear dropdown filter state
     setAllSelectedFilterOptions(
       new Map([
         ["manufacturer", []],
@@ -181,19 +142,21 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
         ["yearTo", []],
       ])
     );
-    // Clear text input fields (priceFrom, priceTo, color)
-    if (formRef.current) {
-      formRef.current.reset();
-    }
+    setMoreFilters({
+      priceFrom: "",
+      priceTo: "",
+      color: "",
+    });
     router.push(pathname);
-  }, [router, pathname, formRef]);
+  }, [router, pathname]);
 
-  // Expose clear handler to parent component
-  useEffect(() => {
-    if (onClearHandlerReady) {
-      onClearHandlerReady(handleClearFiltersAndClose);
-    }
-  }, [onClearHandlerReady, handleClearFiltersAndClose]);
+  const handleClearMoreFilters = useCallback(() => {
+    setMoreFilters({
+      priceFrom: "",
+      priceTo: "",
+      color: "",
+    });
+  }, []);
 
   const manufacturerOptions = useMemo(
     () => mapVehicleManufacturersToSelectOptions(),
@@ -212,8 +175,18 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
     allSelectedFilterOptions
   );
 
-  // Render filters for desktop (with DialogPrimitiveButton for years)
-  const renderDesktopFilters = () => {
+  const handleMoreFiltersChange = useCallback(
+    (key: keyof typeof moreFilters, value: string) => {
+      setMoreFilters((prevMoreFilters) => {
+        return produce(prevMoreFilters, (draft) => {
+          draft[key] = value;
+        });
+      });
+    },
+    []
+  );
+
+  const renderFilters = () => {
     return (
       <>
         <SearchMultiSelect
@@ -237,10 +210,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        <DialogPrimitiveButton
-          title={yearDialogButtonTitle}
-          showOverlay={true}
-        >
+        <DialogPrimitiveButton title={yearDialogButtonTitle} showOverlay={true}>
           <SearchSingleSelect
             placeholder="Год от"
             displayName="год от"
@@ -263,7 +233,6 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
     );
   };
 
-  // Render filters for mobile (without DialogPrimitiveButton for years)
   const renderMobileFilters = () => {
     return (
       <>
@@ -315,18 +284,21 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
         <PriceTextSearch
           name="priceFrom"
           placeholder="0"
-          defaultValue={searchParams.get("priceFrom") ?? undefined}
+          value={moreFilters.priceFrom}
+          onChange={(value) => handleMoreFiltersChange("priceFrom", value)}
         />
         <PriceTextSearch
           name="priceTo"
           placeholder="0"
-          defaultValue={searchParams.get("priceTo") ?? undefined}
+          value={moreFilters.priceTo}
+          onChange={(value) => handleMoreFiltersChange("priceTo", value)}
         />
         <TextSearch
           name="color"
           placeholder="Цвет"
           type="text"
-          defaultValue={searchParams.get("color")?.toString()}
+          value={moreFilters.color}
+          onChange={(value) => handleMoreFiltersChange("color", value)}
         />
       </ModalFiltersSection>
     );
@@ -334,68 +306,52 @@ const FiltersClient: FC<FiltersClientProps> = ({ formRef, onSubmitHandlerReady, 
 
   return (
     <>
-      <form
-        ref={formRef}
-        onSubmit={(e) => e.preventDefault()}
-        style={{
-          display: "flex",
-          gap: "12px",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        {/* Desktop Filters */}
-        <DesktopFiltersWrapper>
-          {renderDesktopFilters()}
+      <DesktopFiltersWrapper>
+        {renderFilters()}
 
-          <Button
-            variant="outline"
-            color="gray"
-            onClick={() => setIsMoreFiltersModalOpen(true)}
-            size="3"
-          >
-            Больше фильтров
-          </Button>
+        <Button
+          variant="outline"
+          color="gray"
+          onClick={() => setIsMoreFiltersModalOpen(true)}
+          size="3"
+        >
+          Больше фильтров
+        </Button>
 
-          <Button
-            variant="outline"
-            color="gray"
-            disabled={isSearchButtonDisabled}
-            onClick={handleSubmitAllFilters}
-            size="3"
-          >
-            Поиск
-          </Button>
-          <Button
-            variant="outline"
-            color="gray"
-            disabled={searchParams.size === 0}
-            onClick={handleClearFiltersAndClose}
-            size="3"
-          >
-            Очистить все фильтры
-          </Button>
-        </DesktopFiltersWrapper>
-      </form>
+        <Button
+          variant="outline"
+          color="gray"
+          disabled={isSearchButtonDisabled}
+          onClick={handleSubmitAllFilters}
+          size="3"
+        >
+          Поиск
+        </Button>
+        <Button
+          variant="outline"
+          color="gray"
+          disabled={searchParams.size === 0}
+          onClick={handleClearFiltersAndClose}
+          size="3"
+        >
+          Очистить все фильтры
+        </Button>
+      </DesktopFiltersWrapper>
 
       {/* More Filters Modal (Desktop) */}
       <MoreFiltersModal
         open={isMoreFiltersModalOpen}
         onOpenChange={setIsMoreFiltersModalOpen}
+        onClearMoreFilters={handleClearMoreFilters}
       >
         {renderMoreFilters()}
       </MoreFiltersModal>
 
       {/* Mobile Filters - rendered inside VehicleFilters modal */}
-      <div
-        style={{
-          display: "contents",
-        }}
-        className="mobile-filters-content"
-      >
+      <MobileFiltersWrapper>
         {renderMobileFilters()}
         {renderMoreFilters()}
-      </div>
+      </MobileFiltersWrapper>
     </>
   );
 };

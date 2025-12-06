@@ -277,27 +277,19 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
       <Dialog.Root open={isModalOpen} onOpenChange={closeModal}>
         <FiltersModalContent>
           <ModalHeader>
-            <Flex direction="column" gap="1">
-              <Heading
-                size={{
-                  initial: "4",
-                  xs: "5",
-                }}
-              >
-                Фильтры
-              </Heading>
-              {activeFiltersCount > 0 && (
-                <Text size="2" color="gray">
-                  {activeFiltersCount}{" "}
-                  {activeFiltersCount === 1
-                    ? "фильтр"
-                    : activeFiltersCount < 5
-                    ? "фильтра"
-                    : "фильтров"}{" "}
-                  применено
-                </Text>
-              )}
-            </Flex>
+            <Dialog.Title mb="0" as="h1">Фильтры</Dialog.Title>
+            {activeFiltersCount > 0 && (
+              <Text size="2" color="gray">
+                {activeFiltersCount}{" "}
+                {activeFiltersCount === 1
+                  ? "фильтр"
+                  : activeFiltersCount < 5
+                  ? "фильтра"
+                  : "фильтров"}{" "}
+                применено
+              </Text>
+            )}
+
             <IconButton
               variant="ghost"
               color="gray"
@@ -312,9 +304,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           </ModalHeader>
 
           <ModalBody>
-            <ModalFiltersSection>
-              {renderFilters()}
-            </ModalFiltersSection>
+            <ModalFiltersSection>{renderFilters()}</ModalFiltersSection>
           </ModalBody>
 
           <ModalFooter>
@@ -349,8 +339,8 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
                     sm: "1",
                   }}
                 >
-                  <span style={{ whiteSpace: 'nowrap' }}>
-                  Показать результаты
+                  <span style={{ whiteSpace: "nowrap" }}>
+                    Показать результаты
                   </span>
                 </Button>
               </Flex>

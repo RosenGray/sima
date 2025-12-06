@@ -1,5 +1,5 @@
 "use client";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState } from "react";
 import { Dialog, Flex, Heading, IconButton, Text, Button } from "@radix-ui/themes";
 import { Cross2Icon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import {
@@ -30,39 +30,44 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
   onMobileClear,
   isSearchButtonDisabled = false,
 }) => {
-  const { isModalOpen, openModal, closeModal } = useFiltersModal();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleMobileSubmit = () => {
-    if (onMobileSubmit) {
-      onMobileSubmit();
-    }
-    closeModal();
-  };
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+  console.log(isModalOpen);
 
-  const handleMobileClear = () => {
-    if (onMobileClear) {
-      onMobileClear();
-    }
-  };
+  // const { isModalOpen, openModal, closeModal } = useFiltersModal();
+
+  // const handleMobileSubmit = () => {
+  //   if (onMobileSubmit) {
+  //     onMobileSubmit();
+  //   }
+  //   closeModal();
+  // };
+
+  // const handleMobileClear = () => {
+  //   if (onMobileClear) {
+  //     onMobileClear();
+  //   }
+  // };
 
   return (
     <>
       {/* Desktop View */}
-      <VehicleFiltersContainer>
+      <VehicleFiltersContainer $isModalOpen={isModalOpen}>
         <VehicleFiltersHeader>
           <Heading size="4">Фильтры</Heading>
         </VehicleFiltersHeader>
-        <VehicleFiltersContent>{children}</VehicleFiltersContent>
+        <VehicleFiltersContent>
+          {children}
+        </VehicleFiltersContent>
       </VehicleFiltersContainer>
 
       {/* Mobile Filter Button */}
       <MobileFilterButton
-        size={{
-          initial: "2",
-          xs: "3",
-        }}
+        size="2"
         variant="soft"
-        onClick={openModal}
+        onClick={() => setIsModalOpen(true)}
       >
         <Flex align="center" gap="2">
           <MixerHorizontalIcon width="18" height="18" />
@@ -89,94 +94,7 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
       </MobileFilterButton>
 
       {/* Mobile Modal */}
-      <Dialog.Root open={isModalOpen} onOpenChange={closeModal}>
-        <MobileFiltersModal>
-          <ModalHeader>
-            <Flex direction="column" gap="1">
-              <Heading
-                size={{
-                  initial: "4",
-                  xs: "5",
-                }}
-              >
-                Фильтры
-              </Heading>
-              {activeFiltersCount > 0 && (
-                <Text size="2" color="gray">
-                  {activeFiltersCount}{" "}
-                  {activeFiltersCount === 1
-                    ? "фильтр"
-                    : activeFiltersCount < 5
-                    ? "фильтра"
-                    : "фильтров"}{" "}
-                  применено
-                </Text>
-              )}
-            </Flex>
-            <IconButton
-              variant="ghost"
-              color="gray"
-              onClick={closeModal}
-              size={{
-                initial: "2",
-                xs: "3",
-              }}
-            >
-              <Cross2Icon width="20" height="20" />
-            </IconButton>
-          </ModalHeader>
 
-          <ModalBody>
-            <VehicleFiltersHeader>
-              <Heading size="4">Фильтры</Heading>
-            </VehicleFiltersHeader>
-            <VehicleFiltersContent>
-              <ModalFiltersSection>
-                {/* Mobile filters will be rendered here via children */}
-                {children}
-              </ModalFiltersSection>
-            </VehicleFiltersContent>
-          </ModalBody>
-
-          <ModalFooter>
-            <Flex direction="column" gap="3" width="100%">
-              <Flex gap="3" width="100%">
-                {activeFiltersCount > 0 && (
-                  <Button
-                    variant="outline"
-                    color="gray"
-                    onClick={handleMobileClear}
-                    size={{
-                      initial: "2",
-                      xs: "3",
-                    }}
-                    style={{ flex: 1 }}
-                  >
-                    Очистить
-                  </Button>
-                )}
-                <Button
-                  variant="solid"
-                  style={{
-                    flex: activeFiltersCount > 0 ? 1 : undefined,
-                    width: activeFiltersCount === 0 ? "100%" : undefined,
-                  }}
-                  onClick={handleMobileSubmit}
-                  disabled={isSearchButtonDisabled}
-                  size={{
-                    initial: "2",
-                    xs: "3",
-                  }}
-                >
-                  <span style={{ whiteSpace: "nowrap" }}>
-                    Показать результаты
-                  </span>
-                </Button>
-              </Flex>
-            </Flex>
-          </ModalFooter>
-        </MobileFiltersModal>
-      </Dialog.Root>
     </>
   );
 };

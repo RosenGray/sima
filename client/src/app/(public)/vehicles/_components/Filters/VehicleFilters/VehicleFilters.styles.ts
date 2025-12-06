@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Dialog, Box, Button, Flex } from "@radix-ui/themes";
 import { breakpoints } from "@/globals";
 
-export const VehicleFiltersContainer = styled.div`
+export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
   transform: translateY(-50%);
   background: var(--accent-1);
   min-height: 130px;
@@ -12,14 +12,20 @@ export const VehicleFiltersContainer = styled.div`
   border: 1px solid var(--gray-6);
   display: flex;
   flex-direction: column;
-  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 24px;
+  /* padding: 20px 24px; */
   transition: all 0.2s ease;
   position: relative;
+  border: 1px solid red;
 
   @media (max-width: ${breakpoints.sm - 1}px) {
-    display: none;
+    position: fixed;
+    inset: 0;
+    top: var(--header-height);
+    transform: translateY(0);
+    opacity: ${({ $isModalOpen }) => $isModalOpen ? 1 : 0};
+    z-index: ${({ $isModalOpen }) => $isModalOpen ? 1000 : -1};
+    transition: all 0.2s ease;
   }
 
   &:hover {
@@ -43,22 +49,24 @@ export const VehicleFiltersHeader = styled.header`
 `;
 
 export const VehicleFiltersContent = styled.div`
+  border: 1px solid blue;
   flex: 1;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
-  @media (max-width: ${breakpoints.sm - 1}px) {
+  /* @media (max-width: ${breakpoints.sm - 1}px) {
     padding: var(--space-5);
-  }
+  } */
 
   /* Hide mobile filters content on desktop */
-  @media (min-width: ${breakpoints.sm}px) {
+  /* @media (min-width: ${breakpoints.sm}px) {
     .mobile-filters-content {
       display: none !important;
     }
-  }
+  } */
 `;
 
 export const DesktopFiltersWrapper = styled.div`

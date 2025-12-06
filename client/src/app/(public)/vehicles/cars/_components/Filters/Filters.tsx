@@ -7,6 +7,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { parseWithZod } from "@conform-to/zod";
 import { CarFilterSchema } from "./filters.types";
 import { enableMapSet } from "immer";
+import { CarsFiltersProvider } from "./CarsFiltersProvider";
 
 enableMapSet();
 
@@ -14,7 +15,7 @@ const Filters: FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
   const submitHandlerRef = useRef<(() => void) | null>(null);
   const clearHandlerRef = useRef<(() => void) | null>(null);
   const [isSearchButtonDisabled, setIsSearchButtonDisabled] = useState(false);
@@ -84,28 +85,29 @@ const Filters: FC = () => {
   };
 
   return (
-    <FiltersProvider>
-      <VehicleFilters
-        activeFiltersCount={activeFiltersCount}
-        isSearchButtonDisabled={isSearchButtonDisabled}
-        onMobileSubmit={handleSubmitAllFilters}
-        onMobileClear={handleClearFiltersAndClose}
-      >
-        <FiltersClient 
-          formRef={formRef} 
-          onSubmitHandlerReady={(handler) => {
-            // Store handler in ref to avoid state updates during render
-            submitHandlerRef.current = handler;
-          }}
-          onClearHandlerReady={(handler) => {
-            // Store handler in ref to avoid state updates during render
-            clearHandlerRef.current = handler;
-          }}
-          onSearchButtonDisabledChange={setIsSearchButtonDisabled}
-        />
-      </VehicleFilters>
-    </FiltersProvider>
+    <VehicleFilters
+      // activeFiltersCount={activeFiltersCount}
+      // isSearchButtonDisabled={isSearchButtonDisabled}
+      // onMobileSubmit={handleSubmitAllFilters}
+      // onMobileClear={handleClearFiltersAndClose}
+    >
+      <FiltersClient />
+    </VehicleFilters>
   );
 };
 
 export default Filters;
+{
+  /* <FiltersClient 
+formRef={formRef} 
+onSubmitHandlerReady={(handler) => {
+  // Store handler in ref to avoid state updates during render
+  submitHandlerRef.current = handler;
+}}
+onClearHandlerReady={(handler) => {
+  // Store handler in ref to avoid state updates during render
+  clearHandlerRef.current = handler;
+}}
+onSearchButtonDisabledChange={setIsSearchButtonDisabled}
+/> */
+}

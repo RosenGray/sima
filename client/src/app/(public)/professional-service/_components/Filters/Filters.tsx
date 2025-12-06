@@ -13,7 +13,7 @@ const Filters: FC = async () => {
       <FiltersContainer>
         <FiltersClient mappedCategories={mappedCategories} />
       </FiltersContainer>
-    </FiltersProvider>
+    </FiltersProvider> 
   );
 };
 

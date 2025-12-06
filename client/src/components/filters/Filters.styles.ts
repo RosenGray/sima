@@ -119,7 +119,7 @@ export const ModalHeader = styled(Box)`
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--gray-6);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   background: var(--accent-2);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -140,6 +140,7 @@ export const ModalFiltersSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  border: 1px solid green;
 `;
 
 export const ModalFooter = styled(Box)`
