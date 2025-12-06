@@ -1,113 +1,21 @@
 "use client";
-import { FC, useMemo, useRef, useState } from "react";
-import { FiltersProvider } from "@/components/filters/FiltersContext";
+import { FC } from "react";
 import FiltersClient from "./FiltersClient";
 import VehicleFilters from "../../../_components/Filters/VehicleFilters/VehicleFilters";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { parseWithZod } from "@conform-to/zod";
-import { CarFilterSchema } from "./filters.types";
+import { useSearchParams } from "next/navigation";
+
 import { enableMapSet } from "immer";
-import { CarsFiltersProvider } from "./CarsFiltersProvider";
 
 enableMapSet();
 
 const Filters: FC = () => {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const formRef = useRef<HTMLFormElement | null>(null);
-  const submitHandlerRef = useRef<(() => void) | null>(null);
-  const clearHandlerRef = useRef<(() => void) | null>(null);
-  const [isSearchButtonDisabled, setIsSearchButtonDisabled] = useState(false);
-
-  // Count active filters including all types
-  const activeFiltersCount = useMemo(() => {
-    let count = 0;
-    if (searchParams.get("manufacturer")) count++;
-    if (searchParams.get("model")) count++;
-    if (searchParams.get("yearFrom")) count++;
-    if (searchParams.get("yearTo")) count++;
-    if (searchParams.get("priceFrom")) count++;
-    if (searchParams.get("priceTo")) count++;
-    if (searchParams.get("color")) count++;
-    return count;
-  }, [searchParams]);
-
-  // Use the submit handler from FiltersClient if available, otherwise fallback
-  const handleSubmitAllFilters = () => {
-    if (submitHandlerRef.current) {
-      submitHandlerRef.current();
-    } else {
-      // Fallback: only handle text inputs (for backward compatibility)
-      const formData = new FormData(formRef.current!);
-      const schemaKeys = Object.keys(CarFilterSchema.shape);
-      const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
-
-      const _searchParams = new URLSearchParams(searchParams);
-      _searchParams.set("page", "1");
-
-      if (parseResult.status === "success") {
-        const values = parseResult.value;
-        schemaKeys.forEach((key) => {
-          _searchParams.delete(key);
-          const value = values[key as keyof typeof parseResult.value];
-          const valueString = value?.toString();
-          if (valueString && valueString !== "") {
-            _searchParams.append(key, valueString);
-          }
-        });
-      } else if (parseResult.status === "error" && parseResult.error) {
-        const { error } = parseResult;
-        for (let i = 0; i < schemaKeys.length; i++) {
-          const key = schemaKeys[i];
-          _searchParams.delete(key);
-          const errors = error[key];
-          if (errors && errors.length > 0) continue;
-          const value = formData.get(key);
-          const valueString = value?.toString();
-          if (valueString && valueString !== "") {
-            _searchParams.append(key, valueString);
-          }
-        }
-      }
-
-      router.replace(`${pathname}?${_searchParams.toString()}`);
-    }
-  };
-
-  const handleClearFiltersAndClose = () => {
-    if (clearHandlerRef.current) {
-      clearHandlerRef.current();
-    } else {
-      // Fallback: only clear URL
-      router.push(pathname);
-    }
-  };
 
   return (
-    <VehicleFilters
-      // activeFiltersCount={activeFiltersCount}
-      // isSearchButtonDisabled={isSearchButtonDisabled}
-      // onMobileSubmit={handleSubmitAllFilters}
-      // onMobileClear={handleClearFiltersAndClose}
-    >
+    <VehicleFilters activeFiltersCount={searchParams.size - 1}>
       <FiltersClient />
     </VehicleFilters>
   );
 };
 
 export default Filters;
-{
-  /* <FiltersClient 
-formRef={formRef} 
-onSubmitHandlerReady={(handler) => {
-  // Store handler in ref to avoid state updates during render
-  submitHandlerRef.current = handler;
-}}
-onClearHandlerReady={(handler) => {
-  // Store handler in ref to avoid state updates during render
-  clearHandlerRef.current = handler;
-}}
-onSearchButtonDisabledChange={setIsSearchButtonDisabled}
-/> */
-}
