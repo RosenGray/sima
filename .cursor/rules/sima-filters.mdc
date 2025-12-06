@@ -592,16 +592,97 @@ async getAll(
 
 ### Step 1: Create Filters Component Structure
 
-1. **Create Filters.tsx (Server Component):**
+There are two patterns for filter component structure:
+
+#### Pattern 1: With Wrapper Component (e.g., VehicleFilters)
+
+When you need a wrapper component above filters (like `VehicleFilters` for vehicles category):
+
+1. **Create Filters.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC } from "react";
+   import FiltersClient from "./FiltersClient";
+   import WrapperComponent from "../../../_components/Filters/WrapperComponent/WrapperComponent";
+   import { useSearchParams } from "next/navigation";
+
+   const Filters: FC = () => {
+     const searchParams = useSearchParams();
+
+     return (
+       <WrapperComponent activeFiltersCount={searchParams.size - 1}>
+         <FiltersClient />
+       </WrapperComponent>
+     );
+   };
+
+   export default Filters;
+   ```
+
+2. **Create WrapperComponent.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC, ReactNode } from "react";
+   import { useFiltersModal } from "@/components/filters/FiltersContext";
+   // Import styled components and UI elements
+
+   interface WrapperComponentProps {
+     children: ReactNode;
+     activeFiltersCount?: number;
+   }
+
+   const WrapperComponent: FC<WrapperComponentProps> = ({
+     children,
+     activeFiltersCount = 0,
+   }) => {
+     const { isModalOpen, openModal, closeModal } = useFiltersModal();
+
+     return (
+       <>
+         {/* Desktop View - Container */}
+         <WrapperContainer $isModalOpen={isModalOpen}>
+           <WrapperHeader>
+             {/* Header content */}
+           </WrapperHeader>
+           <WrapperContent>{children}</WrapperContent>
+         </WrapperContainer>
+
+         {/* Mobile Filter Button */}
+         <MobileFilterButton onClick={openModal}>
+           {/* Button content with activeFiltersCount badge */}
+         </MobileFilterButton>
+       </>
+     );
+   };
+
+   export default WrapperComponent;
+   ```
+
+   **Key Points:**
+   - Wrapper component provides container/modal structure
+   - Desktop: Shows as container with header and content
+   - Mobile: Becomes full-screen modal when `isModalOpen` is true
+   - Uses `FiltersContext` for modal state management
+   - Accepts `activeFiltersCount` prop for badge display
+
+#### Pattern 2: Without Wrapper Component (Simple Filters)
+
+When you don't need a wrapper component (most common case):
+
+1. **Create Filters.tsx (Server Component - if fetching data, or Client Component):**
    ```typescript
    import { FC } from "react";
    import { FiltersProvider } from "@/components/filters/FiltersContext";
    import FiltersClient from "./FiltersClient";
 
    const Filters: FC = () => {
+     // If fetching data, do it here
+     // const data = await fetchData();
+
      return (
        <FiltersProvider>
          <FiltersClient />
+         {/* or <FiltersClient data={data} /> if passing data */}
        </FiltersProvider>
      );
    };
@@ -609,12 +690,79 @@ async getAll(
    export default Filters;
    ```
 
-2. **Create Filters.styles.ts (Empty initially):**
+2. **Create Filters.styles.ts:**
+
+   **For Pattern 1 (With Wrapper Component):**
+   ```typescript
+   "use client";
+   import { breakpoints } from "@/globals";
+   import { Box } from "@radix-ui/themes";
+   import styled from "styled-components";
+
+   export const ModalFiltersSection = styled(Box)`
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+   `;
+
+   export const DesktopFiltersWrapper = styled(Box)`
+     height: 100%;
+     flex: 1;
+     display: none;
+     padding: var(--space-3);
+
+     @media (min-width: ${breakpoints.sm - 1}px) {
+       display: grid;
+       grid-template-columns: repeat(4, 1fr);
+       gap: 10px;
+     }
+   `;
+
+   export const MobileFiltersWrapper = styled(Box)`
+     flex: 1;
+     padding-bottom: 0;
+     overflow: hidden;
+     display: flex;
+     flex-direction: column;
+
+     @media (min-width: ${breakpoints.sm}px) {
+       display: none;
+     }
+   `;
+
+   export const MobileFiltersContent = styled(Box)`
+     flex: 1;
+     overflow-y: auto;
+     display: flex;
+     flex-direction: column;
+     padding: var(--space-3);
+     gap: 10px;
+   `;
+
+   export const MobileFilterFooter = styled(Box)`
+     position: absolute;
+     height: 50px;
+     bottom: 0;
+     left: 0;
+     right: 0;
+     border-top: 1px solid var(--gray-6);
+     margin-bottom: 0;
+     background: var(--color-background);
+     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 10px;
+   `;
+   ```
+
+   **For Pattern 2 (Without Wrapper Component):**
    ```typescript
    "use client";
    import styled from "styled-components";
 
    // Empty styles file - will be populated later
+   // Or use shared styles from @/components/filters/Filters.styles
    ```
 
 3. **Create filters.types.ts (For Text Input Validation):**
@@ -625,7 +773,7 @@ async getAll(
    // Combine multiple schemas if needed
    export const EntityFilterSchema = z.object({
      ...PriceFromToSchema.shape, // Includes priceFrom and priceTo with comma formatting
-     color: z.number().optional(), // or z.string().optional() for text
+     color: z.string().optional(), // or z.number().optional() for numeric
      // Add other text input fields here
    });
 
@@ -647,10 +795,14 @@ FiltersClient supports four types of filters:
 
 1. **Multi-Select Dropdown Filters (SearchMultiSelect)**: Multi-select dropdowns managed via `allSelectedFilterOptions` Map state
 2. **Single-Select Dropdown Filters (SearchSingleSelect)**: Single-select dropdowns managed via `allSelectedFilterOptions` Map state (wraps single value in array)
-3. **Text Input Filters (TextSearch)**: Text inputs managed via form FormData with Zod validation
-4. **Price Input Filters (PriceTextSearch)**: Price inputs with comma formatting, managed via form FormData with Zod validation
+3. **Text Input Filters (TextSearch)**: Text inputs managed via controlled state (not FormData)
+4. **Price Input Filters (PriceTextSearch)**: Price inputs with comma formatting, managed via controlled state (not FormData)
 
-All types are combined in a single form and submitted together via `handleSubmitAllFilters`.
+**Important:** When using a wrapper component (Pattern 1), FiltersClient renders differently for desktop vs mobile:
+- **Desktop**: Renders inline filters + "More Filters" button + MoreFiltersModal
+- **Mobile**: Renders all filters inside wrapper modal (which becomes full-screen)
+
+When not using a wrapper component (Pattern 2), FiltersClient handles its own desktop/mobile UI using Dialog or similar.
 
 #### Required Imports
 
@@ -675,6 +827,7 @@ import { EntityFilter, EntityFilterSchema } from "./filters.types";
 #### State Management
 
 ```typescript
+// Dropdown filters state (SearchMultiSelect and SearchSingleSelect)
 const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
   useState<AllSelectedFilterOptionsMap>(
     new Map([
@@ -684,9 +837,22 @@ const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
       ["yearTo", []],       // Single-select filter (still uses array internally)
     ])
   );
+
+// Text input filters state (for "more filters" - price, color, etc.)
+const [moreFilters, setMoreFilters] = useState({
+  priceFrom: searchParams.get("priceFrom") ?? "",
+  priceTo: searchParams.get("priceTo") ?? "",
+  color: searchParams.get("color") ?? "",
+});
+
+// More Filters Modal state (only if using wrapper component pattern)
+const [isMoreFiltersModalOpen, setIsMoreFiltersModalOpen] = useState(false);
 ```
 
-**Note:** Both `SearchMultiSelect` and `SearchSingleSelect` use the same state management pattern. `SearchSingleSelect` internally wraps the single selected option in an array to match the `MultiValue<Option>` interface.
+**Note:** 
+- Both `SearchMultiSelect` and `SearchSingleSelect` use the same state management pattern. `SearchSingleSelect` internally wraps the single selected option in an array to match the `MultiValue<Option>` interface.
+- Text input filters (price, color) are managed via controlled state, not FormData, for better UX and easier state management.
+- When using wrapper component pattern, `moreFilters` state is separate and managed independently.
 
 #### Filter Dependencies
 
@@ -703,28 +869,24 @@ const dependentOptions = useMemo(
 );
 ```
 
-#### Form Reference (For Text Inputs)
-
-When using text input filters, add a form reference:
-
-```typescript
-const formRef = useRef<HTMLFormElement>(null);
-```
-
 #### Handler Functions
 
 1. **handleSubmitAllFilters** - Updates URL with selected filters (both dropdowns and text inputs):
    ```typescript
-   const handleSubmitAllFilters = () => {
-     // Extract FormData for text inputs (if using form)
-     const formData = new FormData(formRef.current!);
+   const handleSubmitAllFilters = useCallback(() => {
+     // Create FormData from moreFilters state for validation
+     const formData = new FormData();
+     Object.entries(moreFilters).forEach(([key, value]) => {
+       formData.append(key, value?.toString() ?? "");
+     });
+     
      const schemaKeys = Object.keys(FilterSchema.shape);
      const parseResult = parseWithZod(formData, { schema: FilterSchema });
 
      const _searchParams = new URLSearchParams(searchParams);
      _searchParams.set("page", "1");
      
-     // Handle dropdown filters (SearchMultiSelect)
+     // Handle dropdown filters (SearchMultiSelect and SearchSingleSelect)
      const params = allSelectedFilterOptions.keys();
      params.forEach((paramName) => {
        const options = allSelectedFilterOptions.get(paramName)!;
@@ -738,7 +900,7 @@ const formRef = useRef<HTMLFormElement>(null);
        }
      });
 
-     // Handle text input filters (TextSearch)
+     // Handle text input filters (from moreFilters state)
      if (parseResult.status === "success") {
        const values = parseResult.value;
        schemaKeys.forEach((key) => {
@@ -766,7 +928,32 @@ const formRef = useRef<HTMLFormElement>(null);
      }
 
      router.replace(`${pathname}?${_searchParams.toString()}`);
-   };
+   }, [moreFilters, searchParams, allSelectedFilterOptions, router, pathname]);
+   ```
+
+2. **handleMoreFiltersChange** - Updates moreFilters state:
+   ```typescript
+   const handleMoreFiltersChange = useCallback(
+     (key: keyof typeof moreFilters, value: string) => {
+       setMoreFilters((prevMoreFilters) => {
+         return produce(prevMoreFilters, (draft) => {
+           draft[key] = value;
+         });
+       });
+     },
+     []
+   );
+   ```
+
+3. **handleClearMoreFilters** - Clears only moreFilters state:
+   ```typescript
+   const handleClearMoreFilters = useCallback(() => {
+     setMoreFilters({
+       priceFrom: "",
+       priceTo: "",
+       color: "",
+     });
+   }, []);
    ```
 
 2. **handleSetAllSelectedFilterOptions** - Updates filter state:
@@ -787,36 +974,40 @@ const formRef = useRef<HTMLFormElement>(null);
    );
    ```
 
-3. **handleClearFiltersAndClose** - Clears all filters:
+4. **handleClearFilters** - Clears all filters (both dropdowns and text inputs):
    ```typescript
-   const handleClearFiltersAndClose = () => {
+   const handleClearFilters = useCallback(() => {
      setAllSelectedFilterOptions(
        new Map([
          ["filterParam1", []],
          ["filterParam2", []],
+         ["yearFrom", []],
+         ["yearTo", []],
        ])
      );
+     setMoreFilters({
+       priceFrom: "",
+       priceTo: "",
+       color: "",
+     });
      router.push(pathname);
-   };
+   }, [router, pathname]);
    ```
 
-#### Form Wrapper (For Text Inputs)
+#### Search Button Disabled State
 
-When using text input filters, wrap all filters in a form:
+Check if search button should be disabled:
 
 ```typescript
-<form
-  ref={formRef}
-  onSubmit={(e) => e.preventDefault()}
-  style={{
-    display: "flex",
-    gap: "12px",
-    flexWrap: "wrap",
-    alignItems: "center",
-  }}
->
-  {/* Dropdown and text filters go here */}
-</form>
+const isSearchButtonDisabled = useMemo(() => {
+  const optionsFiltersAreDisabled = Array.from(
+    allSelectedFilterOptions.values()
+  ).every((options) => options.length === 0);
+  const moreFiltersAreDisabled = Object.values(moreFilters).every(
+    (value) => value === undefined || value === "" || value === null
+  );
+  return optionsFiltersAreDisabled && moreFiltersAreDisabled;
+}, [allSelectedFilterOptions, moreFilters]);
 ```
 
 #### SearchMultiSelect Components
@@ -880,11 +1071,65 @@ import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/S
 - When multiple options can be selected simultaneously
 - For filters that represent multiple choices
 
+#### DialogPrimitiveButton Component (For Grouping Related Filters)
+
+When you need to group multiple related filters (e.g., yearFrom and yearTo) in a dropdown dialog:
+
+```typescript
+import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
+import { getYearDialogButtonTitle } from "./Filters.utils";
+
+// Generate dynamic title based on selected values
+const yearDialogButtonTitle = getYearDialogButtonTitle(allSelectedFilterOptions);
+
+<DialogPrimitiveButton title={yearDialogButtonTitle} showOverlay={true}>
+  <SearchSingleSelect
+    placeholder="Год от"
+    displayName="год от"
+    paramName="yearFrom"
+    options={yearsOptions}
+    selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+    setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  />
+
+  <SearchSingleSelect
+    placeholder="Год до"
+    displayName="год до"
+    paramName="yearTo"
+    options={yearsOptions}
+    selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+    setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  />
+</DialogPrimitiveButton>
+```
+
+**Key Points:**
+- Creates a button that opens a dropdown dialog
+- Useful for grouping related filters (e.g., year range, price range)
+- Button title can be dynamic based on selected values
+- Dialog positions itself below the button
+- Use `showOverlay={true}` to show backdrop overlay
+- Dialog closes when clicking outside or pressing Escape
+
 #### TextSearch Components
+
+When using controlled state (recommended for wrapper component pattern):
 
 ```typescript
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
 
+<TextSearch
+  name="color"
+  placeholder="Цвет"
+  type="text"
+  value={moreFilters.color}
+  onChange={(value) => handleMoreFiltersChange("color", value)}
+/>
+```
+
+When using uncontrolled state (defaultValue pattern):
+
+```typescript
 <TextSearch
   name="color"
   placeholder="Цвет"
@@ -895,11 +1140,31 @@ import TextSearch from "@/components/filters/TextSearch/TextSearch";
 
 #### PriceTextSearch Components
 
-For price range filters, use `PriceTextSearch` which automatically formats numbers with commas:
+For price range filters, use `PriceTextSearch` which automatically formats numbers with commas.
+
+When using controlled state (recommended for wrapper component pattern):
 
 ```typescript
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 
+<PriceTextSearch
+  name="priceFrom"
+  placeholder="0"
+  value={moreFilters.priceFrom}
+  onChange={(value) => handleMoreFiltersChange("priceFrom", value)}
+/>
+
+<PriceTextSearch
+  name="priceTo"
+  placeholder="0"
+  value={moreFilters.priceTo}
+  onChange={(value) => handleMoreFiltersChange("priceTo", value)}
+/>
+```
+
+When using uncontrolled state (defaultValue pattern):
+
+```typescript
 <PriceTextSearch
   name="priceFrom"
   placeholder="0"
@@ -919,24 +1184,249 @@ import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearc
 - Displays currency symbol (₪)
 - Manages internal state for formatted display value
 - Works with `PriceFromToSchema` from `@/lib/common/types/common.types` which validates and transforms comma-formatted strings to numbers
+- Supports both controlled (`value` + `onChange`) and uncontrolled (`defaultValue`) patterns
 
-### Step 3: Integration with Page
+### Step 3: Create MoreFiltersModal Component (Optional - Only for Wrapper Pattern)
+
+When using wrapper component pattern and you want to separate "more filters" (price, color, etc.) into a separate modal:
+
+1. **Create MoreFiltersModal.tsx:**
+   ```typescript
+   "use client";
+   import { FC, ReactNode } from "react";
+   import { Dialog, Button, IconButton, Heading, Text, Flex } from "@radix-ui/themes";
+   import { Cross2Icon } from "@radix-ui/react-icons";
+   import {
+     MoreFiltersModalContent,
+     MoreFiltersModalHeader,
+     MoreFiltersModalBody,
+     MoreFiltersModalFooter,
+   } from "./MoreFiltersModal.styles";
+
+   interface MoreFiltersModalProps {
+     open: boolean;
+     onOpenChange: (open: boolean) => void;
+     children: ReactNode;
+     onClearMoreFilters: () => void;
+   }
+
+   const MoreFiltersModal: FC<MoreFiltersModalProps> = ({
+     open,
+     onOpenChange,
+     children,
+     onClearMoreFilters,
+   }) => {
+     return (
+       <Dialog.Root open={open} onOpenChange={onOpenChange}>
+         <MoreFiltersModalContent>
+           <MoreFiltersModalHeader>
+             <Flex direction="column" gap="1">
+               <Heading size={{ initial: "4", xs: "5" }}>
+                 Больше фильтров
+               </Heading>
+               <Text size="2" color="gray">
+                 Дополнительные параметры поиска
+               </Text>
+             </Flex>
+             <IconButton
+               variant="ghost"
+               color="gray"
+               onClick={() => onOpenChange(false)}
+               size={{ initial: "2", xs: "3" }}
+             >
+               <Cross2Icon width="20" height="20" />
+             </IconButton>
+           </MoreFiltersModalHeader>
+
+           <MoreFiltersModalBody>{children}</MoreFiltersModalBody>
+
+           <MoreFiltersModalFooter>
+             <Button variant="outline" color="gray" onClick={onClearMoreFilters}>
+               Очистить
+             </Button>
+             <Dialog.Close>
+               <Button variant="outline" color="gray">
+                 Сохранить
+               </Button>
+             </Dialog.Close>
+           </MoreFiltersModalFooter>
+         </MoreFiltersModalContent>
+       </Dialog.Root>
+     );
+   };
+
+   export default MoreFiltersModal;
+   ```
+
+2. **Create MoreFiltersModal.styles.ts:**
+   ```typescript
+   "use client";
+   import styled from "styled-components";
+   import { Dialog, Box } from "@radix-ui/themes";
+
+   export const MoreFiltersModalContent = styled(Dialog.Content)`
+     max-width: 600px !important;
+     width: 90vw;
+     max-height: 80vh;
+     background: var(--accent-1);
+     border-radius: var(--radius-4);
+     padding: 0 !important;
+     display: flex;
+     flex-direction: column;
+     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+     @media (max-width: 768px) {
+       max-width: 100vw !important;
+       width: 100vw;
+       max-height: 100vh;
+       height: 100vh;
+       border-radius: 0;
+     }
+   `;
+
+   export const MoreFiltersModalHeader = styled(Box)`
+     padding: var(--space-4) var(--space-5);
+     border-bottom: 1px solid var(--gray-6);
+     display: flex;
+     align-items: flex-start;
+     justify-content: space-between;
+     background: var(--accent-2);
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+     gap: var(--space-3);
+   `;
+
+   export const MoreFiltersModalBody = styled(Box)`
+     flex: 1;
+     overflow-y: auto;
+     padding: var(--space-5);
+     -webkit-overflow-scrolling: touch;
+   `;
+
+   export const MoreFiltersModalFooter = styled(Box)`
+     padding: var(--space-4) var(--space-5);
+     border-top: 1px solid var(--gray-6);
+     display: flex;
+     justify-content: space-between;
+     background: var(--accent-2);
+     box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+   `;
+   ```
+
+### Step 4: FiltersClient Rendering Patterns
+
+#### Pattern 1: With Wrapper Component (Desktop + Mobile Separation)
+
+When using a wrapper component, FiltersClient renders differently for desktop vs mobile:
+
+```typescript
+return (
+  <>
+    {/* Desktop Filters */}
+    <DesktopFiltersWrapper>
+      {renderFilters()} {/* Main filters (dropdowns) */}
+      <Button onClick={() => setIsMoreFiltersModalOpen(true)}>
+        Больше фильтров
+      </Button>
+      <Button onClick={handleSubmitAllFilters}>Поиск</Button>
+      <Button onClick={handleClearFilters}>Очистить все фильтры</Button>
+    </DesktopFiltersWrapper>
+
+    {/* More Filters Modal (Desktop only) */}
+    <MoreFiltersModal
+      open={isMoreFiltersModalOpen}
+      onOpenChange={setIsMoreFiltersModalOpen}
+      onClearMoreFilters={handleClearMoreFilters}
+    >
+      {renderMoreFilters()} {/* Price, color, etc. */}
+    </MoreFiltersModal>
+
+    {/* Mobile Filters - rendered inside wrapper modal */}
+    <MobileFiltersWrapper>
+      <MobileFiltersContent>
+        {renderMobileFilters()} {/* All filters including more filters */}
+      </MobileFiltersContent>
+      <MobileFilterFooter>
+        <Button onClick={() => { handleSubmitAllFilters(); closeModal(); }}>
+          Поиск
+        </Button>
+        <Button onClick={handleClearFilters}>
+          Очистить все фильтры
+        </Button>
+      </MobileFilterFooter>
+    </MobileFiltersWrapper>
+  </>
+);
+```
+
+**Key Points:**
+- Desktop: Main filters inline + "More Filters" button opens MoreFiltersModal
+- Mobile: All filters rendered inside wrapper modal (which becomes full-screen)
+- Use `useFiltersModal()` hook to access `closeModal` function
+- Separate render functions: `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()`
+
+#### Pattern 2: Without Wrapper Component (Self-Contained)
+
+When not using a wrapper component, FiltersClient handles its own desktop/mobile UI:
+
+```typescript
+const { isModalOpen, openModal, closeModal } = useFiltersModal();
+
+return (
+  <>
+    {/* Desktop View */}
+    <DesktopFiltersWrapper>
+      {renderFilters()}
+      <Button onClick={handleSubmitAllFilters}>Поиск</Button>
+      <Button onClick={handleClearFilters}>Очистить все фильтры</Button>
+    </DesktopFiltersWrapper>
+
+    {/* Mobile Filter Button */}
+    <MobileFilterButton onClick={openModal}>
+      Фильтры
+    </MobileFilterButton>
+
+    {/* Mobile Filters Modal */}
+    <Dialog.Root open={isModalOpen} onOpenChange={closeModal}>
+      <FiltersModalContent>
+        <ModalHeader>
+          <Dialog.Title>Фильтры</Dialog.Title>
+          <IconButton onClick={closeModal}>...</IconButton>
+        </ModalHeader>
+        <ModalBody>
+          {renderFilters()}
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={() => { handleSubmitAllFilters(); closeModal(); }}>
+            Показать результаты
+          </Button>
+          <Button onClick={handleClearFilters}>Очистить</Button>
+        </ModalFooter>
+      </FiltersModalContent>
+    </Dialog.Root>
+  </>
+);
+```
+
+### Step 5: Integration with Page
 
 1. **Import Filters component in page.tsx:**
    ```typescript
    import Filters from "./_components/Filters/Filters";
+   import { FiltersProvider } from "@/components/filters/FiltersContext";
    ```
 
-2. **Wrap Filters in Suspense:**
+2. **Wrap Filters in Suspense and FiltersProvider:**
    ```typescript
    <Suspense fallback={<LoadingFilters />}>
-     <VehicleFilters>
+     <FiltersProvider>
        <Filters />
-     </VehicleFilters>
+     </FiltersProvider>
    </Suspense>
    ```
 
-### Step 4: Create Filter Schema (For Text Inputs)
+   **Note:** If Filters.tsx already wraps FiltersClient with FiltersProvider (Pattern 2), you don't need to wrap again in page.tsx.
+
+### Step 6: Create Filter Schema (For Text Inputs)
 
 When using text input filters, create a Zod schema for validation:
 
@@ -948,7 +1438,7 @@ When using text input filters, create a Zod schema for validation:
    // Combine multiple schemas if needed
    export const EntityFilterSchema = z.object({
      ...PriceFromToSchema.shape,
-     color: z.number().optional(), // or z.string().optional() for text
+     color: z.string().optional(), // Use z.string() for text inputs
      // Add other text input fields here
    });
 
@@ -959,6 +1449,27 @@ When using text input filters, create a Zod schema for validation:
    ```typescript
    import { parseWithZod } from "@conform-to/zod";
    import { EntityFilter, EntityFilterSchema } from "./filters.types";
+   ```
+
+3. **Create Filters.utils.ts (Optional - for helper functions):**
+   ```typescript
+   import { AllSelectedFilterOptionsMap } from "@/components/filters/select/types";
+
+   export const getYearDialogButtonTitle = (
+     allSelectedFilterOptions: AllSelectedFilterOptionsMap
+   ) => {
+     const yearFrom = allSelectedFilterOptions.get("yearFrom")?.[0]?.label;
+     const yearTo = allSelectedFilterOptions.get("yearTo")?.[0]?.label;
+
+     if (yearFrom && yearTo) {
+       return `${yearFrom}-${yearTo}`;
+     } else if (yearFrom) {
+       return `Год от ${yearFrom}`;
+     } else if (yearTo) {
+       return `Год до ${yearTo}`;
+     }
+     return "Год";
+   };
    ```
 
 ### Example: Car Filters Implementation (With Dropdowns and Text Inputs)
@@ -1198,21 +1709,53 @@ const FiltersClient: FC = () => {
 8. **Use SearchSingleSelect** - Reusable component for single-select filters (e.g., yearFrom, yearTo)
 9. **Use TextSearch** - Reusable component for regular text input filters
 10. **Use PriceTextSearch** - Reusable component for price input filters with comma formatting
-11. **Wrap in form** - When using text inputs, wrap all filters in a `<form>` with `formRef`
-12. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation
+11. **Controlled state for text inputs** - Use controlled state (`value` + `onChange`) instead of FormData for better UX
+12. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation (create FormData from state)
 13. **Graceful error handling** - On validation errors, still add non-error fields to URL
-14. **Default values from URL** - Initialize text inputs with values from `searchParams.get()`
+14. **Initialize from URL** - Initialize text inputs with values from `searchParams.get()` in state
 15. **URL synchronization** - All filters update URL params for sharing/bookmarking
 16. **Reset page to 1** - When filters change, reset to first page
 17. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
 18. **Portal rendering** - Use `isPortalTarget` prop on SearchSingleSelect when z-index issues occur with dropdown menus
+19. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
+20. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
+21. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
+22. **Search button disabled state** - Check both dropdown filters and moreFilters state to determine if search button should be disabled
 
-### Mobile/Desktop UI (Future)
+### Mobile/Desktop UI Patterns
 
-- Desktop: Inline filters with buttons
-- Mobile: Modal with filters and action buttons
-- Use FiltersContext for modal state management
-- Follow pattern from `professional-service/_components/Filters/`
+#### Pattern 1: With Wrapper Component
+
+**Desktop:**
+- Wrapper component shows as container with header
+- FiltersClient renders main filters inline
+- "More Filters" button opens MoreFiltersModal (separate modal)
+- Action buttons (Search, Clear) shown inline
+
+**Mobile:**
+- Wrapper component becomes full-screen modal when opened
+- FiltersClient renders all filters inside wrapper modal
+- Mobile filter button triggers wrapper modal
+- Action buttons shown in footer of wrapper modal
+
+**Example:** `vehicles/cars/_components/Filters/`
+
+#### Pattern 2: Without Wrapper Component
+
+**Desktop:**
+- FiltersClient renders filters inline with action buttons
+- All filters visible at once
+
+**Mobile:**
+- Mobile filter button opens FiltersClient's own modal
+- All filters shown in modal with action buttons in footer
+
+**Example:** `professional-service/_components/Filters/`
+
+**Key Differences:**
+- Pattern 1: Separates "more filters" into separate modal (desktop only), wrapper handles mobile modal
+- Pattern 2: All filters together, FiltersClient handles its own modal
+- Both use `FiltersContext` for modal state management
 
 ## Implementation Example: Car Filters
 
@@ -1329,9 +1872,57 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
 };
 ```
 
+## Component Architecture Summary
+
+### Pattern 1: With Wrapper Component
+
+```
+Page.tsx
+  └── FiltersProvider
+      └── Filters.tsx (Client Component)
+          └── WrapperComponent (e.g., VehicleFilters)
+              └── FiltersClient
+                  ├── DesktopFiltersWrapper
+                  │   ├── renderFilters() (main filters)
+                  │   ├── "More Filters" button
+                  │   └── Action buttons
+                  ├── MoreFiltersModal (Desktop only)
+                  │   └── renderMoreFilters() (price, color)
+                  └── MobileFiltersWrapper
+                      ├── renderMobileFilters() (all filters)
+                      └── MobileFilterFooter (action buttons)
+```
+
+### Pattern 2: Without Wrapper Component
+
+```
+Page.tsx
+  └── FiltersProvider
+      └── Filters.tsx (Server/Client Component)
+          └── FiltersClient
+              ├── DesktopFiltersWrapper
+              │   ├── renderFilters() (all filters)
+              │   └── Action buttons
+              ├── MobileFilterButton
+              └── Dialog (Mobile modal)
+                  ├── renderFilters() (all filters)
+                  └── Action buttons
+```
+
 ## References
 
 - Follow the pattern established in:
-  - `lib/professionals/professional-service/repository/ProfessionalServiceRepository.ts`
-  - `lib/vehicles/cars/repository/CarRepository.ts`
-  - `app/(public)/vehicles/cars/page.tsx`
+  - **Pattern 1 (With Wrapper):**
+    - `app/(public)/vehicles/_components/Filters/VehicleFilters/VehicleFilters.tsx`
+    - `app/(public)/vehicles/cars/_components/Filters/Filters.tsx`
+    - `app/(public)/vehicles/cars/_components/Filters/FiltersClient.tsx`
+    - `app/(public)/vehicles/cars/_components/modals/MoreFiltersModal/MoreFiltersModal.tsx`
+  - **Pattern 2 (Without Wrapper):**
+    - `app/(public)/professional-service/_components/Filters/Filters.tsx`
+    - `app/(public)/professional-service/_components/Filters/FiltersClient.tsx`
+  - **Repository Examples:**
+    - `lib/professionals/professional-service/repository/ProfessionalServiceRepository.ts`
+    - `lib/vehicles/cars/repository/CarRepository.ts`
+  - **Page Examples:**
+    - `app/(public)/vehicles/cars/page.tsx`
+    - `app/(public)/professional-service/page.tsx`
