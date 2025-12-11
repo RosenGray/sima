@@ -1,19 +1,12 @@
 "use client";
 
 import { Heading, Text } from "@radix-ui/themes";
-import {
-  PublishAdPageContainer,
-  PublishAdGrid,
-} from "./page.styles";
-import {
-  PersonIcon,
-  HomeIcon,
-  CubeIcon,
-  IdCardIcon,
-  HeartFilledIcon,
-  CameraIcon,
-} from "@radix-ui/react-icons";
+import { PublishAdPageContainer, PublishAdGrid } from "./page.styles";
+import { IdCardIcon, HeartFilledIcon, CameraIcon } from "@radix-ui/react-icons";
 import IconCard from "@/components/IconCard/IconCard";
+import HandymanIcon from "@/components/svg/Handyman/Handyman";
+import HouseIcon from "@/components/svg/House/House";
+import TransportIcon from "@/components/svg/Transport/Transport";
 
 interface PublishAdCategory {
   id: string;
@@ -28,7 +21,7 @@ const categories: PublishAdCategory[] = [
     id: "professional-services",
     title: "Услуги специалистов",
     description: "Разместите объявление о ваших профессиональных услугах",
-    icon: <PersonIcon width="32" height="32" />,
+    icon: <HandymanIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/professional-service/create",
   },
   {
@@ -36,7 +29,7 @@ const categories: PublishAdCategory[] = [
     title: "Недвижимость",
     description:
       "Продажа или аренда квартир, домов и коммерческой недвижимости",
-    icon: <HomeIcon width="32" height="32" />,
+    icon: <HouseIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/real-estate",
   },
   {
@@ -44,7 +37,7 @@ const categories: PublishAdCategory[] = [
     title: "Транспорт",
     description:
       "Продажа автомобилей, мотоциклов и других транспортных средств",
-    icon: <CubeIcon width="32" height="32" />,
+    icon: <TransportIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/vehicles",
   },
   {

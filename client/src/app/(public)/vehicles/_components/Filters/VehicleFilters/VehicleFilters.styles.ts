@@ -6,7 +6,7 @@ import { breakpoints } from "@/globals";
 export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
   transform: translateY(-50%);
   background: var(--accent-1);
-  min-height: 130px; 
+  min-height: 130px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--gray-6);
   display: flex;
@@ -24,7 +24,6 @@ export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
     opacity: ${({ $isModalOpen }) => ($isModalOpen ? 1 : 0)};
     z-index: ${({ $isModalOpen }) => ($isModalOpen ? 1000 : -1)};
     transition: all 0.2s ease;
-
   }
 
   &:hover {
@@ -51,7 +50,6 @@ export const VehicleFiltersHeader = styled.header`
 `;
 
 export const VehicleFiltersContent = styled.div`
-
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -80,4 +78,34 @@ export const FiltersCountBadge = styled(Flex)`
   font-size: 11px;
   font-weight: 600;
   padding: 0 6px;
+`;
+
+export const VehicleFiltersNavBar = styled.nav`
+padding-top: 10px;
+  height: 60px;
+`;
+export const VehiclesFiltersNavBarList = styled.ul`
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  gap: 5px;
+  justify-content: center;
+`;
+
+export const VehicleFiltersNavBarItem = styled.li<{ $isActive: boolean }>`
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: calc(100% / 12);
+  display: flex;
+  
+  & > a {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    & > svg {
+      border:2px solid ${({ $isActive }) => ($isActive ? 'var(--accent-9)' : 'transparent')};
+      border-radius: 50%;
+    }
+  }
 `;

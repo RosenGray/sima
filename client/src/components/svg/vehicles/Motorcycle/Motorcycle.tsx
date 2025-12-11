@@ -1,10 +1,18 @@
-const MotorcycleIcon = () => {
+interface MotorcycleIconProps {
+  width?: number;
+  height?: number;
+  viewBox?: {
+    width: number;
+    height: number;
+  }
+}
+const MotorcycleIcon = ({ width, height, viewBox = { width: 100, height: 100 } }: MotorcycleIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="120"
-      height="120"
-      viewBox="0 0 120 120"
+      width={width}
+      height={height}
+      viewBox={`0 0 ${viewBox?.width} ${viewBox?.height}`}
       fill="none"
     >
       <defs>
