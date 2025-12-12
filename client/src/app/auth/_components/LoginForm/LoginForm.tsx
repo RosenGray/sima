@@ -9,6 +9,7 @@ import {
 import { Box, Flex, Heading, IconButton, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { LoginSchema } from "@/lib/auth/types/auth.scema";
 import { loginUser } from "@/lib/auth/actions/login";
 import AuthTextField from "@/components/Form/AuthTextField/AuthTextField";
@@ -19,6 +20,8 @@ import { FormCard } from "@/components/Form/FormCard/FormCard.styles";
 import { GoogleSignInButton } from "@/components/buttons/GoogleSignInButton/GoogleSignInButton";
 
 const LoginForm = () => {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [formState, formAction, isPending] = useActionState(
     loginUser,
@@ -52,6 +55,9 @@ const LoginForm = () => {
   return (
     <Box width="100%" maxWidth="550px">
       <form action={formAction} {...getFormProps(form)} noValidate>
+        {redirectTo && (
+          <input type="hidden" name="redirectTo" value={redirectTo} />
+        )}
         <FormCard size="4">
           <Flex direction="column" gap="5" p="4">
             <Heading align="center" size="7" mb="2">

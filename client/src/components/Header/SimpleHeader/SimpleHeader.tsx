@@ -17,6 +17,7 @@ import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
+import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -49,9 +50,9 @@ export default function Header() {
 
           {/* Logo - Center */}
           <Logo>
-            <Text size="6" weight="bold">
-              Sima
-            </Text>
+            <Link href="/">
+            <SimaDarkLogo width={200} height={60}  />
+            </Link>
           </Logo>
 
           <ActionsContainer>

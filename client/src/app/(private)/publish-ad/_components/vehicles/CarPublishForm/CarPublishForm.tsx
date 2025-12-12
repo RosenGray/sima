@@ -618,6 +618,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                   <BasicFormField
                     type="email"
                     field={contactEmail}
+                    containerStyle={{ display: "flex", flexDirection: "column" ,justifyContent: "end"}}
                     label="Email"
                     placeholder="@ Адрес электронной почты"
                     size="3"

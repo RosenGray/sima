@@ -53,5 +53,12 @@ export async function loginUser(initialState: unknown, formData: FormData) {
     });
   }
   revalidatePath("/", "layout");
-  redirect("/auth/success");
+  
+  // Get redirectTo from formData if present
+  const redirectTo = formData.get("redirectTo")?.toString();
+  const successUrl = redirectTo 
+    ? `/auth/success?redirectTo=${encodeURIComponent(redirectTo)}`
+    : "/auth/success";
+  
+  redirect(successUrl);
 }

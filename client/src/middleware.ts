@@ -78,8 +78,11 @@ export async function middleware(request: NextRequest) {
   // If it's a protected route, check authentication
   if (isProtectedRoute) {
     if (!token) {
-      // No token, redirect to login
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+      // No token, redirect to login with redirectTo parameter
+      const fullPath = request.nextUrl.pathname + request.nextUrl.search;
+      const loginUrl = new URL("/auth/login", request.url);
+      loginUrl.searchParams.set("redirectTo", fullPath);
+      return NextResponse.redirect(loginUrl);
     }
 
     try {
@@ -87,10 +90,11 @@ export async function middleware(request: NextRequest) {
       await jwtVerify(token, getJwtSecret());
       return NextResponse.next();
     } catch {
-      // Token is invalid, redirect to login
-      const response = NextResponse.redirect(
-        new URL("/auth/login", request.url)
-      );
+      // Token is invalid, redirect to login with redirectTo parameter
+      const fullPath = request.nextUrl.pathname + request.nextUrl.search;
+      const loginUrl = new URL("/auth/login", request.url);
+      loginUrl.searchParams.set("redirectTo", fullPath);
+      const response = NextResponse.redirect(loginUrl);
       // Clear the invalid token
       response.cookies.set(SIMA_AUTH_SESSION_CONFIG.name, "", {
         domain: SIMA_AUTH_SESSION_CONFIG.domain,

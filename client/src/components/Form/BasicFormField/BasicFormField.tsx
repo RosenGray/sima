@@ -16,6 +16,7 @@ interface BasicFormFieldrops extends TextField.RootProps {
   showEmailDisclaimer?: boolean;
   _key?: string;
   isMandatory?: boolean;
+  containerStyle?: React.CSSProperties;
 }
 
 const BasicFormField: FC<BasicFormFieldrops> = ({
@@ -34,18 +35,20 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
   type = "text",
   _key,
   isMandatory,
+  containerStyle,
   ...rest
 }) => {
   const { mb, mt, mr, ml } = rest;
 
   return (
-    <Box mb={mb} mt={mt} mr={mr} ml={ml}>
+    <Box mb={mb} mt={mt} mr={mr} ml={ml} style={containerStyle}>
       {label && (
         <Text
           htmlFor={rest.id}
           as="label"
           size="3"
           weight="bold"
+          mb="2"
           style={{
             display: "flex",
             alignItems: "center",
@@ -82,7 +85,7 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
       <Text style={{ fontSize: 10 }} weight="bold" as="span" size="1">
         {anotherLabel}
       </Text>
-      <br />
+
       <Text as="p" align="center" weight="bold" size="2" color="red">
         {errors}
       </Text>

@@ -1,4 +1,4 @@
-import { Box, Heading, Card } from "@radix-ui/themes";
+import { Box, Heading } from "@radix-ui/themes";
 import { PublishAdProfessionalsPageContainer } from "./page.styles";
 import ProfessionalServicePublishForm from "../../../_components/ProfessionalServicePublishForm/ProfessionalServicePublishForm";
 import { FC } from "react";
@@ -36,16 +36,16 @@ const PublishAdProfessionalsPage: FC<PublishAdProfessionalsPageProps> = async ({
   return (
     <PublishProfessionalServiceAdProvider data={{ mappedCategories }}>
       <PublishAdProfessionalsPageContainer>
-        <Box maxWidth="80%" mx="auto">
+        <Box  mx="auto">
           <Heading mb="4" align="center">
             Редактирование объявления
           </Heading>
-          <Card>
+    
             <ProfessionalServicePublishForm
               service={service}
               formMode={FormMode.Edit}
             />
-          </Card>
+
         </Box>
       </PublishAdProfessionalsPageContainer>
     </PublishProfessionalServiceAdProvider>

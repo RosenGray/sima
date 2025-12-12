@@ -25,12 +25,12 @@ const PublishAdProfessionalsPage: FC<PublishAdProfessionalsPageProps> = async ({
 
   return (
     <PublishProfessionalServiceAdProvider data={{ mappedCategories }}>
-          <PublishAdProfessionalsPageContainer>
-      <Heading mb="4" align="center">
-        Добавление нового объявления
-      </Heading>
-      <ProfessionalServicePublishForm formMode={FormMode.Create} />
-    </PublishAdProfessionalsPageContainer>
+      <PublishAdProfessionalsPageContainer>
+        <Heading mb="4" align="center">
+          Добавление нового объявления
+        </Heading>
+        <ProfessionalServicePublishForm formMode={FormMode.Create} />
+      </PublishAdProfessionalsPageContainer>
     </PublishProfessionalServiceAdProvider>
   );
 };

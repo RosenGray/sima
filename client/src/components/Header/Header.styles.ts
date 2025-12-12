@@ -126,31 +126,41 @@ export const MobileMenuButton = styled(Button)`
 `;
 
 export const HamburgerIcon = styled.div<{ $isOpen: boolean }>`
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  
+  justify-content: center;
+  position: relative;
+
   span {
     display: block;
-    height: 2px;
+    position: absolute;
     width: 100%;
+    height: 2px;
     background: currentColor;
-    border-radius: 1px;
-    transition: all 0.3s ease;
-    transform-origin: center;
-    
+    border-radius: 2px;
+    transition: 
+      transform 0.3s cubic-bezier(.4,0,.2,1),
+      opacity 0.3s cubic-bezier(.4,0,.2,1);
+    left: 0;
+
     &:nth-child(1) {
-      transform: ${props => props.$isOpen ? 'rotate(45deg) translateY(6px)' : 'rotate(0) translateY(0)'};
+      top: 6px;
+      transform: ${({ $isOpen }) =>
+        $isOpen ? 'rotate(45deg) translateY(6px)' : 'none'};
     }
-    
+
     &:nth-child(2) {
-      opacity: ${props => props.$isOpen ? '0' : '1'};
+      top: 11px;
+      opacity: ${({ $isOpen }) => ($isOpen ? '0' : '1')};
+      transform: none;
     }
-    
+
     &:nth-child(3) {
-      transform: ${props => props.$isOpen ? 'rotate(-45deg) translateY(-6px)' : 'rotate(0) translateY(0)'};
+      top: 16px;
+      transform: ${({ $isOpen }) =>
+        $isOpen ? 'rotate(-45deg) translateY(-6px)' : 'none'};
     }
   }
 `;

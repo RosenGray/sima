@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { PlusCircledIcon,Cross1Icon } from "@radix-ui/react-icons";
 import {
   HeaderContainer,
   Logo,
@@ -22,6 +22,8 @@ import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
+import SimaDarkIcon from "@/components/svg/Sima/SimaDark";
+import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
 
 // const navigationItems = [
 //   {
@@ -121,9 +123,9 @@ export default function Header() {
 
           {/* Logo - Center */}
           <Logo>
-            <Text size="6" weight="bold">
-              Sima
-            </Text>
+            <Link href="/">
+              <SimaDarkLogo width={200} height={60}  />
+            </Link>
           </Logo>
 
           {/* Desktop Navigation - Hidden on mobile */}
