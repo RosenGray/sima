@@ -21,7 +21,7 @@ export async function registerUser(initialState: unknown, formData: FormData) {
   try {
     await connectDB();
 
-    const { firstName, lastName, email, password, acceptMarketing } = result.value;
+    const { firstName, lastName, email, password } = result.value;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return result.reply({
