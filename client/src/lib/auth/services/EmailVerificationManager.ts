@@ -32,11 +32,11 @@ export const storeVerificationToken = async (email: string, token: string) => {
   const expiresAt = new Date(Date.now() + TOKEN_EXPIRATION_MINUTES * 60 * 1000);
   await User.updateOne(
     { email },
-    { 
-      $set: { 
-        emailVerificationToken: token, 
-        emailVerificationTokenExpiresAt: expiresAt 
-      } 
+    {
+      $set: {
+        emailVerificationToken: token,
+        emailVerificationTokenExpiresAt: expiresAt,
+      },
     }
   );
 };
@@ -55,29 +55,46 @@ export const validateVerificationToken = async (
     const user = await User.findOne({ emailVerificationToken: token });
 
     if (!user || !user.emailVerificationTokenExpiresAt) {
-      return { isValid: false, reason: VerificationTokenValidationReason.TokenNotFound };
+      return {
+        isValid: false,
+        reason: VerificationTokenValidationReason.TokenNotFound,
+      };
     }
 
     if (user.isEmailVerified) {
-      return { isValid: false, reason: VerificationTokenValidationReason.AlreadyVerified };
+      return {
+        isValid: false,
+        reason: VerificationTokenValidationReason.AlreadyVerified,
+      };
     }
 
     if (Date.now() > user.emailVerificationTokenExpiresAt.getTime()) {
       await deleteVerificationToken(token);
-      return { isValid: false, reason: VerificationTokenValidationReason.TokenExpired };
+      return {
+        isValid: false,
+        reason: VerificationTokenValidationReason.TokenExpired,
+      };
     }
 
     return { isValid: true, email: user.email };
   } catch (error) {
     console.log(error);
-    return { isValid: false, reason: VerificationTokenValidationReason.TokenNotFound };
+    return {
+      isValid: false,
+      reason: VerificationTokenValidationReason.TokenNotFound,
+    };
   }
 };
 
 export const deleteVerificationToken = async (token: string) => {
   await User.updateOne(
     { emailVerificationToken: token },
-    { $unset: { emailVerificationToken: "", emailVerificationTokenExpiresAt: "" } }
+    {
+      $unset: {
+        emailVerificationToken: "",
+        emailVerificationTokenExpiresAt: "",
+      },
+    }
   );
 };
 
@@ -171,7 +188,10 @@ export const getEmailVerificationTemplate = (verificationLink: string) => {
   `;
 };
 
-export const sendVerificationEmail = async (email: string, verificationLink: string) => {
+export const sendVerificationEmail = async (
+  email: string,
+  verificationLink: string
+) => {
   try {
     const transporter = getTransporter();
     const mailOptions = {
@@ -185,8 +205,6 @@ export const sendVerificationEmail = async (email: string, verificationLink: str
     console.log("Verification email sent:", info.messageId);
     return true;
   } catch (error) {
-    console.error("Error sending verification email:", error);
-    return false;
+    throw error;
   }
 };
-
