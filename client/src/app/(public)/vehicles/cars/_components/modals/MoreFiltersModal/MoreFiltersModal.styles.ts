@@ -1,6 +1,6 @@
 "use client";
 import styled from "styled-components";
-import { Dialog, Box, Flex } from "@radix-ui/themes";
+import { Dialog, Box } from "@radix-ui/themes";
 
 export const MoreFiltersModalContent = styled(Dialog.Content)`
   max-width: 600px !important;
@@ -44,8 +44,14 @@ export const MoreFiltersModalFooter = styled(Box)`
   padding: var(--space-4) var(--space-5);
   border-top: 1px solid var(--gray-6);
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   background: var(--accent-2);
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
-`;
 
+  & > button {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--gray-1);
+    }
+  }
+`;

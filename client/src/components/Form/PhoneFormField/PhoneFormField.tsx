@@ -74,6 +74,7 @@ const PhoneFormField: FC<PhoneFormFieldProps> = ({
       {label && (
         <Text
           htmlFor={rest.id}
+          mb="2"
           as="label"
           size="3"
           weight="bold"

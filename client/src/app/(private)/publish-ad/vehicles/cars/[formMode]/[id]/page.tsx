@@ -1,4 +1,4 @@
-import { Box, Heading, Card } from "@radix-ui/themes";
+import { Box, Heading } from "@radix-ui/themes";
 import { FC } from "react";
 import { FormModeSchema } from "@/components/Form/types/form.types";
 import { FormMode } from "@/components/Form/types/form.types";
@@ -30,13 +30,11 @@ const EditPublishAdVehiclesPage: FC<EditPublishAdVehiclesPageProps> = async ({
 
   return (
     <PublishAdVehiclesPageContainer>
-      <Box maxWidth="80%" mx="auto">
+      <Box mx="auto">
         <Heading mb="4" align="center">
           Редактирование объявления
         </Heading>
-        <Card>
-          <CarPublishForm car={car} formMode={FormMode.Edit} />
-        </Card>
+        <CarPublishForm car={car} formMode={FormMode.Edit} />
       </Box>
     </PublishAdVehiclesPageContainer>
   );

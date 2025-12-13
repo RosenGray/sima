@@ -11,7 +11,7 @@ import {
 } from "./TextSearch.styles";
 
 interface TextSearchProps
-  extends TextField.RootProps,
+  extends Omit<TextField.RootProps, "onChange">,
     Omit<
       React.ComponentPropsWithoutRef<"input">,
       | "name"
@@ -23,6 +23,7 @@ interface TextSearchProps
       | keyof TextField.RootProps
     > {
   name: string;
+  onChange: (value: string) => void;
   placeholder?: string;
   type?: "number" | "text";
   label?: string;
@@ -31,6 +32,7 @@ interface TextSearchProps
 
 const TextSearch: FC<TextSearchProps> = ({
   name,
+  onChange,
   placeholder,
   label,
   type = "text",
@@ -48,6 +50,7 @@ const TextSearch: FC<TextSearchProps> = ({
         type={type}
         placeholder={placeholder}
         defaultValue={defaultValue}
+        onChange={(e) => onChange(e.target.value)}
         {...inputProps}
       >
         <SearchInputSlot>

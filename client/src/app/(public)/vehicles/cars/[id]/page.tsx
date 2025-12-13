@@ -11,7 +11,7 @@ const CarPage: FC<CarPageProps> = async ({ params }) => {
   const { id } = await params;
   const car = await carRepository.getByPublicId(id);
   if (!car) {
-    notFound();
+    return notFound();
   }
   return <CarDetailClient car={car} />;
 };

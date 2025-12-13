@@ -1,25 +1,29 @@
 "use client";
 import styled from "styled-components";
-import { Dialog, Box, Button, Flex } from "@radix-ui/themes";
+import { Button, Flex } from "@radix-ui/themes";
 import { breakpoints } from "@/globals";
 
-export const VehicleFiltersContainer = styled.div`
+export const VehicleFiltersContainer = styled.div<{ $isModalOpen: boolean }>`
   transform: translateY(-50%);
   background: var(--accent-1);
   min-height: 130px;
-  border-radius: var(--radius-3);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--gray-6);
   display: flex;
   flex-direction: column;
-  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 24px;
   transition: all 0.2s ease;
   position: relative;
+  border-radius: var(--radius-4);
 
   @media (max-width: ${breakpoints.sm - 1}px) {
-    display: none;
+    position: fixed;
+    inset: 0;
+    /* top: var(--header-height); */
+    transform: translateY(0);
+    opacity: ${({ $isModalOpen }) => ($isModalOpen ? 1 : 0)};
+    z-index: ${({ $isModalOpen }) => ($isModalOpen ? 1000 : -1)};
+    transition: all 0.2s ease;
   }
 
   &:hover {
@@ -29,48 +33,28 @@ export const VehicleFiltersContainer = styled.div`
 `;
 
 export const VehicleFiltersHeader = styled.header`
-  height: 60px;
+  height: 50px;
   flex-shrink: 0;
   border-bottom: 0.5px solid var(--gray-6);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 var(--space-4);
   background: var(--accent-2);
+  display: none;
 
   @media (max-width: ${breakpoints.sm - 1}px) {
     padding: var(--space-4) var(--space-5);
+    display: flex;
   }
 `;
 
 export const VehicleFiltersContent = styled.div`
   flex: 1;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-
-  @media (max-width: ${breakpoints.sm - 1}px) {
-    padding: var(--space-5);
-  }
-
-  /* Hide mobile filters content on desktop */
-  @media (min-width: ${breakpoints.sm}px) {
-    .mobile-filters-content {
-      display: none !important;
-    }
-  }
-`;
-
-export const DesktopFiltersWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-
-  @media (max-width: ${breakpoints.sm - 1}px) {
-    display: none;
-  }
 `;
 
 export const MobileFilterButton = styled(Button)`
@@ -83,69 +67,45 @@ export const MobileFilterButton = styled(Button)`
   }
 `;
 
-export const MobileFiltersModal = styled(Dialog.Content)`
-  max-width: 100vw !important;
-  max-height: 100dvh !important;
-  width: 100vw;
-  height: 100dvh;
-  padding: 0 !important;
-  display: flex;
-  flex-direction: column;
-  background: var(--accent-1);
-  border-radius: 0 !important;
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  animation: slideUp 0.3s ease-out;
+export const FiltersCountBadge = styled(Flex)`
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--accent-9);
+  color: var(--accent-1);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 6px;
+`;
 
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
+export const VehicleFiltersNavBar = styled.nav`
+padding-top: 10px;
+  height: 60px;
+`;
+export const VehiclesFiltersNavBarList = styled.ul`
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  gap: 5px;
+  justify-content: center;
+`;
+
+export const VehicleFiltersNavBarItem = styled.li<{ $isActive: boolean }>`
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: calc(100% / 12);
+  display: flex;
+  
+  & > a {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    & > svg {
+      border:2px solid ${({ $isActive }) => ($isActive ? 'var(--accent-9)' : 'transparent')};
+      border-radius: 50%;
     }
   }
-
-  @media (min-width: ${breakpoints.sm}px) {
-    display: none;
-  }
-`;
-
-export const ModalHeader = styled(Box)`
-  padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--gray-6);
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  background: var(--accent-2);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  gap: var(--space-3);
-`;
-
-export const ModalBody = styled(Box)`
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 0;
-  -webkit-overflow-scrolling: touch;
-  display: flex;
-  flex-direction: column;
-`;
-
-export const ModalFooter = styled(Box)`
-  padding: var(--space-4) var(--space-5);
-  border-top: 1px solid var(--gray-6);
-  display: flex;
-  gap: var(--space-3);
-  background: var(--accent-2);
-  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
-`;
-
-export const ModalFiltersSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
 `;

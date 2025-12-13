@@ -33,7 +33,7 @@ export const IconCardContent = styled(Flex)`
   align-items: center;
   text-align: center;
   height: 100%;
-  justify-content: center;
+
   gap: var(--space-4);
 `;
 

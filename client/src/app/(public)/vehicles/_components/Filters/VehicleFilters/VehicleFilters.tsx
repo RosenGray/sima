@@ -1,182 +1,185 @@
 "use client";
 import { FC, ReactNode } from "react";
-import { Dialog, Flex, Heading, IconButton, Text, Button } from "@radix-ui/themes";
-import { Cross2Icon, MixerHorizontalIcon } from "@radix-ui/react-icons";
+import { Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+import { MixerHorizontalIcon, CrossCircledIcon } from "@radix-ui/react-icons";
+import { useFiltersModal } from "@/components/filters/FiltersContext";
 import {
   VehicleFiltersContainer,
   VehicleFiltersContent,
   VehicleFiltersHeader,
-  MobileFiltersModal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   MobileFilterButton,
-  ModalFiltersSection,
+  FiltersCountBadge,
+  VehicleFiltersNavBar,
+  VehiclesFiltersNavBarList,
+  VehicleFiltersNavBarItem,
 } from "./VehicleFilters.styles";
-import { useFiltersModal } from "@/components/filters/FiltersContext";
+import CarIcon from "@/components/svg/vehicles/Car/Car";
+import TruckIcon from "@/components/svg/vehicles/Truck/Truck";
+import CommercialCarIcon from "@/components/svg/vehicles/Commercial/Commercial";
+import MotorcycleIcon from "@/components/svg/vehicles/Motorcycle/Motorcycle";
+import ScooterIcon from "@/components/svg/vehicles/Scooter/Scooter";
+import AtvIcon from "@/components/svg/vehicles/Atv/Atv";
+import CaravanIcon from "@/components/svg/vehicles/Caravan/Caravan";
+import AccessoriesAndSoundIcon from "@/components/svg/vehicles/AccessoriesAndSound/AccessoriesAndSound";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+
+interface VehicleCategory {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  href: string;
+}
+
+const vehicleCategories: VehicleCategory[] = [
+  {
+    id: "passenger-cars",
+    title: "Легковые автомобили",
+    description: "Продажа легковых автомобилей различных марок и моделей",
+    icon: (
+      <CarIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
+    ),
+    href: "/vehicles/cars",
+  },
+  {
+    id: "off-road",
+    title: "Внедорожники и джипы",
+    description: "Внедорожники, джипы и автомобили повышенной проходимости",
+    icon: (
+      <TruckIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
+    ),
+    href: "/publish-ad/vehicles/off-road",
+  },
+  {
+    id: "commercial",
+    title: "Коммерческий транспорт",
+    description: "Грузовые автомобили, фургоны и коммерческий транспорт",
+    icon: (
+      <CommercialCarIcon
+        width={45}
+        height={45}
+        viewBox={{ width: 120, height: 120 }}
+      />
+    ),
+    href: "/publish-ad/vehicles/commercial",
+  },
+  {
+    id: "motorcycles",
+    title: "Мотоциклы",
+    description: "Мотоциклы различных классов и моделей",
+    icon: (
+      <MotorcycleIcon
+        width={45}
+        height={45}
+        viewBox={{ width: 120, height: 120 }}
+      />
+    ),
+    href: "/publish-ad/vehicles/motorcycles",
+  },
+  {
+    id: "scooters",
+    title: "Скутеры",
+    description: "Скутеры и мопеды для городской езды",
+    icon: (
+      <ScooterIcon
+        width={45}
+        height={45}
+        viewBox={{ width: 120, height: 120 }}
+      />
+    ),
+    href: "/publish-ad/vehicles/scooters",
+  },
+  {
+    id: "atv",
+    title: "Квадроциклы",
+    description: "Квадроциклы и вездеходы для бездорожья",
+    icon: (
+      <AtvIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
+    ),
+    href: "/publish-ad/vehicles/atv",
+  },
+  {
+    id: "trailers",
+    title: "Прицепы, караваны и специальные",
+    description: "Прицепы, караваны и специальные транспортные средства",
+    icon: (
+      <CaravanIcon
+        width={45}
+        height={45}
+        viewBox={{ width: 120, height: 120 }}
+      />
+    ),
+    href: "/publish-ad/vehicles/trailers",
+  },
+  {
+    id: "accessories",
+    title: "Аксессуары и звук",
+    description: "Автомобильные аксессуары и аудиосистемы",
+    icon: (
+      <AccessoriesAndSoundIcon
+        width={45}
+        height={45}
+        viewBox={{ width: 120, height: 120 }}
+      />
+    ),
+    href: "/publish-ad/vehicles/accessories",
+  },
+];
 
 interface VehicleFiltersProps {
   children: ReactNode;
   activeFiltersCount?: number;
-  onMobileSubmit?: () => void;
-  onMobileClear?: () => void;
-  isSearchButtonDisabled?: boolean;
 }
 
 const VehicleFilters: FC<VehicleFiltersProps> = ({
   children,
   activeFiltersCount = 0,
-  onMobileSubmit,
-  onMobileClear,
-  isSearchButtonDisabled = false,
 }) => {
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
-
-  const handleMobileSubmit = () => {
-    if (onMobileSubmit) {
-      onMobileSubmit();
-    }
-    closeModal();
-  };
-
-  const handleMobileClear = () => {
-    if (onMobileClear) {
-      onMobileClear();
-    }
-  };
-
+  const pathname = usePathname();
+  console.log('pathname', pathname);
   return (
     <>
       {/* Desktop View */}
-      <VehicleFiltersContainer>
+      <VehicleFiltersContainer $isModalOpen={isModalOpen}>
         <VehicleFiltersHeader>
+          <IconButton
+            size="4"
+            variant="ghost"
+            color="gray"
+            onClick={closeModal}
+          >
+            <CrossCircledIcon width="28" height="28" />
+          </IconButton>
           <Heading size="4">Фильтры</Heading>
         </VehicleFiltersHeader>
+        <VehicleFiltersNavBar>
+          <VehiclesFiltersNavBarList>
+            {vehicleCategories.map((category) => (
+              <VehicleFiltersNavBarItem $isActive={pathname === category.href} key={category.id}>
+                <Link href={category.href}>
+                  {category.icon}
+                  {/* <Text size="2">{category.title}</Text> */}
+                </Link>
+              </VehicleFiltersNavBarItem>
+            ))}
+          </VehiclesFiltersNavBarList>
+        </VehicleFiltersNavBar>
         <VehicleFiltersContent>{children}</VehicleFiltersContent>
       </VehicleFiltersContainer>
 
       {/* Mobile Filter Button */}
-      <MobileFilterButton
-        size={{
-          initial: "2",
-          xs: "3",
-        }}
-        variant="soft"
-        onClick={openModal}
-      >
+      <MobileFilterButton size="2" variant="soft" onClick={openModal}>
         <Flex align="center" gap="2">
           <MixerHorizontalIcon width="18" height="18" />
           <Text>Фильтры</Text>
           {activeFiltersCount > 0 && (
-            <Flex
-              align="center"
-              justify="center"
-              style={{
-                minWidth: "20px",
-                height: "20px",
-                borderRadius: "var(--radius-full)",
-                background: "var(--accent-9)",
-                color: "var(--accent-1)",
-                fontSize: "11px",
-                fontWeight: "600",
-                padding: "0 6px",
-              }}
-            >
-              {activeFiltersCount}
-            </Flex>
+            <FiltersCountBadge>{activeFiltersCount}</FiltersCountBadge>
           )}
         </Flex>
       </MobileFilterButton>
-
-      {/* Mobile Modal */}
-      <Dialog.Root open={isModalOpen} onOpenChange={closeModal}>
-        <MobileFiltersModal>
-          <ModalHeader>
-            <Flex direction="column" gap="1">
-              <Heading
-                size={{
-                  initial: "4",
-                  xs: "5",
-                }}
-              >
-                Фильтры
-              </Heading>
-              {activeFiltersCount > 0 && (
-                <Text size="2" color="gray">
-                  {activeFiltersCount}{" "}
-                  {activeFiltersCount === 1
-                    ? "фильтр"
-                    : activeFiltersCount < 5
-                    ? "фильтра"
-                    : "фильтров"}{" "}
-                  применено
-                </Text>
-              )}
-            </Flex>
-            <IconButton
-              variant="ghost"
-              color="gray"
-              onClick={closeModal}
-              size={{
-                initial: "2",
-                xs: "3",
-              }}
-            >
-              <Cross2Icon width="20" height="20" />
-            </IconButton>
-          </ModalHeader>
-
-          <ModalBody>
-            <VehicleFiltersHeader>
-              <Heading size="4">Фильтры</Heading>
-            </VehicleFiltersHeader>
-            <VehicleFiltersContent>
-              <ModalFiltersSection>
-                {/* Mobile filters will be rendered here via children */}
-                {children}
-              </ModalFiltersSection>
-            </VehicleFiltersContent>
-          </ModalBody>
-
-          <ModalFooter>
-            <Flex direction="column" gap="3" width="100%">
-              <Flex gap="3" width="100%">
-                {activeFiltersCount > 0 && (
-                  <Button
-                    variant="outline"
-                    color="gray"
-                    onClick={handleMobileClear}
-                    size={{
-                      initial: "2",
-                      xs: "3",
-                    }}
-                    style={{ flex: 1 }}
-                  >
-                    Очистить
-                  </Button>
-                )}
-                <Button
-                  variant="solid"
-                  style={{
-                    flex: activeFiltersCount > 0 ? 1 : undefined,
-                    width: activeFiltersCount === 0 ? "100%" : undefined,
-                  }}
-                  onClick={handleMobileSubmit}
-                  disabled={isSearchButtonDisabled}
-                  size={{
-                    initial: "2",
-                    xs: "3",
-                  }}
-                >
-                  <span style={{ whiteSpace: "nowrap" }}>
-                    Показать результаты
-                  </span>
-                </Button>
-              </Flex>
-            </Flex>
-          </ModalFooter>
-        </MobileFiltersModal>
-      </Dialog.Root>
     </>
   );
 };

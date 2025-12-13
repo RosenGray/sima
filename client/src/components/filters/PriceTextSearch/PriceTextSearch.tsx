@@ -1,6 +1,6 @@
 "use client";
 import { TextField } from "@radix-ui/themes";
-import { FC, useId, useState, useCallback } from "react";
+import { FC, useId, useState, useCallback, useEffect } from "react";
 import {
   SearchContainer,
   SearchLabel,
@@ -10,7 +10,7 @@ import {
 import { formatNumberWithCommas } from "@/utils/common";
 
 interface PriceTextSearchProps
-  extends TextField.RootProps,
+  extends Omit<TextField.RootProps, "onChange">,
     Omit<
       React.ComponentPropsWithoutRef<"input">,
       | "name"
@@ -24,6 +24,7 @@ interface PriceTextSearchProps
       | keyof TextField.RootProps
     > {
   name: string;
+  onChange: (value: string) => void;
   placeholder?: string;
   label?: string;
   type?: never; // Prevent type from being passed
@@ -31,23 +32,32 @@ interface PriceTextSearchProps
 
 const PriceTextSearch: FC<PriceTextSearchProps> = ({
   name,
+  onChange,
   placeholder,
   label,
-  defaultValue,
+  value,
   ...inputProps
 }) => {
   const id = useId();
-  const initialValue = defaultValue
-    ? formatNumberWithCommas(defaultValue.toString())
-    : "";
+  const initialValue = value ? formatNumberWithCommas(value.toString()) : "";
 
-  const [value, setValue] = useState<string | undefined>(initialValue);
+  const [_value, setValue] = useState<string>(initialValue);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    const formatted = formatNumberWithCommas(inputValue);
-    setValue(formatted);
-  }, []);
+  useEffect(() => {
+    if (value === "") {
+      setValue("");
+    }
+  }, [value]);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = e.target.value;
+      const formatted = formatNumberWithCommas(inputValue);
+      setValue(formatted);
+      onChange(formatted);
+    },
+    [onChange]
+  );
 
   return (
     <SearchContainer>
@@ -58,7 +68,7 @@ const PriceTextSearch: FC<PriceTextSearchProps> = ({
         name={name}
         type="text"
         placeholder={placeholder}
-        value={value}
+        value={_value}
         onChange={handleChange}
         pattern="[\d,]*"
         inputMode="numeric"

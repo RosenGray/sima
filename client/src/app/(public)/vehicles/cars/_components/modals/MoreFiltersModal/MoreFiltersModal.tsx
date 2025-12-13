@@ -1,6 +1,13 @@
 "use client";
 import { FC, ReactNode } from "react";
-import { Dialog, Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+import {
+  Button,
+  Dialog,
+  Flex,
+  Heading,
+  IconButton,
+  Text,
+} from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import {
   MoreFiltersModalContent,
@@ -13,12 +20,14 @@ interface MoreFiltersModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
+  onClearMoreFilters: () => void;
 }
 
 const MoreFiltersModal: FC<MoreFiltersModalProps> = ({
   open,
   onOpenChange,
   children,
+  onClearMoreFilters,
 }) => {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -53,10 +62,13 @@ const MoreFiltersModal: FC<MoreFiltersModalProps> = ({
         <MoreFiltersModalBody>{children}</MoreFiltersModalBody>
 
         <MoreFiltersModalFooter>
+          <Button variant="outline" color="gray" onClick={onClearMoreFilters}>
+            Очистить
+          </Button>
           <Dialog.Close>
-            <Text size="2" color="gray" style={{ cursor: "pointer" }}>
-              Закрыть
-            </Text>
+            <Button variant="outline" color="gray">
+              Сохранить
+            </Button>
           </Dialog.Close>
         </MoreFiltersModalFooter>
       </MoreFiltersModalContent>
@@ -65,4 +77,3 @@ const MoreFiltersModal: FC<MoreFiltersModalProps> = ({
 };
 
 export default MoreFiltersModal;
-

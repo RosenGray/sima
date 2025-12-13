@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const CarFilterSchema = z.object({
     ...PriceFromToSchema.shape,
-    color: z.number().optional(),
+    color: z.string().optional(),
 });
 
 export type CarFilter = z.infer<typeof CarFilterSchema>;
