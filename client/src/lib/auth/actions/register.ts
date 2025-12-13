@@ -1,20 +1,23 @@
 "use server";
 import { cookies } from "next/headers";
 import { parseWithZod } from "@conform-to/zod";
-import {  RegisterSchema } from "../types/auth.scema";
+import { RegisterSchema } from "../types/auth.scema";
 import connectDB from "@/lib/mongo/mongodb";
 import { User } from "../models/User";
 import { SIMA_AUTH_SESSION_CONFIG } from "../config";
 import { jwtSignUser } from "../utils/auth.utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { 
-  generateVerificationToken, 
-  storeVerificationToken, 
-  sendVerificationEmail 
+import {
+  generateVerificationToken,
+  storeVerificationToken,
+  sendVerificationEmail,
 } from "../services/EmailVerificationManager";
+import { Logger } from "@logtail/next";
 
 export async function registerUser(initialState: unknown, formData: FormData) {
+  const log = new Logger();
+
   const result = parseWithZod(formData, { schema: RegisterSchema });
   if (result.status !== "success") return result.reply();
 
@@ -28,16 +31,16 @@ export async function registerUser(initialState: unknown, formData: FormData) {
         formErrors: ["Электронная почта уже используется"],
       });
     }
-    const user = new User({ 
-      firstName, 
-      lastName, 
-      email, 
+    const user = new User({
+      firstName,
+      lastName,
+      email,
       password,
       isEmailVerified: false,
       acceptMarketing: result.value.acceptMarketing === "on",
     });
     await user.save();
-    
+
     // Generate and send email verification
     try {
       const verificationToken = generateVerificationToken();
@@ -46,7 +49,7 @@ export async function registerUser(initialState: unknown, formData: FormData) {
       const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
       await sendVerificationEmail(email, verificationLink);
     } catch (emailError) {
-      console.error("Error sending verification email:", emailError);
+      log.error("Error sending verification email:", emailError as Error);
       // Don't block registration if email fails
     }
 
@@ -67,6 +70,6 @@ export async function registerUser(initialState: unknown, formData: FormData) {
       formErrors: ["Неизвестная ошибка"],
     });
   }
-  revalidatePath('/', 'layout');
+  revalidatePath("/", "layout");
   redirect("/auth/success");
 }

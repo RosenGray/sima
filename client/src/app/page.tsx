@@ -4,6 +4,7 @@ import { Button, Flex, Heading, Text, Box } from '@radix-ui/themes';
 import Header from '../components/Header/Header/Header';
 import { serviceCategoryRepository } from '@/lib/service-categories/repositories';
 import HomePageProvider from '@/providers/HomePageProvider/HomePageProvider';
+import Dummy from '@/components/Dummy/Dummy';
 
 
 // const PageContainer = styled(Container)`
@@ -51,7 +52,7 @@ export default async function Home() {
             </Flex>
           </Flex>
           <div style={{ marginTop: 40, width: '100%' }}>
-   
+            <Dummy />
           </div>
         </Box>
       </Box>
