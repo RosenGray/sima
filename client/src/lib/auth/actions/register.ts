@@ -41,18 +41,7 @@ export async function registerUser(initialState: unknown, formData: FormData) {
     });
     await user.save();
 
-    // Generate and send email verification
-    try {
-      const verificationToken = generateVerificationToken();
-      await storeVerificationToken(email, verificationToken);
-      const { NEXT_PUBLIC_CLIENT_URL } = process.env;
-      const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
-      await sendVerificationEmail(email, verificationLink);
-    } catch (emailError) {
-      log.error("Error sending verification email:", emailError as Error);
-      // Don't block registration if email fails
-    }
-
+    // Set cookie and redirect immediately (don't wait for email)
     const cookieStore = await cookies();
     const userJwt = jwtSignUser(user);
     cookieStore.set(
@@ -60,6 +49,21 @@ export async function registerUser(initialState: unknown, formData: FormData) {
       userJwt,
       SIMA_AUTH_SESSION_CONFIG
     );
+
+    // Generate and send email verification asynchronously (non-blocking)
+    // This prevents timeout issues in production
+    (async () => {
+      try {
+        const verificationToken = generateVerificationToken();
+        await storeVerificationToken(email, verificationToken);
+        const { NEXT_PUBLIC_CLIENT_URL } = process.env;
+        const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
+        await sendVerificationEmail(email, verificationLink);
+      } catch (emailError) {
+        log.error("Error sending verification email:", emailError as Error);
+        // Don't block registration if email fails
+      }
+    })();
   } catch (error) {
     if (error instanceof Error) {
       return result.reply({

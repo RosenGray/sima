@@ -12,7 +12,7 @@ export const TOKEN_LENGTH = 32;
 const GMAIL_APP_USER = "sima.customer@gmail.com";
 const GMAIL_APP_PASSWORD = "npdm wzub ihci vssk";
 
-// Create transporter
+// Create transporter with timeout settings
 const getTransporter = () => {
   return nodemailer.createTransport({
     service: "Gmail",
@@ -20,6 +20,14 @@ const getTransporter = () => {
       user: GMAIL_APP_USER,
       pass: GMAIL_APP_PASSWORD,
     },
+    // Timeout settings to prevent connection timeouts
+    connectionTimeout: 10000, // 10 seconds to establish connection
+    socketTimeout: 10000, // 10 seconds for socket operations
+    greetingTimeout: 10000, // 10 seconds for SMTP greeting
+    // Retry configuration
+    pool: true, // Use connection pooling
+    maxConnections: 1, // Limit connections
+    maxMessages: 3, // Max messages per connection
   });
 };
 
@@ -190,21 +198,44 @@ export const getEmailVerificationTemplate = (verificationLink: string) => {
 
 export const sendVerificationEmail = async (
   email: string,
-  verificationLink: string
-) => {
-  try {
-    const transporter = getTransporter();
-    const mailOptions = {
-      from: GMAIL_APP_USER,
-      to: email,
-      subject: "Подтвердите вашу электронную почту - Sima",
-      html: getEmailVerificationTemplate(verificationLink),
-    };
+  verificationLink: string,
+  retries: number = 2
+): Promise<boolean> => {
+  const transporter = getTransporter();
+  const mailOptions = {
+    from: GMAIL_APP_USER,
+    to: email,
+    subject: "Подтвердите вашу электронную почту - Sima",
+    html: getEmailVerificationTemplate(verificationLink),
+  };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Verification email sent:", info.messageId);
-    return true;
-  } catch (error) {
-    throw error;
+  // Retry logic with exponential backoff
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      // Add timeout wrapper to prevent hanging
+      const sendPromise = transporter.sendMail(mailOptions);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("Email send timeout after 15 seconds")), 15000);
+      });
+
+      const info = await Promise.race([sendPromise, timeoutPromise]);
+      console.log("Verification email sent:", info.messageId);
+      return true;
+    } catch (error) {
+      const isLastAttempt = attempt === retries;
+      
+      if (isLastAttempt) {
+        // Log error but don't throw - registration should still succeed
+        console.error(`Failed to send verification email after ${retries + 1} attempts:`, error);
+        throw error;
+      }
+
+      // Wait before retry (exponential backoff: 1s, 2s, 4s...)
+      const waitTime = Math.pow(2, attempt) * 1000;
+      console.log(`Email send attempt ${attempt + 1} failed, retrying in ${waitTime}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+    }
   }
+
+  return false;
 };
