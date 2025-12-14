@@ -60,7 +60,7 @@ export async function registerUser(initialState: unknown, formData: FormData) {
         const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
         await sendVerificationEmail(email, verificationLink);
       } catch (emailError) {
-        log.error("Error sending verification email:", emailError as Error);
+        // log.error("Error sending verification email:", emailError as Error);
         // Don't block registration if email fails
       }
     })();
