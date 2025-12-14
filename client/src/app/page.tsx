@@ -52,7 +52,7 @@ export default async function Home() {
             </Flex>
           </Flex>
           <div style={{ marginTop: 40, width: '100%' }}>
-            <Dummy /> 2
+            <Dummy /> 3
           </div>
         </Box>
       </Box>
