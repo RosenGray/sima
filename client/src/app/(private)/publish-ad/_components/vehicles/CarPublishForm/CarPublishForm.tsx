@@ -268,7 +268,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
 
   return (
     <>
-      <form key={formKey.toString()} action={formAction} {...getFormProps(form)}>
+      <form key={formKey.toString()} action={formAction} {...getFormProps(form)} autoComplete="off">
         <FormShell
           px={{ initial: "4", sm: "6", md: "8" }}
           py={{ initial: "5", md: "7" }}
