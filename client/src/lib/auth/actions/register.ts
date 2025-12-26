@@ -14,7 +14,7 @@ import {
   sendVerificationEmail,
 } from "../services/EmailVerificationManager";
 import { Logger } from "@logtail/next";
-
+//
 export async function registerUser(initialState: unknown, formData: FormData) {
   const log = new Logger();
 
