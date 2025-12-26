@@ -9,16 +9,20 @@ export const TOKEN_EXPIRATION_MINUTES = 15;
 export const TOKEN_LENGTH = 32;
 
 // Gmail credentials (same as PasswordManager)
-const GMAIL_APP_USER = "sima.customer@gmail.com";
-const GMAIL_APP_PASSWORD = "npdm wzub ihci vssk";
-
+// const GMAIL_APP_USER = "sima.customer@gmail.com";
+// const GMAIL_APP_PASSWORD = "npdm wzub ihci vssk";
+const PRIVATE_EMAIL_USER = "support@sima-board.com"; //todo add from env
+const PRIVATE_EMAIL_PASSWORD = "xVaduiUwO5D!77Nf"; //todo add from env
 // Create transporter with timeout settings
 const getTransporter = () => {
   return nodemailer.createTransport({
-    service: "Gmail",
+    // service: "Gmail",
+    host:"mail.privateemail.com",
+    port: process.env.NODE_ENV === "production" ? 465 : 587,
+    secure: process.env.NODE_ENV === "production",
     auth: {
-      user: GMAIL_APP_USER,
-      pass: GMAIL_APP_PASSWORD,
+      user: PRIVATE_EMAIL_USER,
+      pass: PRIVATE_EMAIL_PASSWORD,
     },
     // Timeout settings to prevent connection timeouts
     connectionTimeout: 10000, // 10 seconds to establish connection
@@ -188,7 +192,7 @@ export const getEmailVerificationTemplate = (verificationLink: string) => {
           <p>Это автоматическое сообщение, пожалуйста, не отвечайте на него.</p>
           <p>Если у вас возникли проблемы с нажатием кнопки подтверждения, скопируйте и вставьте URL-адрес ниже в ваш веб-браузер:</p>
           <p style="word-break: break-all;">${verificationLink}</p>
-          <p>Если у вас возникли проблемы, пожалуйста свяжитесь с нами по адресу ${GMAIL_APP_USER}</p>
+          <p>Если у вас возникли проблемы, пожалуйста свяжитесь с нами по адресу ${PRIVATE_EMAIL_USER}</p>
         </div>
       </div>
     </body>
@@ -203,7 +207,7 @@ export const sendVerificationEmail = async (
 ): Promise<boolean> => {
   const transporter = getTransporter();
   const mailOptions = {
-    from: GMAIL_APP_USER,
+    from: PRIVATE_EMAIL_USER,
     to: email,
     subject: "Подтвердите вашу электронную почту - Sima",
     html: getEmailVerificationTemplate(verificationLink),
