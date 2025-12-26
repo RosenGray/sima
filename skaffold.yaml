@@ -8,34 +8,10 @@ build:
   local:
     push: false
   artifacts:
-    - image: rosengray/sima-auth
-      context: auth
-      docker:
-        dockerfile: Dockerfile.dev
-      sync:
-        manual:
-          - src: 'src/**/*.ts'
-            dest: .
     - image: rosengray/sima-client
       context: client 
       docker:
         dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: 'src/**/*.ts'
-            dest: .
-    - image: rosengray/sima-realestate
-      context: realestate
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: 'src/**/*.ts'
-            dest: .
-    - image: rosengray/sima-professionals
-      context: professionals
-      docker:
-        dockerfile: Dockerfile.dev
       sync:
         manual:
           - src: 'src/**/*.ts'
