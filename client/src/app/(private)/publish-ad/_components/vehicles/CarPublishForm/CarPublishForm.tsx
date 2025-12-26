@@ -590,6 +590,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                     errors={contactName.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <PhoneFormField
