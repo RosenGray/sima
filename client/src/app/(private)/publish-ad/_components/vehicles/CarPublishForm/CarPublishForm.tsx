@@ -268,7 +268,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
 
   return (
     <>
-      <form key={formKey.toString()} action={formAction} {...getFormProps(form)} autoComplete="off">
+      <form key={formKey.toString()} action={formAction} {...getFormProps(form)}>
         <FormShell
           px={{ initial: "4", sm: "6", md: "8" }}
           py={{ initial: "5", md: "7" }}
@@ -590,6 +590,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                     errors={contactName.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <PhoneFormField

@@ -2,6 +2,7 @@ import { FC, Ref, ReactNode } from "react";
 import { TextField, Text, Box } from "@radix-ui/themes";
 import { FieldMetadata, getInputProps } from "@conform-to/react";
 import EmailDisclaimer from "@/components/EmailDisclaimer/EmailDisclaimer";
+import { Browser, useBrowser } from "@/hooks/useBrowser";
 
 interface BasicFormFieldrops extends TextField.RootProps {
   field: FieldMetadata<
@@ -17,6 +18,7 @@ interface BasicFormFieldrops extends TextField.RootProps {
   _key?: string;
   isMandatory?: boolean;
   containerStyle?: React.CSSProperties;
+  disabledAutocomplete?: boolean;
 }
 
 const BasicFormField: FC<BasicFormFieldrops> = ({
@@ -36,9 +38,11 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
   _key,
   isMandatory,
   containerStyle,
+  disabledAutocomplete,
   ...rest
 }) => {
   const { mb, mt, mr, ml } = rest;
+  const browser = useBrowser();
 
   return (
     <Box mb={mb} mt={mt} mr={mr} ml={ml} style={containerStyle}>
@@ -78,7 +82,8 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
         className={className}
         data-isvalid={dataIsValid}
         ref={ref}
-        autoComplete="off"
+        autoComplete={(disabledAutocomplete && browser === Browser.Chrome) ? "true" : "off"}
+
         {...rest}
       >
         <TextField.Slot>{children}</TextField.Slot>
