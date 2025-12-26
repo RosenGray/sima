@@ -30,7 +30,7 @@ const getTransporter = () => {
   return nodemailer.createTransport({
     // service: "Gmail",
     host: "mail.privateemail.com",
-    port: 587, // Use STARTTLS port (works better in production environments)
+    port: 2525, // Use STARTTLS port (works better in production environments)
     secure: false, // false for STARTTLS, true for SSL/TLS
     requireTLS: true, // Require TLS encryption
     auth: {
