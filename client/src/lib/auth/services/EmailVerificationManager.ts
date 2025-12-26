@@ -4,6 +4,14 @@ import connectDB from "@/lib/mongo/mongodb";
 import nodemailer from "nodemailer";
 import { VerificationTokenValidationReason } from "../types/verification.types";
 
+// Type for SMTP error with additional properties
+interface SMTPError extends Error {
+  code?: string;
+  command?: string;
+  response?: string;
+  responseCode?: number;
+}
+
 // Configuration
 export const TOKEN_EXPIRATION_MINUTES = 15;
 export const TOKEN_LENGTH = 32;
@@ -15,23 +23,35 @@ const PRIVATE_EMAIL_USER = "support@sima-board.com"; //todo add from env
 const PRIVATE_EMAIL_PASSWORD = "xVaduiUwO5D!77Nf"; //todo add from env
 // Create transporter with timeout settings
 const getTransporter = () => {
+  // Use port 587 with STARTTLS for both dev and production
+  // Port 465 (SSL/TLS) is often blocked in containerized/Kubernetes environments
+  const isProduction = process.env.NODE_ENV === "production";
+  
   return nodemailer.createTransport({
     // service: "Gmail",
-    host:"mail.privateemail.com",
-    port: process.env.NODE_ENV === "production" ? 465 : 587,
-    secure: process.env.NODE_ENV === "production",
+    host: "mail.privateemail.com",
+    port: 587, // Use STARTTLS port (works better in production environments)
+    secure: false, // false for STARTTLS, true for SSL/TLS
+    requireTLS: true, // Require TLS encryption
     auth: {
       user: PRIVATE_EMAIL_USER,
       pass: PRIVATE_EMAIL_PASSWORD,
     },
-    // Timeout settings to prevent connection timeouts
-    connectionTimeout: 10000, // 10 seconds to establish connection
-    socketTimeout: 10000, // 10 seconds for socket operations
-    greetingTimeout: 10000, // 10 seconds for SMTP greeting
+    // Timeout settings - increased for production network latency
+    connectionTimeout: isProduction ? 30000 : 10000, // 30s production, 10s dev
+    socketTimeout: isProduction ? 30000 : 10000, // 30s production, 10s dev
+    greetingTimeout: isProduction ? 30000 : 10000, // 30s production, 10s dev
     // Retry configuration
     pool: true, // Use connection pooling
     maxConnections: 1, // Limit connections
     maxMessages: 3, // Max messages per connection
+    // Additional TLS options for better compatibility
+    tls: {
+      // Don't reject unauthorized certificates in production (useful for some mail servers)
+      rejectUnauthorized: !isProduction,
+      // Minimum TLS version
+      minVersion: "TLSv1.2",
+    },
   });
 };
 
@@ -214,29 +234,50 @@ export const sendVerificationEmail = async (
   };
 
   // Retry logic with exponential backoff
+  const isProduction = process.env.NODE_ENV === "production";
+  const sendTimeout = isProduction ? 45000 : 20000; // 45s production, 20s dev
+  
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       // Add timeout wrapper to prevent hanging
       const sendPromise = transporter.sendMail(mailOptions);
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error("Email send timeout after 15 seconds")), 15000);
+        setTimeout(() => reject(new Error(`Email send timeout after ${sendTimeout / 1000} seconds`)), sendTimeout);
       });
 
       const info = await Promise.race([sendPromise, timeoutPromise]);
       console.log("Verification email sent:", info.messageId);
+      // Close transporter connection pool after successful send
+      transporter.close();
       return true;
     } catch (error) {
       const isLastAttempt = attempt === retries;
       
       if (isLastAttempt) {
-        // Log error but don't throw - registration should still succeed
-        console.error(`Failed to send verification email after ${retries + 1} attempts:`, error);
+        // Log detailed error information for debugging
+        const smtpError = error as SMTPError;
+        console.error(`Failed to send verification email after ${retries + 1} attempts:`, {
+          error: error instanceof Error ? error.message : String(error),
+          code: smtpError?.code,
+          command: smtpError?.command,
+          response: smtpError?.response,
+          responseCode: smtpError?.responseCode,
+          env: process.env.NODE_ENV,
+          host: "mail.privateemail.com",
+          port: 587,
+        });
+        // Close transporter connection pool on failure
+        transporter.close();
         throw error;
       }
 
       // Wait before retry (exponential backoff: 1s, 2s, 4s...)
       const waitTime = Math.pow(2, attempt) * 1000;
-      console.log(`Email send attempt ${attempt + 1} failed, retrying in ${waitTime}ms...`);
+      const smtpError = error as SMTPError;
+      console.log(`Email send attempt ${attempt + 1} failed, retrying in ${waitTime}ms...`, {
+        error: error instanceof Error ? error.message : String(error),
+        code: smtpError?.code,
+      });
       await new Promise((resolve) => setTimeout(resolve, waitTime));
     }
   }
