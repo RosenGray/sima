@@ -19,44 +19,39 @@ import Dummy from "@/components/Dummy/Dummy";
 //   max-width: 600px;
 // `;
 
-
 import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 
-
-
 const testSendEmail = async () => {
-  'use server';
+  "use server";
   const mailerSend = new MailerSend({
-    apiKey: "mlsn.a4233a0cb99c2a9e1af880385e6e36023aa8423ab1733f5f57a19af57784383e"
-});
+    apiKey:
+      "mlsn.a4233a0cb99c2a9e1af880385e6e36023aa8423ab1733f5f57a19af57784383e",
+  });
 
-const sentFrom = new Sender("noreply@test-y7zpl983w0345vx6.mlsender.net", "Sima Board");
+  const sentFrom = new Sender(
+    "noreply@test-y7zpl983w0345vx6.mlsender.net",
+    "Sima Board"
+  );
 
-const recipients = [
-    new Recipient("vladonchik@gmail.com", "Vlad Onchik")
-];
+  const recipients = [new Recipient("vladonchik@gmail.com", "Vlad Onchik")];
 
-const emailParams = new EmailParams()
+  const emailParams = new EmailParams()
     .setFrom(sentFrom)
     .setTo(recipients)
     .setReplyTo(sentFrom)
     .setSubject("This is a Subject")
     .setHtml("<h1 style='color: red;'>Hello World</h1>")
-    .setText("Greetings from the team, you got this message through MailerSend.");
+    .setText(
+      "Greetings from the team, you got this message through MailerSend."
+    );
 
-    try {
-      const result = await mailerSend.email.send(emailParams);
-      console.log(result);
-    } catch (error) {
-      console.error('Error sending email', error);
-    }
-    return {
-      success: true,
-      message: "Email sent successfully",
-    };
+  try {
+    const result = await mailerSend.email.send(emailParams);
+    console.log(result);
+  } catch (error) {
+    console.error("Error sending email", error);
+  }
 };
-
-
 
 export default async function Home() {
   const serviceCategories = await serviceCategoryRepository.getAll();
