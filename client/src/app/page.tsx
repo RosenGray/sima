@@ -47,7 +47,7 @@ const testSendEmail = async () => {
 
   try {
     const result = await mailerSend.email.send(emailParams);
-    console.log(result);
+    console.log('Email sent successfully', result);
   } catch (error) {
     console.error("Error sending email", error);
   }
@@ -56,7 +56,6 @@ const testSendEmail = async () => {
 export default async function Home() {
   const serviceCategories = await serviceCategoryRepository.getAll();
 
-  console.log(1);
   return (
     <HomePageProvider data={{ serviceCategories }}>
       <Header />
