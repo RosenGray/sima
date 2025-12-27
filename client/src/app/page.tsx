@@ -24,12 +24,11 @@ import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 const testSendEmail = async () => {
   "use server";
   const mailerSend = new MailerSend({
-    apiKey:
-      "mlsn.a4233a0cb99c2a9e1af880385e6e36023aa8423ab1733f5f57a19af57784383e",
+    apiKey: process.env.MAILER_SEND_API_KEY || "",
   });
 
   const sentFrom = new Sender(
-    "noreply@test-y7zpl983w0345vx6.mlsender.net",
+    "noreply@sima-board.com",
     "Sima Board"
   );
 
@@ -90,7 +89,7 @@ export default async function Home() {
             </Flex>
           </Flex>
           <div style={{ marginTop: 40, width: "100%" }}>
-            <Dummy /> 6
+            <Dummy /> 7
             <form action={testSendEmail}>
               <button type="submit">Test Send Email</button>
             </form>

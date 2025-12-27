@@ -48,6 +48,11 @@ spec:
                 secretKeyRef:
                   name: db-password
                   key: DB_PASSWORD
+            - name: MAILER_SEND_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mailer-send-api-key
+                  key: MAILER_SEND_API_KEY
 
 ---
 apiVersion: v1
