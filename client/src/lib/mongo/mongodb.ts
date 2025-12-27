@@ -1,12 +1,20 @@
-'use server';
-
 import mongoose from "mongoose";
 import { DatabaseConnectionError, ServerErrorType } from "@sima-board/common";
 
-let isConnected = false;
+// Cache the connection promise to prevent multiple simultaneous connections
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 const connectDB = async () => {
-  // Validate environment variables at runtime
+  // If we have a cached connection, return it
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  // Validate environment variables
   const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD, MONGO_URI: ENV_MONGO_URI } = process.env;
 
   if (!JWT_KEY) {
@@ -15,7 +23,6 @@ const connectDB = async () => {
 
   const isProd = NODE_ENV === "production";
   
-  // Priority: ENV_MONGO_URI > isProd ? cloud : local
   const MONGO_URI = ENV_MONGO_URI || (isProd
     ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/sima`
     : "mongodb://localhost:30016/sima");
@@ -24,37 +31,43 @@ const connectDB = async () => {
     throw new Error("MONGO_URI must be defined");
   }
 
-  if (isConnected) {
-    console.log("Already connected to MongoDB");
-    return;
-  }
+  // If connection is in progress, wait for it
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false, // Disable buffering to fail fast
+      maxPoolSize: 10, // Maximum number of connections
+      minPoolSize: 2, // Minimum number of connections
+      serverSelectionTimeoutMS: 5000, // Timeout for server selection
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+      family: 4, // Use IPv4, skip trying IPv6
+      retryWrites: true,
+      retryReads: true,
+    };
 
-  if (mongoose.connection.readyState === 1) {
-    isConnected = true;
-    console.log("MongoDB connection already established");
-    return;
+    console.log("Connecting to MongoDB...");
+    
+    try {
+      cached.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => {
+        console.log("✓ Connected to MongoDB");
+        return mongoose;
+      });
+    } catch (error) {
+      cached.promise = null; // Reset on failure
+      console.error("MongoDB connection error:", error);
+      throw new DatabaseConnectionError(
+        "Error connecting to db",
+        ServerErrorType.DatabaseConnection
+      );
+    }
   }
-
-  if (mongoose.connection.readyState === 2) {
-    console.log("MongoDB connection is connecting...");
-    return;
-  }
-
-  console.log("Starting  service...");
 
   try {
-    await mongoose.connect(MONGO_URI);
-    isConnected = true;
-    console.log("Connected to MongoDB");
-    // Optional: Test connection
-    // const testCollection = mongoose.connection.db?.collection("test");
-    // await testCollection?.insertOne({
-    //   message: "Database connected!",
-    //   timestamp: new Date(),
-    // });
+    cached.conn = await cached.promise;
+    return cached.conn;
   } catch (error) {
-    console.error("MongoDB connection error:", error);
-    isConnected = false;
+    cached.promise = null; // Reset promise on error
+    cached.conn = null;
+    console.error("Failed to establish MongoDB connection:", error);
     throw new DatabaseConnectionError(
       "Error connecting to db",
       ServerErrorType.DatabaseConnection
@@ -62,19 +75,29 @@ const connectDB = async () => {
   }
 };
 
+// Monitor connection events
+mongoose.connection.on("connected", () => {
+  console.log("MongoDB connected event");
+});
+
 mongoose.connection.on("disconnected", () => {
-  console.log("MongoDB disconnected");
-  isConnected = false;
+  console.log("MongoDB disconnected - will reconnect automatically");
+  cached.conn = null;
+  cached.promise = null;
 });
 
 mongoose.connection.on("error", (error) => {
   console.error("MongoDB connection error:", error);
-  isConnected = false;
+  cached.conn = null;
+  cached.promise = null;
 });
 
-process.on("SIGINT", async () => {
-  await mongoose.connection.close();
-  process.exit(0);
-});
+// Graceful shutdown
+if (process.env.NODE_ENV !== 'production') {
+  process.on("SIGINT", async () => {
+    await mongoose.connection.close();
+    process.exit(0);
+  });
+}
 
 export default connectDB;
