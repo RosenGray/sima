@@ -1,11 +1,8 @@
-
-
-import { Button, Flex, Heading, Text, Box } from '@radix-ui/themes';
-import Header from '../components/Header/Header/Header';
-import { serviceCategoryRepository } from '@/lib/service-categories/repositories';
-import HomePageProvider from '@/providers/HomePageProvider/HomePageProvider';
-import Dummy from '@/components/Dummy/Dummy';
-
+import { Button, Flex, Heading, Text, Box } from "@radix-ui/themes";
+import Header from "../components/Header/Header/Header";
+import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
+import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
+import Dummy from "@/components/Dummy/Dummy";
 
 // const PageContainer = styled(Container)`
 //   min-height: 100vh;
@@ -22,37 +19,87 @@ import Dummy from '@/components/Dummy/Dummy';
 //   max-width: 600px;
 // `;
 
-export default async function Home() {
-  const serviceCategories =
-  await serviceCategoryRepository.getAll();
 
-  console.log(process.env);
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
+
+
+
+const testSendEmail = async () => {
+  'use server';
+  const mailerSend = new MailerSend({
+    apiKey: "mlsn.a4233a0cb99c2a9e1af880385e6e36023aa8423ab1733f5f57a19af57784383e"
+});
+
+const sentFrom = new Sender("noreply@test-y7zpl983w0345vx6.mlsender.net", "Sima Board");
+
+const recipients = [
+    new Recipient("vladonchik@gmail.com", "Vlad Onchik")
+];
+
+const emailParams = new EmailParams()
+    .setFrom(sentFrom)
+    .setTo(recipients)
+    .setReplyTo(sentFrom)
+    .setSubject("This is a Subject")
+    .setHtml("<h1 style='color: red;'>Hello World</h1>")
+    .setText("Greetings from the team, you got this message through MailerSend.");
+
+    try {
+      const result = await mailerSend.email.send(emailParams);
+      console.log(result);
+    } catch (error) {
+      console.error('Error sending email', error);
+    }
+    return {
+      success: true,
+      message: "Email sent successfully",
+    };
+};
+
+
+
+export default async function Home() {
+  const serviceCategories = await serviceCategoryRepository.getAll();
+
+  console.log(1);
   return (
     <HomePageProvider data={{ serviceCategories }}>
       <Header />
-      <Box  pt="6rem">
-        <Box >
+      <Box pt="6rem">
+        <Box>
           <Flex direction="column" gap="6" align="center">
             <Heading size="9" weight="bold">
               Hello World4
             </Heading>
-            
+
             <Text size="6" color="gray">
               Welcome to our Marketplace
             </Text>
-            
-            <Text size="4" color="gray" style={{ maxWidth: '500px', lineHeight: '1.6' }}>
-              Discover amazing products, connect with sellers, and build your business 
-              in our vibrant marketplace community. Your journey starts here.
+
+            <Text
+              size="4"
+              color="gray"
+              style={{ maxWidth: "500px", lineHeight: "1.6" }}
+            >
+              Discover amazing products, connect with sellers, and build your
+              business in our vibrant marketplace community. Your journey starts
+              here.
             </Text>
-            
+
             <Flex gap="4" mt="4">
-              <Button size="3" variant="solid">Get Started</Button>
-              <Button size="3" variant="outline">Learn More</Button>
+              <Button size="3" variant="solid">
+                Get Started
+              </Button>
+              <Button size="3" variant="outline">
+                Learn More
+              </Button>
             </Flex>
           </Flex>
-          <div style={{ marginTop: 40, width: '100%' }}>
-            <Dummy /> 5
+          <div style={{ marginTop: 40, width: "100%" }}>
+            <Dummy /> 6
+            <form action={testSendEmail}>
+              <button type="submit">Test Send Email</button>
+            </form>
           </div>
         </Box>
       </Box>
