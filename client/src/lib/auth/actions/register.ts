@@ -8,12 +8,9 @@ import { SIMA_AUTH_SESSION_CONFIG } from "../config";
 import { jwtSignUser } from "../utils/auth.utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import {
-  generateVerificationToken,
-  storeVerificationToken,
-  sendVerificationEmail,
-} from "../services/EmailVerificationManager";
 import { Logger } from "@logtail/next";
+import { generateToken, storeVerificationToken } from "../services/TokenManager/TokenManager";
+import { EmailService } from "@/lib/common/services/EmailService";
 //
 export async function registerUser(initialState: unknown, formData: FormData) {
   const log = new Logger();
@@ -54,18 +51,20 @@ export async function registerUser(initialState: unknown, formData: FormData) {
     // This prevents timeout issues in production
     (async () => {
       try {
-        const verificationToken = generateVerificationToken();
+        const verificationToken = generateToken();
         await storeVerificationToken(email, verificationToken);
         const { NEXT_PUBLIC_CLIENT_URL } = process.env;
         const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
-        await sendVerificationEmail(email, verificationLink);
+        await EmailService.sendVerificationEmail(email, verificationLink);
       } catch (emailError) {
-        // log.error("Error sending verification email:", emailError as Error);
+        log.error("Error sending verification email:", emailError as Error);
         // Don't block registration if email fails
       }
     })();
+    log.info("registerUser: verification email sent successfully new user registered", { email,firstName,lastName });
   } catch (error) {
     if (error instanceof Error) {
+      log.error("Error registering user:", { error: error.message });
       return result.reply({
         formErrors: ["Неизвестная ошибка"],
       });

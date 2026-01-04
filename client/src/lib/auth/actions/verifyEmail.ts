@@ -1,15 +1,16 @@
 "use server";
 import connectDB from "@/lib/mongo/mongodb";
 import { User } from "../models/User";
-import {
-  validateVerificationToken,
-  deleteVerificationToken,
-} from "../services/EmailVerificationManager";
+
 import {
   VerificationTokenValidationReason,
   VerifyEmailResult,
 } from "../types/verification.types";
 import { revalidatePath } from "next/cache";
+import {
+  deleteVerificationToken,
+  validateVerificationToken,
+} from "../services/TokenManager/TokenManager";
 
 export async function verifyEmail(token: string): Promise<VerifyEmailResult> {
   try {

@@ -33,6 +33,8 @@ const testSendEmail = async () => {
   );
 
   const recipients = [new Recipient("vladonchik@gmail.com", "Vlad Onchik")];
+  //const recipients = [new Recipient("test@sima-board.com", "Test User")];
+
 
   const emailParams = new EmailParams()
     .setFrom(sentFrom)

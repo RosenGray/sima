@@ -1,10 +1,7 @@
 import { User } from "../models/User";
 import connectDB from "@/lib/mongo/mongodb";
 import nodemailer from "nodemailer";
-import {
-  generateVerificationToken,
-  storeVerificationToken,
-} from "./EmailVerificationManager";
+import { generateToken, storeVerificationToken } from "./TokenManager/TokenManager";
 
 // Configuration - PRODUCTION MODE
 export const UNVERIFIED_ACCOUNT_DELETION_DAYS = 21;
@@ -299,7 +296,7 @@ export const processAccountCleanup = async (): Promise<CleanupResult> => {
             const daysLeft = UNVERIFIED_ACCOUNT_DELETION_DAYS - daysSinceCreation;
             
             // Generate fresh verification token
-            const verificationToken = generateVerificationToken();
+            const verificationToken = generateToken();
             await storeVerificationToken(user.email, verificationToken);
             
             const { NEXT_PUBLIC_CLIENT_URL } = process.env;
