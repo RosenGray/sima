@@ -8,6 +8,7 @@ import {
   validateToken,
   deleteToken,
 } from "../services/TokenManager/TokenManager";
+import { EmailService } from "@/lib/common/services/EmailService";
 import { redirect } from "next/navigation";
 
 export async function resetPasswordConfirm(
@@ -54,6 +55,17 @@ export async function resetPasswordConfirm(
 
     // Delete the token to prevent reuse
     await deleteToken(token);
+
+    // Send success email notification
+    if (tokenValidation.email) {
+      try {
+        await EmailService.sendPasswordResetSuccessEmail(tokenValidation.email);
+      } catch (emailError) {
+        // Log email error but don't fail the password reset
+        console.error("Failed to send password reset success email:", emailError);
+        // Continue with redirect even if email fails
+      }
+    }
   } catch (error) {
     if (error instanceof Error) {
       return result.reply({
