@@ -1,25 +1,28 @@
 "use server";
 import connectDB from "@/lib/mongo/mongodb";
 import { User } from "../models/User";
-import {
-  generateVerificationToken,
-  storeVerificationToken,
-  sendVerificationEmail,
-} from "../services/EmailVerificationManager";
 import { ResendVerificationResult } from "../types/verification.types";
+import {
+  generateToken,
+  storeVerificationToken,
+} from "../services/TokenManager/TokenManager";
+import { EmailService } from "@/lib/common/services/EmailService";
 
-export async function resendVerificationEmail(email: string): Promise<ResendVerificationResult> {
+export async function resendVerificationEmail(
+  email: string
+): Promise<ResendVerificationResult> {
   try {
     await connectDB();
 
     // Find user by email
     const user = await User.findOne({ email });
-    
+
     if (!user) {
       // Don't reveal if email exists or not for security
       return {
         success: true,
-        message: "Если этот адрес зарегистрирован, письмо с подтверждением было отправлено",
+        message:
+          "Если этот адрес зарегистрирован, письмо с подтверждением было отправлено",
       };
     }
 
@@ -32,14 +35,14 @@ export async function resendVerificationEmail(email: string): Promise<ResendVeri
     }
 
     // Generate new verification token
-    const verificationToken = generateVerificationToken();
+    const verificationToken = generateToken();
     await storeVerificationToken(email, verificationToken);
-    
+
     const { NEXT_PUBLIC_CLIENT_URL } = process.env;
     const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
-    
+
     // Send verification email
-    await sendVerificationEmail(email, verificationLink);
+    await EmailService.sendVerificationEmail(email, verificationLink);
 
     return {
       success: true,
@@ -53,4 +56,3 @@ export async function resendVerificationEmail(email: string): Promise<ResendVeri
     };
   }
 }
-
