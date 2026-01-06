@@ -56,12 +56,12 @@ export async function registerUser(initialState: unknown, formData: FormData) {
         const { NEXT_PUBLIC_CLIENT_URL } = process.env;
         const verificationLink = `${NEXT_PUBLIC_CLIENT_URL}/auth/verify-email/${verificationToken}`;
         await EmailService.sendVerificationEmail(email, verificationLink);
+        log.info("registerUser: verification email sent successfully new user registered", { email,firstName,lastName });
       } catch (emailError) {
         log.error("Error sending verification email:", emailError as Error);
         // Don't block registration if email fails
       }
     })();
-    log.info("registerUser: verification email sent successfully new user registered", { email,firstName,lastName });
   } catch (error) {
     if (error instanceof Error) {
       log.error("Error registering user:", { error: error.message });
@@ -69,6 +69,7 @@ export async function registerUser(initialState: unknown, formData: FormData) {
         formErrors: ["Неизвестная ошибка"],
       });
     }
+    log.error("Error registering user:", { error});
     return result.reply({
       formErrors: ["Неизвестная ошибка"],
     });
