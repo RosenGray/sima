@@ -19,41 +19,6 @@ import Dummy from "@/components/Dummy/Dummy";
 //   max-width: 600px;
 // `;
 
-import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
-
-const testSendEmail = async () => {
-  "use server";
-  const mailerSend = new MailerSend({
-    apiKey: process.env.MAILER_SEND_API_KEY || "",
-  });
-
-  const sentFrom = new Sender(
-    "noreply@sima-board.com",
-    "Sima Board"
-  );
-
-  const recipients = [new Recipient("vladonchik@gmail.com", "Vlad Onchik")];
-  //const recipients = [new Recipient("test@sima-board.com", "Test User")];
-
-
-  const emailParams = new EmailParams()
-    .setFrom(sentFrom)
-    .setTo(recipients)
-    .setReplyTo(sentFrom)
-    .setSubject("This is a Subject")
-    .setHtml("<h1 style='color: red;'>Hello World</h1>")
-    .setText(
-      "Greetings from the team, you got this message through MailerSend."
-    );
-
-  try {
-    const result = await mailerSend.email.send(emailParams);
-    console.log('Email sent successfully', result);
-  } catch (error) {
-    console.error("Error sending email", error);
-  }
-};
-
 export default async function Home() {
   const serviceCategories = await serviceCategoryRepository.getAll();
 
@@ -91,10 +56,7 @@ export default async function Home() {
             </Flex>
           </Flex>
           <div style={{ marginTop: 40, width: "100%" }}>
-            <Dummy /> 7
-            <form action={testSendEmail}>
-              <button type="submit">Test Send Email</button>
-            </form>
+            <Dummy /> 8
           </div>
         </Box>
       </Box>
