@@ -20,6 +20,8 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   selectedOptions,
   setAllSelectedFilterOptions,
   isPortalTarget = false,
+  modalPortalTarget,
+  menuPosition,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
@@ -90,7 +92,14 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
 
       <Select
         {...rest}
-        menuPortalTarget={isPortalTarget ? menuPortalTarget : undefined}
+        menuPortalTarget={
+          modalPortalTarget !== undefined
+            ? modalPortalTarget
+            : isPortalTarget
+              ? menuPortalTarget
+              : undefined
+        }
+        menuPosition={menuPosition}
         value={selectedOptions.length > 0 ? selectedOptions[0] : null}
         name={`search-single-select-${paramName}`}
         instanceId={id}

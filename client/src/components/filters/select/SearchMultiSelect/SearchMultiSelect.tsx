@@ -20,6 +20,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   selectedOptions,
   setAllSelectedFilterOptions,
   isPortalTarget = false,
+  menuPosition,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
@@ -102,8 +103,28 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     return selectedCount >= maxSelectedOptions;
   };
 
+  // Handle mousedown to toggle menu - workaround for Radix Dialog blocking react-select's mousedown
+  const handleContainerMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      // Don't interfere if clicking on a button (like confirm/cancel in CustomMenu)
+      if ((e.target as HTMLElement).closest("button")) {
+        return;
+      }
+      // Don't interfere if clicking inside the menu (on options)
+      if ((e.target as HTMLElement).closest('[class*="menu"]')) {
+        return;
+      }
+      
+      // Toggle menu state
+      e.preventDefault();
+      e.stopPropagation();
+      setMenuIsOpen((prev) => !prev);
+    },
+    []
+  );
+
   return (
-    <Box>
+    <Box onMouseDownCapture={handleContainerMouseDown}>
       {label && (
         <Text style={{ lineHeight: "2" }} htmlFor={rest.id} as="label" size="2">
           {label}
@@ -112,7 +133,10 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
-        menuPortalTarget={isPortalTarget ? menuPortalTarget : undefined}
+        menuPortalTarget={
+          isPortalTarget ? menuPortalTarget : undefined
+        }
+        menuPosition={menuPosition}
         value={selectedOptions}
         name={`search-multi-select-${paramName}`}
         instanceId={id}
@@ -122,8 +146,10 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         isMulti
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
+        openMenuOnFocus={false}
+        menuShouldScrollIntoView={false}
         menuIsOpen={menuIsOpen}
-        onMenuOpen={() => setMenuIsOpen(true)}
+        onMenuClose={() => setMenuIsOpen(false)}
         isOptionDisabled={isOptionDisabled}
         {...({
           displayName,

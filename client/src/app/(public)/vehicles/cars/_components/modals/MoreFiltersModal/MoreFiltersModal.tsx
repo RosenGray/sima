@@ -59,7 +59,9 @@ const MoreFiltersModal: FC<MoreFiltersModalProps> = ({
           </IconButton>
         </MoreFiltersModalHeader>
 
-        <MoreFiltersModalBody>{children}</MoreFiltersModalBody>
+        <MoreFiltersModalBody>
+          {children}
+        </MoreFiltersModalBody>
 
         <MoreFiltersModalFooter>
           <Button variant="outline" color="gray" onClick={onClearMoreFilters}>

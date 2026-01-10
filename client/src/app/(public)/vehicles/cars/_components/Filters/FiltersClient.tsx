@@ -2,9 +2,7 @@
 import React, {
   FC,
   useCallback,
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { enableMapSet, produce } from "immer";
@@ -232,6 +230,7 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
 
         <SearchMultiSelect
@@ -243,6 +242,7 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("model")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
 
         <DialogPrimitiveButton title={yearDialogButtonTitle} showOverlay={true}>
@@ -343,6 +343,8 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("district")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+          
         />
 
         <SearchMultiSelect
@@ -354,6 +356,7 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("city")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
         />
       </ModalFiltersSection>
     );
