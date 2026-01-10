@@ -34,6 +34,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const dropdownId = `multi-select-${paramName}-${id}`;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName);
+  const [_menuPosition, setMenuPosition] = useState(menuPosition);
   const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
@@ -55,8 +56,10 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // 3. Fixed positioning can fail when portal parent is outside viewport
     if (!isMobile && portalTarget) {
       setMenuPortalTarget(portalTarget);
+      setMenuPosition(menuPosition);
     } else {
       setMenuPortalTarget(undefined);
+      setMenuPosition(undefined);
     }
 
     // Handle window resize
@@ -204,7 +207,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         menuPortalTarget={
           isPortalTarget ? menuPortalTarget : undefined
         }
-        menuPosition={menuPosition}
+        menuPosition={_menuPosition}
         menuPlacement={menuPlacement}
         maxMenuHeight={maxMenuHeight}
         value={selectedOptions}
