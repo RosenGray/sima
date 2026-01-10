@@ -18,7 +18,6 @@ import {
 
 interface MoreFiltersModalProps {
   open: boolean;
-  _ref: React.RefObject<HTMLDivElement | null>;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
   onClearMoreFilters: () => void;
@@ -29,11 +28,10 @@ const MoreFiltersModal: FC<MoreFiltersModalProps> = ({
   onOpenChange,
   children,
   onClearMoreFilters,
-  _ref,
 }) => {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <MoreFiltersModalContent ref={_ref}>
+      <MoreFiltersModalContent>
         <MoreFiltersModalHeader>
           <Flex direction="column" gap="1">
             <Heading

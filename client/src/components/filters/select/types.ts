@@ -30,6 +30,7 @@ export interface SearchMultiSelectProps
   label?: string;
   paramName: string;
   displayName?: string;
+  isPortalTarget?: boolean;
 }
 
 export interface SearchSingleSelectProps

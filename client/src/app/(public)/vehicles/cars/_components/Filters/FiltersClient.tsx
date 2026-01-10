@@ -1,5 +1,12 @@
 "use client";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -61,7 +68,6 @@ const FiltersClient: FC = () => {
     priceTo: searchParams.get("priceTo") ?? "",
     color: searchParams.get("color") ?? "",
   });
-  const moreFiltersModalRef = useRef<HTMLDivElement>(null);
 
   const isSearchButtonDisabled = useMemo(() => {
     const optionsFiltersAreDisabled = Array.from(
@@ -303,7 +309,6 @@ const FiltersClient: FC = () => {
           selectedOptions={allSelectedFilterOptions.get("yearTo")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
-
       </>
     );
   };
@@ -353,11 +358,8 @@ const FiltersClient: FC = () => {
       </ModalFiltersSection>
     );
   };
-//MoreFiltersModal
+  //MoreFiltersModal
 
-useEffect(() => {
-  console.log('moreFiltersModalRef.current', moreFiltersModalRef.current);
-}, [ isMoreFiltersModalOpen]);
   return (
     <>
       <DesktopFiltersWrapper>
@@ -393,7 +395,6 @@ useEffect(() => {
 
       {/* More Filters Modal (Desktop) */}
       <MoreFiltersModal
-        _ref={moreFiltersModalRef}
         open={isMoreFiltersModalOpen}
         onOpenChange={setIsMoreFiltersModalOpen}
         onClearMoreFilters={handleClearMoreFilters}

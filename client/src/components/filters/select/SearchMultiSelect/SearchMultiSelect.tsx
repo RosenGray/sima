@@ -19,6 +19,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   maxSelectedOptions,
   selectedOptions,
   setAllSelectedFilterOptions,
+  isPortalTarget = false,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
@@ -111,7 +112,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
-        menuPortalTarget={menuPortalTarget}
+        menuPortalTarget={isPortalTarget ? menuPortalTarget : undefined}
         value={selectedOptions}
         name={`search-multi-select-${paramName}`}
         instanceId={id}
