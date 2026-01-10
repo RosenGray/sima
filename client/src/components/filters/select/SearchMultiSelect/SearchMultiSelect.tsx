@@ -10,6 +10,7 @@ import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
 import CustomMenu from "./CustomMenu";
 import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
+import { useDropdownCoordination } from "@/components/filters/FiltersContext";
 
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
@@ -21,11 +22,14 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   setAllSelectedFilterOptions,
   isPortalTarget = false,
   menuPosition,
+  isDisabled,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
+  const { openDropdownId, setOpenDropdownId } = useDropdownCoordination();
   const searchParams = useSearchParams();
   const id = useId();
+  const dropdownId = `multi-select-${paramName}-${id}`;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName);
   const paramSelectionOptions = options.filter((opt) =>
@@ -74,6 +78,13 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     }
   }, [paramName, paramSelectionOptions, setAllSelectedFilterOptions]);
 
+  // Close this dropdown when another dropdown opens
+  useEffect(() => {
+    if (openDropdownId && openDropdownId !== dropdownId && menuIsOpen) {
+      setMenuIsOpen(false);
+    }
+  }, [openDropdownId, dropdownId, menuIsOpen]);
+
   const handleChange = useCallback(
     (options: MultiValue<Option>) => {
       let optionsToSet = options;
@@ -106,6 +117,10 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   // Handle mousedown to toggle menu - workaround for Radix Dialog blocking react-select's mousedown
   const handleContainerMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      // Don't toggle if the select is disabled
+      if (isDisabled) {
+        return;
+      }
       // Don't interfere if clicking on a button (like confirm/cancel in CustomMenu)
       if ((e.target as HTMLElement).closest("button")) {
         return;
@@ -114,13 +129,23 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
       if ((e.target as HTMLElement).closest('[class*="menu"]')) {
         return;
       }
-      
+
       // Toggle menu state
       e.preventDefault();
       e.stopPropagation();
-      setMenuIsOpen((prev) => !prev);
+      setMenuIsOpen((prev) => {
+        const newState = !prev;
+        // If opening, set this as the current open dropdown (closes others)
+        if (newState) {
+          setOpenDropdownId(dropdownId);
+        } else {
+          // If closing, clear the open dropdown
+          setOpenDropdownId(null);
+        }
+        return newState;
+      });
     },
-    []
+    [isDisabled, dropdownId, setOpenDropdownId]
   );
 
   return (
@@ -133,6 +158,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
+        isDisabled={isDisabled}
         menuPortalTarget={
           isPortalTarget ? menuPortalTarget : undefined
         }
@@ -149,12 +175,18 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         openMenuOnFocus={false}
         menuShouldScrollIntoView={false}
         menuIsOpen={menuIsOpen}
-        onMenuClose={() => setMenuIsOpen(false)}
+        onMenuClose={() => {
+          setMenuIsOpen(false);
+          setOpenDropdownId(null);
+        }}
         isOptionDisabled={isOptionDisabled}
         {...({
           displayName,
           maxSelectedOptions,
-          customMenuCloseHandler: () => setMenuIsOpen(false),
+          customMenuCloseHandler: () => {
+            setMenuIsOpen(false);
+            setOpenDropdownId(null);
+          },
         } as Partial<CustomSelectProps>)}
         components={{
           Option: OptionWithCheckbox,
