@@ -116,11 +116,45 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     return selectedCount >= maxSelectedOptions;
   };
 
-  // Handle mousedown to toggle menu - workaround for Radix Dialog blocking react-select's mousedown
-  const handleContainerMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  // Track if we're on mobile
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => window.innerWidth < 768;
+    setIsMobile(checkMobile());
+    
+    const handleResize = () => setIsMobile(checkMobile());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Ref for the container element to attach native event listeners (desktop only)
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Store current values in refs to access in native event handlers
+  const menuIsOpenRef = useRef(menuIsOpen);
+  const isDisabledRef = useRef(isDisabled);
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    menuIsOpenRef.current = menuIsOpen;
+  }, [menuIsOpen]);
+  
+  useEffect(() => {
+    isDisabledRef.current = isDisabled;
+  }, [isDisabled]);
+
+  // Use native event listeners ONLY on desktop - for handling Radix Dialog blocking react-select
+  // On mobile, let react-select handle events naturally
+  useEffect(() => {
+    // Skip on mobile - let react-select handle events naturally
+    if (isMobile) return;
+    
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleInteraction = (e: MouseEvent) => {
       // Don't toggle if the select is disabled
-      if (isDisabled) {
+      if (isDisabledRef.current) {
         return;
       }
       // Don't interfere if clicking on a button (like confirm/cancel in CustomMenu)
@@ -137,21 +171,27 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
       e.stopPropagation();
       
       // Calculate new state before updating (avoid nested setState calls)
-      const newState = !menuIsOpen;
+      const newState = !menuIsOpenRef.current;
       setMenuIsOpen(newState);
       
-      // Update dropdown coordination state separately (not inside setMenuIsOpen callback)
+      // Update dropdown coordination state separately
       if (newState) {
         setOpenDropdownId(dropdownId);
       } else {
         setOpenDropdownId(null);
       }
-    },
-    [isDisabled, dropdownId, setOpenDropdownId, menuIsOpen]
-  );
+    };
+
+    // Only add mousedown listener on desktop
+    container.addEventListener("mousedown", handleInteraction, { capture: true });
+
+    return () => {
+      container.removeEventListener("mousedown", handleInteraction, { capture: true });
+    };
+  }, [dropdownId, setOpenDropdownId, isMobile]);
 
   return (
-    <Box onMouseDownCapture={handleContainerMouseDown}>
+    <Box ref={containerRef}>
       {label && (
         <Text style={{ lineHeight: "2" }} htmlFor={rest.id} as="label" size="2">
           {label}
@@ -178,7 +218,14 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         hideSelectedOptions={false}
         openMenuOnFocus={false}
         menuShouldScrollIntoView={false}
-        menuIsOpen={menuIsOpen}
+        // On desktop: controlled mode (we manage menuIsOpen)
+        // On mobile: uncontrolled mode (react-select manages it)
+        menuIsOpen={isMobile ? undefined : menuIsOpen}
+        onMenuOpen={() => {
+          if (isMobile) {
+            setOpenDropdownId(dropdownId);
+          }
+        }}
         onMenuClose={() => {
           setMenuIsOpen(false);
           setOpenDropdownId(null);
