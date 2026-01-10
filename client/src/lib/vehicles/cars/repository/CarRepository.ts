@@ -10,6 +10,11 @@ export interface CarSearchFilters {
   model?: string[];
   yearFrom?: string;
   yearTo?: string;
+  district?: string[];
+  city?: string[];
+  priceFrom?: number;
+  priceTo?: number;
+  color?: string;
 }
 
 interface PaginatedResponse {
@@ -43,6 +48,11 @@ class CarRepository {
         model: sanitize(searchFilters.model),
         yearFrom: sanitize(searchFilters.yearFrom),
         yearTo: sanitize(searchFilters.yearTo),
+        district: sanitize(searchFilters.district),
+        city: sanitize(searchFilters.city),
+        priceFrom: sanitize(searchFilters.priceFrom),
+        priceTo: sanitize(searchFilters.priceTo),
+        color: sanitize(searchFilters.color),
       };
 
       // Build search filter using MongoDB query
@@ -81,6 +91,49 @@ class CarRepository {
             searchFilter.yearOfManufacture = { $lte: yearToNum };
           }
         }
+      }
+
+      // Add district filter
+      if (sanitizedFilters.district) {
+        searchFilter.district = { $in: sanitizedFilters.district };
+      }
+
+      // Add city filter
+      if (sanitizedFilters.city) {
+        searchFilter.city = { $in: sanitizedFilters.city };
+      }
+
+      // Add price range filters
+      // Handle priceFrom (minimum price)
+      if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
+        const priceFromNum = Number(sanitizedFilters.priceFrom);
+        if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+          searchFilter.price = { $gte: priceFromNum };
+        }
+      }
+
+      // Handle priceTo (maximum price)
+      if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
+        const priceToNum = Number(sanitizedFilters.priceTo);
+        if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+          // Combine with existing price filter if exists
+          if (searchFilter.price) {
+            searchFilter.price = {
+              ...searchFilter.price,
+              $lte: priceToNum,
+            };
+          } else {
+            searchFilter.price = { $lte: priceToNum };
+          }
+        }
+      }
+
+      // Add color filter (text search with regex)
+      if (sanitizedFilters.color?.trim()) {
+        searchFilter.color = {
+          $regex: sanitizedFilters.color.trim(),
+          $options: "i", // Case-insensitive
+        };
       }
 
       // Calculate pagination

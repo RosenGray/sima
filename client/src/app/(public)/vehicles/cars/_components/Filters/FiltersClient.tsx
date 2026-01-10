@@ -9,6 +9,11 @@ import {
 } from "@/lib/vehicles/cars/vehicleModels";
 import { VehicleManufacturerId } from "@/lib/vehicles/cars/vehicleManufacturers/types/vehicleManufacturer.schema";
 import { getYearsOptions } from "@/lib/vehicles/utils/vehicles.utils";
+import {
+  getCitiesToSelectOptionsByDistrictIds,
+  mapAreasToSelectOptions,
+} from "@/lib/cities";
+import { Districts } from "@/lib/cities/types/cities.schema";
 import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
@@ -36,7 +41,6 @@ enableMapSet();
 
 const FiltersClient: FC = () => {
   const { closeModal } = useFiltersModal();
-  console.log('closeModal', closeModal);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -48,6 +52,8 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["district", []],
+        ["city", []],
       ])
     );
   const [moreFilters, setMoreFilters] = useState({
@@ -69,6 +75,10 @@ const FiltersClient: FC = () => {
   const selectedManufacturerIds = allSelectedFilterOptions
     .get("manufacturer")!
     .map((option) => option.value) as VehicleManufacturerId[];
+
+  const selectedDistricts = allSelectedFilterOptions
+    .get("district")!
+    .map((option) => option.value) as Districts[];
 
   const handleSubmitAllFilters = useCallback(() => {
     const formData = new FormData();
@@ -132,6 +142,10 @@ const FiltersClient: FC = () => {
           if (paramName === "manufacturer" && options.length === 0) {
             draft.set("model", []);
           }
+          // When district changes, clear city if district is empty
+          if (paramName === "district" && options.length === 0) {
+            draft.set("city", []);
+          }
         });
       });
     },
@@ -145,6 +159,8 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["district", []],
+        ["city", []],
       ])
     );
     setMoreFilters({
@@ -178,6 +194,13 @@ const FiltersClient: FC = () => {
 
   const yearDialogButtonTitle = getYearDialogButtonTitle(
     allSelectedFilterOptions
+  );
+
+  const areasOptions = useMemo(() => mapAreasToSelectOptions(), []);
+
+  const citiesOptions = useMemo(
+    () => getCitiesToSelectOptionsByDistrictIds(selectedDistricts),
+    [selectedDistricts]
   );
 
   const handleMoreFiltersChange = useCallback(
@@ -234,6 +257,27 @@ const FiltersClient: FC = () => {
             setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
           />
         </DialogPrimitiveButton>
+
+        <SearchMultiSelect
+          placeholder="Выберите район"
+          displayName="районы"
+          paramName="district"
+          options={areasOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("district")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          displayName="города"
+          placeholder="Выберите город"
+          paramName="city"
+          options={citiesOptions}
+          isDisabled={selectedDistricts.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("city")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
       </>
     );
   };
@@ -277,6 +321,27 @@ const FiltersClient: FC = () => {
           paramName="yearTo"
           options={yearsOptions}
           selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          placeholder="Выберите район"
+          displayName="районы"
+          paramName="district"
+          options={areasOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("district")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          displayName="города"
+          placeholder="Выберите город"
+          paramName="city"
+          options={citiesOptions}
+          isDisabled={selectedDistricts.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("city")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
       </>
