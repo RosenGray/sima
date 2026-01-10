@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useCallback, useMemo, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -61,6 +61,7 @@ const FiltersClient: FC = () => {
     priceTo: searchParams.get("priceTo") ?? "",
     color: searchParams.get("color") ?? "",
   });
+  const moreFiltersModalRef = useRef<HTMLDivElement>(null);
 
   const isSearchButtonDisabled = useMemo(() => {
     const optionsFiltersAreDisabled = Array.from(
@@ -257,27 +258,6 @@ const FiltersClient: FC = () => {
             setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
           />
         </DialogPrimitiveButton>
-
-        <SearchMultiSelect
-          placeholder="Выберите район"
-          displayName="районы"
-          paramName="district"
-          options={areasOptions}
-          maxSelectedOptions={3}
-          selectedOptions={allSelectedFilterOptions.get("district")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-        />
-
-        <SearchMultiSelect
-          displayName="города"
-          placeholder="Выберите город"
-          paramName="city"
-          options={citiesOptions}
-          isDisabled={selectedDistricts.length === 0}
-          maxSelectedOptions={3}
-          selectedOptions={allSelectedFilterOptions.get("city")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-        />
       </>
     );
   };
@@ -324,26 +304,6 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
 
-        <SearchMultiSelect
-          placeholder="Выберите район"
-          displayName="районы"
-          paramName="district"
-          options={areasOptions}
-          maxSelectedOptions={3}
-          selectedOptions={allSelectedFilterOptions.get("district")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-        />
-
-        <SearchMultiSelect
-          displayName="города"
-          placeholder="Выберите город"
-          paramName="city"
-          options={citiesOptions}
-          isDisabled={selectedDistricts.length === 0}
-          maxSelectedOptions={3}
-          selectedOptions={allSelectedFilterOptions.get("city")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-        />
       </>
     );
   };
@@ -370,10 +330,34 @@ const FiltersClient: FC = () => {
           value={moreFilters.color}
           onChange={(value) => handleMoreFiltersChange("color", value)}
         />
+        <SearchMultiSelect
+          placeholder="Выберите район"
+          displayName="районы"
+          paramName="district"
+          options={areasOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("district")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        <SearchMultiSelect
+          displayName="города"
+          placeholder="Выберите город"
+          paramName="city"
+          options={citiesOptions}
+          isDisabled={selectedDistricts.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("city")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
       </ModalFiltersSection>
     );
   };
+//MoreFiltersModal
 
+useEffect(() => {
+  console.log('moreFiltersModalRef.current', moreFiltersModalRef.current);
+}, [ isMoreFiltersModalOpen]);
   return (
     <>
       <DesktopFiltersWrapper>
@@ -409,6 +393,7 @@ const FiltersClient: FC = () => {
 
       {/* More Filters Modal (Desktop) */}
       <MoreFiltersModal
+        _ref={moreFiltersModalRef}
         open={isMoreFiltersModalOpen}
         onOpenChange={setIsMoreFiltersModalOpen}
         onClearMoreFilters={handleClearMoreFilters}
