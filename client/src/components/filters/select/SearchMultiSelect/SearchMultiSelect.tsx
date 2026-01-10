@@ -135,19 +135,19 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
       // Toggle menu state
       e.preventDefault();
       e.stopPropagation();
-      setMenuIsOpen((prev) => {
-        const newState = !prev;
-        // If opening, set this as the current open dropdown (closes others)
-        if (newState) {
-          setOpenDropdownId(dropdownId);
-        } else {
-          // If closing, clear the open dropdown
-          setOpenDropdownId(null);
-        }
-        return newState;
-      });
+      
+      // Calculate new state before updating (avoid nested setState calls)
+      const newState = !menuIsOpen;
+      setMenuIsOpen(newState);
+      
+      // Update dropdown coordination state separately (not inside setMenuIsOpen callback)
+      if (newState) {
+        setOpenDropdownId(dropdownId);
+      } else {
+        setOpenDropdownId(null);
+      }
     },
-    [isDisabled, dropdownId, setOpenDropdownId]
+    [isDisabled, dropdownId, setOpenDropdownId, menuIsOpen]
   );
 
   return (
