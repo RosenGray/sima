@@ -31,6 +31,8 @@ export interface SearchMultiSelectProps
   isPortalTarget?: boolean;
   modalPortalTarget?: HTMLElement | null;
   menuPosition?: "absolute" | "fixed";
+  menuPlacement?: "auto" | "bottom" | "top";
+  maxMenuHeight?: number;
 }
 
 export interface SearchSingleSelectProps

@@ -22,6 +22,8 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   setAllSelectedFilterOptions,
   isPortalTarget = false,
   menuPosition,
+  menuPlacement = "auto",
+  maxMenuHeight = 250,
   isDisabled,
   ...rest
 }) => {
@@ -163,6 +165,8 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
           isPortalTarget ? menuPortalTarget : undefined
         }
         menuPosition={menuPosition}
+        menuPlacement={menuPlacement}
+        maxMenuHeight={maxMenuHeight}
         value={selectedOptions}
         name={`search-multi-select-${paramName}`}
         instanceId={id}
