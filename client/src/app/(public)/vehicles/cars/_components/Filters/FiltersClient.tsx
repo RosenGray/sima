@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  FC,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import React, { FC, useCallback, useMemo, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -25,6 +20,7 @@ import {
   Option,
 } from "@/components/filters/select/types";
 import { Button, Text } from "@radix-ui/themes";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { CarFilter, CarFilterSchema } from "./filters.types";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
@@ -316,6 +312,28 @@ const FiltersClient: FC = () => {
   const renderMoreFilters = () => {
     return (
       <ModalFiltersSection>
+        <SearchMultiSelect
+          placeholder="Выберите район"
+          displayName="районы"
+          paramName="district"
+          options={areasOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("district")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          displayName="города"
+          placeholder="Выберите город"
+          paramName="city"
+          options={citiesOptions}
+          isDisabled={selectedDistricts.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("city")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
         <PriceTextSearch
           name="priceFrom"
           placeholder="0"
@@ -335,29 +353,6 @@ const FiltersClient: FC = () => {
           value={moreFilters.color}
           onChange={(value) => handleMoreFiltersChange("color", value)}
         />
-        <SearchMultiSelect
-          placeholder="Выберите район"
-          displayName="районы"
-          paramName="district"
-          options={areasOptions}
-          maxSelectedOptions={3}
-          selectedOptions={allSelectedFilterOptions.get("district")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-          menuPosition="fixed"
-          
-        />
-
-        <SearchMultiSelect
-          displayName="города"
-          placeholder="Выберите город"
-          paramName="city"
-          options={citiesOptions}
-          isDisabled={selectedDistricts.length === 0}
-          maxSelectedOptions={3}
-          selectedOptions={allSelectedFilterOptions.get("city")!}
-          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-          menuPosition="fixed"
-        />
       </ModalFiltersSection>
     );
   };
@@ -373,16 +368,17 @@ const FiltersClient: FC = () => {
           onClick={() => setIsMoreFiltersModalOpen(true)}
           size="3"
         >
-          <Text size="2">Больше фильтров</Text>
+          <Text size="2">еще фильтры</Text>
         </Button>
 
         <Button
-          variant="outline"
-          color="gray"
+          variant="solid"
+          color="yellow"
           disabled={isSearchButtonDisabled}
           onClick={handleSubmitAllFilters}
           size="3"
         >
+          <MagnifyingGlassIcon width="18" height="18" />
           <Text size="3">Поиск</Text>
         </Button>
         <Button
@@ -414,8 +410,8 @@ const FiltersClient: FC = () => {
 
         <MobileFilterFooter>
           <Button
-            variant="outline"
-            color="gray"
+            variant="solid"
+            color="yellow"
             disabled={isSearchButtonDisabled}
             onClick={() => {
               handleSubmitAllFilters();
@@ -423,6 +419,7 @@ const FiltersClient: FC = () => {
             }}
             size="3"
           >
+            <MagnifyingGlassIcon width="18" height="18" />
             <Text size="3">Поиск</Text>
           </Button>
           <Button

@@ -22,6 +22,8 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   isPortalTarget = false,
   modalPortalTarget,
   menuPosition,
+  menuPlacement = "auto",
+  maxMenuHeight = 200,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
@@ -100,6 +102,8 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
               : undefined
         }
         menuPosition={menuPosition}
+        menuPlacement={menuPlacement}
+        maxMenuHeight={maxMenuHeight}
         value={selectedOptions.length > 0 ? selectedOptions[0] : null}
         name={`search-single-select-${paramName}`}
         instanceId={id}

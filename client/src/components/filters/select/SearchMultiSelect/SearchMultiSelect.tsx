@@ -74,7 +74,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [portalTarget]);
+  }, [portalTarget, menuPosition]);
 
   useEffect(() => {
     if (!hasInitialized.current && paramSelectionOptions.length > 0) {

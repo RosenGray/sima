@@ -179,11 +179,15 @@ async getAll(
    const filters: EntitySearchFilters = {
      manufacturer: arrayFilters.manufacturer,
      model: arrayFilters.model,
+     district: arrayFilters.district,
+     city: arrayFilters.city,
      // Add other array filters here
    };
    ```
 
-4. **Handle special cases (single value filters like yearFrom/yearTo):**
+4. **Handle special cases (single value filters):**
+   
+   **For yearFrom/yearTo (single string values):**
    ```typescript
    // Handle yearFrom and yearTo as single values (not arrays) for range queries
    if (searchParams.yearFrom) {
@@ -196,6 +200,44 @@ async getAll(
      filters.yearTo = Array.isArray(searchParams.yearTo) 
        ? searchParams.yearTo[0] 
        : searchParams.yearTo;
+   }
+   ```
+   
+   **For priceFrom/priceTo (transform from comma-formatted string to number):**
+   ```typescript
+   // Handle price range filters - transform from string (with commas) to number
+   if (searchParams.priceFrom) {
+     const priceFromStr = Array.isArray(searchParams.priceFrom)
+       ? searchParams.priceFrom[0]
+       : searchParams.priceFrom;
+     // Remove commas and parse to number (same logic as PriceFromToSchema)
+     const cleaned = priceFromStr.replace(/,/g, "");
+     const priceFromNum = Number(cleaned);
+     if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+       filters.priceFrom = priceFromNum;
+     }
+   }
+
+   if (searchParams.priceTo) {
+     const priceToStr = Array.isArray(searchParams.priceTo)
+       ? searchParams.priceTo[0]
+       : searchParams.priceTo;
+     // Remove commas and parse to number (same logic as PriceFromToSchema)
+     const cleaned = priceToStr.replace(/,/g, "");
+     const priceToNum = Number(cleaned);
+     if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+       filters.priceTo = priceToNum;
+     }
+   }
+   ```
+   
+   **For color (single string value):**
+   ```typescript
+   // Handle color filter - single string value
+   if (searchParams.color) {
+     filters.color = Array.isArray(searchParams.color)
+       ? searchParams.color[0]
+       : searchParams.color;
    }
    ```
 
@@ -375,16 +417,29 @@ import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearc
 priceFrom?: number; // After schema transformation
 priceTo?: number;   // After schema transformation
 
-// Query - values are already numbers after schema transformation
-if (sanitizedFilters.priceFrom) {
-  searchFilter.price = { $gte: sanitizedFilters.priceFrom };
+// Query - values are already numbers after page component transformation
+// Handle priceFrom (minimum price)
+if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
+  const priceFromNum = Number(sanitizedFilters.priceFrom);
+  if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+    searchFilter.price = { $gte: priceFromNum };
+  }
 }
 
-if (sanitizedFilters.priceTo) {
-  searchFilter.price = {
-    ...searchFilter.price,
-    $lte: sanitizedFilters.priceTo,
-  };
+// Handle priceTo (maximum price)
+if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
+  const priceToNum = Number(sanitizedFilters.priceTo);
+  if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+    // Combine with existing price filter if exists
+    if (searchFilter.price) {
+      searchFilter.price = {
+        ...searchFilter.price,
+        $lte: priceToNum,
+      };
+    } else {
+      searchFilter.price = { $lte: priceToNum };
+    }
+  }
 }
 ```
 
@@ -401,9 +456,12 @@ if (sanitizedFilters.priceTo) {
 // Interface - single string value, not array
 color?: string;
 
-// Query - use regex for text search
-if (sanitizedFilters.color) {
-  searchFilter.color = { $regex: sanitizedFilters.color, $options: "i" };
+// Query - use regex for text search with trim() for safety
+if (sanitizedFilters.color?.trim()) {
+  searchFilter.color = {
+    $regex: sanitizedFilters.color.trim(),
+    $options: "i", // Case-insensitive
+  };
 }
 ```
 
@@ -469,16 +527,17 @@ export interface EntitySearchFilters {
   manufacturer?: string[];
   model?: string[];
   district?: string[];
+  city?: string[];
   
   // ObjectId array filters
   categoryId?: string[];
   subCategoryId?: string[];
   
-  // Numeric range filters (single values)
+  // Numeric range filters (single values - strings in page, numbers in repository)
   yearFrom?: string;
   yearTo?: string;
-  priceFrom?: string;
-  priceTo?: string;
+  priceFrom?: number; // Transformed to number in repository after page processing
+  priceTo?: number;   // Transformed to number in repository after page processing
   
   // Text input filters (single values)
   color?: string;
@@ -503,6 +562,11 @@ async getAll(
       model: sanitize(searchFilters.model),
       yearFrom: sanitize(searchFilters.yearFrom),
       yearTo: sanitize(searchFilters.yearTo),
+      district: sanitize(searchFilters.district),
+      city: sanitize(searchFilters.city),
+      priceFrom: sanitize(searchFilters.priceFrom),
+      priceTo: sanitize(searchFilters.priceTo),
+      color: sanitize(searchFilters.color),
     };
     
     // Build query filter
@@ -517,7 +581,7 @@ async getAll(
       searchFilter.model = { $in: sanitizedFilters.model };
     }
     
-    // Range filters (numeric text inputs)
+    // Year range filters
     if (sanitizedFilters.yearFrom) {
       const yearFromNum = Number(sanitizedFilters.yearFrom);
       if (!Number.isNaN(yearFromNum)) {
@@ -534,28 +598,58 @@ async getAll(
         };
       }
     }
+
+    // Add district filter
+    if (sanitizedFilters.district) {
+      searchFilter.district = { $in: sanitizedFilters.district };
+    }
+
+    // Add city filter
+    if (sanitizedFilters.city) {
+      searchFilter.city = { $in: sanitizedFilters.city };
+    }
     
-    // Text input filters (numeric range)
-    if (sanitizedFilters.priceFrom) {
+    // Add district filter
+    if (sanitizedFilters.district) {
+      searchFilter.district = { $in: sanitizedFilters.district };
+    }
+
+    // Add city filter
+    if (sanitizedFilters.city) {
+      searchFilter.city = { $in: sanitizedFilters.city };
+    }
+    
+    // Price range filters (already numbers after page component transformation)
+    // Handle priceFrom (minimum price)
+    if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
       const priceFromNum = Number(sanitizedFilters.priceFrom);
-      if (!Number.isNaN(priceFromNum)) {
+      if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
         searchFilter.price = { $gte: priceFromNum };
       }
     }
-    
-    if (sanitizedFilters.priceTo) {
+
+    // Handle priceTo (maximum price)
+    if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
       const priceToNum = Number(sanitizedFilters.priceTo);
-      if (!Number.isNaN(priceToNum)) {
-        searchFilter.price = {
-          ...searchFilter.price,
-          $lte: priceToNum,
-        };
+      if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+        // Combine with existing price filter if exists
+        if (searchFilter.price) {
+          searchFilter.price = {
+            ...searchFilter.price,
+            $lte: priceToNum,
+          };
+        } else {
+          searchFilter.price = { $lte: priceToNum };
+        }
       }
     }
     
-    // Text input filters (string/text)
-    if (sanitizedFilters.color) {
-      searchFilter.color = { $regex: sanitizedFilters.color, $options: "i" };
+    // Text input filters (string/text) - use trim() for safety
+    if (sanitizedFilters.color?.trim()) {
+      searchFilter.color = {
+        $regex: sanitizedFilters.color.trim(),
+        $options: "i", // Case-insensitive
+      };
     }
     
     // Calculate pagination
@@ -1767,6 +1861,11 @@ export interface CarSearchFilters {
   model?: string[];
   yearFrom?: string; // Single value for range filter
   yearTo?: string;   // Single value for range filter
+  district?: string[];
+  city?: string[];
+  priceFrom?: number; // Transformed to number in page component
+  priceTo?: number;   // Transformed to number in page component
+  color?: string;
 }
 ```
 
@@ -1787,6 +1886,11 @@ async getAll(
       model: sanitize(searchFilters.model),
       yearFrom: sanitize(searchFilters.yearFrom),
       yearTo: sanitize(searchFilters.yearTo),
+      district: sanitize(searchFilters.district),
+      city: sanitize(searchFilters.city),
+      priceFrom: sanitize(searchFilters.priceFrom),
+      priceTo: sanitize(searchFilters.priceTo),
+      color: sanitize(searchFilters.color),
     };
 
     // Build search filter
@@ -1824,6 +1928,49 @@ async getAll(
       }
     }
 
+    // Add district filter
+    if (sanitizedFilters.district) {
+      searchFilter.district = { $in: sanitizedFilters.district };
+    }
+
+    // Add city filter
+    if (sanitizedFilters.city) {
+      searchFilter.city = { $in: sanitizedFilters.city };
+    }
+
+    // Add price range filters
+    // Handle priceFrom (minimum price)
+    if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
+      const priceFromNum = Number(sanitizedFilters.priceFrom);
+      if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+        searchFilter.price = { $gte: priceFromNum };
+      }
+    }
+
+    // Handle priceTo (maximum price)
+    if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
+      const priceToNum = Number(sanitizedFilters.priceTo);
+      if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+        // Combine with existing price filter if exists
+        if (searchFilter.price) {
+          searchFilter.price = {
+            ...searchFilter.price,
+            $lte: priceToNum,
+          };
+        } else {
+          searchFilter.price = { $lte: priceToNum };
+        }
+      }
+    }
+
+    // Add color filter (text search with regex)
+    if (sanitizedFilters.color?.trim()) {
+      searchFilter.color = {
+        $regex: sanitizedFilters.color.trim(),
+        $options: "i", // Case-insensitive
+      };
+    }
+
     // ... rest of pagination and query logic
   } catch (error) {
     // ... error handling
@@ -1836,20 +1983,37 @@ async getAll(
 ```typescript
 import { CarSearchFilters } from "@/lib/vehicles/cars/repository/CarRepository";
 
+interface CarsPageProps {
+  searchParams?: Promise<{
+    manufacturer?: string | string[];
+    model?: string | string[];
+    yearFrom?: string | string[];
+    yearTo?: string | string[];
+    district?: string | string[];
+    city?: string | string[];
+    priceFrom?: string;
+    priceTo?: string;
+    color?: string;
+    page?: string;
+  }>;
+}
+
 const CarsPage: FC<CarsPageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
 
-  // Extract array filters
+  // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);
 
   // Build filters object with proper types
   const filters: CarSearchFilters = {
     manufacturer: arrayFilters.manufacturer,
     model: arrayFilters.model,
+    district: arrayFilters.district,
+    city: arrayFilters.city,
   };
 
-  // Handle single value filters (yearFrom/yearTo)
+  // Handle single value filters (yearFrom/yearTo) - not arrays for range queries
   if (searchParams.yearFrom) {
     filters.yearFrom = Array.isArray(searchParams.yearFrom)
       ? searchParams.yearFrom[0]
@@ -1861,6 +2025,40 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
       ? searchParams.yearTo[0]
       : searchParams.yearTo;
   }
+
+  // Handle price range filters - transform from string (with commas) to number
+  if (searchParams.priceFrom) {
+    const priceFromStr = Array.isArray(searchParams.priceFrom)
+      ? searchParams.priceFrom[0]
+      : searchParams.priceFrom;
+    // Remove commas and parse to number (same logic as PriceFromToSchema)
+    const cleaned = priceFromStr.replace(/,/g, "");
+    const priceFromNum = Number(cleaned);
+    if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+      filters.priceFrom = priceFromNum;
+    }
+  }
+
+  if (searchParams.priceTo) {
+    const priceToStr = Array.isArray(searchParams.priceTo)
+      ? searchParams.priceTo[0]
+      : searchParams.priceTo;
+    // Remove commas and parse to number (same logic as PriceFromToSchema)
+    const cleaned = priceToStr.replace(/,/g, "");
+    const priceToNum = Number(cleaned);
+    if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+      filters.priceTo = priceToNum;
+    }
+  }
+
+  // Handle color filter - single string value
+  if (searchParams.color) {
+    filters.color = Array.isArray(searchParams.color)
+      ? searchParams.color[0]
+      : searchParams.color;
+  }
+
+  const contentKey = JSON.stringify({ ...filters, page: currentPage });
 
   return (
     <CarsPageContainer>
