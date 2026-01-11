@@ -14,6 +14,9 @@ interface CarsPageProps {
     model?: string | string[];
     yearFrom?: string | string[];
     yearTo?: string | string[];
+    numberOfHand?: string | string[];
+    transmission?: string | string[];
+    engineType?: string | string[];
     district?: string | string[];
     city?: string | string[];
     priceFrom?: string;
@@ -34,6 +37,9 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
   const filters: CarSearchFilters = {
     manufacturer: arrayFilters.manufacturer,
     model: arrayFilters.model,
+    numberOfHand: arrayFilters.numberOfHand,
+    transmission: arrayFilters.transmission,
+    engineType: arrayFilters.engineType,
     district: arrayFilters.district,
     city: arrayFilters.city,
   };

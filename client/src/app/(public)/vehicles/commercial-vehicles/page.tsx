@@ -14,6 +14,8 @@ interface CommercialVehiclesPageProps {
     model?: string | string[];
     yearFrom?: string | string[];
     yearTo?: string | string[];
+    numberOfHand?: string | string[];
+    transmission?: string | string[];
     district?: string | string[];
     city?: string | string[];
     priceFrom?: string;
@@ -34,6 +36,8 @@ const CommercialVehiclesPage: FC<CommercialVehiclesPageProps> = async (props) =>
   const filters: CommercialVehicleSearchFilters = {
     manufacturer: arrayFilters.manufacturer,
     model: arrayFilters.model,
+    numberOfHand: arrayFilters.numberOfHand,
+    transmission: arrayFilters.transmission,
     district: arrayFilters.district,
     city: arrayFilters.city,
   };

@@ -8,7 +8,11 @@ import {
   getVehicleModelsToSelectOptionsByManufacturerIds,
 } from "@/lib/vehicles/cars/vehicleModels";
 import { VehicleManufacturerId } from "@/lib/vehicles/cars/vehicleManufacturers/types/vehicleManufacturer.schema";
-import { getYearsOptions } from "@/lib/vehicles/utils/vehicles.utils";
+import {
+  getYearsOptions,
+  getNumberOfHandsOptions,
+} from "@/lib/vehicles/utils/vehicles.utils";
+import { TransmissionType, EngineType } from "@/lib/vehicles/cars/types/cars.types";
 import {
   getCitiesToSelectOptionsByDistrictIds,
   mapAreasToSelectOptions,
@@ -40,6 +44,34 @@ import { useFiltersModal } from "@/components/filters/FiltersContext";
 
 enableMapSet();
 
+// Map TransmissionType enum to select options
+const transmissionOptions = Object.values(TransmissionType).map((value) => ({
+  value,
+  label:
+    value === TransmissionType.MANUAL
+      ? "Механическая"
+      : value === TransmissionType.AUTOMATIC
+      ? "Автоматическая"
+      : value === TransmissionType.TIPTRONIC
+      ? "Типтроник"
+      : "Роботизированная",
+}));
+
+// Map EngineType enum to select options
+const engineTypeOptions = Object.values(EngineType).map((value) => ({
+  value,
+  label:
+    value === EngineType.GASOLINE
+      ? "Бензин"
+      : value === EngineType.DIESEL
+      ? "Дизель"
+      : value === EngineType.TURBO_DIESEL
+      ? "Турбодизель"
+      : value === EngineType.HYBRID
+      ? "Гибрид"
+      : "Электрический",
+}));
+
 const FiltersClient: FC = () => {
   const { closeModal } = useFiltersModal();
   const searchParams = useSearchParams();
@@ -53,6 +85,9 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["numberOfHand", []],
+        ["transmission", []],
+        ["engineType", []],
         ["district", []],
         ["city", []],
       ])
@@ -160,6 +195,9 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["numberOfHand", []],
+        ["transmission", []],
+        ["engineType", []],
         ["district", []],
         ["city", []],
       ])
@@ -196,6 +234,8 @@ const FiltersClient: FC = () => {
   const yearDialogButtonTitle = getYearDialogButtonTitle(
     allSelectedFilterOptions
   );
+
+  const numberOfHandsOptions = useMemo(() => getNumberOfHandsOptions(), []);
 
   const areasOptions = useMemo(() => mapAreasToSelectOptions(), []);
 
@@ -334,6 +374,40 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
           menuPosition="fixed"
         />
+
+        <SearchMultiSelect
+          placeholder="Количество рук"
+          displayName="количество рук"
+          paramName="numberOfHand"
+          options={numberOfHandsOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("numberOfHand")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          placeholder="Коробка передач"
+          displayName="коробка передач"
+          paramName="transmission"
+          options={transmissionOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("transmission")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          placeholder="Тип двигателя"
+          displayName="тип двигателя"
+          paramName="engineType"
+          options={engineTypeOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("engineType")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
         <PriceTextSearch
           name="priceFrom"
           placeholder="0"

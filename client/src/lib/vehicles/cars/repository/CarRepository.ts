@@ -10,6 +10,9 @@ export interface CarSearchFilters {
   model?: string[];
   yearFrom?: string;
   yearTo?: string;
+  numberOfHand?: string[];
+  transmission?: string[];
+  engineType?: string[];
   district?: string[];
   city?: string[];
   priceFrom?: number;
@@ -48,6 +51,9 @@ class CarRepository {
         model: sanitize(searchFilters.model),
         yearFrom: sanitize(searchFilters.yearFrom),
         yearTo: sanitize(searchFilters.yearTo),
+        numberOfHand: sanitize(searchFilters.numberOfHand),
+        transmission: sanitize(searchFilters.transmission),
+        engineType: sanitize(searchFilters.engineType),
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
         priceFrom: sanitize(searchFilters.priceFrom),
@@ -91,6 +97,26 @@ class CarRepository {
             searchFilter.yearOfManufacture = { $lte: yearToNum };
           }
         }
+      }
+
+      // Add numberOfHand filter
+      if (sanitizedFilters.numberOfHand) {
+        const numberOfHandNums = sanitizedFilters.numberOfHand
+          .map((hand) => Number(hand))
+          .filter((num) => !Number.isNaN(num) && num >= 1);
+        if (numberOfHandNums.length > 0) {
+          searchFilter.numberOfHand = { $in: numberOfHandNums };
+        }
+      }
+
+      // Add transmission filter
+      if (sanitizedFilters.transmission) {
+        searchFilter.transmission = { $in: sanitizedFilters.transmission };
+      }
+
+      // Add engineType filter
+      if (sanitizedFilters.engineType) {
+        searchFilter.engineType = { $in: sanitizedFilters.engineType };
       }
 
       // Add district filter

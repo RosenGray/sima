@@ -6,7 +6,11 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { mapCommercialVehicleManufacturersToSelectOptions } from "@/lib/vehicles/commercial-vehicles/vehicleCommercialManufacturers";
 import { getCommercialVehicleModelsToSelectOptionsByManufacturerIds } from "@/lib/vehicles/commercial-vehicles/vehicleCommercialModels";
 import { VehicleManufacturerId } from "@/lib/vehicles/commercial-vehicles/vehicleCommercialManufacturers/types/commercialVehicleManufacturer.schema";
-import { getYearsOptions } from "@/lib/vehicles/utils/vehicles.utils";
+import {
+  getYearsOptions,
+  getNumberOfHandsOptions,
+} from "@/lib/vehicles/utils/vehicles.utils";
+import { TransmissionType } from "@/lib/vehicles/cars/types/cars.types";
 import {
   getCitiesToSelectOptionsByDistrictIds,
   mapAreasToSelectOptions,
@@ -38,6 +42,19 @@ import { useFiltersModal } from "@/components/filters/FiltersContext";
 
 enableMapSet();
 
+// Map TransmissionType enum to select options
+const transmissionOptions = Object.values(TransmissionType).map((value) => ({
+  value,
+  label:
+    value === TransmissionType.MANUAL
+      ? "Механическая"
+      : value === TransmissionType.AUTOMATIC
+      ? "Автоматическая"
+      : value === TransmissionType.TIPTRONIC
+      ? "Типтроник"
+      : "Роботизированная",
+}));
+
 const FiltersClient: FC = () => {
   const { closeModal } = useFiltersModal();
   const searchParams = useSearchParams();
@@ -51,6 +68,8 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["numberOfHand", []],
+        ["transmission", []],
         ["district", []],
         ["city", []],
       ])
@@ -158,6 +177,8 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["numberOfHand", []],
+        ["transmission", []],
         ["district", []],
         ["city", []],
       ])
@@ -194,6 +215,8 @@ const FiltersClient: FC = () => {
   const yearDialogButtonTitle = getYearDialogButtonTitle(
     allSelectedFilterOptions
   );
+
+  const numberOfHandsOptions = useMemo(() => getNumberOfHandsOptions(), []);
 
   const areasOptions = useMemo(() => mapAreasToSelectOptions(), []);
 
@@ -332,6 +355,29 @@ const FiltersClient: FC = () => {
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
           menuPosition="fixed"
         />
+
+        <SearchMultiSelect
+          placeholder="Количество рук"
+          displayName="количество рук"
+          paramName="numberOfHand"
+          options={numberOfHandsOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("numberOfHand")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          placeholder="Коробка передач"
+          displayName="коробка передач"
+          paramName="transmission"
+          options={transmissionOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("transmission")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
         <PriceTextSearch
           name="priceFrom"
           placeholder="0"
