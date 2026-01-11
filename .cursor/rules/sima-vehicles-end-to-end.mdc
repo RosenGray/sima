@@ -58,9 +58,9 @@ flowchart TB
 
 | Category ID | Entity Name | Has Manufacturer/Model | Unique Fields | Complexity |
 |-------------|-------------|------------------------|---------------|------------|
-| `cars` | Car | Yes (existing) | transmission, engineType, numberOfHand, mileage, numberOfDoors, color | Complex |
+| `cars` | Car | Yes (existing) | transmission, engineType, engineCapacity, numberOfHand, mileage, numberOfDoors, color, accessories | Complex |
 | `off-road` | OffRoad | Yes (unique manufacturers) | driveType (4x4/AWD), groundClearance, offRoadFeatures | Complex |
-| `commercial` | Commercial | Yes (truck manufacturers) | vehicleType, payload, axles, cabinType | Complex |
+| `commercial-vehicles` | CommercialVehicle | Yes (commercial vehicle manufacturers) | transmission, numberOfHand, mileage, numberOfDoors, color | Complex |
 | `motorcycles` | Motorcycle | Yes (motorcycle manufacturers) | engineDisplacement, motorcycleCategory, hasABS | Complex |
 | `scooters` | Scooter | Yes (simpler manufacturers) | engineDisplacement, powerType (electric/gas) | Medium |
 | `atv` | Atv | Yes (ATV manufacturers) | engineDisplacement, terrainType, seating | Medium |
@@ -1338,11 +1338,13 @@ const isOwner = thisUserIsOwner(entity.user.id);
 - **Unique Fields**: `driveType` (4x4/AWD/2WD), `groundClearance`, `offRoadFeatures`
 - Consider adding: `wheelSize`, `suspensionType`, `hasDiffLock`
 
-### Commercial
+### Commercial Vehicles
 
-- Needs separate truck manufacturers list
-- **Unique Fields**: `vehicleType` (truck/van/bus), `payload`, `axles`, `cabinType`
-- Consider adding: `licensePlateType`, `loadingType`, `hasRefrigeration`
+- Has separate commercial vehicle manufacturers list (e.g., OPEL with models like Vivaro, Movano, Combo)
+- **Unique Fields**: `transmission` (reuses `TransmissionType` from cars), `numberOfHand`, `mileage`, `numberOfDoors`, `color`
+- **NOT included**: `engineType`, `engineCapacity`, `accessories` (unlike cars)
+- **URL path**: `/vehicles/commercial-vehicles`
+- Similar to cars but for commercial vehicles (vans, light commercial vehicles)
 
 ### Motorcycles
 

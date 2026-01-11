@@ -63,7 +63,7 @@ const vehicleCategories: VehicleCategory[] = [
         viewBox={{ width: 120, height: 120 }}
       />
     ),
-    href: "/publish-ad/vehicles/commercial",
+    href: "/vehicles/commercial-vehicles",
   },
   {
     id: "motorcycles",

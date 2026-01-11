@@ -40,7 +40,7 @@ const vehicleCategories: VehicleCategory[] = [
     title: "Коммерческий транспорт",
     description: "Грузовые автомобили, фургоны и коммерческий транспорт",
     icon: <CommercialCarIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/commercial",
+    href: "/publish-ad/vehicles/commercial-vehicles/create",
   },
   {
     id: "motorcycles",
