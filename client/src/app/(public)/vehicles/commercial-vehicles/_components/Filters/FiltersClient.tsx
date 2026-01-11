@@ -18,7 +18,7 @@ import {
   Option,
 } from "@/components/filters/select/types";
 import { Button, Text } from "@radix-ui/themes";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { CommercialVehicleFilter, CommercialVehicleFilterSchema } from "./filters.types";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
@@ -365,6 +365,7 @@ const FiltersClient: FC = () => {
           onClick={() => setIsMoreFiltersModalOpen(true)}
           size="3"
         >
+          <MixerHorizontalIcon width="18" height="18" />
           <Text size="2">еще фильтры</Text>
         </Button>
 
