@@ -1,6 +1,6 @@
 "use client";
 import { FC, ReactNode } from "react";
-import { Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+import { Flex, Heading, IconButton, Text, Tooltip } from "@radix-ui/themes";
 import { MixerHorizontalIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 import { useFiltersModal } from "@/components/filters/FiltersContext";
 import {
@@ -23,7 +23,6 @@ import CaravanIcon from "@/components/svg/vehicles/Caravan/Caravan";
 import AccessoriesAndSoundIcon from "@/components/svg/vehicles/AccessoriesAndSound/AccessoriesAndSound";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 
 interface VehicleCategory {
   id: string;
@@ -139,7 +138,7 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
 }) => {
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
   const pathname = usePathname();
-  console.log('pathname', pathname);
+  console.log("pathname", pathname);
   return (
     <>
       {/* Desktop View */}
@@ -158,12 +157,14 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
         <VehicleFiltersNavBar>
           <VehiclesFiltersNavBarList>
             {vehicleCategories.map((category) => (
-              <VehicleFiltersNavBarItem $isActive={pathname === category.href} key={category.id}>
-                <Link href={category.href}>
-                  {category.icon}
-                  {/* <Text size="2">{category.title}</Text> */}
-                </Link>
-              </VehicleFiltersNavBarItem>
+              <Tooltip content={category.title} key={category.id}>
+                <VehicleFiltersNavBarItem
+                  $isActive={pathname === category.href}
+                
+                >
+                  <Link href={category.href}>{category.icon}</Link>
+                </VehicleFiltersNavBarItem>
+              </Tooltip>
             ))}
           </VehiclesFiltersNavBarList>
         </VehicleFiltersNavBar>
