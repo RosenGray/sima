@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useCallback, useMemo, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { enableMapSet, produce } from "immer";
 import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -189,6 +189,75 @@ const FiltersClient: FC = () => {
     () => getCitiesToSelectOptionsByDistrictIds(selectedDistricts),
     [selectedDistricts]
   );
+
+  // Sync filter state with searchParams whenever searchParams changes
+  useEffect(() => {
+    // Get all option arrays
+    const allCategoryOptions = mapSpecialVehicleCategoriesToSelectOptions();
+    const allKindOptions = getSpecialVehicleKindsToSelectOptionsByCategoryIds(
+      searchParams.getAll("category") as SpecialVehicleCategoryId[]
+    );
+    const allAreasOptions = mapAreasToSelectOptions();
+    const allCitiesOptions = getCitiesToSelectOptionsByDistrictIds(
+      searchParams.getAll("district") as Districts[]
+    );
+
+    // Sync dropdown filters (category, kind, district, city)
+    const categoryParams = searchParams.getAll("category");
+    const kindParams = searchParams.getAll("kind");
+    const districtParams = searchParams.getAll("district");
+    const cityParams = searchParams.getAll("city");
+
+    setAllSelectedFilterOptions((prevOptionsMap) => {
+      return produce(prevOptionsMap, (draft) => {
+        // Update category
+        if (categoryParams.length > 0) {
+          const matchedCategoryOptions = allCategoryOptions.filter((opt) =>
+            categoryParams.includes(opt.value)
+          );
+          draft.set("category", matchedCategoryOptions);
+        } else {
+          draft.set("category", []);
+        }
+
+        // Update kind
+        if (kindParams.length > 0) {
+          const matchedKindOptions = allKindOptions.filter((opt) =>
+            kindParams.includes(opt.value)
+          );
+          draft.set("kind", matchedKindOptions);
+        } else {
+          draft.set("kind", []);
+        }
+
+        // Update district
+        if (districtParams.length > 0) {
+          const matchedDistrictOptions = allAreasOptions.filter((opt) =>
+            districtParams.includes(opt.value)
+          );
+          draft.set("district", matchedDistrictOptions);
+        } else {
+          draft.set("district", []);
+        }
+
+        // Update city
+        if (cityParams.length > 0) {
+          const matchedCityOptions = allCitiesOptions.filter((opt) =>
+            cityParams.includes(opt.value)
+          );
+          draft.set("city", matchedCityOptions);
+        } else {
+          draft.set("city", []);
+        }
+      });
+    });
+
+    // Sync price filters
+    setMoreFilters({
+      priceFrom: searchParams.get("priceFrom") ?? "",
+      priceTo: searchParams.get("priceTo") ?? "",
+    });
+  }, [searchParams]);
 
   const handleMoreFiltersChange = useCallback(
     (key: keyof typeof moreFilters, value: string) => {

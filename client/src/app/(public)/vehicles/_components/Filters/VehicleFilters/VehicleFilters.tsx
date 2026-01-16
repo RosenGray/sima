@@ -1,5 +1,5 @@
 "use client";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useMemo } from "react";
 import { Flex, Heading, IconButton, Text, Tooltip } from "@radix-ui/themes";
 import { MixerHorizontalIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 import { useFiltersModal } from "@/components/filters/FiltersContext";
@@ -22,7 +22,7 @@ import AtvIcon from "@/components/svg/vehicles/Atv/Atv";
 import CaravanIcon from "@/components/svg/vehicles/Caravan/Caravan";
 import AccessoriesAndSoundIcon from "@/components/svg/vehicles/AccessoriesAndSound/AccessoriesAndSound";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface VehicleCategory {
   id: string;
@@ -147,7 +147,42 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
 }) => {
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
   const pathname = usePathname();
-  console.log("pathname", pathname);
+  const searchParams = useSearchParams();
+
+  // Helper function to check if a category is active
+  const isCategoryActive = useMemo(() => {
+    return (category: VehicleCategory): boolean => {
+      // Parse the href to extract pathname and query params
+      const [categoryPathname, categoryQuery] = category.href.split("?");
+      
+      // Check if pathname matches
+      if (pathname !== categoryPathname) {
+        return false;
+      }
+
+      // If category has query params, check if they match
+      if (categoryQuery) {
+        const categoryParams = new URLSearchParams(categoryQuery);
+        const currentCategory = searchParams.get("category");
+        const expectedCategory = categoryParams.get("category");
+        
+        // If both have category params, they must match
+        if (expectedCategory) {
+          return currentCategory === expectedCategory;
+        }
+      } else {
+        // If category has no query params, check that current URL also has no category param
+        // (unless we're on special-vehicles page, where category param is optional)
+        if (pathname === "/vehicles/special-vehicles") {
+          // For special-vehicles without category, check that no category param exists
+          return !searchParams.get("category");
+        }
+      }
+
+      return true;
+    };
+  }, [pathname, searchParams]);
+
   return (
     <>
       {/* Desktop View */}
@@ -168,8 +203,7 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
             {vehicleCategories.map((category) => (
               <Tooltip content={category.title} key={category.id}>
                 <VehicleFiltersNavBarItem
-                  $isActive={pathname === category.href}
-                
+                  $isActive={isCategoryActive(category)}
                 >
                   <Link href={category.href}>{category.icon}</Link>
                 </VehicleFiltersNavBarItem>
