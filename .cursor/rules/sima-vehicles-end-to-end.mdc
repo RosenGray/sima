@@ -1137,6 +1137,7 @@ Use this checklist when implementing a new vehicle category:
   - Use `DropFilesInput` and `ImagesPreviewer` for images
 
 - [ ] **4.2** Create form styles (`app/(private)/publish-ad/_components/vehicles/{Entity}PublishForm/{Entity}PublishForm.styles.ts`)
+  - **Add `"use client"` directive at the top** (required for styled-components)
   - Copy from `CarPublishForm.styles.ts`
 
 - [ ] **4.3** Create create page (`app/(private)/publish-ad/vehicles/{category}/[formMode]/page.tsx`)
@@ -1152,6 +1153,7 @@ Use this checklist when implementing a new vehicle category:
   - Render form with `FormMode.Edit` and entity data
 
 - [ ] **4.5** Create page styles (`app/(private)/publish-ad/vehicles/{category}/[formMode]/page.styles.ts`)
+  - **Add `"use client"` directive at the top** (required for styled-components)
 
 ### Phase 5: Listing Page
 
@@ -1162,12 +1164,14 @@ Use this checklist when implementing a new vehicle category:
   - Render `Filters` and `Content` in Suspense
 
 - [ ] **5.2** Create page styles (`app/(public)/vehicles/{category}/page.styles.ts`)
+  - **Add `"use client"` directive at the top** (required for styled-components)
   - Define `{Category}PageContainer`, `{Entity}Grid`, `StickyPaginationWrapper`, `Title`
 
 - [ ] **5.3** Create loading component (`app/(public)/vehicles/{category}/loading.tsx`)
   - Render skeleton cards (6 by default)
 
 - [ ] **5.4** Create loading styles (`app/(public)/vehicles/{category}/loading.styles.ts`)
+  - **Add `"use client"` directive at the top** (required for styled-components)
 
 - [ ] **5.5** Create content component (`app/(public)/vehicles/{category}/_components/{Entity}Content/{Entity}Content.tsx`)
   - Fetch data with `repository.getAll(filters, currentPage, pageSize)`
@@ -1178,6 +1182,7 @@ Use this checklist when implementing a new vehicle category:
   - Use appropriate formatting helpers
 
 - [ ] **5.7** Create card styles (`app/(public)/vehicles/{category}/_components/{Entity}Cards/{Entity}Card.styles.ts`)
+  - **Add `"use client"` directive at the top** (required for styled-components)
 
 - [ ] **5.8** Create cards list (`app/(public)/vehicles/{category}/_components/{Entity}Cards/{Entity}Cards.tsx`)
   - Map entities to Link + Card components
@@ -1206,9 +1211,11 @@ Use this checklist when implementing a new vehicle category:
   - Helper functions for filter button titles
 
 - [ ] **6.5** Create filters styles (`app/(public)/vehicles/{category}/_components/Filters/Filters.styles.ts`)
+  - **Add `"use client"` directive at the top** (required for styled-components)
 
 - [ ] **6.6** Create more filters modal (`app/(public)/vehicles/{category}/_components/modals/MoreFiltersModal/`)
   - Modal for additional filters (district, city, price, etc.)
+  - **Add `"use client"` directive at the top of `.styles.ts` file** (required for styled-components)
 
 ### Phase 7: Detail Page
 
@@ -1225,6 +1232,7 @@ Use this checklist when implementing a new vehicle category:
   - Error modal for delete errors
 
 - [ ] **7.3** Create detail styles (`app/(public)/vehicles/{category}/_components/{Entity}DetailClient/{Entity}DetailClient.styles.ts`)
+  - **Add `"use client"` directive at the top** (required for styled-components)
 
 ### Phase 8: Integration
 

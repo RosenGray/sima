@@ -12,6 +12,7 @@ alwaysApply: true
 - Component file: `{FormName}.tsx` (e.g., `CarPublishForm.tsx`)
 - Styled components file: `{FormName}.styles.ts` (e.g., `CarPublishForm.styles.ts`)
 - Always use "use client" directive at the top of form components
+- **ALWAYS use "use client" directive at the top of `.styles.ts` files** that use `styled-components` (see styling guidelines)
 - Component name should start with a capital letter and use PascalCase
 
 ## Required Imports

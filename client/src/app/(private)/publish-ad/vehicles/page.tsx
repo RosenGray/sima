@@ -47,7 +47,7 @@ const vehicleCategories: VehicleCategory[] = [
     title: "Мотоциклы",
     description: "Мотоциклы различных классов и моделей",
     icon: <MotorcycleIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/motorcycles",
+    href: "/publish-ad/vehicles/motorcycles/create",
   },
   {
     id: "scooters",
