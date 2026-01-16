@@ -12,6 +12,11 @@ const categoryEntries = Object.entries(
   specialVehicleCategoriesMap,
 ) as Array<[SpecialVehicleCategoryId, SpecialVehicleCategory]>;
 
+const categoryLookupCache = new Map<
+  SpecialVehicleCategoryId,
+  SpecialVehicleCategory
+>(categoryEntries);
+
 const kindOptionsCache = new Map<SpecialVehicleCategoryId, Option[]>();
 const kindLookupCache = new Map<
   SpecialVehicleCategoryId,
@@ -64,6 +69,4 @@ export const getSpecialVehicleKindById = (
 
 export const getSpecialVehicleCategoryById = (
   id: SpecialVehicleCategoryId,
-): SpecialVehicleCategory | undefined => {
-  return specialVehicleCategoriesMap[id];
-};
+): SpecialVehicleCategory | undefined => categoryLookupCache.get(id);
