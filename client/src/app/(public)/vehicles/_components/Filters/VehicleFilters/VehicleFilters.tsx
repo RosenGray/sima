@@ -97,7 +97,16 @@ const vehicleCategories: VehicleCategory[] = [
     icon: (
       <AtvIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
     ),
-    href: "/publish-ad/vehicles/atv",
+    href: "/vehicles/special-vehicles?category=ATVS",
+  },
+  {
+    id: "trucks",
+    title: "Грузовики",
+    description: "Грузовики и фургоны для перевозки грузов",
+    icon: (
+      <TruckIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
+    ),
+    href: "/vehicles/special-vehicles?category=TRUCKS",
   },
   {
     id: "special-vehicles",
