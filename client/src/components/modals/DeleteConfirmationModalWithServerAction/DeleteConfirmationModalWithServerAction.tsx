@@ -1,6 +1,5 @@
 "use client";
 import { AlertDialog, Button, Flex } from "@radix-ui/themes";
-import { useState } from "react";
 
 interface DeleteConfirmationModalWithServerActionProps {
   open: boolean;

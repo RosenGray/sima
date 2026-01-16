@@ -73,12 +73,16 @@ export async function deleteOffRoadVehicleAd(offRoadVehiclePublicId: string) {
   }
 }
 
+// Alternative version with redirect
 export async function deleteOffRoadVehicleAdWithRedirect(
-  offRoadVehiclePublicId: string,
-  initialState: unknown,
-  formData: FormData
+  offRoadVehiclePublicId: string
 ) {
   const result = await deleteOffRoadVehicleAd(offRoadVehiclePublicId);
-  revalidatePath("/vehicles/off-road", "layout");
-  redirect("/vehicles/off-road");
+
+  if (result.success) {
+    revalidatePath("/vehicles/off-road", "layout");
+    redirect("/vehicles/off-road");
+  }
+
+  return result;
 }
