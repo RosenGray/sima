@@ -79,6 +79,9 @@ export async function deleteCommercialVehicleAdWithRedirect(
   formData: FormData
 ) {
   const result = await deleteCommercialVehicleAd(commercialVehiclePublicId);
-  revalidatePath("/vehicles/commercial-vehicles", "layout");
-  redirect("/vehicles/commercial-vehicles");
+  if(result.success) {
+    revalidatePath("/vehicles/commercial-vehicles", "layout");
+    redirect("/vehicles/commercial-vehicles");
+  }
+  return result;
 }
