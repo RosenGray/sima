@@ -1157,7 +1157,10 @@ Use this checklist when implementing a new vehicle category:
 
 ### Phase 5: Listing Page
 
+**⚠️ IMPORTANT: Create Phase 6 (Filters) BEFORE or AT THE SAME TIME as Phase 5.1, since the page imports Filters component. If you create the page first, you'll get a "Module not found" error.**
+
 - [ ] **5.1** Create page (`app/(public)/vehicles/{category}/page.tsx`)
+  - **⚠️ CRITICAL: Ensure Filters component exists (Phase 6.1) before importing it here**
   - Define `searchParams` interface with filter params
   - Extract and process filters using `searchParamsToFilters`
   - Create `contentKey` for Suspense
@@ -1188,6 +1191,8 @@ Use this checklist when implementing a new vehicle category:
   - Map entities to Link + Card components
 
 ### Phase 6: Filters
+
+**⚠️ IMPORTANT: Create this phase BEFORE or AT THE SAME TIME as Phase 5.1, since the listing page imports the Filters component.**
 
 - [ ] **6.1** Create filters wrapper (`app/(public)/vehicles/{category}/_components/Filters/Filters.tsx`)
   - Use `VehicleFilters` wrapper component

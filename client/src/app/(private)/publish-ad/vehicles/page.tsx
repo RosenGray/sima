@@ -54,28 +54,28 @@ const vehicleCategories: VehicleCategory[] = [
     title: "Скутеры",
     description: "Скутеры и мопеды для городской езды",
     icon: <ScooterIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/scooters",
+    href: "/publish-ad/vehicles/scooters/create",
   },
   {
     id: "atv",
     title: "Квадроциклы",
     description: "Квадроциклы и вездеходы для бездорожья",
     icon: <AtvIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/atv",
+    href: "/publish-ad/vehicles/atv/create",
   },
   {
     id: "trailers",
     title: "Прицепы, караваны и специальные",
     description: "Прицепы, караваны и специальные транспортные средства",
     icon: <CaravanIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/trailers",
+    href: "/publish-ad/vehicles/trailers/create",
   },
   {
     id: "accessories",
     title: "Аксессуары и звук",
     description: "Автомобильные аксессуары и аудиосистемы",
     icon: <AccessoriesAndSoundIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/accessories",
+    href: "/publish-ad/vehicles/accessories/create",
   },
 ];
 
