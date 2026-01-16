@@ -64,11 +64,18 @@ const vehicleCategories: VehicleCategory[] = [
     href: "/publish-ad/vehicles/atv/create",
   },
   {
-    id: "trailers",
-    title: "Прицепы, караваны и специальные",
+    id: "trucks",
+    title: "Грузовики",
+    description: "Грузовики и фургоны для перевозки грузов",
+    icon: <TruckIcon viewBox={{ width: 120, height: 120 }}/>,
+    href: "/publish-ad/vehicles/trucks/create",
+  },
+  {
+    id: "special-vehicles",
+    title: "Специальные транспортные средства",
     description: "Прицепы, караваны и специальные транспортные средства",
     icon: <CaravanIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/trailers/create",
+    href: "/publish-ad/vehicles/special-vehicles/create",
   },
   {
     id: "accessories",
