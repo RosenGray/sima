@@ -33,7 +33,7 @@ const vehicleCategories: VehicleCategory[] = [
     title: "Внедорожники и джипы",
     description: "Внедорожники, джипы и автомобили повышенной проходимости",
     icon: <TruckIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/off-road",
+    href: "/publish-ad/vehicles/off-road/create",
   },
   {
     id: "commercial",

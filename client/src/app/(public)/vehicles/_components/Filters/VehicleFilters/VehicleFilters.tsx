@@ -49,7 +49,7 @@ const vehicleCategories: VehicleCategory[] = [
     icon: (
       <TruckIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
     ),
-    href: "/publish-ad/vehicles/off-road",
+    href: "/vehicles/off-road",
   },
   {
     id: "commercial",
