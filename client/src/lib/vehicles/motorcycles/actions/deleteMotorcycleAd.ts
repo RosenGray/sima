@@ -75,12 +75,16 @@ export async function deleteMotorcycleAd(motorcyclePublicId: string) {
   }
 }
 
+// Alternative version with redirect
 export async function deleteMotorcycleAdWithRedirect(
-  motorcyclePublicId: string,
-  initialState: unknown,
-  formData: FormData
+  motorcyclePublicId: string
 ) {
   const result = await deleteMotorcycleAd(motorcyclePublicId);
-  revalidatePath("/vehicles/motorcycles", "layout");
-  redirect("/vehicles/motorcycles");
+
+  if (result.success) {
+    revalidatePath("/vehicles/motorcycles", "layout");
+    redirect("/vehicles/motorcycles");
+  }
+
+  return result;
 }

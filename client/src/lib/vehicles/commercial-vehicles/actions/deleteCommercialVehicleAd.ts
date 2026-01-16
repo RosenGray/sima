@@ -73,15 +73,16 @@ export async function deleteCommercialVehicleAd(commercialVehiclePublicId: strin
   }
 }
 
+// Alternative version with redirect
 export async function deleteCommercialVehicleAdWithRedirect(
-  commercialVehiclePublicId: string,
-  initialState: unknown,
-  formData: FormData
+  commercialVehiclePublicId: string
 ) {
   const result = await deleteCommercialVehicleAd(commercialVehiclePublicId);
-  if(result.success) {
+
+  if (result.success) {
     revalidatePath("/vehicles/commercial-vehicles", "layout");
     redirect("/vehicles/commercial-vehicles");
   }
+
   return result;
 }
