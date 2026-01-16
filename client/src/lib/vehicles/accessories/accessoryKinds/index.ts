@@ -12,6 +12,11 @@ const categoryEntries = Object.entries(
   accessoryCategoriesMap,
 ) as Array<[AccessoryCategoryId, AccessoryCategory]>;
 
+const categoryLookupCache = new Map<
+  AccessoryCategoryId,
+  AccessoryCategory
+>(categoryEntries);
+
 const kindOptionsCache = new Map<AccessoryCategoryId, Option[]>();
 const kindLookupCache = new Map<
   AccessoryCategoryId,
@@ -64,6 +69,4 @@ export const getAccessoryKindById = (
 
 export const getAccessoryCategoryById = (
   id: AccessoryCategoryId,
-): AccessoryCategory | undefined => {
-  return accessoryCategoriesMap[id];
-};
+): AccessoryCategory | undefined => categoryLookupCache.get(id);
