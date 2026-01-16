@@ -70,7 +70,7 @@ export const DialogPrimitiveButtonContent = styled(Dialog.Content)`
 
 // Content container - matches DialogContentContainer from DialogButton
 export const DialogContentContainer = styled(Box)`
-border:1px solid red;
+
   /* Additional container styling if needed */
 `;
 

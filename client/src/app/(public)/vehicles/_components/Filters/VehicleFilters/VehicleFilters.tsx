@@ -1,6 +1,6 @@
 "use client";
-import { FC, ReactNode } from "react";
-import { Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+import { FC, ReactNode, useMemo } from "react";
+import { Flex, Heading, IconButton, Text, Tooltip } from "@radix-ui/themes";
 import { MixerHorizontalIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 import { useFiltersModal } from "@/components/filters/FiltersContext";
 import {
@@ -22,8 +22,7 @@ import AtvIcon from "@/components/svg/vehicles/Atv/Atv";
 import CaravanIcon from "@/components/svg/vehicles/Caravan/Caravan";
 import AccessoriesAndSoundIcon from "@/components/svg/vehicles/AccessoriesAndSound/AccessoriesAndSound";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface VehicleCategory {
   id: string;
@@ -50,7 +49,7 @@ const vehicleCategories: VehicleCategory[] = [
     icon: (
       <TruckIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
     ),
-    href: "/publish-ad/vehicles/off-road",
+    href: "/vehicles/off-road",
   },
   {
     id: "commercial",
@@ -63,7 +62,7 @@ const vehicleCategories: VehicleCategory[] = [
         viewBox={{ width: 120, height: 120 }}
       />
     ),
-    href: "/publish-ad/vehicles/commercial",
+    href: "/vehicles/commercial-vehicles",
   },
   {
     id: "motorcycles",
@@ -76,7 +75,7 @@ const vehicleCategories: VehicleCategory[] = [
         viewBox={{ width: 120, height: 120 }}
       />
     ),
-    href: "/publish-ad/vehicles/motorcycles",
+    href: "/vehicles/motorcycles",
   },
   {
     id: "scooters",
@@ -89,7 +88,7 @@ const vehicleCategories: VehicleCategory[] = [
         viewBox={{ width: 120, height: 120 }}
       />
     ),
-    href: "/publish-ad/vehicles/scooters",
+    href: "/vehicles/scooters",
   },
   {
     id: "atv",
@@ -98,11 +97,20 @@ const vehicleCategories: VehicleCategory[] = [
     icon: (
       <AtvIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
     ),
-    href: "/publish-ad/vehicles/atv",
+    href: "/vehicles/special-vehicles?category=ATVS",
   },
   {
-    id: "trailers",
-    title: "Прицепы, караваны и специальные",
+    id: "trucks",
+    title: "Грузовики",
+    description: "Грузовики и фургоны для перевозки грузов",
+    icon: (
+      <TruckIcon width={45} height={45} viewBox={{ width: 120, height: 120 }} />
+    ),
+    href: "/vehicles/special-vehicles?category=TRUCKS",
+  },
+  {
+    id: "special-vehicles",
+    title: "Специальные транспортные средства",
     description: "Прицепы, караваны и специальные транспортные средства",
     icon: (
       <CaravanIcon
@@ -111,7 +119,7 @@ const vehicleCategories: VehicleCategory[] = [
         viewBox={{ width: 120, height: 120 }}
       />
     ),
-    href: "/publish-ad/vehicles/trailers",
+    href: "/vehicles/special-vehicles",
   },
   {
     id: "accessories",
@@ -124,7 +132,7 @@ const vehicleCategories: VehicleCategory[] = [
         viewBox={{ width: 120, height: 120 }}
       />
     ),
-    href: "/publish-ad/vehicles/accessories",
+    href: "/vehicles/accessories",
   },
 ];
 
@@ -139,7 +147,42 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
 }) => {
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
   const pathname = usePathname();
-  console.log('pathname', pathname);
+  const searchParams = useSearchParams();
+
+  // Helper function to check if a category is active
+  const isCategoryActive = useMemo(() => {
+    return (category: VehicleCategory): boolean => {
+      // Parse the href to extract pathname and query params
+      const [categoryPathname, categoryQuery] = category.href.split("?");
+      
+      // Check if pathname matches
+      if (pathname !== categoryPathname) {
+        return false;
+      }
+
+      // If category has query params, check if they match
+      if (categoryQuery) {
+        const categoryParams = new URLSearchParams(categoryQuery);
+        const currentCategory = searchParams.get("category");
+        const expectedCategory = categoryParams.get("category");
+        
+        // If both have category params, they must match
+        if (expectedCategory) {
+          return currentCategory === expectedCategory;
+        }
+      } else {
+        // If category has no query params, check that current URL also has no category param
+        // (unless we're on special-vehicles page, where category param is optional)
+        if (pathname === "/vehicles/special-vehicles") {
+          // For special-vehicles without category, check that no category param exists
+          return !searchParams.get("category");
+        }
+      }
+
+      return true;
+    };
+  }, [pathname, searchParams]);
+
   return (
     <>
       {/* Desktop View */}
@@ -158,12 +201,13 @@ const VehicleFilters: FC<VehicleFiltersProps> = ({
         <VehicleFiltersNavBar>
           <VehiclesFiltersNavBarList>
             {vehicleCategories.map((category) => (
-              <VehicleFiltersNavBarItem $isActive={pathname === category.href} key={category.id}>
-                <Link href={category.href}>
-                  {category.icon}
-                  {/* <Text size="2">{category.title}</Text> */}
-                </Link>
-              </VehicleFiltersNavBarItem>
+              <Tooltip content={category.title} key={category.id}>
+                <VehicleFiltersNavBarItem
+                  $isActive={isCategoryActive(category)}
+                >
+                  <Link href={category.href}>{category.icon}</Link>
+                </VehicleFiltersNavBarItem>
+              </Tooltip>
             ))}
           </VehiclesFiltersNavBarList>
         </VehicleFiltersNavBar>

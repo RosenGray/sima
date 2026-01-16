@@ -10,6 +10,14 @@ export interface CarSearchFilters {
   model?: string[];
   yearFrom?: string;
   yearTo?: string;
+  numberOfHand?: string[];
+  transmission?: string[];
+  engineType?: string[];
+  district?: string[];
+  city?: string[];
+  priceFrom?: number;
+  priceTo?: number;
+  color?: string;
 }
 
 interface PaginatedResponse {
@@ -43,6 +51,14 @@ class CarRepository {
         model: sanitize(searchFilters.model),
         yearFrom: sanitize(searchFilters.yearFrom),
         yearTo: sanitize(searchFilters.yearTo),
+        numberOfHand: sanitize(searchFilters.numberOfHand),
+        transmission: sanitize(searchFilters.transmission),
+        engineType: sanitize(searchFilters.engineType),
+        district: sanitize(searchFilters.district),
+        city: sanitize(searchFilters.city),
+        priceFrom: sanitize(searchFilters.priceFrom),
+        priceTo: sanitize(searchFilters.priceTo),
+        color: sanitize(searchFilters.color),
       };
 
       // Build search filter using MongoDB query
@@ -81,6 +97,69 @@ class CarRepository {
             searchFilter.yearOfManufacture = { $lte: yearToNum };
           }
         }
+      }
+
+      // Add numberOfHand filter
+      if (sanitizedFilters.numberOfHand) {
+        const numberOfHandNums = sanitizedFilters.numberOfHand
+          .map((hand) => Number(hand))
+          .filter((num) => !Number.isNaN(num) && num >= 1);
+        if (numberOfHandNums.length > 0) {
+          searchFilter.numberOfHand = { $in: numberOfHandNums };
+        }
+      }
+
+      // Add transmission filter
+      if (sanitizedFilters.transmission) {
+        searchFilter.transmission = { $in: sanitizedFilters.transmission };
+      }
+
+      // Add engineType filter
+      if (sanitizedFilters.engineType) {
+        searchFilter.engineType = { $in: sanitizedFilters.engineType };
+      }
+
+      // Add district filter
+      if (sanitizedFilters.district) {
+        searchFilter.district = { $in: sanitizedFilters.district };
+      }
+
+      // Add city filter
+      if (sanitizedFilters.city) {
+        searchFilter.city = { $in: sanitizedFilters.city };
+      }
+
+      // Add price range filters
+      // Handle priceFrom (minimum price)
+      if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
+        const priceFromNum = Number(sanitizedFilters.priceFrom);
+        if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+          searchFilter.price = { $gte: priceFromNum };
+        }
+      }
+
+      // Handle priceTo (maximum price)
+      if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
+        const priceToNum = Number(sanitizedFilters.priceTo);
+        if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+          // Combine with existing price filter if exists
+          if (searchFilter.price) {
+            searchFilter.price = {
+              ...searchFilter.price,
+              $lte: priceToNum,
+            };
+          } else {
+            searchFilter.price = { $lte: priceToNum };
+          }
+        }
+      }
+
+      // Add color filter (text search with regex)
+      if (sanitizedFilters.color?.trim()) {
+        searchFilter.color = {
+          $regex: sanitizedFilters.color.trim(),
+          $options: "i", // Case-insensitive
+        };
       }
 
       // Calculate pagination

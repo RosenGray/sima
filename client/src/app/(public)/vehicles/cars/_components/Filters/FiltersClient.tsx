@@ -8,13 +8,23 @@ import {
   getVehicleModelsToSelectOptionsByManufacturerIds,
 } from "@/lib/vehicles/cars/vehicleModels";
 import { VehicleManufacturerId } from "@/lib/vehicles/cars/vehicleManufacturers/types/vehicleManufacturer.schema";
-import { getYearsOptions } from "@/lib/vehicles/utils/vehicles.utils";
+import {
+  getYearsOptions,
+  getNumberOfHandsOptions,
+} from "@/lib/vehicles/utils/vehicles.utils";
+import { TransmissionType, EngineType } from "@/lib/vehicles/cars/types/cars.types";
+import {
+  getCitiesToSelectOptionsByDistrictIds,
+  mapAreasToSelectOptions,
+} from "@/lib/cities";
+import { Districts } from "@/lib/cities/types/cities.schema";
 import { MultiValue } from "react-select";
 import {
   AllSelectedFilterOptionsMap,
   Option,
 } from "@/components/filters/select/types";
 import { Button, Text } from "@radix-ui/themes";
+import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { CarFilter, CarFilterSchema } from "./filters.types";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
@@ -34,9 +44,36 @@ import { useFiltersModal } from "@/components/filters/FiltersContext";
 
 enableMapSet();
 
+// Map TransmissionType enum to select options
+const transmissionOptions = Object.values(TransmissionType).map((value) => ({
+  value,
+  label:
+    value === TransmissionType.MANUAL
+      ? "Механическая"
+      : value === TransmissionType.AUTOMATIC
+      ? "Автоматическая"
+      : value === TransmissionType.TIPTRONIC
+      ? "Типтроник"
+      : "Роботизированная",
+}));
+
+// Map EngineType enum to select options
+const engineTypeOptions = Object.values(EngineType).map((value) => ({
+  value,
+  label:
+    value === EngineType.GASOLINE
+      ? "Бензин"
+      : value === EngineType.DIESEL
+      ? "Дизель"
+      : value === EngineType.TURBO_DIESEL
+      ? "Турбодизель"
+      : value === EngineType.HYBRID
+      ? "Гибрид"
+      : "Электрический",
+}));
+
 const FiltersClient: FC = () => {
   const { closeModal } = useFiltersModal();
-  console.log('closeModal', closeModal);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -48,6 +85,11 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["numberOfHand", []],
+        ["transmission", []],
+        ["engineType", []],
+        ["district", []],
+        ["city", []],
       ])
     );
   const [moreFilters, setMoreFilters] = useState({
@@ -69,6 +111,10 @@ const FiltersClient: FC = () => {
   const selectedManufacturerIds = allSelectedFilterOptions
     .get("manufacturer")!
     .map((option) => option.value) as VehicleManufacturerId[];
+
+  const selectedDistricts = allSelectedFilterOptions
+    .get("district")!
+    .map((option) => option.value) as Districts[];
 
   const handleSubmitAllFilters = useCallback(() => {
     const formData = new FormData();
@@ -132,6 +178,10 @@ const FiltersClient: FC = () => {
           if (paramName === "manufacturer" && options.length === 0) {
             draft.set("model", []);
           }
+          // When district changes, clear city if district is empty
+          if (paramName === "district" && options.length === 0) {
+            draft.set("city", []);
+          }
         });
       });
     },
@@ -145,6 +195,11 @@ const FiltersClient: FC = () => {
         ["model", []],
         ["yearFrom", []],
         ["yearTo", []],
+        ["numberOfHand", []],
+        ["transmission", []],
+        ["engineType", []],
+        ["district", []],
+        ["city", []],
       ])
     );
     setMoreFilters({
@@ -180,6 +235,15 @@ const FiltersClient: FC = () => {
     allSelectedFilterOptions
   );
 
+  const numberOfHandsOptions = useMemo(() => getNumberOfHandsOptions(), []);
+
+  const areasOptions = useMemo(() => mapAreasToSelectOptions(), []);
+
+  const citiesOptions = useMemo(
+    () => getCitiesToSelectOptionsByDistrictIds(selectedDistricts),
+    [selectedDistricts]
+  );
+
   const handleMoreFiltersChange = useCallback(
     (key: keyof typeof moreFilters, value: string) => {
       setMoreFilters((prevMoreFilters) => {
@@ -202,6 +266,7 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
 
         <SearchMultiSelect
@@ -213,6 +278,7 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("model")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
 
         <DialogPrimitiveButton title={yearDialogButtonTitle} showOverlay={true}>
@@ -286,6 +352,62 @@ const FiltersClient: FC = () => {
   const renderMoreFilters = () => {
     return (
       <ModalFiltersSection>
+        <SearchMultiSelect
+          placeholder="Выберите район"
+          displayName="районы"
+          paramName="district"
+          options={areasOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("district")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          displayName="города"
+          placeholder="Выберите город"
+          paramName="city"
+          options={citiesOptions}
+          isDisabled={selectedDistricts.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("city")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          placeholder="Количество рук"
+          displayName="количество рук"
+          paramName="numberOfHand"
+          options={numberOfHandsOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("numberOfHand")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          placeholder="Коробка передач"
+          displayName="коробка передач"
+          paramName="transmission"
+          options={transmissionOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("transmission")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
+        <SearchMultiSelect
+          placeholder="Тип двигателя"
+          displayName="тип двигателя"
+          paramName="engineType"
+          options={engineTypeOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("engineType")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          menuPosition="fixed"
+        />
+
         <PriceTextSearch
           name="priceFrom"
           placeholder="0"
@@ -308,6 +430,7 @@ const FiltersClient: FC = () => {
       </ModalFiltersSection>
     );
   };
+  //MoreFiltersModal
 
   return (
     <>
@@ -319,16 +442,19 @@ const FiltersClient: FC = () => {
           onClick={() => setIsMoreFiltersModalOpen(true)}
           size="3"
         >
-          <Text size="2">Больше фильтров</Text>
+          <MixerHorizontalIcon width="18" height="18" />
+          <Text size="2">еще фильтры</Text>
+          
         </Button>
 
         <Button
-          variant="outline"
-          color="gray"
+          variant="solid"
+          color="yellow"
           disabled={isSearchButtonDisabled}
           onClick={handleSubmitAllFilters}
           size="3"
         >
+          <MagnifyingGlassIcon width="18" height="18" />
           <Text size="3">Поиск</Text>
         </Button>
         <Button
@@ -360,8 +486,8 @@ const FiltersClient: FC = () => {
 
         <MobileFilterFooter>
           <Button
-            variant="outline"
-            color="gray"
+            variant="solid"
+            color="yellow"
             disabled={isSearchButtonDisabled}
             onClick={() => {
               handleSubmitAllFilters();
@@ -369,6 +495,7 @@ const FiltersClient: FC = () => {
             }}
             size="3"
           >
+            <MagnifyingGlassIcon width="18" height="18" />
             <Text size="3">Поиск</Text>
           </Button>
           <Button

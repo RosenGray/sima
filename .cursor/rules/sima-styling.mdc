@@ -16,10 +16,27 @@ alwaysApply: true
 
 ## Styled Components Best Practices
 
+- **ALWAYS add `"use client"` directive at the top of ALL `.styles.ts` files** that use `styled-components`. This is required because `styled-components` uses React context internally, which only works in Client Components.
 - Always extend Radix UI components when possible: `styled(Box)`, `styled(Grid)`, `styled(Flex)`, `styled(Card)`, etc.
 - Use Radix UI CSS variables for theming: `var(--accent-a3)`, `var(--gray-6)`, `var(--radius-4)`, `var(--space-4)`, etc.
-- Import styled-components: `import { styled } from "styled-components"`
+- Import styled-components: `import { styled } from "styled-components"` or `import styled from "styled-components"`
 - Import Radix components: `import { Box, Flex, Grid, Card } from "@radix-ui/themes"`
+
+### Critical: "use client" Directive
+
+**Every `.styles.ts` file that imports `styled` from `styled-components` MUST have `"use client"` as the first line:**
+
+```typescript
+"use client";
+import { Box } from "@radix-ui/themes";
+import { styled } from "styled-components";
+
+export const MyStyledComponent = styled(Box)`
+  /* styles */
+`;
+```
+
+This is required even when the styles file is imported by a Server Component, because `styled-components` uses React Context internally which only works in Client Components.
 
 ## Responsive Styling and Layout
 

@@ -1,7 +1,5 @@
 import {
-  GroupBase,
   MultiValue,
-  OptionsOrGroups,
   Props,
   SingleValue,
 } from "react-select";
@@ -30,6 +28,11 @@ export interface SearchMultiSelectProps
   label?: string;
   paramName: string;
   displayName?: string;
+  isPortalTarget?: boolean;
+  modalPortalTarget?: HTMLElement | null;
+  menuPosition?: "absolute" | "fixed";
+  menuPlacement?: "auto" | "bottom" | "top";
+  maxMenuHeight?: number;
 }
 
 export interface SearchSingleSelectProps
@@ -44,6 +47,10 @@ export interface SearchSingleSelectProps
   paramName: string;
   displayName?: string;
   isPortalTarget?: boolean;
+  modalPortalTarget?: HTMLElement | null;
+  menuPosition?: "absolute" | "fixed";
+  menuPlacement?: "auto" | "bottom" | "top";
+  maxMenuHeight?: number;
 }
 
 

@@ -10,6 +10,7 @@ import OptionWithCheckbox from "./OptionWithCheckbox";
 import ValueContainer from "./ValueContainer";
 import CustomMenu from "./CustomMenu";
 import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
+import { useDropdownCoordination } from "@/components/filters/FiltersContext";
 
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
@@ -19,13 +20,21 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   maxSelectedOptions,
   selectedOptions,
   setAllSelectedFilterOptions,
+  isPortalTarget = false,
+  menuPosition,
+  menuPlacement = "auto",
+  maxMenuHeight = 250,
+  isDisabled,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
+  const { openDropdownId, setOpenDropdownId } = useDropdownCoordination();
   const searchParams = useSearchParams();
   const id = useId();
+  const dropdownId = `multi-select-${paramName}-${id}`;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const paramValues = searchParams.getAll(paramName);
+  const [_menuPosition, setMenuPosition] = useState(menuPosition);
   const paramSelectionOptions = options.filter((opt) =>
     paramValues.includes(opt.value)
   );
@@ -47,8 +56,10 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     // 3. Fixed positioning can fail when portal parent is outside viewport
     if (!isMobile && portalTarget) {
       setMenuPortalTarget(portalTarget);
+      setMenuPosition(menuPosition);
     } else {
       setMenuPortalTarget(undefined);
+      setMenuPosition(undefined);
     }
 
     // Handle window resize
@@ -63,7 +74,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [portalTarget]);
+  }, [portalTarget, menuPosition]);
 
   useEffect(() => {
     if (!hasInitialized.current && paramSelectionOptions.length > 0) {
@@ -71,6 +82,13 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
       hasInitialized.current = true;
     }
   }, [paramName, paramSelectionOptions, setAllSelectedFilterOptions]);
+
+  // Close this dropdown when another dropdown opens
+  useEffect(() => {
+    if (openDropdownId && openDropdownId !== dropdownId && menuIsOpen) {
+      setMenuIsOpen(false);
+    }
+  }, [openDropdownId, dropdownId, menuIsOpen]);
 
   const handleChange = useCallback(
     (options: MultiValue<Option>) => {
@@ -101,8 +119,82 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     return selectedCount >= maxSelectedOptions;
   };
 
+  // Track if we're on mobile
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => window.innerWidth < 768;
+    setIsMobile(checkMobile());
+    
+    const handleResize = () => setIsMobile(checkMobile());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Ref for the container element to attach native event listeners (desktop only)
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Store current values in refs to access in native event handlers
+  const menuIsOpenRef = useRef(menuIsOpen);
+  const isDisabledRef = useRef(isDisabled);
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    menuIsOpenRef.current = menuIsOpen;
+  }, [menuIsOpen]);
+  
+  useEffect(() => {
+    isDisabledRef.current = isDisabled;
+  }, [isDisabled]);
+
+  // Use native event listeners ONLY on desktop - for handling Radix Dialog blocking react-select
+  // On mobile, let react-select handle events naturally
+  useEffect(() => {
+    // Skip on mobile - let react-select handle events naturally
+    if (isMobile) return;
+    
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleInteraction = (e: MouseEvent) => {
+      // Don't toggle if the select is disabled
+      if (isDisabledRef.current) {
+        return;
+      }
+      // Don't interfere if clicking on a button (like confirm/cancel in CustomMenu)
+      if ((e.target as HTMLElement).closest("button")) {
+        return;
+      }
+      // Don't interfere if clicking inside the menu (on options)
+      if ((e.target as HTMLElement).closest('[class*="menu"]')) {
+        return;
+      }
+
+      // Toggle menu state
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Calculate new state before updating (avoid nested setState calls)
+      const newState = !menuIsOpenRef.current;
+      setMenuIsOpen(newState);
+      
+      // Update dropdown coordination state separately
+      if (newState) {
+        setOpenDropdownId(dropdownId);
+      } else {
+        setOpenDropdownId(null);
+      }
+    };
+
+    // Only add mousedown listener on desktop
+    container.addEventListener("mousedown", handleInteraction, { capture: true });
+
+    return () => {
+      container.removeEventListener("mousedown", handleInteraction, { capture: true });
+    };
+  }, [dropdownId, setOpenDropdownId, isMobile]);
+
   return (
-    <Box>
+    <Box ref={containerRef}>
       {label && (
         <Text style={{ lineHeight: "2" }} htmlFor={rest.id} as="label" size="2">
           {label}
@@ -111,7 +203,13 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
 
       <Select<Option, true>
         {...rest}
-        menuPortalTarget={menuPortalTarget}
+        isDisabled={isDisabled}
+        menuPortalTarget={
+          isPortalTarget ? menuPortalTarget : undefined
+        }
+        menuPosition={_menuPosition}
+        menuPlacement={menuPlacement}
+        maxMenuHeight={maxMenuHeight}
         value={selectedOptions}
         name={`search-multi-select-${paramName}`}
         instanceId={id}
@@ -121,13 +219,28 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         isMulti
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
-        menuIsOpen={menuIsOpen}
-        onMenuOpen={() => setMenuIsOpen(true)}
+        openMenuOnFocus={false}
+        menuShouldScrollIntoView={false}
+        // On desktop: controlled mode (we manage menuIsOpen)
+        // On mobile: uncontrolled mode (react-select manages it)
+        menuIsOpen={isMobile ? undefined : menuIsOpen}
+        onMenuOpen={() => {
+          if (isMobile) {
+            setOpenDropdownId(dropdownId);
+          }
+        }}
+        onMenuClose={() => {
+          setMenuIsOpen(false);
+          setOpenDropdownId(null);
+        }}
         isOptionDisabled={isOptionDisabled}
         {...({
           displayName,
           maxSelectedOptions,
-          customMenuCloseHandler: () => setMenuIsOpen(false),
+          customMenuCloseHandler: () => {
+            setMenuIsOpen(false);
+            setOpenDropdownId(null);
+          },
         } as Partial<CustomSelectProps>)}
         components={{
           Option: OptionWithCheckbox,
