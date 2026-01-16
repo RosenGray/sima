@@ -100,8 +100,8 @@ const vehicleCategories: VehicleCategory[] = [
     href: "/publish-ad/vehicles/atv",
   },
   {
-    id: "trailers",
-    title: "Прицепы, караваны и специальные",
+    id: "special-vehicles",
+    title: "Специальные транспортные средства",
     description: "Прицепы, караваны и специальные транспортные средства",
     icon: (
       <CaravanIcon
@@ -110,7 +110,7 @@ const vehicleCategories: VehicleCategory[] = [
         viewBox={{ width: 120, height: 120 }}
       />
     ),
-    href: "/publish-ad/vehicles/trailers",
+    href: "/vehicles/special-vehicles",
   },
   {
     id: "accessories",
