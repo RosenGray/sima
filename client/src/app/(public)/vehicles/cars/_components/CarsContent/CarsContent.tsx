@@ -3,11 +3,13 @@ import { carRepository, CarSearchFilters } from "@/lib/vehicles/cars/repository/
 import { CarCards } from "../CarCards/CarCards";
 import {
   CarsGrid,
+  Header,
   StickyPaginationWrapper,
   Title,
 } from "../../page.styles";
-import { Text } from "@radix-ui/themes";
+import { Box, Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
+import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
 
 interface CarsContentProps {
   filters: CarSearchFilters;
@@ -22,11 +24,17 @@ const CarsContent: FC<CarsContentProps> = async ({
 
   return (
     <>
-      <Title size="5">Автомобили</Title>
-
-      <Text as="p" size="2" color="gray">
-        {carsResponse.totalCount} результатов найдено
-      </Text>
+   <Header>
+    <Box>
+    <Title size="5">Автомобили</Title>
+    <Text as="p" size="2" color="gray">
+      {carsResponse.totalCount} результатов найдено
+    </Text>
+    </Box>
+    <DialogPrimitiveButton title="Сортировать по" showOverlay={false}>
+     123
+    </DialogPrimitiveButton>
+   </Header>
 
       <CarsGrid
         mt="25px"
@@ -49,3 +57,22 @@ const CarsContent: FC<CarsContentProps> = async ({
 
 export default CarsContent;
 
+{/* <DialogPrimitiveButton title={yearDialogButtonTitle} showOverlay={true}>
+<SearchSingleSelect
+  placeholder="Год от"
+  displayName="год от"
+  paramName="yearFrom"
+  options={yearsOptions}
+  selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+/>
+
+<SearchSingleSelect
+  placeholder="Год до"
+  displayName="год до"
+  paramName="yearTo"
+  options={yearsOptions}
+  selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+/>
+</DialogPrimitiveButton> */}
