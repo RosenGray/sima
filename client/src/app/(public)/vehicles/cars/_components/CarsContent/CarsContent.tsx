@@ -10,6 +10,7 @@ import {
 import { Box, Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
 import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
+import DialogPrimitiveOnMobileStickyButton from "@/components/modals/DialogPrimitiveOnMobileStickyButton/DialogPrimitiveOnMobileStickyButton";
 
 interface CarsContentProps {
   filters: CarSearchFilters;
@@ -31,9 +32,9 @@ const CarsContent: FC<CarsContentProps> = async ({
       {carsResponse.totalCount} результатов найдено
     </Text>
     </Box>
-    <DialogPrimitiveButton title="Сортировать по" showOverlay={false}>
+    <DialogPrimitiveOnMobileStickyButton title="Сортировать по" showOverlay={true}>
      123
-    </DialogPrimitiveButton>
+    </DialogPrimitiveOnMobileStickyButton>
    </Header>
 
       <CarsGrid
