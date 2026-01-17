@@ -31,5 +31,6 @@ export const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 1em;
   border:2px solid red;
 `;

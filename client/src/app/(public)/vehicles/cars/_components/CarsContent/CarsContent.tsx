@@ -9,13 +9,24 @@ import {
 } from "../../page.styles";
 import { Box, Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
-import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
 import DialogPrimitiveOnMobileStickyButton from "@/components/modals/DialogPrimitiveOnMobileStickyButton/DialogPrimitiveOnMobileStickyButton";
+import SortFilters from "@/components/SortFilters/SortFilters";
 
 interface CarsContentProps {
   filters: CarSearchFilters;
   currentPage: number;
 }
+
+const sortFilters = [
+  {
+    title: "Дата",
+    href: "/vehicles/cars?sort=date",
+  },
+  {
+    title: "Цена",
+    href: "/vehicles/cars?sort=price",
+  },
+];
 
 const CarsContent: FC<CarsContentProps> = async ({
   filters,
@@ -25,17 +36,17 @@ const CarsContent: FC<CarsContentProps> = async ({
 
   return (
     <>
-   <Header>
-    <Box>
-    <Title size="5">Автомобили</Title>
-    <Text as="p" size="2" color="gray">
-      {carsResponse.totalCount} результатов найдено
-    </Text>
-    </Box>
-    <DialogPrimitiveOnMobileStickyButton title="Сортировать по" showOverlay={true}>
-     123
-    </DialogPrimitiveOnMobileStickyButton>
-   </Header>
+      <Header>
+        <Box>
+          <Title size="5">Автомобили</Title>
+          <Text as="p" size="2" color="gray">
+            {carsResponse.totalCount} результатов найдено
+          </Text>
+        </Box>
+        <DialogPrimitiveOnMobileStickyButton buttonVariant="ghost" titleIsVisible={false} title="date" subtitle="Сортировка по" subtitleIsVisible={true} showOverlay={true}>
+          <SortFilters items={sortFilters} />
+          </DialogPrimitiveOnMobileStickyButton>
+      </Header>
 
       <CarsGrid
         mt="25px"
@@ -57,23 +68,3 @@ const CarsContent: FC<CarsContentProps> = async ({
 };
 
 export default CarsContent;
-
-{/* <DialogPrimitiveButton title={yearDialogButtonTitle} showOverlay={true}>
-<SearchSingleSelect
-  placeholder="Год от"
-  displayName="год от"
-  paramName="yearFrom"
-  options={yearsOptions}
-  selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
-  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-/>
-
-<SearchSingleSelect
-  placeholder="Год до"
-  displayName="год до"
-  paramName="yearTo"
-  options={yearsOptions}
-  selectedOptions={allSelectedFilterOptions.get("yearTo")!}
-  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
-/>
-</DialogPrimitiveButton> */}

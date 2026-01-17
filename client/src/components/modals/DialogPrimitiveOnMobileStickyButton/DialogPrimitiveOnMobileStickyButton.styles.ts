@@ -1,7 +1,7 @@
 "use client";
 import styled from "styled-components";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Box } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { breakpoints } from "@/globals";
 
 // Overlay styling - matches Radix UI Themes Dialog overlay
@@ -109,11 +109,30 @@ export const DialogContentContainer = styled(Box)`
   /* Additional container styling if needed */
 `;
 
+export const DialogHeader = styled(Flex)`
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: 12px;
+  
+  @media (min-width: ${breakpoints.sm}px) {
+    display: block;
+  }
+`;
+
 export const DialogPrimitiveButtonTitle = styled(Dialog.Title)`
   margin: 0 0 12px 0;
   font-weight: 700;
   color: var(--gray-12);
   font-size: 20px;
   line-height: 26px;
-  margin-bottom: 12px;
+  
+  @media (min-width: ${breakpoints.sm}px) {
+    margin-bottom: 12px;
+  }
+  
+  @media (max-width: ${breakpoints.sm - 1}px) {
+    margin-bottom: 0;
+    flex: 1;
+  }
 `;
