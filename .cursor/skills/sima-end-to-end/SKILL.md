@@ -114,6 +114,95 @@ lib/{section}/{category}/
     └── index.ts                          # ChildType selection utilities
 ```
 
+### Section Layout (`app/(public)/{section}/`)
+
+For sections that need a layout wrapper with header and stripe image:
+
+```
+app/(public)/{section}/
+├── layout.tsx                            # Section layout (Server Component)
+└── layout.styles.ts                      # Layout styled components
+```
+
+**layout.tsx pattern:**
+```typescript
+import type { Metadata } from "next";
+import {
+  {Section}LayoutSection,
+  {Section}LayoutStripe,
+} from "./layout.styles";
+import { generateBackblazeUrl } from "@/utils/common";
+import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+
+export const metadata: Metadata = {
+  title: "Section Title",
+  description: "Section description",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const filePath = generateBackblazeUrl("public", "{section}-stripe-placeholder.jpeg");
+
+  return (
+    <{Section}LayoutSection>
+      <SimpleHeader />
+      <{Section}LayoutStripe $src={filePath} />
+      <main>{children}</main>
+    </{Section}LayoutSection>
+  );
+}
+```
+
+**layout.styles.ts pattern:**
+```typescript
+"use client";
+import { Box } from "@radix-ui/themes";
+import styled from "styled-components";
+
+export const {Section}LayoutSection = styled.section`
+  display: flex;
+  flex-direction: column;
+
+  &:before {
+    content: "";
+    display: block;
+    height: var(--header-height);
+  }
+
+  main {
+    flex: 1;
+    padding: 0.5rem;
+  }
+`;
+
+export const {Section}LayoutStripe = styled(Box)<{ $src: string }>`
+  height: 270px;
+  position: relative;
+  background-image: url(${({ $src }) => $src});
+  background-size: cover;
+  background-position: 0px 35%;
+  background-repeat: no-repeat;
+`;
+```
+
+**Key Points:**
+- Layout wraps entire section with `SimpleHeader` and hero stripe image
+- Stripe image uses `generateBackblazeUrl` for S3-compatible storage
+- Layout section provides proper spacing for header
+- Main content area has consistent padding
+- **Use when:** Section needs visual branding with stripe image (e.g., vehicles, professional-service, yad2)
+
+**References:**
+- `app/(public)/vehicles/layout.tsx`
+- `app/(public)/vehicles/layout.styles.ts`
+- `app/(public)/professional-service/layout.tsx`
+- `app/(public)/professional-service/layout.styles.ts`
+- `app/(public)/yad2/layout.tsx`
+- `app/(public)/yad2/layout.styles.ts`
+
 ### Public Pages (`app/(public)/{section}/{category}/`)
 
 ```

@@ -8,7 +8,6 @@ export const ModalFiltersSection = styled(Box)`
   flex-direction: column;
   gap: 10px;
 `;
-
 export const DesktopFiltersWrapper = styled(Box)`
   height: 100%;
   flex: 1;
@@ -58,3 +57,4 @@ export const MobileFilterFooter = styled(Box)`
   justify-content: center;
   gap: 10px;
 `;
+

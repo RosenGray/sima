@@ -686,46 +686,47 @@ async getAll(
 
 ### Step 1: Create Filters Component Structure
 
-There are two patterns for filter component structure:
+There are three patterns for filter component structure:
 
-#### Pattern 1: With Wrapper Component (e.g., VehicleFilters)
+#### Pattern 1a: With Wrapper Component + Navigation (e.g., VehicleFilters)
 
-When you need a wrapper component above filters (like `VehicleFilters` for vehicles category):
+When you need a wrapper component with navigation bar above filters (like `VehicleFilters` for vehicles category):
 
 1. **Create Filters.tsx (Client Component):**
    ```typescript
    "use client";
    import { FC } from "react";
    import FiltersClient from "./FiltersClient";
-   import WrapperComponent from "../../../_components/Filters/WrapperComponent/WrapperComponent";
+   import VehicleFilters from "../../../_components/Filters/VehicleFilters/VehicleFilters";
    import { useSearchParams } from "next/navigation";
 
    const Filters: FC = () => {
      const searchParams = useSearchParams();
 
      return (
-       <WrapperComponent activeFiltersCount={searchParams.size - 1}>
+       <VehicleFilters activeFiltersCount={searchParams.size - 1}>
          <FiltersClient />
-       </WrapperComponent>
+       </VehicleFilters>
      );
    };
 
    export default Filters;
    ```
 
-2. **Create WrapperComponent.tsx (Client Component):**
+2. **Create VehicleFilters.tsx (Client Component):**
    ```typescript
    "use client";
    import { FC, ReactNode } from "react";
    import { useFiltersModal } from "@/components/filters/FiltersContext";
    // Import styled components and UI elements
+   // Import navigation icons and components
 
-   interface WrapperComponentProps {
+   interface VehicleFiltersProps {
      children: ReactNode;
      activeFiltersCount?: number;
    }
 
-   const WrapperComponent: FC<WrapperComponentProps> = ({
+   const VehicleFilters: FC<VehicleFiltersProps> = ({
      children,
      activeFiltersCount = 0,
    }) => {
@@ -734,30 +735,215 @@ When you need a wrapper component above filters (like `VehicleFilters` for vehic
      return (
        <>
          {/* Desktop View - Container */}
-         <WrapperContainer $isModalOpen={isModalOpen}>
-           <WrapperHeader>
-             {/* Header content */}
-           </WrapperHeader>
-           <WrapperContent>{children}</WrapperContent>
-         </WrapperContainer>
+         <VehicleFiltersContainer $isModalOpen={isModalOpen}>
+           <VehicleFiltersHeader>
+             <IconButton onClick={closeModal}>...</IconButton>
+             <Heading>Фильтры</Heading>
+           </VehicleFiltersHeader>
+           <VehicleFiltersNavBar>
+             {/* Navigation bar with category icons */}
+           </VehicleFiltersNavBar>
+           <VehicleFiltersContent>{children}</VehicleFiltersContent>
+         </VehicleFiltersContainer>
 
          {/* Mobile Filter Button */}
          <MobileFilterButton onClick={openModal}>
-           {/* Button content with activeFiltersCount badge */}
+           <MixerHorizontalIcon />
+           <Text>Фильтры</Text>
+           {activeFiltersCount > 0 && <FiltersCountBadge>{activeFiltersCount}</FiltersCountBadge>}
          </MobileFilterButton>
        </>
      );
    };
 
-   export default WrapperComponent;
+   export default VehicleFilters;
    ```
 
    **Key Points:**
-   - Wrapper component provides container/modal structure
-   - Desktop: Shows as container with header and content
+   - Wrapper component provides container/modal structure with navigation
+   - Desktop: Shows as container with header, navigation bar, and content
    - Mobile: Becomes full-screen modal when `isModalOpen` is true
    - Uses `FiltersContext` for modal state management
    - Accepts `activeFiltersCount` prop for badge display
+   - **Use when:** Section has multiple sub-categories with navigation (e.g., vehicles with cars, motorcycles, scooters, etc.)
+
+#### Pattern 1b: With Wrapper Component, No Navigation (e.g., Yad2FiltersWrapper)
+
+When you need a wrapper component without navigation bar (like `Yad2FiltersWrapper` for yad2 section):
+
+1. **Create Filters.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC } from "react";
+   import FiltersClient from "./FiltersClient";
+   import Yad2FiltersWrapper from "./Yad2FiltersWrapper/Yad2FiltersWrapper";
+   import { useSearchParams } from "next/navigation";
+
+   const Filters: FC = () => {
+     const searchParams = useSearchParams();
+
+     return (
+       <Yad2FiltersWrapper activeFiltersCount={searchParams.size - 1}>
+         <FiltersClient />
+       </Yad2FiltersWrapper>
+     );
+   };
+
+   export default Filters;
+   ```
+
+2. **Create Yad2FiltersWrapper.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC, ReactNode } from "react";
+   import { Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+   import { MixerHorizontalIcon, CrossCircledIcon } from "@radix-ui/react-icons";
+   import { useFiltersModal } from "@/components/filters/FiltersContext";
+   import {
+     Yad2FiltersContainer,
+     Yad2FiltersContent,
+     Yad2FiltersHeader,
+     MobileFilterButton,
+     FiltersCountBadge,
+   } from "./Yad2FiltersWrapper.styles";
+
+   interface Yad2FiltersWrapperProps {
+     children: ReactNode;
+     activeFiltersCount?: number;
+   }
+
+   const Yad2FiltersWrapper: FC<Yad2FiltersWrapperProps> = ({
+     children,
+     activeFiltersCount = 0,
+   }) => {
+     const { isModalOpen, openModal, closeModal } = useFiltersModal();
+
+     return (
+       <>
+         {/* Desktop View */}
+         <Yad2FiltersContainer $isModalOpen={isModalOpen}>
+           <Yad2FiltersHeader>
+             <IconButton
+               size="4"
+               variant="ghost"
+               color="gray"
+               onClick={closeModal}
+             >
+               <CrossCircledIcon width="28" height="28" />
+             </IconButton>
+             <Heading size="4">Фильтры</Heading>
+           </Yad2FiltersHeader>
+           <Yad2FiltersContent>{children}</Yad2FiltersContent>
+         </Yad2FiltersContainer>
+
+         {/* Mobile Filter Button */}
+         <MobileFilterButton size="2" variant="soft" onClick={openModal}>
+           <Flex align="center" gap="2">
+             <MixerHorizontalIcon width="18" height="18" />
+             <Text>Фильтры</Text>
+             {activeFiltersCount > 0 && (
+               <FiltersCountBadge>{activeFiltersCount}</FiltersCountBadge>
+             )}
+           </Flex>
+         </MobileFilterButton>
+       </>
+     );
+   };
+
+   export default Yad2FiltersWrapper;
+   ```
+
+3. **Create Yad2FiltersWrapper.styles.ts:**
+   ```typescript
+   "use client";
+   import styled from "styled-components";
+   import { Button, Flex } from "@radix-ui/themes";
+   import { breakpoints } from "@/globals";
+
+   export const Yad2FiltersContainer = styled.div<{ $isModalOpen: boolean }>`
+     transform: translateY(-50%);
+     background: var(--accent-1);
+     min-height: 130px;
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+     border: 1px solid var(--gray-6);
+     display: flex;
+     flex-direction: column;
+     margin: 0 auto;
+     transition: all 0.2s ease;
+     position: relative;
+     border-radius: var(--radius-4);
+
+     @media (max-width: ${breakpoints.sm - 1}px) {
+       position: fixed;
+       inset: 0;
+       transform: translateY(0);
+       opacity: ${({ $isModalOpen }) => ($isModalOpen ? 1 : 0)};
+       z-index: ${({ $isModalOpen }) => ($isModalOpen ? 1000 : -1)};
+       transition: all 0.2s ease;
+     }
+
+     &:hover {
+       border-color: var(--gray-7);
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+     }
+   `;
+
+   export const Yad2FiltersHeader = styled.header`
+     height: 50px;
+     flex-shrink: 0;
+     border-bottom: 0.5px solid var(--gray-6);
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     padding: 0 var(--space-4);
+     background: var(--accent-2);
+     display: none;
+
+     @media (max-width: ${breakpoints.sm - 1}px) {
+       padding: var(--space-4) var(--space-5);
+       display: flex;
+     }
+   `;
+
+   export const Yad2FiltersContent = styled.div`
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     min-height: 0;
+     overflow-y: auto;
+   `;
+
+   export const MobileFilterButton = styled(Button)`
+     display: none;
+     width: 100%;
+     justify-content: center;
+
+     @media (max-width: ${breakpoints.sm - 1}px) {
+       display: flex;
+     }
+   `;
+
+   export const FiltersCountBadge = styled(Flex)`
+     align-items: center;
+     justify-content: center;
+     min-width: 20px;
+     height: 20px;
+     border-radius: var(--radius-full);
+     background: var(--accent-9);
+     color: var(--accent-1);
+     font-size: 11px;
+     font-weight: 600;
+     padding: 0 6px;
+   `;
+   ```
+
+   **Key Points:**
+   - Wrapper component provides container/modal structure without navigation
+   - Desktop: Shows as container with header and content (no navigation bar)
+   - Mobile: Becomes full-screen modal when `isModalOpen` is true
+   - Uses `FiltersContext` for modal state management
+   - Accepts `activeFiltersCount` prop for badge display
+   - **Use when:** Section needs wrapper UI but doesn't have sub-category navigation (e.g., yad2)
 
 #### Pattern 2: Without Wrapper Component (Simple Filters)
 
@@ -786,7 +972,7 @@ When you don't need a wrapper component (most common case):
 
 2. **Create Filters.styles.ts:**
 
-   **For Pattern 1 (With Wrapper Component):**
+   **For Pattern 1a or 1b (With Wrapper Component):**
    ```typescript
    "use client";
    import { breakpoints } from "@/globals";
@@ -1818,10 +2004,10 @@ const FiltersClient: FC = () => {
 
 ### Mobile/Desktop UI Patterns
 
-#### Pattern 1: With Wrapper Component
+#### Pattern 1a: With Wrapper Component + Navigation
 
 **Desktop:**
-- Wrapper component shows as container with header
+- Wrapper component shows as container with header and navigation bar
 - FiltersClient renders main filters inline
 - "More Filters" button opens MoreFiltersModal (separate modal)
 - Action buttons (Search, Clear) shown inline
@@ -1833,6 +2019,27 @@ const FiltersClient: FC = () => {
 - Action buttons shown in footer of wrapper modal
 
 **Example:** `vehicles/cars/_components/Filters/`
+
+#### Pattern 1b: With Wrapper Component, No Navigation
+
+**Desktop:**
+- Wrapper component shows as container with header (no navigation bar)
+- FiltersClient renders main filters inline
+- "More Filters" button opens MoreFiltersModal (separate modal)
+- Action buttons (Search, Clear) shown inline
+
+**Mobile:**
+- Wrapper component becomes full-screen modal when opened
+- FiltersClient renders all filters inside wrapper modal
+- Mobile filter button triggers wrapper modal
+- Action buttons shown in footer of wrapper modal
+
+**Example:** `yad2/_components/Filters/`
+
+**Key Differences from Pattern 1a:**
+- No navigation bar in header
+- Simpler structure for sections without sub-category navigation
+- Same modal behavior and mobile/desktop patterns
 
 #### Pattern 2: Without Wrapper Component
 
@@ -1847,9 +2054,10 @@ const FiltersClient: FC = () => {
 **Example:** `professional-service/_components/Filters/`
 
 **Key Differences:**
-- Pattern 1: Separates "more filters" into separate modal (desktop only), wrapper handles mobile modal
+- Pattern 1a/1b: Separates "more filters" into separate modal (desktop only), wrapper handles mobile modal
+- Pattern 1a includes navigation bar, Pattern 1b doesn't
 - Pattern 2: All filters together, FiltersClient handles its own modal
-- Both use `FiltersContext` for modal state management
+- All patterns use `FiltersContext` for modal state management
 
 ## Implementation Example: Car Filters
 
@@ -2110,17 +2318,24 @@ Page.tsx
 ## References
 
 - Follow the pattern established in:
-  - **Pattern 1 (With Wrapper):**
+  - **Pattern 1a (With Wrapper + Navigation):**
     - `app/(public)/vehicles/_components/Filters/VehicleFilters/VehicleFilters.tsx`
     - `app/(public)/vehicles/cars/_components/Filters/Filters.tsx`
     - `app/(public)/vehicles/cars/_components/Filters/FiltersClient.tsx`
     - `app/(public)/vehicles/cars/_components/modals/MoreFiltersModal/MoreFiltersModal.tsx`
+  - **Pattern 1b (With Wrapper, No Navigation):**
+    - `app/(public)/yad2/_components/Filters/Yad2FiltersWrapper/Yad2FiltersWrapper.tsx`
+    - `app/(public)/yad2/_components/Filters/Filters.tsx`
+    - `app/(public)/yad2/_components/Filters/FiltersClient.tsx`
+    - `app/(public)/yad2/_components/modals/MoreFiltersModal/MoreFiltersModal.tsx`
   - **Pattern 2 (Without Wrapper):**
     - `app/(public)/professional-service/_components/Filters/Filters.tsx`
     - `app/(public)/professional-service/_components/Filters/FiltersClient.tsx`
   - **Repository Examples:**
     - `lib/professionals/professional-service/repository/ProfessionalServiceRepository.ts`
     - `lib/vehicles/cars/repository/CarRepository.ts`
+    - `lib/yad2/repository/Yad2ItemRepository.ts`
   - **Page Examples:**
     - `app/(public)/vehicles/cars/page.tsx`
+    - `app/(public)/yad2/page.tsx`
     - `app/(public)/professional-service/page.tsx`

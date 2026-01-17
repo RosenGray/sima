@@ -22,8 +22,8 @@ import {
   AllSelectedFilterOptionsMap,
   Option,
 } from "@/components/filters/select/types";
-import { Button, Text, Dialog, IconButton, Heading, Flex } from "@radix-ui/themes";
-import { MagnifyingGlassIcon, MixerHorizontalIcon, Cross2Icon } from "@radix-ui/react-icons";
+import { Button, Text } from "@radix-ui/themes";
+import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { Yad2Filter, Yad2FilterSchema } from "./filters.types";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
@@ -39,12 +39,11 @@ import {
   ModalFiltersSection,
 } from "./Filters.styles";
 import { useFiltersModal } from "@/components/filters/FiltersContext";
-import { FiltersSection, MobileFilterButton, FiltersModalContent, ModalHeader, ModalBody, ModalFooter, SubmitSearchFiltersButton } from "@/components/filters/Filters.styles";
 
 enableMapSet();
 
 const FiltersClient: FC = () => {
-  const { closeModal, isModalOpen, openModal } = useFiltersModal();
+  const { closeModal } = useFiltersModal();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -364,83 +363,38 @@ const FiltersClient: FC = () => {
         {renderMoreFilters()}
       </MoreFiltersModal>
 
-      {/* Mobile Filter Button */}
-      <MobileFilterButton onClick={openModal}>
-        <MixerHorizontalIcon width="18" height="18" />
-        <Text size="2">Фильтры</Text>
-        {searchParams.size > 0 && (
-          <Text
-            size="1"
-            style={{
-              backgroundColor: "var(--accent-9)",
-              color: "white",
-              borderRadius: "50%",
-              width: "20px",
-              height: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+      {/* Mobile Filters - rendered inside Yad2FiltersWrapper modal */}
+      <MobileFiltersWrapper>
+        <MobileFiltersContent>
+          {renderMobileFilters()}
+          {renderMoreFilters()}
+        </MobileFiltersContent>
+
+        <MobileFilterFooter>
+          <Button
+            variant="solid"
+            color="yellow"
+            disabled={isSearchButtonDisabled}
+            onClick={() => {
+              handleSubmitAllFilters();
+              closeModal();
             }}
+            size="3"
           >
-            {searchParams.size - 1}
-          </Text>
-        )}
-      </MobileFilterButton>
-
-      {/* Mobile Filters Modal */}
-      <Dialog.Root open={isModalOpen} onOpenChange={closeModal}>
-        <FiltersModalContent>
-          <ModalHeader>
-            <Flex direction="column" gap="1">
-              <Heading size={{ initial: "4", xs: "5" }}>
-                Фильтры
-              </Heading>
-              <Text size="2" color="gray">
-                Найдите то, что ищете
-              </Text>
-            </Flex>
-            <IconButton
-              variant="ghost"
-              color="gray"
-              onClick={closeModal}
-              size={{ initial: "2", xs: "3" }}
-            >
-              <Cross2Icon width="20" height="20" />
-            </IconButton>
-          </ModalHeader>
-
-          <ModalBody>
-            <FiltersSection>
-              {renderMobileFilters()}
-              {renderMoreFilters()}
-            </FiltersSection>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              variant="outline"
-              color="gray"
-              onClick={handleClearFilters}
-              size="3"
-            >
-              Очистить
-            </Button>
-            <SubmitSearchFiltersButton
-              variant="solid"
-              color="yellow"
-              disabled={isSearchButtonDisabled}
-              onClick={() => {
-                handleSubmitAllFilters();
-                closeModal();
-              }}
-              size="3"
-            >
-              <MagnifyingGlassIcon width="18" height="18" />
-              <Text size="3">Показать результаты</Text>
-            </SubmitSearchFiltersButton>
-          </ModalFooter>
-        </FiltersModalContent>
-      </Dialog.Root>
+            <MagnifyingGlassIcon width="18" height="18" />
+            <Text size="3">Поиск</Text>
+          </Button>
+          <Button
+            variant="outline"
+            color="gray"
+            disabled={searchParams.size === 0}
+            onClick={handleClearFilters}
+            size="3"
+          >
+            Очистить все фильтры
+          </Button>
+        </MobileFilterFooter>
+      </MobileFiltersWrapper>
     </>
   );
 };

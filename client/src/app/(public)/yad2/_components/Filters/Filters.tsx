@@ -1,12 +1,16 @@
+"use client";
 import { FC } from "react";
 import FiltersClient from "./FiltersClient";
-import { FiltersProvider } from "@/components/filters/FiltersContext";
+import Yad2FiltersWrapper from "./Yad2FiltersWrapper/Yad2FiltersWrapper";
+import { useSearchParams } from "next/navigation";
 
 const Filters: FC = () => {
+  const searchParams = useSearchParams();
+
   return (
-    <FiltersProvider>
+    <Yad2FiltersWrapper activeFiltersCount={searchParams.size - 1}>
       <FiltersClient />
-    </FiltersProvider>
+    </Yad2FiltersWrapper>
   );
 };
 
