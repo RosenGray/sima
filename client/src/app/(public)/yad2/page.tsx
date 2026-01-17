@@ -16,6 +16,7 @@ interface Yad2PageProps {
     city?: string | string[];
     priceFrom?: string;
     priceTo?: string;
+    textSearch?: string;
     page?: string;
   }>;
 }
@@ -58,6 +59,13 @@ const Yad2Page: FC<Yad2PageProps> = async (props) => {
     if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
       filters.priceTo = priceToNum;
     }
+  }
+
+  // Handle text search filter
+  if (searchParams.textSearch) {
+    filters.textSearch = Array.isArray(searchParams.textSearch)
+      ? searchParams.textSearch[0]
+      : searchParams.textSearch;
   }
 
   const contentKey = JSON.stringify({ ...filters, page: currentPage });

@@ -465,18 +465,43 @@ if (sanitizedFilters.color?.trim()) {
 }
 ```
 
-### 7. Text Search Filters (Future)
+### 7. Text Search Filters (Multi-Field Search)
 
-**Use case:** Full-text search across multiple fields
+**Use case:** Full-text search across multiple fields (e.g., productTitle and description)
 
-**Example:** Using MongoDB text index
+**Example:** Search for "kukuriku" in both productTitle and description fields
 
 **Implementation:**
+
+**Model Schema (add text index for performance):**
 ```typescript
+// Add after schema definition, before export
+yad2ItemSchema.index({
+  productTitle: "text",
+  description: "text",
+});
+```
+
+**Repository Query (using $or with regex):**
+```typescript
+// Interface
+textSearch?: string;
+
+// Query - use $or with regex for case-insensitive partial matching
 if (sanitizedFilters.textSearch?.trim()) {
-  searchFilter.$text = { $search: sanitizedFilters.textSearch.trim() };
+  const searchTerm = sanitizedFilters.textSearch.trim();
+  searchFilter.$or = [
+    { productTitle: { $regex: searchTerm, $options: "i" } },
+    { description: { $regex: searchTerm, $options: "i" } },
+  ];
 }
 ```
+
+**Note:** 
+- Use `$or` with `$regex` for searching across multiple fields
+- Use `$options: "i"` for case-insensitive matching
+- Text index improves performance but is not required for regex queries
+- Always sanitize and trim the search term before using in query
 
 ## Security Best Practices
 
@@ -1404,8 +1429,16 @@ import TextSearch from "@/components/filters/TextSearch/TextSearch";
   type="text"
   value={moreFilters.color}
   onChange={(value) => handleMoreFiltersChange("color", value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmitAllFilters();
+    }
+  }}
 />
 ```
+
+**Note:** Always add `onKeyDown` handler to `TextSearch` components to enable Enter key submission. For mobile views inside modals, also call `closeModal()` after `handleSubmitAllFilters()`.
 
 When using uncontrolled state (defaultValue pattern):
 
@@ -1415,6 +1448,12 @@ When using uncontrolled state (defaultValue pattern):
   placeholder="Цвет"
   type="text"
   defaultValue={searchParams.get("color")?.toString()}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmitAllFilters();
+    }
+  }}
 />
 ```
 
@@ -1990,17 +2029,19 @@ const FiltersClient: FC = () => {
 9. **Use TextSearch** - Reusable component for regular text input filters
 10. **Use PriceTextSearch** - Reusable component for price input filters with comma formatting
 11. **Controlled state for text inputs** - Use controlled state (`value` + `onChange`) instead of FormData for better UX
-12. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation (create FormData from state)
-13. **Graceful error handling** - On validation errors, still add non-error fields to URL
-14. **Initialize from URL** - Initialize text inputs with values from `searchParams.get()` in state
-15. **URL synchronization** - All filters update URL params for sharing/bookmarking
-16. **Reset page to 1** - When filters change, reset to first page
-17. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
-18. **Portal rendering** - Use `isPortalTarget` prop on SearchSingleSelect when z-index issues occur with dropdown menus
-19. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
-20. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
-21. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
-22. **Search button disabled state** - Check both dropdown filters and moreFilters state to determine if search button should be disabled
+12. **Enter key support** - Always add `onKeyDown` handler to `TextSearch` components to enable Enter key submission (calls `handleSubmitAllFilters()`)
+13. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation (create FormData from state)
+14. **Graceful error handling** - On validation errors, still add non-error fields to URL
+15. **Initialize from URL** - Initialize text inputs with values from `searchParams.get()` in state
+16. **URL synchronization** - All filters update URL params for sharing/bookmarking
+17. **Reset page to 1** - When filters change, reset to first page
+18. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
+19. **Portal rendering** - Use `isPortalTarget` prop on SearchSingleSelect when z-index issues occur with dropdown menus
+20. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
+21. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
+22. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
+23. **Search button disabled state** - Check both dropdown filters and moreFilters state to determine if search button should be disabled
+24. **Multi-field text search** - Use `$or` with `$regex` for searching across multiple fields (e.g., productTitle and description)
 
 ### Mobile/Desktop UI Patterns
 

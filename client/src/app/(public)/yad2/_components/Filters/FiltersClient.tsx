@@ -29,6 +29,7 @@ import { Yad2Filter, Yad2FilterSchema } from "./filters.types";
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
 import MoreFiltersModal from "../modals/MoreFiltersModal/MoreFiltersModal";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
 import { getPriceDialogButtonTitle } from "./Filters.utils";
 import {
@@ -60,6 +61,7 @@ const FiltersClient: FC = () => {
   const [moreFilters, setMoreFilters] = useState({
     priceFrom: searchParams.get("priceFrom") ?? "",
     priceTo: searchParams.get("priceTo") ?? "",
+    textSearch: searchParams.get("textSearch") ?? "",
   });
 
   const isSearchButtonDisabled = useMemo(() => {
@@ -164,6 +166,7 @@ const FiltersClient: FC = () => {
     setMoreFilters({
       priceFrom: "",
       priceTo: "",
+      textSearch: "",
     });
     router.push(pathname);
   }, [router, pathname]);
@@ -172,6 +175,7 @@ const FiltersClient: FC = () => {
     setMoreFilters({
       priceFrom: "",
       priceTo: "",
+      textSearch: "",
     });
   }, []);
 
@@ -246,6 +250,19 @@ const FiltersClient: FC = () => {
             onChange={(value) => handleMoreFiltersChange("priceTo", value)}
           />
         </DialogPrimitiveButton>
+
+        <TextSearch
+          name="textSearch"
+          placeholder="Свободный поиск"
+          value={moreFilters.textSearch}
+          onChange={(value) => handleMoreFiltersChange("textSearch", value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSubmitAllFilters();
+            }
+          }}
+        />
       </>
     );
   };
@@ -285,6 +302,20 @@ const FiltersClient: FC = () => {
           placeholder="0"
           value={moreFilters.priceTo}
           onChange={(value) => handleMoreFiltersChange("priceTo", value)}
+        />
+
+        <TextSearch
+          name="textSearch"
+          placeholder="Свободный поиск"
+          value={moreFilters.textSearch}
+          onChange={(value) => handleMoreFiltersChange("textSearch", value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSubmitAllFilters();
+              closeModal();
+            }
+          }}
         />
       </>
     );

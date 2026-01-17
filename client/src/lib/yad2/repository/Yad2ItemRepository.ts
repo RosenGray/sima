@@ -11,6 +11,7 @@ export interface Yad2ItemSearchFilters {
   city?: string[];
   priceFrom?: number;
   priceTo?: number;
+  textSearch?: string;
 }
 
 interface PaginatedResponse {
@@ -46,6 +47,7 @@ class Yad2ItemRepository {
         city: sanitize(searchFilters.city),
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
+        textSearch: sanitize(searchFilters.textSearch),
       };
 
       // Build search filter using MongoDB query
@@ -100,6 +102,15 @@ class Yad2ItemRepository {
             searchFilter.price = { $lte: priceToNum };
           }
         }
+      }
+
+      // Add text search filter
+      if (sanitizedFilters.textSearch?.trim()) {
+        const searchTerm = sanitizedFilters.textSearch.trim();
+        searchFilter.$or = [
+          { productTitle: { $regex: searchTerm, $options: "i" } },
+          { description: { $regex: searchTerm, $options: "i" } },
+        ];
       }
 
       // Calculate pagination

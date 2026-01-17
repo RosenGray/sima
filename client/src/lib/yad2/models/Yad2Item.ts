@@ -149,6 +149,12 @@ const yad2ItemSchema = new mongoose.Schema(
   }
 );
 
+// Add text index for efficient text search
+yad2ItemSchema.index({
+  productTitle: "text",
+  description: "text",
+});
+
 export const Yad2Item =
   mongoose.models.Yad2Item ||
   mongoose.model<IYad2Item>("Yad2Item", yad2ItemSchema);
