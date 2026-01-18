@@ -1,5 +1,5 @@
 "use client";
-import { FC, useMemo } from "react";
+import { FC, MouseEvent, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams, usePathname } from "next/navigation";
 import {
@@ -15,24 +15,41 @@ export interface SortOption {
   descLabel?: string;
 }
 
+type SortDirection = "asc" | "desc";
+
+interface SortItem {
+  field: string;
+  direction: SortDirection;
+  label: string;
+  href: string;
+  isActive: boolean;
+  sort: string;
+}
+
 interface SortFiltersProps {
   currentSort?: string; // e.g., "date_desc"
   sortOptions: SortOption[]; // Array of sort options for this section
+  onSortChange?: (nextSort: string) => void;
 }
 
-const SortFilters: FC<SortFiltersProps> = ({ currentSort, sortOptions }) => {
+const SortFilters: FC<SortFiltersProps> = ({
+  currentSort,
+  sortOptions,
+  onSortChange,
+}) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const sortItems = useMemo(() => {
+  const sortItems: SortItem[] = useMemo(() => {
     // Guard against undefined sortOptions
     if (!sortOptions || !Array.isArray(sortOptions) || sortOptions.length === 0) {
       return [];
     }
 
-    const generateSortLink = (field: string, direction: "asc" | "desc") => {
+    const generateSortLink = (field: string, direction: SortDirection) => {
       const params = new URLSearchParams(searchParams);
-      params.set("sort", `${field}_${direction}`);
+      const sort = `${field}_${direction}`;
+      params.set("sort", sort);
       params.set("page", "1"); // Reset to first page when sort changes
       return `${pathname}?${params.toString()}`;
     };
@@ -40,33 +57,59 @@ const SortFilters: FC<SortFiltersProps> = ({ currentSort, sortOptions }) => {
     return sortOptions.flatMap((option) => {
       const ascSort = `${option.field}_asc`;
       const descSort = `${option.field}_desc`;
-      const ascOption = option.ascLabel ? {
-        field: option.field,
-        direction: "asc" as const,
-        label: option.ascLabel,
-        href: generateSortLink(option.field, "asc"),
-        isActive: currentSort === ascSort,
-        } : null;
+      const ascOption = option.ascLabel
+        ? {
+            field: option.field,
+            direction: "asc" as const,
+            label: option.ascLabel,
+            href: generateSortLink(option.field, "asc"),
+            isActive: currentSort === ascSort,
+            sort: ascSort,
+          }
+        : null;
 
-      const descOption = option.descLabel ? {
-        field: option.field,
-        direction: "desc" as const,
-        label: option.descLabel,
-        href: generateSortLink(option.field, "desc"),
-        isActive: currentSort === descSort,
-      } : null;
+      const descOption = option.descLabel
+        ? {
+            field: option.field,
+            direction: "desc" as const,
+            label: option.descLabel,
+            href: generateSortLink(option.field, "desc"),
+            isActive: currentSort === descSort,
+            sort: descSort,
+          }
+        : null;
 
-      return [ascOption, descOption].filter(Boolean);
+      return [ascOption, descOption].filter(Boolean) as SortItem[];
     });
   }, [currentSort, searchParams, pathname, sortOptions]);
+
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>, nextSort: string) => {
+    if (!onSortChange) return;
+    // Preserve native link behavior for new tab/window and modifier clicks.
+    if (
+      e.metaKey ||
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.altKey ||
+      // Middle click
+      e.button === 1
+    ) {
+      return;
+    }
+    e.preventDefault();
+    onSortChange(nextSort);
+  };
 
   return (
     <SortFiltersContainer>
       <SortFiltersList>
         {sortItems.map((item, index) => (
-          item && <SortFiltersListItem key={`${item.field}_${item.direction}_${index}`}>
+          <SortFiltersListItem key={`${item.field}_${item.direction}_${index}`}>
             <Link
-              href={item.href}>
+              href={item.href}
+              data-active={item.isActive}
+              onClick={(e) => handleClick(e, item.sort)}
+            >
               {item.label}
             </Link>
           </SortFiltersListItem>

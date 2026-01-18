@@ -3,14 +3,11 @@ import { carRepository, CarSearchFilters } from "@/lib/vehicles/cars/repository/
 import { CarCards } from "../CarCards/CarCards";
 import {
   CarsGrid,
-  Header,
   StickyPaginationWrapper,
-  Title,
 } from "../../page.styles";
-import { Box, Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
-import DialogPrimitiveOnMobileStickyButton from "@/components/modals/DialogPrimitiveOnMobileStickyButton/DialogPrimitiveOnMobileStickyButton";
-import SortFilters, { SortOption } from "@/components/SortFilters/SortFilters";
+import { SortOption } from "@/components/SortFilters/SortFilters";
+import CarsHeaderClient from "../CarsHeaderClient/CarsHeaderClient";
 
 interface CarsContentProps {
   filters: CarSearchFilters;
@@ -54,17 +51,11 @@ const CarsContent: FC<CarsContentProps> = async ({
 
   return (
     <>
-      <Header>
-        <Box>
-          <Title size="5">Автомобили</Title>
-          <Text as="p" size="2" color="gray">
-            {carsResponse.totalCount} результатов найдено
-          </Text>
-        </Box>
-        <DialogPrimitiveOnMobileStickyButton buttonVariant="ghost" titleIsVisible={false} title="daגte" subtitle="Сортировка по" subtitleIsVisible={true} showOverlay={false}>
-          <SortFilters currentSort={sort} sortOptions={carSortOptions} />
-          </DialogPrimitiveOnMobileStickyButton>
-      </Header>
+      <CarsHeaderClient
+        totalCount={carsResponse.totalCount}
+        initialSort={sort}
+        sortOptions={carSortOptions}
+      />
 
       <CarsGrid
         mt="25px"

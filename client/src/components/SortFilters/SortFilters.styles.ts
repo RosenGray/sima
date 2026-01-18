@@ -36,11 +36,23 @@ export const SortFiltersListItem = styled.li`
     transition: all 0.2s ease;
     background-color: var(--gray-2);
     border: 1px solid var(--gray-6);
+
+    &[data-active="true"] {
+      background-color: var(--accent-a3);
+      border-color: var(--accent-8);
+      color: var(--accent-12);
+    }
     
     &:hover {
       background-color: var(--gray-4);
       border-color: var(--gray-8);
       color: var(--gray-12);
+    }
+
+    &[data-active="true"]:hover {
+      background-color: var(--accent-a4);
+      border-color: var(--accent-9);
+      color: var(--accent-12);
     }
     
     &:active {
