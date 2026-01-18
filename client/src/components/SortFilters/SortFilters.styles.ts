@@ -3,30 +3,31 @@ import styled from "styled-components";
 import { Box } from "@radix-ui/themes";
 
 export const SortFiltersContainer = styled(Box)`
+padding: 0;
   width: 100%;
+  max-height: 250px;
+  overflow: auto;
 `;
 
 export const SortFiltersList = styled.ul`
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-1);
   list-style: none;
   padding: 0;
   margin: 0;
-  
-  @media (max-width: 767px) {
-    gap: var(--space-1);
-  }
 `;
 
 export const SortFiltersListItem = styled.li`
   display: flex;
+  width: 100%;
   
   & > a {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: var(--space-2) var(--space-4);
+    justify-content: flex-start;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-2);
     color: var(--gray-12);
     text-decoration: none;

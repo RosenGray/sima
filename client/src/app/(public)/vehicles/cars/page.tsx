@@ -22,6 +22,7 @@ interface CarsPageProps {
     priceFrom?: string;
     priceTo?: string;
     color?: string;
+    sort?: string;
     page?: string;
   }>;
 }
@@ -29,6 +30,7 @@ interface CarsPageProps {
 const CarsPage: FC<CarsPageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
+  const sort = searchParams?.sort || "date_desc"; // Default to newest first
 
   // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);
@@ -89,7 +91,7 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
       : searchParams.color;
   }
 
-  const contentKey = JSON.stringify({ ...filters, page: currentPage });
+  const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
 
   return (
     <CarsPageContainer>
@@ -99,7 +101,7 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
         </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <CarsContent filters={filters} currentPage={currentPage} />
+        <CarsContent filters={filters} currentPage={currentPage} sort={sort} />
       </Suspense>
     </CarsPageContainer>
   );

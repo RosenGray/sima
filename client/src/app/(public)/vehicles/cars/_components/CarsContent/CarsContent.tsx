@@ -10,29 +10,47 @@ import {
 import { Box, Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
 import DialogPrimitiveOnMobileStickyButton from "@/components/modals/DialogPrimitiveOnMobileStickyButton/DialogPrimitiveOnMobileStickyButton";
-import SortFilters from "@/components/SortFilters/SortFilters";
+import SortFilters, { SortOption } from "@/components/SortFilters/SortFilters";
 
 interface CarsContentProps {
   filters: CarSearchFilters;
   currentPage: number;
+  sort?: string;
 }
 
-const sortFilters = [
+const carSortOptions: SortOption[] = [
   {
-    title: "Дата",
-    href: "/vehicles/cars?sort=date",
+    field: "date",
+    label: "Дата",
+    ascLabel: "Дата",
+    // descLabel: "Дата (новые → старые)",
   },
   {
-    title: "Цена",
-    href: "/vehicles/cars?sort=price",
+    field: "year",
+    label: "Год",
+    ascLabel: "Год (младшие → старшие)",
+    // descLabel: "Год (старшие → младшие)",
+  },
+  {
+    field: "price",
+    label: "Цена",
+    ascLabel: "Цена (низкая → высокая)",
+    descLabel: "Цена (высокая → низкая)",
+  },
+  {
+    field: "mileage",
+    label: "Пробег",
+    ascLabel: "Пробег (низкий → высокий)",
+    // descLabel: "Пробег (высокий → низкий)",
   },
 ];
 
 const CarsContent: FC<CarsContentProps> = async ({
   filters,
   currentPage,
+  sort,
 }) => {
-  const carsResponse = await carRepository.getAll(filters, currentPage, 10);
+  const carsResponse = await carRepository.getAll(filters, currentPage, 10, sort);
 
   return (
     <>
@@ -43,8 +61,8 @@ const CarsContent: FC<CarsContentProps> = async ({
             {carsResponse.totalCount} результатов найдено
           </Text>
         </Box>
-        <DialogPrimitiveOnMobileStickyButton buttonVariant="ghost" titleIsVisible={false} title="date" subtitle="Сортировка по" subtitleIsVisible={true} showOverlay={true}>
-          <SortFilters items={sortFilters} />
+        <DialogPrimitiveOnMobileStickyButton buttonVariant="ghost" titleIsVisible={false} title="daגte" subtitle="Сортировка по" subtitleIsVisible={true} showOverlay={false}>
+          <SortFilters currentSort={sort} sortOptions={carSortOptions} />
           </DialogPrimitiveOnMobileStickyButton>
       </Header>
 
