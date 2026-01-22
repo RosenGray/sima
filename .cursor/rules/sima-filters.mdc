@@ -8,7 +8,7 @@ alwaysApply: true
 
 ## Overview
 
-This guide covers implementing filters for listing pages, including search params processing, repository filtering, database queries, and UI components. Filters should be implemented step by step: first backend/database logic, then UI components.
+This guide covers implementing filters for listing pages, including search params processing, repository filtering, database queries, and UI components. In practice, listing pages usually combine **filters + sorting + pagination**; this doc now covers sorting as a first-class, URL-driven control alongside filters.
 
 ## Implementation Steps
 
@@ -30,6 +30,8 @@ This guide covers implementing filters for listing pages, including search param
        filterParam1?: string | string[];
        filterParam2?: string | string[];
        numericFilter?: string; // For single value filters like yearFrom
+       // Sorting param (section-specific; commonly `sort`)
+       sort?: string;
        page?: string;
      }>;
    }
@@ -47,6 +49,24 @@ This guide covers implementing filters for listing pages, including search param
    - Excludes `page` by default
    - Filters out empty/undefined values
 
+### Step 2a: Sorting Params (URL-driven)
+
+Sorting is managed via URL params just like filters, so users can share/bookmark results.
+
+- **Param naming**: section-specific (recommended: `sort`)
+- **Value format**: section-specific (recommended: `${field}_${direction}`), but can vary per section
+- **Pagination coupling**: **always reset `page` to `1` when sort changes**
+- **Preserve filters**: when changing sort, preserve all existing filter params in the URL (modify only `sort` and `page`)
+
+**Client-side sort change pattern (recommended):**
+
+```typescript
+const params = new URLSearchParams(searchParams);
+params.set("sort", nextSort);
+params.set("page", "1");
+router.replace(`${pathname}?${params.toString()}`);
+```
+
 ### Step 3: Update Repository getAll Method
 
 #### Method Signature
@@ -55,7 +75,8 @@ This guide covers implementing filters for listing pages, including search param
 async getAll(
   searchFilters: EntitySearchFilters = {},
   currentPage: number = 1,
-  pageSize: number = 10
+  pageSize: number = 10,
+  sort?: string
 ): Promise<PaginatedResponse>
 ```
 
@@ -137,10 +158,45 @@ async getAll(
    const totalCount = await Entity.countDocuments(searchFilter);
    const results = await Entity.find(searchFilter)
      .populate("user")
-     .sort({ createdAt: -1 })
+     .sort({ createdAt: -1 }) // default when sort not implemented/invalid
      .skip(skip)
      .limit(pageSize);
    ```
+
+6. **Add sorting safely (server-side whitelist + field mapping)**
+
+Never pass raw user input directly into `.sort()`. Use:
+
+- **parsing/validation** against an allowlist of supported sort values for that section
+- **mapping** from user-facing sort fields to DB field names
+- **fallback** to a default sort if invalid/undefined
+
+Example pattern (cars uses this approach):
+
+```typescript
+type SortDirection = "asc" | "desc";
+type SortField = "date" | "price" | "year"; // section-specific
+
+function parseSortString(sort?: string): { field: SortField; direction: SortDirection } | null {
+  // validate shape + allowlist; return null if invalid
+  return null;
+}
+
+function buildSortObject(
+  sortOptions: { field: SortField; direction: SortDirection } | null
+): Record<string, 1 | -1> {
+  if (!sortOptions) return { createdAt: -1 };
+  const fieldMap: Record<SortField, string> = {
+    date: "createdAt",
+    price: "price",
+    year: "yearOfManufacture",
+  };
+  return { [fieldMap[sortOptions.field]]: sortOptions.direction === "asc" ? 1 : -1 };
+}
+
+const sortObject = buildSortObject(parseSortString(sort));
+const results = await Entity.find(searchFilter).sort(sortObject);
+```
 
 ### Step 4: Update Content Component
 
@@ -149,6 +205,7 @@ async getAll(
    interface EntityContentProps {
      filters: EntitySearchFilters;
      currentPage: number;
+     sort?: string;
    }
    ```
 
@@ -157,7 +214,8 @@ async getAll(
    const entityResponse = await entityRepository.getAll(
      filters,
      currentPage,
-     10
+     10,
+     sort
    );
    ```
 
@@ -243,7 +301,8 @@ async getAll(
 
 5. **Pass filters to content component:**
    ```typescript
-   <EntityContent filters={filters} currentPage={currentPage} />
+   const sort = searchParams?.sort; // apply section default if needed
+   <EntityContent filters={filters} currentPage={currentPage} sort={sort} />
    ```
 
 ## Filter Types

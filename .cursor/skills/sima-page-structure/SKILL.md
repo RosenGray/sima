@@ -15,7 +15,7 @@ Listing pages (e.g., `/vehicles/cars`, `/professional-service`) should follow a 
 
 - **Location**: `app/(public)/{category}/{entity}/page.tsx` (e.g., `app/(public)/vehicles/cars/page.tsx`)
 - **Type**: Server Component (async)
-- **Responsibility**: Extract search params, process filters, wrap content in Suspense
+- **Responsibility**: Extract search params, process filters + sorting + pagination, wrap content in Suspense
 
 #### Required Imports
 
@@ -32,6 +32,8 @@ import Loading from "./loading";
 interface EntityPageProps {
   searchParams?: Promise<{
     page?: string;
+    // Sorting param (section-specific; commonly `sort`)
+    // sort?: string;
     // Add other filter params here as needed
     // filterParam1?: string | string[];
     // filterParam2?: string | string[];
@@ -62,13 +64,24 @@ const EntityPage: FC<EntityPageProps> = async (props) => {
   // Extract current page
   const currentPage = Number(searchParams?.page) || 1;
 
-  // Create unique key for Suspense to trigger re-fetch on filter/page change
-  const contentKey = JSON.stringify({ ...filters, page: currentPage });
+  // Sorting (section-specific)
+  // IMPORTANT:
+  // - sorting should be URL-driven (searchParams)
+  // - whenever sort changes in UI, reset page=1
+  // - include `sort` in Suspense key to trigger re-fetch
+  const sort = typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
+
+  // Create unique key for Suspense to trigger re-fetch on filter/page/sort change
+  const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
 
   return (
     <PageContainer>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <ContentComponent filters={filters} currentPage={currentPage} />
+        <ContentComponent
+          filters={filters}
+          currentPage={currentPage}
+          sort={sort}
+        />
       </Suspense>
     </PageContainer>
   );
@@ -84,7 +97,8 @@ When filters are not yet implemented:
 const filters = {};
 
 // Still create contentKey for future compatibility
-const contentKey = JSON.stringify({ ...filters, page: currentPage });
+const sort = typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
+const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
 ```
 
 ## Content Component (`{Entity}Content.tsx`)
@@ -122,6 +136,7 @@ interface EntitySearchFilters {
 interface EntityContentProps {
   filters: EntitySearchFilters;
   currentPage: number;
+  sort?: string;
 }
 ```
 
@@ -131,10 +146,11 @@ interface EntityContentProps {
 const EntityContent: FC<EntityContentProps> = async ({
   filters,
   currentPage,
+  sort,
 }) => {
   // Fetch data using repository
   // Note: Repository signature will be updated when filters are implemented
-  const entityResponse = await entityRepository.getAll(currentPage, 10);
+  const entityResponse = await entityRepository.getAll(filters, currentPage, 10, sort);
 
   return (
     <>
@@ -172,7 +188,7 @@ export default EntityContent;
 When filters are not yet implemented in repository:
 
 ```typescript
-// For now, getAll doesn't accept filters - will be updated when filters are implemented
+// For now, getAll may not accept filters/sort - will be updated when filtering/sorting are implemented
 const entityResponse = await entityRepository.getAll(currentPage, 10);
 ```
 
@@ -372,6 +388,13 @@ export const StickyPaginationWrapper = styled(Box)`
 - Filter out empty/undefined values
 - Create filter object compatible with repository interface
 
+### 3a. Sorting
+
+- Sorting should be **URL-driven** (based on `searchParams`) to support sharing/bookmarking
+- **Always include sort in the Suspense key** so a sort change refetches server data
+- Sorting is **section-specific** (param name + allowed values), but the pipeline stays the same: `page.tsx` → Content → Repository
+- UI should **preserve filters** and **reset `page` to 1** when sort changes
+
 ### 4. Pagination
 
 - Extract `currentPage` from searchParams with fallback to 1
@@ -414,7 +437,8 @@ interface EntitySearchFilters {
 async getAll(
   searchFilters: EntitySearchFilters = {},
   currentPage: number = 1,
-  pageSize: number = 10
+  pageSize: number = 10,
+  sort?: string
 ): Promise<PaginatedResponse>
 ```
 
@@ -483,10 +507,10 @@ const filters = Object.keys(searchParams)
 ### Suspense with Dynamic Key
 
 ```typescript
-const contentKey = JSON.stringify({ ...filters, page: currentPage });
+const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
 
 <Suspense key={contentKey} fallback={<Loading />}>
-  <ContentComponent filters={filters} currentPage={currentPage} />
+  <ContentComponent filters={filters} currentPage={currentPage} sort={sort} />
 </Suspense>
 ```
 
