@@ -56,6 +56,7 @@ export const createPetForSaleSchema = ({ minNumberOfImages = 1 }) => {
           message: "Неверное значение возраста",
         }
       ),
+    adjustments: z.array(z.coerce.number()).optional(),
     description: z.string({
       required_error: "Введите описание",
     }),

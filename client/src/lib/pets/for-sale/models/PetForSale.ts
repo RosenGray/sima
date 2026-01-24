@@ -1,5 +1,5 @@
 import { FileUploadItem } from "@/lib/files/uploadFiles";
-import { PetGender, PetAge } from "../types/petForSale.types";
+import { PetGender, PetAge, PetAdjustments } from "../types/petForSale.types";
 import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
@@ -13,6 +13,7 @@ export interface IPetForSale {
   price: number;
   gender: PetGender;
   age: PetAge;
+  adjustments?: PetAdjustments[];
   description: string;
   district: string;
   city: string;
@@ -101,6 +102,21 @@ const petForSaleSchema = new mongoose.Schema(
       type: Number,
       required: true,
       enum: [PetAge.PUPPY, PetAge.YOUNG, PetAge.ADULT, PetAge.GROWN],
+    },
+    adjustments: {
+      type: [Number],
+      required: false,
+      enum: [
+        PetAdjustments.Spayed,
+        PetAdjustments.Neutered,
+        PetAdjustments.Vaccinated,
+        PetAdjustments.Trained,
+        PetAdjustments.KidsFriendly,
+        PetAdjustments.YardSuitable,
+        PetAdjustments.DogsFriendly,
+        PetAdjustments.ApartmentSuitable,
+        PetAdjustments.AdultsFriendly
+      ],
     },
     description: {
       type: String,

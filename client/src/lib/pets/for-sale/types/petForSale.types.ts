@@ -19,3 +19,15 @@ export interface SerializedPetForSale
   createdAt: string;
   user: SerializedUser;
 }
+
+export enum PetAdjustments {
+  Spayed = 1,
+  Neutered = 2,
+  Vaccinated = 3,
+  Trained = 4,
+  KidsFriendly = 5,
+  YardSuitable = 6,
+  DogsFriendly = 7,
+  ApartmentSuitable = 8,
+  AdultsFriendly = 9,
+}
