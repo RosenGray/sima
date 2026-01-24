@@ -17,6 +17,7 @@ interface PetForSalePageProps {
     district?: string | string[];
     city?: string | string[];
     textSearch?: string;
+    adjustments?: string | string[];
     sort?: string;
     page?: string;
   }>;
@@ -36,6 +37,7 @@ const PetForSalePage: FC<PetForSalePageProps> = async (props) => {
     kind: arrayFilters.kind,
     district: arrayFilters.district,
     city: arrayFilters.city,
+    adjustments: arrayFilters.adjustments,
   };
 
   // Handle price range filters - transform from string (with commas) to number

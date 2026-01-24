@@ -13,6 +13,7 @@ export interface PetForSaleSearchFilters {
   district?: string[];
   city?: string[];
   textSearch?: string; // Free text search like Yad2
+  adjustments?: string[]; // PetAdjustments enum values (1-9)
 }
 
 export type SortField = "date" | "price" | "age";
@@ -117,6 +118,7 @@ class PetForSaleRepository {
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
         textSearch: sanitize(searchFilters.textSearch),
+        adjustments: sanitize(searchFilters.adjustments),
       };
 
       // Build search filter using MongoDB query
@@ -140,6 +142,19 @@ class PetForSaleRepository {
       // Add city filter
       if (sanitizedFilters.city) {
         searchFilter.city = { $in: sanitizedFilters.city };
+      }
+
+      // Add adjustments filter
+      if (sanitizedFilters.adjustments) {
+        // Convert string array to number array and validate
+        const adjustmentNumbers = sanitizedFilters.adjustments
+          .map((adj) => Number(adj))
+          .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 9);
+
+        if (adjustmentNumbers.length > 0) {
+          // Match documents where adjustments array contains any of the selected values
+          searchFilter.adjustments = { $in: adjustmentNumbers };
+        }
       }
 
       // Add price range filters
