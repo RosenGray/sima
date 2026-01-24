@@ -1128,12 +1128,30 @@ When you don't need a wrapper component (most common case):
      flex: 1;
      display: none;
      padding: var(--space-3);
+     overflow-x: hidden;
 
      @media (min-width: ${breakpoints.sm - 1}px) {
-       display: grid;
-       grid-template-columns: repeat(4, 1fr);
+       display: flex;
        gap: 10px;
+       align-items: center;
      }
+   `;
+
+   export const FiltersSection = styled(Box)`
+     display: flex;
+     flex-wrap: wrap;
+     gap: 10px;
+     flex: 1;
+     align-items: center;
+     min-width: 0;
+   `;
+
+   export const ButtonsSection = styled(Box)`
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+     flex-shrink: 0;
+     align-items: stretch;
    `;
 
   export const MobileFiltersWrapper = styled(Box)`
@@ -1457,6 +1475,12 @@ const isSearchButtonDisabled = useMemo(() => {
 
 #### SearchMultiSelect Components
 
+**Desktop filters (in renderFilters/renderMainFilters):**
+- **CRITICAL: Always use `isPortalTarget` prop** on ALL SearchMultiSelect components in desktop filters
+- This is **MANDATORY** - without it, dropdown menus will be clipped by container overflow constraints
+- Portaled dropdowns render outside the container DOM hierarchy, preventing clipping and z-index issues
+- This must be applied to every SearchMultiSelect in `renderFilters()` or `renderMainFilters()` functions
+
 ```typescript
 <SearchMultiSelect
   displayName="фильтр 1"
@@ -1466,6 +1490,7 @@ const isSearchButtonDisabled = useMemo(() => {
   maxSelectedOptions={3}
   selectedOptions={allSelectedFilterOptions.get("filterParam1")!}
   setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  isPortalTarget
 />
 
 <SearchMultiSelect
@@ -1477,6 +1502,24 @@ const isSearchButtonDisabled = useMemo(() => {
   maxSelectedOptions={3}
   selectedOptions={allSelectedFilterOptions.get("dependentFilter")!}
   setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  isPortalTarget
+/>
+```
+
+**More filters modal (in renderMoreFilters):**
+- **Always use `menuPosition="fixed"` prop** to ensure dropdown menus render properly inside the modal
+- This prevents dropdowns from being clipped by modal boundaries
+
+```typescript
+<SearchMultiSelect
+  placeholder="Выберите район"
+  displayName="районы"
+  paramName="district"
+  options={areasOptions}
+  maxSelectedOptions={3}
+  selectedOptions={allSelectedFilterOptions.get("district")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  menuPosition="fixed"
 />
 ```
 
@@ -1805,12 +1848,14 @@ return (
   <>
     {/* Desktop Filters */}
     <DesktopFiltersWrapper>
-      {renderFilters()} {/* Main filters (dropdowns) */}
-      <Button onClick={() => setIsMoreFiltersModalOpen(true)}>
-        Больше фильтров
-      </Button>
-      <Button onClick={handleSubmitAllFilters}>Поиск</Button>
-      <Button onClick={handleClearFilters}>Очистить все фильтры</Button>
+      <FiltersSection>{renderFilters()}</FiltersSection> {/* Main filters (dropdowns) - wrapped in FiltersSection for flex layout */}
+      <ButtonsSection>
+        <Button onClick={() => setIsMoreFiltersModalOpen(true)}>
+          Больше фильтров
+        </Button>
+        <Button onClick={handleSubmitAllFilters}>Поиск</Button>
+        <Button onClick={handleClearFilters}>Очистить все фильтры</Button>
+      </ButtonsSection>
     </DesktopFiltersWrapper>
 
     {/* More Filters Modal (Desktop only) */}
@@ -2200,13 +2245,16 @@ const FiltersClient: FC = () => {
 17. **URL synchronization** - All filters update URL params for sharing/bookmarking
 18. **Reset page to 1** - When filters change, reset to first page
 19. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
-20. **Portal rendering** - Use `isPortalTarget` prop on SearchSingleSelect when z-index issues occur with dropdown menus
-21. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
-22. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
-23. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
-24. **Search button disabled state** - Check both dropdown filters and moreFilters state (including array fields like `adjustments.length === 0`) to determine if search button should be disabled
-25. **Multi-field text search** - Use `$or` with `$regex` for searching across multiple fields (e.g., productTitle and description)
-26. **Array filters in moreFilters** - Store as `string[]`; use dedicated handler (e.g. `handleAdjustmentsChange`); exclude from schema/FormData; append each value to URL in `handleSubmitAllFilters`; narrow `handleMoreFiltersChange` key type to scalar keys only
+20. **Portal rendering for desktop filters** - **CRITICAL: ALWAYS use `isPortalTarget` prop on EVERY SearchMultiSelect component in desktop view** (renderFilters/renderMainFilters). This is **MANDATORY** - without it, dropdown menus will be clipped by container overflow constraints. Portaled dropdowns render outside the container DOM hierarchy, preventing clipping and z-index issues. Missing this prop will cause dropdowns to be cut off and multi-select dropdowns to close incorrectly.
+21. **Fixed menu position for modal filters** - **ALWAYS use `menuPosition="fixed"` prop on SearchMultiSelect components in more filters modal** (renderMoreFilters) to ensure dropdown menus render properly inside the modal and prevent clipping
+22. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
+23. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
+24. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
+25. **Search button disabled state** - Check both dropdown filters and moreFilters state (including array fields like `adjustments.length === 0`) to determine if search button should be disabled
+26. **Multi-field text search** - Use `$or` with `$regex` for searching across multiple fields (e.g., productTitle and description)
+27. **Array filters in moreFilters** - Store as `string[]`; use dedicated handler (e.g. `handleAdjustmentsChange`); exclude from schema/FormData; append each value to URL in `handleSubmitAllFilters`; narrow `handleMoreFiltersChange` key type to scalar keys only
+28. **Flex layout for DesktopFiltersWrapper** - Use flex layout (not grid) with `FiltersSection` wrapping filters (flex: 1, flex-wrap) and `ButtonsSection` for buttons (flex-shrink: 0). This prevents horizontal scrolling when you have more than 4 filters. Add `overflow-x: hidden` to `DesktopFiltersWrapper` only. **DO NOT add overflow-x, max-width, or width constraints to the wrapper container** (e.g., Yad2FiltersContainer, RealEstateFiltersContainer) as this will clip portaled dropdown menus.
+29. **Wrapper container constraints** - Wrapper container (e.g., Yad2FiltersContainer, RealEstateFiltersContainer) should be a simple flex container with basic styling (transform, background, border, border-radius, etc.). **DO NOT add `max-width`, `width: 100%`, or `overflow-x: hidden`** to the wrapper container. These constraints will clip portaled dropdown menus that use `isPortalTarget`. The wrapper container should match the pattern in `yad2/_components/Filters/Yad2FiltersWrapper/Yad2FiltersWrapper.styles.ts`.
 
 ### Mobile/Desktop UI Patterns
 

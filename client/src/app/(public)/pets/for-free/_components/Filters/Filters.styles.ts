@@ -14,12 +14,30 @@ export const DesktopFiltersWrapper = styled(Box)`
   flex: 1;
   display: none;
   padding: var(--space-3);
+  overflow-x: hidden;
 
   @media (min-width: ${breakpoints.sm - 1}px) {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: 10px;
+    align-items: center;
   }
+`;
+
+export const FiltersSection = styled(Box)`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+`;
+
+export const ButtonsSection = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  align-items: stretch;
 `;
 
 export const MobileFiltersWrapper = styled(Box)`

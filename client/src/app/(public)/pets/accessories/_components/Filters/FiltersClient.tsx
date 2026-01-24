@@ -33,6 +33,8 @@ import {
   MobileFiltersContent,
   MobileFiltersWrapper,
   ModalFiltersSection,
+  FiltersSection,
+  ButtonsSection,
 } from "./Filters.styles";
 import { useFiltersModal } from "@/components/filters/FiltersContext";
 
@@ -328,36 +330,38 @@ const FiltersClient: FC = () => {
   return (
     <>
       <DesktopFiltersWrapper>
-        {renderFilters()}
-        <Button
-          variant="outline"
-          color="gray"
-          onClick={() => setIsMoreFiltersModalOpen(true)}
-          size="3"
-        >
-          <MixerHorizontalIcon width="18" height="18" />
-          <Text size="2">еще фильтры</Text>
-        </Button>
+        <FiltersSection>{renderFilters()}</FiltersSection>
+        <ButtonsSection>
+          <Button
+            variant="outline"
+            color="gray"
+            onClick={() => setIsMoreFiltersModalOpen(true)}
+            size="3"
+          >
+            <MixerHorizontalIcon width="18" height="18" />
+            <Text size="2">еще фильтры</Text>
+          </Button>
 
-        <Button
-          variant="solid"
-          color="yellow"
-          disabled={isSearchButtonDisabled}
-          onClick={handleSubmitAllFilters}
-          size="3"
-        >
-          <MagnifyingGlassIcon width="18" height="18" />
-          <Text size="3">Поиск</Text>
-        </Button>
-        <Button
-          variant="outline"
-          color="gray"
-          disabled={searchParams.size === 0}
-          onClick={handleClearFilters}
-          size="3"
-        >
-          Очистить все фильтры
-        </Button>
+          <Button
+            variant="solid"
+            color="yellow"
+            disabled={isSearchButtonDisabled}
+            onClick={handleSubmitAllFilters}
+            size="3"
+          >
+            <MagnifyingGlassIcon width="18" height="18" />
+            <Text size="3">Поиск</Text>
+          </Button>
+          <Button
+            variant="outline"
+            color="gray"
+            disabled={searchParams.size === 0}
+            onClick={handleClearFilters}
+            size="3"
+          >
+            Очистить все фильтры
+          </Button>
+        </ButtonsSection>
       </DesktopFiltersWrapper>
 
       {/* More Filters Modal (Desktop) */}

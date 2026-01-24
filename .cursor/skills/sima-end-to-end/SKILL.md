@@ -116,13 +116,21 @@ lib/{section}/{category}/
 
 ### Section Layout (`app/(public)/{section}/`)
 
+**IMPORTANT: Always create section layout with stripe image for new sections.**
+
 For sections that need a layout wrapper with header and stripe image:
 
 ```
 app/(public)/{section}/
-├── layout.tsx                            # Section layout (Server Component)
-└── layout.styles.ts                      # Layout styled components
+├── layout.tsx                            # Section layout (Server Component) - REQUIRED
+└── layout.styles.ts                      # Layout styled components - REQUIRED
 ```
+
+**When to create:**
+- **Always create** `layout.tsx` and `layout.styles.ts` for new sections
+- Provides visual branding with hero stripe image
+- Wraps entire section with `SimpleHeader` and stripe
+- Required for consistent section appearance (vehicles, pets, professional-service, yad2, real-estate all have this)
 
 **layout.tsx pattern:**
 ```typescript
