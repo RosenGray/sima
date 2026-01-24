@@ -28,6 +28,7 @@ alwaysApply: true
   - `PhoneFormField` for phone number inputs
   - `PriceFormField` for price inputs with comma formatting
   - `Checkbox` for checkboxes
+  - `CheckboxButtonGroup` for arrays of checkboxes rendered as button-style options (e.g. adjustments, tags)
   - `DropFilesInput` for file uploads
 - `useAuth` from `@/providers/AuthProvider/AuthProvider` for user context
 - `SubmitButton` from `@/components/buttons/SubmitButton/SubmitButton`
@@ -110,6 +111,14 @@ alwaysApply: true
   - Displays currency symbol (₪) as a child element
   - Manages internal state for formatted display value
 - Use `Checkbox` for checkbox fields
+- Use `CheckboxButtonGroup` for **arrays of checkboxes** (multi-select) rendered as button-style options:
+  - **When to use:** Multi-select fields where each option is a checkbox styled as a button (e.g. pet adjustments, feature tags).
+  - **Conform:** Uses `getFieldsetProps(field)` on the fieldset and `getCollectionProps(field, { type: 'checkbox', options: string[] })` for inputs. Each checkbox shares the same `name`; Conform aggregates repeated keys into an array.
+  - **Schema:** `z.array(z.coerce.number()).optional()` or `z.array(z.string()).optional()`. Option `value` must be string (e.g. enum numeric string).
+  - **Props:** `field`, `label`, `subLabel?`, `options: { value: string; label: string; icon?: React.ReactNode }[]`, `errors?`, `isDisabled?`. Optional `dataAttrList`, `dataAttrLabel`, `dataAttrInput` for `data-nagish` / testing.
+  - **Default value:** Use **string[]** in form `defaultValue` so `getCollectionProps` `defaultChecked` works. Create: `[]`. Edit: `(entity?.field ?? []).map(String)`.
+  - **Icons:** Pass `icon` as `React.ReactNode` (e.g. `<SomeIcon width={18} height={18} />` or custom SVG). Render inside each button-style label.
+  - **Reference:** `CheckboxButtonGroup` in `@/components/Form/CheckboxButtonGroup/`, usage in `PetForSalePublishForm` (`adjustments`).
 - Always pass `errors={field.errors}` to display validation errors
 - Always pass `isDisabled={isPending}` to disable fields during submission
 

@@ -27,6 +27,7 @@ description: Form creation guidelines and best practices
   - `PhoneFormField` for phone number inputs
   - `PriceFormField` for price inputs with comma formatting
   - `Checkbox` for checkboxes
+  - `CheckboxButtonGroup` for arrays of checkboxes rendered as button-style options (e.g. adjustments, tags)
   - `DropFilesInput` for file uploads
 - `useAuth` from `@/providers/AuthProvider/AuthProvider` for user context
 - `SubmitButton` from `@/components/buttons/SubmitButton/SubmitButton`
@@ -109,6 +110,14 @@ description: Form creation guidelines and best practices
   - Displays currency symbol (₪) as a child element
   - Manages internal state for formatted display value
 - Use `Checkbox` for checkbox fields
+- Use `CheckboxButtonGroup` for **arrays of checkboxes** (multi-select) rendered as button-style options:
+  - **When:** Multi-select fields where each option is a checkbox styled as a button (e.g. pet adjustments, feature tags).
+  - **Conform:** `getFieldsetProps(field)` on fieldset; `getCollectionProps(field, { type: 'checkbox', options: string[] })` for inputs. Same `name`; Conform aggregates repeated keys into an array.
+  - **Schema:** `z.array(z.coerce.number()).optional()` or `z.array(z.string()).optional()`. Option `value` must be string.
+  - **Props:** `field`, `label`, `subLabel?`, `options: { value: string; label: string; icon?: React.ReactNode }[]`, `errors?`, `isDisabled?`.
+  - **Default value:** Use **string[]**. Create: `[]`. Edit: `(entity?.field ?? []).map(String)` so `defaultChecked` works.
+  - **Icons:** Pass `icon` as `React.ReactNode` (e.g. `<SomeIcon />` or custom SVG). Render inside each button-style label.
+  - **Reference:** `@/components/Form/CheckboxButtonGroup/`, usage in `PetForSalePublishForm` (`adjustments`).
 - Always pass `errors={field.errors}` to display validation errors
 - Always pass `isDisabled={isPending}` to disable fields during submission
 

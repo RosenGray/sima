@@ -110,6 +110,9 @@ Forms should support both create and edit modes using the `FormMode` enum. This 
       
       // Arrays
       images: [],
+      
+      // Array-of-checkbox fields (CheckboxButtonGroup): use string[] so defaultChecked works
+      adjustments: (entity?.adjustments ?? []).map(String),
     },
     // ... rest of form config
   });
@@ -117,6 +120,7 @@ Forms should support both create and edit modes using the `FormMode` enum. This 
 - Always provide fallback values (empty strings, null, empty arrays)
 - Convert numbers to strings for form inputs (they'll be converted back by schema)
 - For checkboxes, use `"on"` if entity value is true, `null` if false/undefined
+- For **CheckboxButtonGroup** (array-of-checkbox fields): use `(entity?.field ?? []).map(String)` so Conform's `getCollectionProps` `defaultChecked` works; create mode: `[]`
 
 ## Image Handling in Edit Mode
 
