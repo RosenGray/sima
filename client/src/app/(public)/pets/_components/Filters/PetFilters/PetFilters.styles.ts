@@ -90,13 +90,14 @@ export const PetsFiltersNavBarList = styled.ul`
   overflow-x: auto;
   gap: 5px;
   justify-content: center;
+
 `;
 
 export const PetFiltersNavBarItem = styled.li<{ $isActive: boolean }>`
-  flex-shrink: 0;
-  flex-grow: 0;
-  flex-basis: calc(100% / 3);
+
+  flex-basis: calc(100% / 3.05);
   display: flex;
+  border: 1px solid var(--gray-6);
 
   & > a {
     display: flex;
