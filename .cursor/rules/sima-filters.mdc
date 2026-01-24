@@ -152,6 +152,20 @@ async getAll(
      searchFilter.district = { $in: sanitizedFilters.district };
    }
    ```
+   
+   **For numeric enum array filters (with validation):**
+   ```typescript
+   if (sanitizedFilters.adjustments) {
+     // Convert string array to number array and validate
+     const adjustmentNumbers = sanitizedFilters.adjustments
+       .map((adj) => Number(adj))
+       .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 9);
+     
+     if (adjustmentNumbers.length > 0) {
+       searchFilter.adjustments = { $in: adjustmentNumbers };
+     }
+   }
+   ```
 
 5. **Use filter in query:**
    ```typescript
@@ -421,6 +435,40 @@ if (sanitizedFilters.district) {
 }
 ```
 
+### 4a. Numeric Enum Array Filters (With Validation)
+
+**Use case:** Filtering by numeric enum values stored in MongoDB array fields (e.g., pet adjustments, feature tags)
+
+**Example:** `adjustments: ["1", "3", "5"]` (PetAdjustments enum values: Spayed=1, Neutered=2, Vaccinated=3, etc.)
+
+**Implementation:**
+```typescript
+// Interface - string array (from URL params)
+adjustments?: string[];
+
+// Query - convert to numbers, validate range, use $in
+if (sanitizedFilters.adjustments) {
+  // Convert string array to number array and validate
+  const adjustmentNumbers = sanitizedFilters.adjustments
+    .map((adj) => Number(adj))
+    .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 9);
+  
+  if (adjustmentNumbers.length > 0) {
+    // Match documents where adjustments array contains any of the selected values
+    searchFilter.adjustments = { $in: adjustmentNumbers };
+  }
+}
+```
+
+**Key Points:**
+- Values come as strings from URL params (`?adjustments=1&adjustments=3`)
+- Convert to numbers and validate against enum range (e.g., 1-9 for PetAdjustments)
+- Filter out invalid values before querying
+- Use `$in` operator to match documents where the array field contains any of the selected values
+- MongoDB stores the field as an array of numbers: `adjustments: [1, 3, 5]`
+
+**Note:** This pattern is used when enum values are stored as numbers in MongoDB (e.g., `PetAdjustments.Spayed = 1`) rather than strings. Always validate the numeric range to match the enum definition.
+
 ### 5. Price Range Filters (Single Value with Comma Formatting)
 
 **Use case:** Price range inputs with comma formatting (e.g., priceFrom, priceTo)
@@ -616,6 +664,9 @@ export interface EntitySearchFilters {
   // ObjectId array filters
   categoryId?: string[];
   subCategoryId?: string[];
+  
+  // Numeric enum array filters (with validation)
+  adjustments?: string[]; // Numeric enum values (e.g., PetAdjustments: 1-9)
   
   // Numeric range filters (single values - strings in page, numbers in repository)
   yearFrom?: string;
