@@ -469,6 +469,9 @@ if (sanitizedFilters.adjustments) {
 
 **Note:** This pattern is used when enum values are stored as numbers in MongoDB (e.g., `PetAdjustments.Spayed = 1`) rather than strings. Always validate the numeric range to match the enum definition.
 
+**UI Component (SearchCheckboxButtonGroup):**
+Use `SearchCheckboxButtonGroup` for adjustments (and similar numeric enum array filters). Options: `{ value: string; label: string; icon?: ReactNode }[]` with `value` as `String(PetAdjustments.*)`. Share options via a lib module (e.g. `@/lib/pets/for-sale/adjustmentOptions`) for both publish form and filters. See "SearchCheckboxButtonGroup Components" in Step 2 and "References" (pets for-sale FiltersClient).
+
 ### 5. Price Range Filters (Single Value with Comma Formatting)
 
 **Use case:** Price range inputs with comma formatting (e.g., priceFrom, priceTo)
@@ -1206,12 +1209,13 @@ When you don't need a wrapper component (most common case):
 
 #### Overview
 
-FiltersClient supports four types of filters:
+FiltersClient supports five types of filters:
 
 1. **Multi-Select Dropdown Filters (SearchMultiSelect)**: Multi-select dropdowns managed via `allSelectedFilterOptions` Map state
 2. **Single-Select Dropdown Filters (SearchSingleSelect)**: Single-select dropdowns managed via `allSelectedFilterOptions` Map state (wraps single value in array)
 3. **Text Input Filters (TextSearch)**: Text inputs managed via controlled state (not FormData)
 4. **Price Input Filters (PriceTextSearch)**: Price inputs with comma formatting, managed via controlled state (not FormData)
+5. **Checkbox-Button-Group Filters (SearchCheckboxButtonGroup)**: Array-of-checkbox filters (e.g. pet adjustments) managed via controlled state (`value: string[]`, `onChange`). Same UI as form `CheckboxButtonGroup` (fieldset, labels, icons) but no Conform/form. Typically in "more filters."
 
 **Important:** When using a wrapper component (Pattern 1), FiltersClient renders differently for desktop vs mobile:
 - **Desktop**: Renders inline filters + "More Filters" button + MoreFiltersModal
@@ -1229,6 +1233,7 @@ import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/Sea
 import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+import SearchCheckboxButtonGroup from "@/components/filters/SearchCheckboxButtonGroup/SearchCheckboxButtonGroup";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { parseWithZod } from "@conform-to/zod";
 import { MultiValue } from "react-select";
@@ -1258,6 +1263,8 @@ const [moreFilters, setMoreFilters] = useState({
   priceFrom: searchParams.get("priceFrom") ?? "",
   priceTo: searchParams.get("priceTo") ?? "",
   color: searchParams.get("color") ?? "",
+  // Array filters (e.g. adjustments): use string[], separate handler
+  adjustments: searchParams.getAll("adjustments"),
 });
 
 // More Filters Modal state (only if using wrapper component pattern)
@@ -1267,6 +1274,7 @@ const [isMoreFiltersModalOpen, setIsMoreFiltersModalOpen] = useState(false);
 **Note:** 
 - Both `SearchMultiSelect` and `SearchSingleSelect` use the same state management pattern. `SearchSingleSelect` internally wraps the single selected option in an array to match the `MultiValue<Option>` interface.
 - Text input filters (price, color) are managed via controlled state, not FormData, for better UX and easier state management.
+- **SearchCheckboxButtonGroup** (array-of-checkbox filters like adjustments): store in `moreFilters.adjustments` as `string[]`, initialize from `searchParams.getAll("adjustments")`. Use a dedicated `handleAdjustmentsChange(values: string[])`; do **not** use `handleMoreFiltersChange` for adjustments. Narrow `handleMoreFiltersChange` key type to scalar keys only (e.g. `"priceFrom" | "priceTo" | "textSearch"`).
 - When using wrapper component pattern, `moreFilters` state is separate and managed independently.
 
 #### Filter Dependencies
@@ -1286,15 +1294,16 @@ const dependentOptions = useMemo(
 
 #### Handler Functions
 
-1. **handleSubmitAllFilters** - Updates URL with selected filters (both dropdowns and text inputs):
+1. **handleSubmitAllFilters** - Updates URL with selected filters (dropdowns, text/price inputs, and array filters like adjustments):
+   - Build **FormData only from schema keys** (scalar fields: priceFrom, priceTo, textSearch, etc.). Do **not** add array fields (e.g. `adjustments`) to FormData; they are not validated by the filter schema.
+   - After handling dropdowns and schema-validated fields, handle **array filters** (e.g. SearchCheckboxButtonGroup) separately: `_searchParams.delete("adjustments")`, then `moreFilters.adjustments.forEach((v) => _searchParams.append("adjustments", v))`.
    ```typescript
    const handleSubmitAllFilters = useCallback(() => {
-     // Create FormData from moreFilters state for validation
      const formData = new FormData();
-     Object.entries(moreFilters).forEach(([key, value]) => {
-       formData.append(key, value?.toString() ?? "");
-     });
-     
+     formData.append("priceFrom", moreFilters.priceFrom ?? "");
+     formData.append("priceTo", moreFilters.priceTo ?? "");
+     formData.append("textSearch", moreFilters.textSearch ?? "");
+     // Omit adjustments etc. — not in schema
      const schemaKeys = Object.keys(FilterSchema.shape);
      const parseResult = parseWithZod(formData, { schema: FilterSchema });
 
@@ -1315,7 +1324,7 @@ const dependentOptions = useMemo(
        }
      });
 
-     // Handle text input filters (from moreFilters state)
+     // Handle schema-validated scalar filters (price, text, etc.)
      if (parseResult.status === "success") {
        const values = parseResult.value;
        schemaKeys.forEach((key) => {
@@ -1327,13 +1336,12 @@ const dependentOptions = useMemo(
          }
        });
      } else if (parseResult.status === "error" && parseResult.error) {
-       // Graceful degradation: add non-error fields to URL
        const { error } = parseResult;
        for (let i = 0; i < schemaKeys.length; i++) {
          const key = schemaKeys[i];
          _searchParams.delete(key);
          const errors = error[key];
-         if (errors && errors.length > 0) continue; // Skip fields with errors
+         if (errors && errors.length > 0) continue;
          const value = formData.get(key);
          const valueString = value?.toString();
          if (valueString && valueString !== "") {
@@ -1342,36 +1350,44 @@ const dependentOptions = useMemo(
        }
      }
 
+     // Handle array filters (e.g. SearchCheckboxButtonGroup / adjustments)
+     _searchParams.delete("adjustments");
+     moreFilters.adjustments.forEach((v) => _searchParams.append("adjustments", v));
+
      router.replace(`${pathname}?${_searchParams.toString()}`);
    }, [moreFilters, searchParams, allSelectedFilterOptions, router, pathname]);
    ```
 
-2. **handleMoreFiltersChange** - Updates moreFilters state:
+2. **handleMoreFiltersChange** - Updates moreFilters state (scalar keys only). When `moreFilters` includes array fields (e.g. `adjustments`), narrow the key type to `"priceFrom" | "priceTo" | "textSearch"` (or equivalent) so array fields are not updated here.
    ```typescript
    const handleMoreFiltersChange = useCallback(
-     (key: keyof typeof moreFilters, value: string) => {
-       setMoreFilters((prevMoreFilters) => {
-         return produce(prevMoreFilters, (draft) => {
-           draft[key] = value;
-         });
-       });
+     (key: "priceFrom" | "priceTo" | "textSearch", value: string) => {
+       setMoreFilters((prev) => produce(prev, (draft) => { draft[key] = value; }));
      },
      []
    );
    ```
 
-3. **handleClearMoreFilters** - Clears only moreFilters state:
+3. **handleAdjustmentsChange** - Updates array filters (e.g. SearchCheckboxButtonGroup). Use when `moreFilters` includes `adjustments: string[]`.
+   ```typescript
+   const handleAdjustmentsChange = useCallback((values: string[]) => {
+     setMoreFilters((prev) => ({ ...prev, adjustments: values }));
+   }, []);
+   ```
+
+4. **handleClearMoreFilters** - Clears only moreFilters state (include `adjustments: []` when used):
    ```typescript
    const handleClearMoreFilters = useCallback(() => {
      setMoreFilters({
        priceFrom: "",
        priceTo: "",
        color: "",
+       adjustments: [],
      });
    }, []);
    ```
 
-2. **handleSetAllSelectedFilterOptions** - Updates filter state:
+5. **handleSetAllSelectedFilterOptions** - Updates filter state:
    ```typescript
    const handleSetAllSelectedFilterOptions = useCallback(
      (paramName: string, options: MultiValue<Option>) => {
@@ -1389,7 +1405,7 @@ const dependentOptions = useMemo(
    );
    ```
 
-4. **handleClearFilters** - Clears all filters (both dropdowns and text inputs):
+6. **handleClearFilters** - Clears all filters (dropdowns, text/price inputs, and array filters). Include `adjustments: []` in `setMoreFilters` when used.
    ```typescript
    const handleClearFilters = useCallback(() => {
      setAllSelectedFilterOptions(
@@ -1404,6 +1420,7 @@ const dependentOptions = useMemo(
        priceFrom: "",
        priceTo: "",
        color: "",
+       adjustments: [],
      });
      router.push(pathname);
    }, [router, pathname]);
@@ -1411,16 +1428,20 @@ const dependentOptions = useMemo(
 
 #### Search Button Disabled State
 
-Check if search button should be disabled:
+Check if search button should be disabled. When `moreFilters` includes both scalar fields (priceFrom, priceTo, textSearch) and array fields (e.g. `adjustments`), check scalar emptiness and `adjustments.length === 0` explicitly — do **not** use `Object.values(moreFilters).every(...)` because arrays are not `undefined`/`""`/`null`.
 
 ```typescript
 const isSearchButtonDisabled = useMemo(() => {
   const optionsFiltersAreDisabled = Array.from(
     allSelectedFilterOptions.values()
   ).every((options) => options.length === 0);
-  const moreFiltersAreDisabled = Object.values(moreFilters).every(
-    (value) => value === undefined || value === "" || value === null
-  );
+  const moreFiltersScalarEmpty = [
+    moreFilters.priceFrom,
+    moreFilters.priceTo,
+    moreFilters.textSearch,
+  ].every((v) => v === undefined || v === "" || v === null);
+  const moreFiltersAreDisabled =
+    moreFiltersScalarEmpty && moreFilters.adjustments.length === 0;
   return optionsFiltersAreDisabled && moreFiltersAreDisabled;
 }, [allSelectedFilterOptions, moreFilters]);
 ```
@@ -1614,6 +1635,29 @@ When using uncontrolled state (defaultValue pattern):
 - Manages internal state for formatted display value
 - Works with `PriceFromToSchema` from `@/lib/common/types/common.types` which validates and transforms comma-formatted strings to numbers
 - Supports both controlled (`value` + `onChange`) and uncontrolled (`defaultValue`) patterns
+
+#### SearchCheckboxButtonGroup Components
+
+For **array-of-checkbox filters** (e.g. pet adjustments, numeric enum arrays): use `SearchCheckboxButtonGroup`. Same UI as form `CheckboxButtonGroup` (fieldset, legend, button-style checkboxes, optional icons) but **no Conform** — controlled via `value: string[]` and `onChange: (value: string[]) => void`. Typically placed in "more filters" (ModalFiltersSection).
+
+```typescript
+import SearchCheckboxButtonGroup from "@/components/filters/SearchCheckboxButtonGroup/SearchCheckboxButtonGroup";
+import { ADJUSTMENT_OPTIONS } from "@/lib/pets/for-sale/adjustmentOptions";
+
+<SearchCheckboxButtonGroup
+  label="Важные особенности"
+  subLabel="Отметьте особенности питомца."
+  options={ADJUSTMENT_OPTIONS}
+  value={moreFilters.adjustments}
+  onChange={handleAdjustmentsChange}
+/>
+```
+
+**Props:** `label`, `subLabel?`, `options: { value: string; label: string; icon?: ReactNode }[]`, `value: string[]`, `onChange: (value: string[]) => void`, `isDisabled?`.
+
+**State:** Store selected values in `moreFilters.adjustments` (or similar), init from `searchParams.getAll("adjustments")`. Use `handleAdjustmentsChange` to update; exclude `adjustments` from `handleMoreFiltersChange` and from FormData/schema. Append each value to URL in `handleSubmitAllFilters` (see Handler Functions).
+
+**When to use:** Numeric enum array filters (e.g. "4a. Numeric Enum Array Filters"), multi-select options rendered as button-style checkboxes. **Reference:** `app/(public)/pets/for-sale/_components/Filters/FiltersClient.tsx`, `lib/pets/for-sale/adjustmentOptions.tsx`.
 
 ### Step 3: Create MoreFiltersModal Component (Optional - Only for Wrapper Pattern)
 
@@ -2138,20 +2182,22 @@ const FiltersClient: FC = () => {
 8. **Use SearchSingleSelect** - Reusable component for single-select filters (e.g., yearFrom, yearTo)
 9. **Use TextSearch** - Reusable component for regular text input filters
 10. **Use PriceTextSearch** - Reusable component for price input filters with comma formatting
-11. **Controlled state for text inputs** - Use controlled state (`value` + `onChange`) instead of FormData for better UX
-12. **Enter key support** - Always add `onKeyDown` handler to `TextSearch` components to enable Enter key submission (calls `handleSubmitAllFilters()`)
-13. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation (create FormData from state)
-14. **Graceful error handling** - On validation errors, still add non-error fields to URL
-15. **Initialize from URL** - Initialize text inputs with values from `searchParams.get()` in state
-16. **URL synchronization** - All filters update URL params for sharing/bookmarking
-17. **Reset page to 1** - When filters change, reset to first page
-18. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
-19. **Portal rendering** - Use `isPortalTarget` prop on SearchSingleSelect when z-index issues occur with dropdown menus
-20. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
-21. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
-22. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
-23. **Search button disabled state** - Check both dropdown filters and moreFilters state to determine if search button should be disabled
-24. **Multi-field text search** - Use `$or` with `$regex` for searching across multiple fields (e.g., productTitle and description)
+11. **Use SearchCheckboxButtonGroup** - Reusable component for array-of-checkbox filters (e.g. pet adjustments); same UI as form CheckboxButtonGroup, no Conform. Store in `moreFilters` as `string[]`, use dedicated handler, append each value to URL on submit.
+12. **Controlled state for text inputs** - Use controlled state (`value` + `onChange`) instead of FormData for better UX
+13. **Enter key support** - Always add `onKeyDown` handler to `TextSearch` components to enable Enter key submission (calls `handleSubmitAllFilters()`)
+14. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation (create FormData from state)
+15. **Graceful error handling** - On validation errors, still add non-error fields to URL
+16. **Initialize from URL** - Initialize text inputs with values from `searchParams.get()` in state; use `searchParams.getAll()` for array filters (e.g. adjustments)
+17. **URL synchronization** - All filters update URL params for sharing/bookmarking
+18. **Reset page to 1** - When filters change, reset to first page
+19. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
+20. **Portal rendering** - Use `isPortalTarget` prop on SearchSingleSelect when z-index issues occur with dropdown menus
+21. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
+22. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
+23. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
+24. **Search button disabled state** - Check both dropdown filters and moreFilters state (including array fields like `adjustments.length === 0`) to determine if search button should be disabled
+25. **Multi-field text search** - Use `$or` with `$regex` for searching across multiple fields (e.g., productTitle and description)
+26. **Array filters in moreFilters** - Store as `string[]`; use dedicated handler (e.g. `handleAdjustmentsChange`); exclude from schema/FormData; append each value to URL in `handleSubmitAllFilters`; narrow `handleMoreFiltersChange` key type to scalar keys only
 
 ### Mobile/Desktop UI Patterns
 
@@ -2490,3 +2536,8 @@ Page.tsx
     - `app/(public)/vehicles/cars/page.tsx`
     - `app/(public)/yad2/page.tsx`
     - `app/(public)/professional-service/page.tsx`
+    - `app/(public)/pets/for-sale/page.tsx`
+  - **SearchCheckboxButtonGroup / adjustments (pets for-sale):**
+    - `app/(public)/pets/for-sale/_components/Filters/FiltersClient.tsx`
+    - `lib/pets/for-sale/adjustmentOptions.tsx`
+    - `lib/pets/for-sale/repository/PetForSaleRepository.ts`

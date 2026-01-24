@@ -53,7 +53,7 @@ Form primitives live in `@/components/Form/`. Use these components when building
 
 ### CheckboxButtonGroup
 
-- **When to use:** Multi-select options as button-style checkboxes (e.g. pet adjustments, feature tags).
+- **When to use:** Multi-select options as button-style checkboxes (e.g. pet adjustments, feature tags). **For filter UI** (no Conform, no form): use `SearchCheckboxButtonGroup` in `@/components/filters/`; see sima-filters.
 - Props: `field`, `label`, `subLabel?`, `options: { value: string; label: string; icon?: React.ReactNode }[]`, `errors?`, `isDisabled?`, `dataAttrList`, `dataAttrLabel`, `dataAttrInput`.
 - Conform: `getFieldsetProps(field)` on fieldset; `getCollectionProps(field, { type: "checkbox", options: options.map(o => o.value) })`. Same `name`; Conform aggregates into array.
 - Schema: `z.array(z.coerce.number()).optional()` or `z.array(z.string()).optional()`. Option `value` must be string.

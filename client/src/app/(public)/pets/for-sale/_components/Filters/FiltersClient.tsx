@@ -22,10 +22,11 @@ import { Button, Text } from "@radix-ui/themes";
 import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { PetForSaleFilter, PetForSaleFilterSchema } from "./filters.types";
-import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
 import MoreFiltersModal from "../modals/MoreFiltersModal/MoreFiltersModal";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import SearchCheckboxButtonGroup from "@/components/filters/SearchCheckboxButtonGroup/SearchCheckboxButtonGroup";
+import { ADJUSTMENT_OPTIONS } from "@/lib/pets/for-sale/adjustmentOptions";
 import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
 import { getPriceDialogButtonTitle } from "./Filters.utils";
 import {
@@ -58,15 +59,20 @@ const FiltersClient: FC = () => {
     priceFrom: searchParams.get("priceFrom") ?? "",
     priceTo: searchParams.get("priceTo") ?? "",
     textSearch: searchParams.get("textSearch") ?? "",
+    adjustments: searchParams.getAll("adjustments"),
   });
 
   const isSearchButtonDisabled = useMemo(() => {
     const optionsFiltersAreDisabled = Array.from(
       allSelectedFilterOptions.values()
     ).every((options) => options.length === 0);
-    const moreFiltersAreDisabled = Object.values(moreFilters).every(
-      (value) => value === undefined || value === "" || value === null
-    );
+    const moreFiltersScalarEmpty = [
+      moreFilters.priceFrom,
+      moreFilters.priceTo,
+      moreFilters.textSearch,
+    ].every((v) => v === undefined || v === "" || v === null);
+    const moreFiltersAreDisabled =
+      moreFiltersScalarEmpty && moreFilters.adjustments.length === 0;
     return optionsFiltersAreDisabled && moreFiltersAreDisabled;
   }, [allSelectedFilterOptions, moreFilters]);
 
@@ -80,9 +86,9 @@ const FiltersClient: FC = () => {
 
   const handleSubmitAllFilters = useCallback(() => {
     const formData = new FormData();
-    Object.entries(moreFilters).forEach(([key, value]) => {
-      formData.append(key, value?.toString() ?? "");
-    });
+    formData.append("priceFrom", moreFilters.priceFrom ?? "");
+    formData.append("priceTo", moreFilters.priceTo ?? "");
+    formData.append("textSearch", moreFilters.textSearch ?? "");
     const parseResult = parseWithZod(formData, {
       schema: PetForSaleFilterSchema,
     });
@@ -129,6 +135,11 @@ const FiltersClient: FC = () => {
       }
     }
 
+    _searchParams.delete("adjustments");
+    moreFilters.adjustments.forEach((v) => {
+      _searchParams.append("adjustments", v);
+    });
+
     router.replace(`${pathname}?${_searchParams.toString()}`);
   }, [moreFilters, searchParams, allSelectedFilterOptions, router, pathname]);
 
@@ -164,6 +175,7 @@ const FiltersClient: FC = () => {
       priceFrom: "",
       priceTo: "",
       textSearch: "",
+      adjustments: [],
     });
     router.push(pathname);
   }, [router, pathname]);
@@ -173,7 +185,12 @@ const FiltersClient: FC = () => {
       priceFrom: "",
       priceTo: "",
       textSearch: "",
+      adjustments: [],
     });
+  }, []);
+
+  const handleAdjustmentsChange = useCallback((values: string[]) => {
+    setMoreFilters((prev) => ({ ...prev, adjustments: values }));
   }, []);
 
   const animalOptions = useMemo(() => mapAnimalsToSelectOptions(), []);
@@ -191,7 +208,10 @@ const FiltersClient: FC = () => {
   );
 
   const handleMoreFiltersChange = useCallback(
-    (key: keyof typeof moreFilters, value: string) => {
+    (
+      key: "priceFrom" | "priceTo" | "textSearch",
+      value: string
+    ) => {
       setMoreFilters((prevMoreFilters) => {
         return produce(prevMoreFilters, (draft) => {
           draft[key] = value;
@@ -305,6 +325,14 @@ const FiltersClient: FC = () => {
           selectedOptions={allSelectedFilterOptions.get("city")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
           menuPosition="fixed"
+        />
+
+        <SearchCheckboxButtonGroup
+          label="Важные особенности"
+          subLabel="Отметьте особенности питомца."
+          options={ADJUSTMENT_OPTIONS}
+          value={moreFilters.adjustments}
+          onChange={handleAdjustmentsChange}
         />
 
         <TextSearch

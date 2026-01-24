@@ -44,8 +44,8 @@ import {
 import {
   PetGender,
   PetAge,
-  PetAdjustments,
 } from "@/lib/pets/for-sale/types/petForSale.types";
+import { ADJUSTMENT_OPTIONS } from "@/lib/pets/for-sale/adjustmentOptions";
 import PriceFormField from "@/components/Form/PriceFormField/PriceFormField";
 import CheckboxButtonGroup from "@/components/Form/CheckboxButtonGroup/CheckboxButtonGroup";
 import {
@@ -56,7 +56,6 @@ import {
   ReaderIcon,
   SymbolIcon,
 } from "@radix-ui/react-icons";
-import TruckIcon from "@/components/svg/vehicles/Truck/Truck";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -86,54 +85,6 @@ const ageOptions = Object.values(PetAge)
             : "Старший",
     fieldKey: "age",
   }));
-
-const ADJUSTMENT_OPTIONS = [
-  {
-    value: String(PetAdjustments.Spayed),
-    label: "Стерилизована",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.Neutered),
-    label: "Кастрирован",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.Vaccinated),
-    label: "Привит(а)",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.Trained),
-    label: "Дрессирован(а)",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.KidsFriendly),
-    label: "Дружелюбен к детям",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.YardSuitable),
-    label: "Подходит для двора",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.DogsFriendly),
-    label: "Дружелюбен к собакам",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.ApartmentSuitable),
-    label: "Подходит для квартиры",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-  {
-    value: String(PetAdjustments.AdultsFriendly),
-    label: "Подходит для взрослых",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }}/>,
-  },
-];
 
 interface PetForSalePublishFormProps {
   pet?: SerializedPetForSale;

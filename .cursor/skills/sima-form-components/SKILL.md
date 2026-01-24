@@ -258,6 +258,8 @@ interface CheckboxButtonOption {
 />
 ```
 
+**Filter counterpart:** For filter UI (no Conform, no form), use `SearchCheckboxButtonGroup` in `@/components/filters/`. Same visual style (fieldset, labels, icons); controlled via `value` / `onChange`. See sima-filters and `app/(public)/pets/for-sale/_components/Filters/FiltersClient.tsx`.
+
 ---
 
 ## DropFilesInput
