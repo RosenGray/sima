@@ -29,6 +29,13 @@ export const MobileFiltersWrapper = styled(Box)`
   display: flex;
   flex-direction: column;
 
+  &:after{
+    content: '';
+    display: block;
+    width: 100%;
+    height: 50px;
+    background:transparent;
+  }
   @media (min-width: ${breakpoints.sm}px) {
     display: none;
   }
@@ -41,6 +48,7 @@ export const MobileFiltersContent = styled(Box)`
   flex-direction: column;
   padding: var(--space-3);
   gap: 10px;
+
 `;
 
 export const MobileFilterFooter = styled(Box)`

@@ -1136,42 +1136,51 @@ When you don't need a wrapper component (most common case):
      }
    `;
 
-   export const MobileFiltersWrapper = styled(Box)`
-     flex: 1;
-     padding-bottom: 0;
-     overflow: hidden;
-     display: flex;
-     flex-direction: column;
+  export const MobileFiltersWrapper = styled(Box)`
+    flex: 1;
+    padding-bottom: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
-     @media (min-width: ${breakpoints.sm}px) {
-       display: none;
-     }
-   `;
+    /* Add bottom spacer to prevent content from being hidden behind fixed footer */
+    &:after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 50px; /* Must match MobileFilterFooter height */
+      background: transparent;
+    }
 
-   export const MobileFiltersContent = styled(Box)`
-     flex: 1;
-     overflow-y: auto;
-     display: flex;
-     flex-direction: column;
-     padding: var(--space-3);
-     gap: 10px;
-   `;
+    @media (min-width: ${breakpoints.sm}px) {
+      display: none;
+    }
+  `;
 
-   export const MobileFilterFooter = styled(Box)`
-     position: absolute;
-     height: 50px;
-     bottom: 0;
-     left: 0;
-     right: 0;
-     border-top: 1px solid var(--gray-6);
-     margin-bottom: 0;
-     background: var(--color-background);
-     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     gap: 10px;
-   `;
+  export const MobileFiltersContent = styled(Box)`
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-3);
+    gap: 10px;
+  `;
+
+  export const MobileFilterFooter = styled(Box)`
+    position: absolute;
+    height: 50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--gray-6);
+    margin-bottom: 0;
+    background: var(--color-background);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  `;
    ```
 
    **For Pattern 2 (Without Wrapper Component):**
@@ -2255,6 +2264,33 @@ const FiltersClient: FC = () => {
 - Pattern 1a includes navigation bar, Pattern 1b doesn't
 - Pattern 2: All filters together, FiltersClient handles its own modal
 - All patterns use `FiltersContext` for modal state management
+
+#### Scrollable Content with Fixed Footer
+
+When using `MobileFiltersWrapper` with `MobileFiltersContent` (scrollable) and `MobileFilterFooter` (fixed at bottom), **always add a `&:after` pseudo-element** to `MobileFiltersWrapper` to prevent content from being hidden behind the fixed footer:
+
+```typescript
+export const MobileFiltersWrapper = styled(Box)`
+  /* ... other styles ... */
+  
+  /* Add bottom spacer to prevent content from being hidden behind fixed footer */
+  &:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 50px; /* Must match MobileFilterFooter height */
+    background: transparent;
+  }
+`;
+```
+
+**Why this is needed:**
+- `MobileFiltersContent` has `overflow-y: auto` (scrollable)
+- `MobileFilterFooter` is `position: absolute` at bottom (overlays content)
+- Without the spacer, last filter items can be hidden behind the footer when scrolling
+- The `&:after` pseudo-element creates transparent padding equal to footer height, ensuring all content is accessible above the footer
+
+**Important:** The spacer height must match `MobileFilterFooter` height (typically 50px).
 
 ## Implementation Example: Car Filters
 
