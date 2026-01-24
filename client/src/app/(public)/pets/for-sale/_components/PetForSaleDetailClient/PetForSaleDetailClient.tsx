@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -14,8 +14,12 @@ import {
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
-import { SerializedPetForSale } from "@/lib/pets/for-sale/types/petForSale.types";
-import { PetGender, PetAge } from "@/lib/pets/for-sale/types/petForSale.types";
+import {
+  SerializedPetForSale,
+  PetGender,
+  PetAge,
+  PetAdjustments,
+} from "@/lib/pets/for-sale/types/petForSale.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getAnimalById, getAnimalKindById } from "@/lib/pets/animals";
@@ -81,6 +85,18 @@ const formatPrice = (price: number): string => {
   }).format(price);
 };
 
+const ADJUSTMENT_LABELS: Record<number, string> = {
+  [PetAdjustments.Spayed]: "Стерилизована",
+  [PetAdjustments.Neutered]: "Кастрирован",
+  [PetAdjustments.Vaccinated]: "Привит(а)",
+  [PetAdjustments.Trained]: "Дрессирован(а)",
+  [PetAdjustments.KidsFriendly]: "Дружелюбен к детям",
+  [PetAdjustments.YardSuitable]: "Подходит для двора",
+  [PetAdjustments.DogsFriendly]: "Дружелюбен к собакам",
+  [PetAdjustments.ApartmentSuitable]: "Подходит для квартиры",
+  [PetAdjustments.AdultsFriendly]: "Подходит для взрослых",
+};
+
 const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
   pet,
 }) => {
@@ -113,6 +129,7 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
     price,
     gender,
     age,
+    adjustments,
     description,
     contactName,
     contactPrimaryPhone,
@@ -278,6 +295,22 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
                 {formatPrice(price)}
               </Text>
             </InfoRow>
+            {adjustments && adjustments.length > 0 && (
+              <InfoRow>
+                <Flex gap="2" wrap="wrap">
+                  {adjustments.map((value) => (
+                    <Badge
+                      key={value}
+                      size="2"
+                      color="blue"
+                      variant="soft"
+                    >
+                      {ADJUSTMENT_LABELS[value] ?? `#${value}`}
+                    </Badge>
+                  ))}
+                </Flex>
+              </InfoRow>
+            )}
           </InfoSection>
 
           {/* Description */}
