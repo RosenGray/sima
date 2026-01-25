@@ -18,6 +18,7 @@ interface TextSearchProps
       | "type"
       | "placeholder"
       | "defaultValue"
+      | "value"
       | "color"
       | "size"
       | keyof TextField.RootProps
@@ -28,6 +29,7 @@ interface TextSearchProps
   type?: "number" | "text";
   label?: string;
   defaultValue?: string | number;
+  value?: string | number;
 }
 
 const TextSearch: FC<TextSearchProps> = ({
@@ -37,6 +39,7 @@ const TextSearch: FC<TextSearchProps> = ({
   label,
   type = "text",
   defaultValue,
+  value,
   ...inputProps
 }) => {
   const id = useId();
@@ -49,6 +52,7 @@ const TextSearch: FC<TextSearchProps> = ({
         name={name}
         type={type}
         placeholder={placeholder}
+        value={value}
         defaultValue={defaultValue}
         onChange={(e) => onChange(e.target.value)}
         {...inputProps}
