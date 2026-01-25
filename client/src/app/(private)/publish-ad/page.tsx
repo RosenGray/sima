@@ -45,7 +45,7 @@ const categories: PublishAdCategory[] = [
     title: "Работа",
     description: "Предложения работы и вакансии для специалистов",
     icon: <IdCardIcon width="32" height="32" />,
-    href: "/publish-ad/jobs",
+    href: "/publish-ad/jobs/create",
   },
   {
     id: "dating",
