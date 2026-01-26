@@ -497,6 +497,292 @@ app/(public)/{category}/{entity}/
         └── {Entity}Card.styles.ts
 ```
 
+## Card Component Pattern
+
+### Structure Overview
+
+Card components for listing pages should follow a consistent pattern to ensure proper rendering, clickability, and visual consistency.
+
+### Component Architecture
+
+#### Parent Cards Component (`{Entity}Cards.tsx`)
+
+- **Location**: `app/(public)/{category}/{entity}/_components/{Entity}Cards/{Entity}Cards.tsx`
+- **Type**: Client or Server Component (usually Client if no data fetching)
+- **Responsibility**: Map over entities array and wrap each card with Link
+
+**Pattern:**
+```typescript
+import { Link } from "@radix-ui/themes";
+import {Entity}Card from "./{Entity}Card";
+
+const {Entity}Cards: React.FC<{Entity}CardsProps> = ({ entities }) => {
+  return (
+    <>
+      {entities.map((entity) => (
+        <Link href={`/{category}/{entity}/${entity.publicId}`} key={entity.publicId}>
+          <{Entity}Card entity={entity} />
+        </Link>
+      ))}
+    </>
+  );
+};
+```
+
+**Key Points:**
+- **Link MUST wrap the card** - Use Radix UI `Link` component from `@radix-ui/themes`
+- Link wraps the entire card component, not individual elements
+- Each card is wrapped with its own Link pointing to the detail page
+
+#### Individual Card Component (`{Entity}Card.tsx`)
+
+- **Location**: `app/(public)/{category}/{entity}/_components/{Entity}Cards/{Entity}Card.tsx`
+- **Type**: Client Component ("use client" directive)
+- **Responsibility**: Render card UI structure (NO Link component inside)
+
+**Pattern:**
+```typescript
+"use client";
+import React from "react";
+import Image from "next/image";
+import {
+  {Entity}CardBox,
+  {Entity}Card,
+  {Entity}CardHeader,
+  {Entity}CardImages,
+  {Entity}CardImageContainer,
+  {Entity}CardContent,
+  {Entity}CardFooter,
+} from "./{Entity}Card.styles";
+import { Badge, Text, Heading } from "@radix-ui/themes";
+
+const {Entity}Card: React.FC<{Entity}CardProps> = ({ entity }) => {
+  return (
+    <{Entity}CardBox id={entity.publicId}>
+      <{Entity}Card variant="surface">
+        <{Entity}CardHeader>
+          {/* Badges */}
+        </{Entity}CardHeader>
+        <{Entity}CardImages>
+          {/* Single image or Swiper carousel */}
+        </{Entity}CardImages>
+        <{Entity}CardContent>
+          {/* Title and description */}
+        </{Entity}CardContent>
+        <{Entity}CardFooter>
+          {/* Optional footer content */}
+        </{Entity}CardFooter>
+      </{Entity}Card>
+    </{Entity}CardBox>
+  );
+};
+```
+
+**Key Points:**
+- **NO Link component** - Link is handled by parent Cards component
+- Card structure: Box → Card → Header/Images/Content/Footer
+- Always use Next.js `Image` component with `fill` prop and proper `sizes` attribute
+
+### Card Structure Patterns
+
+#### Pattern 1: Cards with Title (e.g., Jobs, Yad2Items)
+
+For cards that display a title:
+
+```typescript
+<{Entity}CardBox>           // height: 100% (no fixed height)
+  <{Entity}Card>            // flex column, height: 100%
+    <{Entity}CardHeader>    // padding, badges
+    <{Entity}CardImages>     // height: 200px, flex-shrink: 0
+    <{Entity}CardContent>    // flex: 1, title + description
+    <{Entity}CardFooter>     // optional, padding only
+  </{Entity}Card>
+</{Entity}CardBox>
+```
+
+**Styling:**
+- `{Entity}CardBox`: `height: 100%` (not fixed height)
+- `{Entity}CardImages`: Fixed `height: 200px` with `flex-shrink: 0`
+- `{Entity}CardContent`: `flex: 1` to take remaining space
+- Use `Heading` component for title in Content section
+
+#### Pattern 2: Cards without Title (e.g., ProfessionalService)
+
+For cards that only display description:
+
+```typescript
+<{Entity}CardBox>           // height: 400px (fixed)
+  <{Entity}Card>            // flex column, height: 100%
+    <{Entity}CardHeader>    // height: 40px, badges
+    <{Entity}CardImages>     // flex: 1 (takes remaining space)
+    <{Entity}CardFooter>     // height: 100px, description only
+  </{Entity}Card>
+</{Entity}CardBox>
+```
+
+**Styling:**
+- `{Entity}CardBox`: Fixed `height: 400px`
+- `{Entity}CardImages`: `flex: 1` (no `min-height: 0` unless parent has explicit height)
+- `{Entity}CardFooter`: Fixed `height: 100px` with description
+
+### Styled Components Pattern
+
+```typescript
+"use client";
+import styled from "styled-components";
+import { Box, Card, Flex } from "@radix-ui/themes";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/autoplay";
+
+// Pattern 1: With Title (height: 100%)
+export const {Entity}CardBox = styled(Box)`
+  width: 100%;
+  height: 100%;              // Use 100% for cards with title
+  border-radius: var(--radius-3);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+`;
+
+// Pattern 2: Without Title (fixed height)
+export const {Entity}CardBox = styled(Box)`
+  width: 100%;
+  height: 400px;             // Fixed height for cards without title
+  border-radius: var(--radius-3);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+`;
+
+export const {Entity}Card = styled(Card)`
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset var(--shadow-4);
+`;
+
+export const {Entity}CardHeader = styled.header`
+  width: 100%;
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+`;
+
+// Pattern 1: Fixed height images
+export const {Entity}CardImages = styled(Box)`
+  width: 100%;
+  height: 200px;
+  flex-shrink: 0;
+`;
+
+// Pattern 2: Flexible images
+export const {Entity}CardImages = styled(Flex)`
+  flex: 1;
+  // DO NOT use min-height: 0 unless parent has explicit height
+`;
+
+export const {Entity}CardImageContainer = styled(Box)`
+  height: 100%;
+  width: 100%;
+  position: relative;        // Required for Next.js Image with fill
+`;
+
+export const {Entity}CardContent = styled(Flex)`
+  flex: 1;
+  flex-direction: column;
+  padding: var(--space-3);
+  gap: var(--space-2);
+`;
+
+export const {Entity}CardFooter = styled.footer`
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+`;
+
+export const {Entity}CardSwiper = styled(Swiper)`
+  width: 100%;
+  height: 100%;
+`;
+
+export const {Entity}CardSwiperSlide = styled(SwiperSlide)``;
+```
+
+### Image Handling
+
+**Single Image:**
+```typescript
+{images.length === 1 ? (
+  <{Entity}CardImageContainer>
+    <Image
+      src={images[0].url}
+      alt={images[0].originalName}
+      fill
+      style={{ objectFit: "cover" }}
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+    />
+  </{Entity}CardImageContainer>
+) : (
+  // Swiper for multiple images
+)}
+```
+
+**Multiple Images (Swiper):**
+```typescript
+<{Entity}CardSwiper
+  modules={[Autoplay]}
+  autoplay={true}
+  spaceBetween={0}
+  slidesPerView={1}
+>
+  {images.map((image) => (
+    <{Entity}CardSwiperSlide key={image.uniqueName}>
+      <{Entity}CardImageContainer>
+        <Image
+          src={image.url}
+          alt={image.originalName}
+          fill
+          style={{ objectFit: "cover" }}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+        />
+      </{Entity}CardImageContainer>
+    </{Entity}CardSwiperSlide>
+  ))}
+</{Entity}CardSwiper>
+```
+
+**Key Points:**
+- Always use `style={{ objectFit: "cover" }}` for consistent image display
+- Always provide proper `sizes` attribute for responsive images
+- ImageContainer must have `position: relative` and `height: 100%` for `fill` prop to work
+
+### Common Mistakes to Avoid
+
+1. **Link Placement**: ❌ Don't put Link inside Card component. ✅ Put Link in Cards component wrapping Card
+2. **ImageContainer Height**: ❌ Don't forget `height: 100%` and `position: relative` for Next.js Image `fill`
+3. **Flex Images**: ❌ Don't use `min-height: 0` on flex images unless parent has explicit height
+4. **Fixed vs Flexible**: ❌ Don't mix fixed height Box with flex: 1 Images without proper constraints
+5. **Title Placement**: ❌ Don't put title in Footer. ✅ Put title in Content section for cards with titles
+
+### References
+
+- Follow the pattern established in:
+  - `app/(public)/yad2/_components/Yad2ItemCards/Yad2ItemCards.tsx` (with title)
+  - `app/(public)/professional-service/_components/ProfessionalServiceCards/ProfessionalServiceCards.tsx` (without title)
+  - `app/(public)/jobs/_components/JobCards/JobCards.tsx` (with title)
+
 ## Common Patterns
 
 ### Filter Processing Template
