@@ -2,10 +2,14 @@ import { vi } from "vitest";
 
 /**
  * Mock Next.js redirect function
+ * Note: In Next.js, redirect() throws a special error that Next.js catches
+ * So we throw an error to simulate this behavior
  */
 export const mockRedirect = vi.fn((url: string) => {
-  // In tests, we just track the call
-  return;
+  // In tests, we track the call and throw to simulate Next.js behavior
+  const error = new Error(`NEXT_REDIRECT;${url}`);
+  (error as any).digest = `NEXT_REDIRECT;${url}`;
+  throw error;
 });
 
 /**

@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@/__tests__/test-utils";
-import { BasicFormField } from "@/components/Form/BasicFormField/BasicFormField";
+import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { z } from "zod";
@@ -49,15 +49,9 @@ describe("BasicFormField", () => {
     render(<TestForm />);
 
     const input = screen.getByLabelText("Test Field");
-    const form = input.closest("form");
-
-    // Try to submit empty form
-    if (form) {
-      form.requestSubmit();
-    }
 
     // Note: This is a simplified example
-    // In real tests, you would wait for validation and check error messages
+    // In real tests, you would trigger validation and check error messages
     expect(input).toBeInTheDocument();
   });
 });

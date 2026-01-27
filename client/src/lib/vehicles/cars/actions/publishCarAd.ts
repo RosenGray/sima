@@ -1,6 +1,6 @@
 "use server";
 import { parseWithZod } from "@conform-to/zod";
-import { createCarSchema, CarFormData } from "../types/car.schema";
+import { createCarSchema } from "../types/car.schema";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
@@ -22,7 +22,7 @@ export async function publishCarAd(initialState: unknown, formData: FormData) {
     });
   }
 
-  const formDataValue = result.value as unknown as CarFormData;
+  const formDataValue = result.value;
   const { images, ...carData } = formDataValue;
 
   try {

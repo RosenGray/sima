@@ -1,3 +1,5 @@
+import { Districts } from "@/lib/cities/types/cities.schema";
+
 /**
  * Create a FormData object with test data
  * Uses global FormData (available in Node.js 18+)
@@ -132,6 +134,27 @@ export function createJobAdFormData(overrides?: Record<string, any>): FormData {
     contactName: "Test User",
     contactPrimaryPhone: "050-123-4567",
     contactEmail: "test@example.com",
+    acceptTerms: "on",
+    images: createMockFiles(1),
+  };
+
+  return createFormData({ ...defaultData, ...overrides });
+}
+
+/**
+ * Create FormData for professional service ad submission
+ */
+export function createProfessionalServiceFormData(
+  overrides?: Record<string, any>
+): FormData {
+  const defaultData = {
+    category: "category-id",
+    subCategory: "subcategory-id",
+    district: Districts.Center,
+    city: "Тель-Авив",
+    description: "Test service description",
+    email: "test@example.com",
+    phoneNumber: "0501234567",
     acceptTerms: "on",
     images: createMockFiles(1),
   };

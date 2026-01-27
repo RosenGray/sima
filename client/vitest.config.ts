@@ -30,8 +30,15 @@ export default defineConfig({
     hookTimeout: 10000,
   },
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: [
+      {
+        find: "@/__tests__",
+        replacement: path.resolve(__dirname, "./__tests__"),
+      },
+      {
+        find: "@",
+        replacement: path.resolve(__dirname, "./src"),
+      },
+    ],
   },
 });

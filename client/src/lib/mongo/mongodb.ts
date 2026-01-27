@@ -14,6 +14,12 @@ const connectDB = async () => {
     return cached.conn;
   }
 
+  // If mongoose is already connected (e.g., in tests with Memory Server), return the existing connection
+  if (mongoose.connection.readyState === 1) {
+    cached.conn = mongoose.connection;
+    return cached.conn;
+  }
+
   // Validate environment variables
   const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD, MONGO_URI: ENV_MONGO_URI } = process.env;
 

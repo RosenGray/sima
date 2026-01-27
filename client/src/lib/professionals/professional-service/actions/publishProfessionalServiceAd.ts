@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
+import mongoose from "mongoose";
 
 export async function publishProfessionalServiceAd(
   initialState: unknown,
@@ -46,7 +47,7 @@ export async function publishProfessionalServiceAd(
 
     const professionalService = new ProfessionalService({
       ...result.value,
-      user: user.id,
+      user: new mongoose.Types.ObjectId(user.id),
       publicId: nanoid(10),
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,

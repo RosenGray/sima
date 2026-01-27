@@ -12,26 +12,32 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { publishCarAd } from "@/lib/vehicles/cars/actions/publishCarAd";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import { UserFactory } from "@/__tests__/factories";
-import { mockGetCurrentUser } from "@/__tests__/mocks/auth";
-import { mockUploadFiles } from "@/__tests__/mocks/fileUpload";
-import { mockRedirect } from "@/__tests__/mocks/next";
 import { createCarAdFormData } from "@/__tests__/utils/serverAction.helpers";
 
-// Mock dependencies
+// Mock dependencies - hoist mocks to avoid initialization issues
+const mocks = vi.hoisted(() => {
+  return {
+    mockGetCurrentUser: vi.fn(),
+    mockUploadFiles: vi.fn(),
+    mockRedirect: vi.fn(),
+    mockRevalidatePath: vi.fn(),
+  };
+});
+
 vi.mock("@/lib/auth/utils/auth.utils", () => ({
-  getCurrentUser: mockGetCurrentUser,
+  getCurrentUser: mocks.mockGetCurrentUser,
 }));
 
 vi.mock("@/lib/files/uploadFiles", () => ({
-  uploadFiles: mockUploadFiles,
+  uploadFiles: mocks.mockUploadFiles,
 }));
 
 vi.mock("next/navigation", () => ({
-  redirect: mockRedirect,
+  redirect: mocks.mockRedirect,
 }));
 
 vi.mock("next/cache", () => ({
-  revalidatePath: vi.fn(),
+  revalidatePath: mocks.mockRevalidatePath,
 }));
 
 describe("Car Ad Publishing Flow [e2e]", () => {
@@ -54,7 +60,7 @@ describe("Car Ad Publishing Flow [e2e]", () => {
   it("should create car ad end-to-end", async () => {
     // 1. Setup: Create user and mock authentication
     const user = await UserFactory.create();
-    mockGetCurrentUser.mockResolvedValue(user);
+    mocks.mockGetCurrentUser.mockResolvedValue(user);
 
     // 2. Setup: Mock file upload
     const mockFiles = [
@@ -69,7 +75,7 @@ describe("Car Ad Publishing Flow [e2e]", () => {
       },
     ];
 
-    mockUploadFiles.mockResolvedValue({
+    mocks.mockUploadFiles.mockResolvedValue({
       success: true,
       message: "Files uploaded",
       files: mockFiles,
@@ -101,14 +107,14 @@ describe("Car Ad Publishing Flow [e2e]", () => {
     expect(cars.data[0].user.id).toBe(user.id);
 
     // 6. Verify: Redirect was called
-    expect(mockRedirect).toHaveBeenCalledWith("/cars");
+    expect(mocks.mockRedirect).toHaveBeenCalledWith("/cars");
   });
 
   it("should handle large batch creation (200-500 items)", async () => {
     const user = await UserFactory.create();
-    mockGetCurrentUser.mockResolvedValue(user);
+    mocks.mockGetCurrentUser.mockResolvedValue(user);
 
-    mockUploadFiles.mockResolvedValue({
+    mocks.mockUploadFiles.mockResolvedValue({
       success: true,
       message: "Files uploaded",
       files: [

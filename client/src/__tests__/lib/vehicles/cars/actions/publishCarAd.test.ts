@@ -4,9 +4,6 @@
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { publishCarAd } from "@/lib/vehicles/cars/actions/publishCarAd";
-import { mockGetCurrentUser, createMockUser } from "@/__tests__/mocks/auth";
-import { mockUploadFiles } from "@/__tests__/mocks/fileUpload";
-import { mockRedirect, mockRevalidatePath } from "@/__tests__/mocks/next";
 import {
   createCarAdFormData,
   assertServerActionSuccess,
@@ -19,21 +16,30 @@ import {
 } from "@/__tests__/mocks/mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
-// Mock dependencies
+// Mock dependencies - hoist mocks to avoid initialization issues
+const mocks = vi.hoisted(() => {
+  return {
+    mockGetCurrentUser: vi.fn(),
+    mockUploadFiles: vi.fn(),
+    mockRedirect: vi.fn(),
+    mockRevalidatePath: vi.fn(),
+  };
+});
+
 vi.mock("@/lib/auth/utils/auth.utils", () => ({
-  getCurrentUser: mockGetCurrentUser,
+  getCurrentUser: mocks.mockGetCurrentUser,
 }));
 
 vi.mock("@/lib/files/uploadFiles", () => ({
-  uploadFiles: mockUploadFiles,
+  uploadFiles: mocks.mockUploadFiles,
 }));
 
 vi.mock("next/navigation", () => ({
-  redirect: mockRedirect,
+  redirect: mocks.mockRedirect,
 }));
 
 vi.mock("next/cache", () => ({
-  revalidatePath: mockRevalidatePath,
+  revalidatePath: mocks.mockRevalidatePath,
 }));
 
 describe("publishCarAd [integration]", () => {
@@ -56,10 +62,10 @@ describe("publishCarAd [integration]", () => {
   it("should create car ad successfully", async () => {
     // Setup: Create authenticated user
     const user = await UserFactory.create();
-    mockGetCurrentUser.mockResolvedValue(user);
+    mocks.mockGetCurrentUser.mockResolvedValue(user);
 
     // Setup: Mock file upload
-    mockUploadFiles.mockResolvedValue({
+    mocks.mockUploadFiles.mockResolvedValue({
       success: true,
       message: "Files uploaded",
       files: [
@@ -91,14 +97,14 @@ describe("publishCarAd [integration]", () => {
     const result = await publishCarAd(undefined, formData);
 
     // Assert: Should redirect (no error returned)
-    expect(mockRedirect).toHaveBeenCalledWith("/cars");
-    expect(mockRevalidatePath).toHaveBeenCalledWith("/cars", "layout");
+    expect(mocks.mockRedirect).toHaveBeenCalledWith("/cars");
+    expect(mocks.mockRevalidatePath).toHaveBeenCalledWith("/cars", "layout");
     assertServerActionSuccess(result);
   });
 
   it("should return error for unauthenticated user", async () => {
     // Setup: No authenticated user
-    mockGetCurrentUser.mockResolvedValue(null);
+    mocks.mockGetCurrentUser.mockResolvedValue(null);
 
     const formData = createCarAdFormData();
 
@@ -108,12 +114,12 @@ describe("publishCarAd [integration]", () => {
     // Assert: Should return error
     expect(result?.status).toBe("error");
     expect(result?.error?.formErrors).toBeDefined();
-    expect(mockRedirect).not.toHaveBeenCalled();
+    expect(mocks.mockRedirect).not.toHaveBeenCalled();
   });
 
   it("should validate required fields", async () => {
     const user = await UserFactory.create();
-    mockGetCurrentUser.mockResolvedValue(user);
+    mocks.mockGetCurrentUser.mockResolvedValue(user);
 
     // Create form data with missing required fields
     const formData = createCarAdFormData({

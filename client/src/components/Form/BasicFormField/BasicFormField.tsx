@@ -48,7 +48,7 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
     <Box mb={mb} mt={mt} mr={mr} ml={ml} style={containerStyle}>
       {label && (
         <Text
-          htmlFor={rest.id}
+          htmlFor={field.id}
           as="label"
           size="3"
           weight="bold"

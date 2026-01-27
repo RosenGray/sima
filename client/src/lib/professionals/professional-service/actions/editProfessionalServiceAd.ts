@@ -13,6 +13,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
 import { professionalServiceRepository } from "../repository/ProfessionalServiceRepository";
+import mongoose from "mongoose";
 
 export async function editProfessionalServiceAd(
   context: {
@@ -101,14 +102,19 @@ export async function editProfessionalServiceAd(
 
     const professionalService = await ProfessionalService.findOneAndUpdate(
       { publicId: context.servicePublicId },
-
       {
         ...result.value,
-        user: user.id,
+        user: new mongoose.Types.ObjectId(user.id),
         acceptTerms: result.value.acceptTerms === "on",
         images: updatedImages,
-      }
+      },
+      { new: true, runValidators: true }
     );
+    if (!professionalService) {
+      return result.reply({
+        formErrors: ["Объявление не найдено"],
+      });
+    }
     await professionalService.save();
     // Return success response with uploaded file data
   } catch (error) {

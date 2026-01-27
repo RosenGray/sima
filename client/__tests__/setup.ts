@@ -26,6 +26,7 @@ vi.mock("next/navigation", () => ({
   }),
   usePathname: () => "/",
   useSearchParams: () => new URLSearchParams(),
+  useServerInsertedHTML: vi.fn(() => null),
 }));
 
 vi.mock("next/headers", () => ({

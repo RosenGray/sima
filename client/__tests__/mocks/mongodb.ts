@@ -15,6 +15,7 @@ export async function setupMongoMemoryServer(): Promise<{
   mongoServer = await MongoMemoryServer.create({
     instance: {
       dbName: "test-db",
+      ip: "127.0.0.1", // Use localhost instead of 0.0.0.0
     },
   });
 
@@ -23,6 +24,11 @@ export async function setupMongoMemoryServer(): Promise<{
   // Connect to the in-memory database
   if (mongoose.connection.readyState === 0) {
     await mongoose.connect(uri);
+  }
+
+  // Update cached connection for connectDB function
+  if (global.mongoose) {
+    global.mongoose.conn = mongoose.connection;
   }
 
   return { mongoServer, uri };
