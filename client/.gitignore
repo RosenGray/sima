@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+*.lcov
+.nyc_output
+__tests__/coverage
 
 # next.js
 /.next/
@@ -43,3 +46,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# MongoDB Memory Server
+.mongodb-memory-server
