@@ -3,10 +3,10 @@ import { FormModeSchema } from "@/components/Form/types/form.types";
 import { FormMode } from "@/components/Form/types/form.types";
 import { notFound } from "next/navigation";
 import { othersRepository } from "@/lib/other/repository/OthersRepository";
-import OthersPublishForm from "../../_components/other/OthersPublishForm/OthersPublishForm";
 import { thisUserIsOwner } from "@/lib/auth/utils/auth.utils";
 import { Heading } from "@radix-ui/themes";
 import { PublishAdOtherPageContainer } from "../page.styles";
+import OthersPublishForm from "../../../_components/other/OthersPublishForm/OthersPublishForm";
 
 interface PublishAdOtherEditPageProps {
   params: Promise<{ formMode: string; id: string }>;

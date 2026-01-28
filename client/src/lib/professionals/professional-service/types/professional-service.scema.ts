@@ -70,7 +70,6 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
         const validFiles = files.filter(
           (file) => file.size > 0 && file.name !== "undefined"
         );
-        console.log("validFiles", validFiles);
         if (validFiles.length > 0) {
           if (files.length > MAX_FILES) {
             ctx.addIssue({

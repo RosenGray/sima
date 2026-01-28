@@ -67,7 +67,7 @@ const RegisterPageForm = () => {
     confirmPassword,
     acceptMarketing,
   } = fields;
-  console.log('acceptMarketing', acceptMarketing.value);
+
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
