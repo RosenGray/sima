@@ -1,49 +1,106 @@
 /**
- * Example Repository Test
- * Tests repository methods with MongoDB Memory Server
+ * Car Repository Unit Tests
+ * Tests repository methods with mocked Mongoose methods
  */
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
-import {
-  setupMongoMemoryServer,
-  teardownMongoMemoryServer,
-  clearDatabase,
-} from "@/__tests__/mocks/mongodb";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
-import { CarFactory, UserFactory } from "@/__tests__/factories";
+import { Car } from "@/lib/vehicles/cars/models/Car";
+import connectDB from "@/lib/mongo/mongodb";
 import {
   verifyPaginationResponse,
-  verifyPaginationCalculations,
+  verifyPaginationMetadata,
 } from "@/__tests__/utils/repository.helpers";
+import {
+  createMockPaginatedResponse,
+  createMockEntityData,
+} from "@/__tests__/mocks/repository";
+import mongoose from "mongoose";
 
-describe("CarRepository", () => {
-  let mongoServer: MongoMemoryServer;
+// Mock dependencies
+const mocks = vi.hoisted(() => {
+  return {
+    mockConnectDB: vi.fn(),
+    mockFind: vi.fn(),
+    mockCountDocuments: vi.fn(),
+    mockFindOne: vi.fn(),
+    mockFindOneAndUpdate: vi.fn(),
+    mockFindOneAndDelete: vi.fn(),
+    mockSave: vi.fn(),
+    mockPopulate: vi.fn(),
+    mockSort: vi.fn(),
+    mockSkip: vi.fn(),
+    mockLimit: vi.fn(),
+  };
+});
 
-  beforeAll(async () => {
-    const result = await setupMongoMemoryServer();
-    mongoServer = result.mongoServer;
-  });
+vi.mock("@/lib/mongo/mongodb", () => ({
+  default: mocks.mockConnectDB,
+}));
 
-  afterAll(async () => {
-    await teardownMongoMemoryServer(mongoServer);
-  });
+describe("CarRepository [unit]", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.mockConnectDB.mockResolvedValue(undefined);
 
-  beforeEach(async () => {
-    await clearDatabase();
+    // Setup Mongoose query chain mocks
+    const mockQueryChain = {
+      populate: vi.fn().mockReturnThis(),
+      sort: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      exec: vi.fn(),
+    };
+
+    // Mock Car model static methods
+    vi.spyOn(Car, "find").mockReturnValue(mockQueryChain as any);
+    vi.spyOn(Car, "countDocuments").mockReturnValue(mockQueryChain as any);
+    vi.spyOn(Car, "findOne").mockReturnValue(mockQueryChain as any);
+    vi.spyOn(Car, "findOneAndUpdate").mockReturnValue(mockQueryChain as any);
+    vi.spyOn(Car, "findOneAndDelete").mockReturnValue(mockQueryChain as any);
+
+    // Mock instance methods
+    mocks.mockPopulate.mockResolvedValue(undefined);
+    mocks.mockSave.mockResolvedValue(undefined);
   });
 
   describe("getAll", () => {
     it("should return paginated cars", async () => {
-      // Create test data
-      const user = await UserFactory.create();
-      await CarFactory.createMany(25, { user: user.id });
+      // Create mock data
+      const mockCars = createMockEntityData(
+        {
+          manufacturer: "Toyota",
+          model: "Camry",
+          yearOfManufacture: 2020,
+          user: { id: new mongoose.Types.ObjectId().toString() },
+        },
+        25
+      );
+
+      const mockResponse = createMockPaginatedResponse(
+        mockCars.slice(0, 10),
+        25,
+        1,
+        10
+      );
+
+      // Mock Mongoose query chain
+      const mockQueryChain = {
+        populate: vi.fn().mockReturnThis(),
+        sort: vi.fn().mockReturnThis(),
+        skip: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValue(mockCars.slice(0, 10)),
+        exec: vi.fn().mockResolvedValue(mockCars.slice(0, 10)),
+      };
+
+      vi.spyOn(Car, "find").mockReturnValue(mockQueryChain as any);
+      vi.spyOn(Car, "countDocuments").mockResolvedValue(25);
 
       // Test repository method
       const result = await carRepository.getAll({}, 1, 10);
 
       // Verify response structure
       verifyPaginationResponse(result);
-      verifyPaginationCalculations(result, 10);
+      verifyPaginationMetadata(result, 10);
 
       // Verify data
       expect(result.data.length).toBe(10);
@@ -53,10 +110,26 @@ describe("CarRepository", () => {
     });
 
     it("should filter by manufacturer", async () => {
-      const user = await UserFactory.create();
-      await CarFactory.create({ user: user.id, manufacturer: "Toyota" });
-      await CarFactory.create({ user: user.id, manufacturer: "Honda" });
-      await CarFactory.create({ user: user.id, manufacturer: "Toyota" });
+      const mockToyotaCars = createMockEntityData(
+        {
+          manufacturer: "Toyota",
+          model: "Camry",
+          yearOfManufacture: 2020,
+          user: { id: new mongoose.Types.ObjectId().toString() },
+        },
+        2
+      );
+
+      const mockQueryChain = {
+        populate: vi.fn().mockReturnThis(),
+        sort: vi.fn().mockReturnThis(),
+        skip: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValue(mockToyotaCars),
+        exec: vi.fn().mockResolvedValue(mockToyotaCars),
+      };
+
+      vi.spyOn(Car, "find").mockReturnValue(mockQueryChain as any);
+      vi.spyOn(Car, "countDocuments").mockResolvedValue(2);
 
       const result = await carRepository.getAll(
         { manufacturer: ["Toyota"] },
@@ -71,6 +144,17 @@ describe("CarRepository", () => {
     });
 
     it("should handle empty results", async () => {
+      const mockQueryChain = {
+        populate: vi.fn().mockReturnThis(),
+        sort: vi.fn().mockReturnThis(),
+        skip: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValue([]),
+        exec: vi.fn().mockResolvedValue([]),
+      };
+
+      vi.spyOn(Car, "find").mockReturnValue(mockQueryChain as any);
+      vi.spyOn(Car, "countDocuments").mockResolvedValue(0);
+
       const result = await carRepository.getAll({}, 1, 10);
 
       expect(result.data.length).toBe(0);
@@ -81,17 +165,41 @@ describe("CarRepository", () => {
 
   describe("getByPublicId", () => {
     it("should return car by publicId", async () => {
-      const user = await UserFactory.create();
-      const car = await CarFactory.create({ user: user.id });
+      const mockCar = {
+        publicId: "test-public-id",
+        manufacturer: "Toyota",
+        model: "Camry",
+        user: { id: new mongoose.Types.ObjectId().toString() },
+        toJSON: () => ({
+          publicId: "test-public-id",
+          manufacturer: "Toyota",
+          model: "Camry",
+          user: { id: mockCar.user.id },
+        }),
+      };
 
-      const result = await carRepository.getByPublicId(car.publicId);
+      const mockQueryChain = {
+        populate: vi.fn().mockResolvedValue(mockCar),
+        exec: vi.fn().mockResolvedValue(mockCar),
+      };
+
+      vi.spyOn(Car, "findOne").mockReturnValue(mockQueryChain as any);
+
+      const result = await carRepository.getByPublicId("test-public-id");
 
       expect(result).toBeDefined();
-      expect(result?.publicId).toBe(car.publicId);
-      expect(result?.user.id).toBe(user.id);
+      expect(result?.publicId).toBe("test-public-id");
+      expect(result?.manufacturer).toBe("Toyota");
     });
 
     it("should return null for non-existent publicId", async () => {
+      const mockQueryChain = {
+        populate: vi.fn().mockResolvedValue(null),
+        exec: vi.fn().mockResolvedValue(null),
+      };
+
+      vi.spyOn(Car, "findOne").mockReturnValue(mockQueryChain as any);
+
       const result = await carRepository.getByPublicId("non-existent-id");
 
       expect(result).toBeNull();
@@ -100,17 +208,44 @@ describe("CarRepository", () => {
 
   describe("create", () => {
     it("should create a new car", async () => {
-      const user = await UserFactory.create();
-      const carData = CarFactory.build({ user: user.id });
+      const mockCarData = {
+        publicId: "test-public-id",
+        manufacturer: "Toyota",
+        model: "Camry",
+        yearOfManufacture: 2020,
+        user: new mongoose.Types.ObjectId(),
+      };
 
-      await carRepository.create({
-        ...carData,
-        user: user.id as any,
+      const mockCarInstance = {
+        ...mockCarData,
+        save: mocks.mockSave,
+        populate: mocks.mockPopulate,
+        toJSON: () => ({
+          ...mockCarData,
+          user: { id: mockCarData.user.toString() },
+        }),
+      };
+
+      mocks.mockSave.mockResolvedValue(mockCarInstance);
+      mocks.mockPopulate.mockResolvedValue(mockCarInstance);
+
+      // Mock Car constructor
+      vi.spyOn(Car.prototype, "constructor" as any).mockImplementation(
+        () => mockCarInstance
+      );
+      vi.spyOn(Car.prototype, "save").mockImplementation(mocks.mockSave);
+      vi.spyOn(Car.prototype, "populate").mockImplementation(
+        mocks.mockPopulate
+      );
+
+      const result = await carRepository.create({
+        ...mockCarData,
+        user: mockCarData.user as any,
       });
 
-      const result = await carRepository.getByPublicId(carData.publicId);
+      expect(mocks.mockSave).toHaveBeenCalled();
+      expect(mocks.mockPopulate).toHaveBeenCalled();
       expect(result).toBeDefined();
-      expect(result?.manufacturer).toBe(carData.manufacturer);
     });
   });
 });

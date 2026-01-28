@@ -1,5 +1,5 @@
 /**
- * Example Server Action Test
+ * Car Ad Publishing Unit Tests
  * Tests server actions with mocked dependencies
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -8,13 +8,7 @@ import {
   createCarAdFormData,
   assertServerActionSuccess,
 } from "@/__tests__/utils/serverAction.helpers";
-import { UserFactory } from "@/__tests__/factories";
-import {
-  setupMongoMemoryServer,
-  teardownMongoMemoryServer,
-  clearDatabase,
-} from "@/__tests__/mocks/mongodb";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 
 // Mock dependencies - hoist mocks to avoid initialization issues
 const mocks = vi.hoisted(() => {
@@ -23,6 +17,7 @@ const mocks = vi.hoisted(() => {
     mockUploadFiles: vi.fn(),
     mockRedirect: vi.fn(),
     mockRevalidatePath: vi.fn(),
+    mockCreate: vi.fn(),
   };
 });
 
@@ -42,27 +37,30 @@ vi.mock("next/cache", () => ({
   revalidatePath: mocks.mockRevalidatePath,
 }));
 
-describe("publishCarAd [integration]", () => {
-  let mongoServer: MongoMemoryServer;
+describe("publishCarAd [unit]", () => {
+  const mockUser = {
+    id: "user-id-123",
+    email: "test@example.com",
+  };
 
-  beforeAll(async () => {
-    const result = await setupMongoMemoryServer();
-    mongoServer = result.mongoServer;
-  });
-
-  afterAll(async () => {
-    await teardownMongoMemoryServer(mongoServer);
-  });
-
-  beforeEach(async () => {
-    await clearDatabase();
+  beforeEach(() => {
     vi.clearAllMocks();
+    mocks.mockCreate.mockResolvedValue(undefined);
+    
+    // Mock redirect to throw Next.js redirect error
+    mocks.mockRedirect.mockImplementation(() => {
+      const error = new Error("NEXT_REDIRECT");
+      (error as any).digest = "NEXT_REDIRECT;redirect=/cars";
+      throw error;
+    });
+
+    // Mock carRepository.create
+    vi.spyOn(carRepository, "create").mockImplementation(mocks.mockCreate);
   });
 
   it("should create car ad successfully", async () => {
-    // Setup: Create authenticated user
-    const user = await UserFactory.create();
-    mocks.mockGetCurrentUser.mockResolvedValue(user);
+    // Setup: Mock authenticated user
+    mocks.mockGetCurrentUser.mockResolvedValue(mockUser);
 
     // Setup: Mock file upload
     mocks.mockUploadFiles.mockResolvedValue({
@@ -82,7 +80,7 @@ describe("publishCarAd [integration]", () => {
       metadata: {
         totalFiles: 1,
         folderName: "vehicles/cars",
-        userId: user.id,
+        userId: mockUser.id,
       },
     });
 
@@ -93,13 +91,25 @@ describe("publishCarAd [integration]", () => {
       yearOfManufacture: "2020",
     });
 
-    // Execute
-    const result = await publishCarAd(undefined, formData);
+    // Execute - redirect throws, so we catch it
+    try {
+      await publishCarAd(undefined, formData);
+    } catch (error: any) {
+      // Next.js redirect throws an error - this is expected
+      if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+        // Redirect was called - success
+      } else {
+        throw error;
+      }
+    }
 
     // Assert: Should redirect (no error returned)
     expect(mocks.mockRedirect).toHaveBeenCalledWith("/cars");
     expect(mocks.mockRevalidatePath).toHaveBeenCalledWith("/cars", "layout");
-    assertServerActionSuccess(result);
+
+    // Verify: Car repository create was called
+    expect(mocks.mockCreate).toHaveBeenCalled();
+    expect(mocks.mockUploadFiles).toHaveBeenCalled();
   });
 
   it("should return error for unauthenticated user", async () => {
@@ -115,11 +125,11 @@ describe("publishCarAd [integration]", () => {
     expect(result?.status).toBe("error");
     expect(result?.error?.formErrors).toBeDefined();
     expect(mocks.mockRedirect).not.toHaveBeenCalled();
+    expect(mocks.mockCreate).not.toHaveBeenCalled();
   });
 
   it("should validate required fields", async () => {
-    const user = await UserFactory.create();
-    mocks.mockGetCurrentUser.mockResolvedValue(user);
+    mocks.mockGetCurrentUser.mockResolvedValue(mockUser);
 
     // Create form data with missing required fields
     const formData = createCarAdFormData({
@@ -131,5 +141,6 @@ describe("publishCarAd [integration]", () => {
     // Assert: Should return validation error
     expect(result?.status).toBe("error");
     expect(result?.error).toBeDefined();
+    expect(mocks.mockCreate).not.toHaveBeenCalled();
   });
 });

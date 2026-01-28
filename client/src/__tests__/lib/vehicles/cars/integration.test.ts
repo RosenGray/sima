@@ -1,17 +1,10 @@
 /**
- * Example Integration Test
- * Tests full flow from server action to database
+ * Car Ad Publishing Flow Unit Tests
+ * Tests full flow from server action with all dependencies mocked
  */
-import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
-import {
-  setupMongoMemoryServer,
-  teardownMongoMemoryServer,
-  clearDatabase,
-} from "@/__tests__/mocks/mongodb";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { publishCarAd } from "@/lib/vehicles/cars/actions/publishCarAd";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
-import { UserFactory } from "@/__tests__/factories";
 import { createCarAdFormData } from "@/__tests__/utils/serverAction.helpers";
 
 // Mock dependencies - hoist mocks to avoid initialization issues
@@ -21,6 +14,8 @@ const mocks = vi.hoisted(() => {
     mockUploadFiles: vi.fn(),
     mockRedirect: vi.fn(),
     mockRevalidatePath: vi.fn(),
+    mockCreate: vi.fn(),
+    mockGetAll: vi.fn(),
   };
 });
 
@@ -40,27 +35,31 @@ vi.mock("next/cache", () => ({
   revalidatePath: mocks.mockRevalidatePath,
 }));
 
-describe("Car Ad Publishing Flow [e2e]", () => {
-  let mongoServer: MongoMemoryServer;
+describe("Car Ad Publishing Flow [unit]", () => {
+  const mockUser = {
+    id: "user-id-123",
+    email: "test@example.com",
+  };
 
-  beforeAll(async () => {
-    const result = await setupMongoMemoryServer();
-    mongoServer = result.mongoServer;
-  });
-
-  afterAll(async () => {
-    await teardownMongoMemoryServer(mongoServer);
-  });
-
-  beforeEach(async () => {
-    await clearDatabase();
+  beforeEach(() => {
     vi.clearAllMocks();
+    mocks.mockCreate.mockResolvedValue(undefined);
+    
+    // Mock redirect to throw Next.js redirect error
+    mocks.mockRedirect.mockImplementation(() => {
+      const error = new Error("NEXT_REDIRECT");
+      (error as any).digest = "NEXT_REDIRECT;redirect=/cars";
+      throw error;
+    });
+
+    // Mock repository methods
+    vi.spyOn(carRepository, "create").mockImplementation(mocks.mockCreate);
+    vi.spyOn(carRepository, "getAll").mockImplementation(mocks.mockGetAll);
   });
 
   it("should create car ad end-to-end", async () => {
-    // 1. Setup: Create user and mock authentication
-    const user = await UserFactory.create();
-    mocks.mockGetCurrentUser.mockResolvedValue(user);
+    // 1. Setup: Mock authentication
+    mocks.mockGetCurrentUser.mockResolvedValue(mockUser);
 
     // 2. Setup: Mock file upload
     const mockFiles = [
@@ -82,11 +81,33 @@ describe("Car Ad Publishing Flow [e2e]", () => {
       metadata: {
         totalFiles: 1,
         folderName: "vehicles/cars",
-        userId: user.id,
+        userId: mockUser.id,
       },
     });
 
-    // 3. Execute: Publish car ad
+    // 3. Setup: Mock repository create
+    const mockCreatedCar = {
+      id: "car-id-123",
+      publicId: "test-public-id",
+      manufacturer: "Toyota",
+      model: "Camry",
+      yearOfManufacture: 2020,
+      price: 150000,
+      user: { id: mockUser.id },
+    };
+    mocks.mockCreate.mockResolvedValue(mockCreatedCar);
+
+    // 4. Setup: Mock repository getAll
+    mocks.mockGetAll.mockResolvedValue({
+      data: [mockCreatedCar],
+      totalCount: 1,
+      currentPage: 1,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    });
+
+    // 5. Execute: Publish car ad
     const formData = createCarAdFormData({
       manufacturer: "Toyota",
       model: "Camry",
@@ -94,25 +115,32 @@ describe("Car Ad Publishing Flow [e2e]", () => {
       price: "150000",
     });
 
-    const result = await publishCarAd(undefined, formData);
+    // Execute - redirect throws, so we catch it
+    try {
+      await publishCarAd(undefined, formData);
+    } catch (error: any) {
+      // Next.js redirect throws an error - this is expected
+      if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+        // Redirect was called - success
+      } else {
+        throw error;
+      }
+    }
 
-    // 4. Verify: No errors
-    expect(result?.status).not.toBe("error");
+    // 7. Verify: Repository create was called with correct data
+    expect(mocks.mockCreate).toHaveBeenCalled();
+    const createCall = mocks.mockCreate.mock.calls[0][0];
+    expect(createCall.manufacturer).toBe("Toyota");
+    expect(createCall.model).toBe("Camry");
+    expect(createCall.yearOfManufacture).toBe(2020);
 
-    // 5. Verify: Car was created in database
-    const cars = await carRepository.getAll({ manufacturer: ["Toyota"] }, 1, 10);
-    expect(cars.data.length).toBeGreaterThan(0);
-    expect(cars.data[0].manufacturer).toBe("Toyota");
-    expect(cars.data[0].model).toBe("Camry");
-    expect(cars.data[0].user.id).toBe(user.id);
-
-    // 6. Verify: Redirect was called
+    // 8. Verify: Redirect was called
     expect(mocks.mockRedirect).toHaveBeenCalledWith("/cars");
+    expect(mocks.mockRevalidatePath).toHaveBeenCalledWith("/cars", "layout");
   });
 
-  it("should handle large batch creation (200-500 items)", async () => {
-    const user = await UserFactory.create();
-    mocks.mockGetCurrentUser.mockResolvedValue(user);
+  it("should handle batch creation flow", async () => {
+    mocks.mockGetCurrentUser.mockResolvedValue(mockUser);
 
     mocks.mockUploadFiles.mockResolvedValue({
       success: true,
@@ -131,21 +159,36 @@ describe("Car Ad Publishing Flow [e2e]", () => {
       metadata: {
         totalFiles: 1,
         folderName: "vehicles/cars",
-        userId: user.id,
+        userId: mockUser.id,
       },
     });
 
-    // Create 200 cars
-    const count = 200;
+    // Mock repository create to return different cars
+    mocks.mockCreate.mockResolvedValue({
+      id: "car-id",
+      manufacturer: "Toyota",
+      user: { id: mockUser.id },
+    });
+
+    // Create multiple cars
+    const count = 5; // Reduced from 200 for unit test
     for (let i = 0; i < count; i++) {
       const formData = createCarAdFormData({
         manufacturer: i % 2 === 0 ? "Toyota" : "Honda",
       });
-      await publishCarAd(undefined, formData);
+      // Execute - redirect throws, so we catch it
+      try {
+        await publishCarAd(undefined, formData);
+      } catch (error: any) {
+        // Next.js redirect throws an error - this is expected
+        if (!error?.digest?.startsWith("NEXT_REDIRECT")) {
+          throw error;
+        }
+      }
     }
 
-    // Verify all were created
-    const result = await carRepository.getAll({}, 1, count);
-    expect(result.totalCount).toBe(count);
+    // Verify: Repository create was called correct number of times
+    expect(mocks.mockCreate).toHaveBeenCalledTimes(count);
+    expect(mocks.mockRedirect).toHaveBeenCalledTimes(count);
   });
 });

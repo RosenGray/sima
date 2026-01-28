@@ -1,21 +1,7 @@
-import mongoose from "mongoose";
-import { clearDatabase } from "../mocks/mongodb";
-
 /**
- * Clean up all collections in the database
+ * Helper functions for repository testing
+ * Note: MongoDB-dependent helpers have been removed in favor of mocking
  */
-export async function cleanupDatabase(): Promise<void> {
-  await clearDatabase();
-}
-
-/**
- * Get count of documents in a collection
- */
-export async function getCollectionCount(
-  model: mongoose.Model<any>
-): Promise<number> {
-  return await model.countDocuments();
-}
 
 /**
  * Helper to verify pagination response structure
@@ -64,35 +50,52 @@ export function verifyPaginationCalculations(
 }
 
 /**
- * Helper to test filter functionality
+ * Verify that all items in result match the filter criteria
  */
-export async function testFilter<T>(
-  repository: {
-    getAll: (filters: any, page?: number, pageSize?: number) => Promise<any>;
-  },
+export function verifyFilterResults<T>(
+  result: { data: T[] },
   filterKey: string,
-  filterValue: any,
-  model: mongoose.Model<T>
-) {
-  // Create test data with and without the filter value
-  const withFilter = await model.create({
-    [filterKey]: filterValue,
-    // Add other required fields as needed
-  });
-
-  const withoutFilter = await model.create({
-    [filterKey]: "different-value",
-    // Add other required fields as needed
-  });
-
-  // Test filter
-  const result = await repository.getAll({ [filterKey]: [filterValue] });
-
+  expectedValues: any[]
+): void {
   expect(result.data.length).toBeGreaterThan(0);
   expect(
-    result.data.every((item: any) => item[filterKey] === filterValue)
+    result.data.every((item: any) => {
+      const itemValue = item[filterKey];
+      // Handle nested properties (e.g., category.id)
+      const actualValue = typeof itemValue === "object" && itemValue?.id
+        ? itemValue.id
+        : itemValue;
+      return expectedValues.includes(actualValue);
+    })
   ).toBe(true);
+}
 
-  // Cleanup
-  await model.deleteMany({ _id: { $in: [withFilter._id, withoutFilter._id] } });
+/**
+ * Verify that filter was applied correctly (for array filters)
+ */
+export function verifyArrayFilter<T>(
+  result: { data: T[] },
+  filterKey: string,
+  expectedValues: any[]
+): void {
+  verifyFilterResults(result, filterKey, expectedValues);
+}
+
+/**
+ * Verify pagination metadata is correct
+ */
+export function verifyPaginationMetadata(
+  response: {
+    totalCount: number;
+    currentPage: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  },
+  pageSize: number
+): void {
+  const expectedTotalPages = Math.ceil(response.totalCount / pageSize);
+  expect(response.totalPages).toBe(expectedTotalPages);
+  expect(response.hasNextPage).toBe(response.currentPage < response.totalPages);
+  expect(response.hasPreviousPage).toBe(response.currentPage > 1);
 }

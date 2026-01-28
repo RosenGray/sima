@@ -38,8 +38,17 @@ export function createMockFile(
   type: string = "image/jpeg",
   size: number = 1024
 ): File {
-  const blob = new Blob(["test file content"], { type });
-  return new File([blob], name, { type });
+  // Create a Blob with the specified size by padding with zeros
+  const content = new ArrayBuffer(size);
+  const blob = new Blob([content], { type });
+  const file = new File([blob], name, { type });
+  // Override the size property to ensure it matches
+  Object.defineProperty(file, "size", {
+    value: size,
+    writable: false,
+    configurable: true,
+  });
+  return file;
 }
 
 /**
