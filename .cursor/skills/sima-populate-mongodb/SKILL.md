@@ -1,4 +1,4 @@
----
+git st---
 name: sima-populate-mongodb
 description: Populate MongoDB collections with test data for development and testing. Generates bulk documents following entity schemas, handles ObjectIds, references, enums, and field types. Use when populating collections with test data, creating seed data, or generating bulk documents for testing.
 ---
