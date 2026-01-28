@@ -377,21 +377,21 @@ const CommercialRealEstateDetailClient: React.FC<
       </ContentGrid>
 
       {/* Modals */}
-      {modalOpen && (
-        <ImageModal
-          images={images}
-          initialIndex={selectedImageIndex}
-          onClose={() => setModalOpen(false)}
-        />
-      )}
+      <ImageModal
+        images={images}
+        currentIndex={selectedImageIndex}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onNavigate={setSelectedImageIndex}
+      />
 
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errors={
-          formState && !formState.success && formState.error
-            ? [formState.error.error || "Ошибка при удалении объявления"]
-            : []
+        errorMessage={
+          formState && typeof formState === "object" && "error" in formState
+            ? (formState.error as string)
+            : undefined
         }
       />
 
