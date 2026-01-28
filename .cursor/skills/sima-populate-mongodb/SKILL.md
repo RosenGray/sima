@@ -297,10 +297,12 @@ adjustments: [1, 3, 5]  // Use actual enum numeric values
 ## Common Schema Variations
 
 ### Standard Ad Pattern
-- `price` (number, required)
+- `title` (string, required) - Job title, product name, etc.
+- `price` (number, required) - May be optional for some entities
 - `contactName`, `contactPrimaryPhone`, `contactEmail` (required)
 - `contactSecondaryPhone` (optional)
 - `images` (array, required)
+- Examples: Jobs, Yad2Items, Cars, etc.
 
 ### Service Pattern (Professional Services)
 - No `price` field
@@ -356,6 +358,94 @@ const districtCityPairs = [
 // 6. Insert in batches
 // 7. Verify counts
 ```
+
+## Example: Jobs (Simpler Pattern - No Categories)
+
+Jobs collection follows the "Standard Ad Pattern" without categories/subcategories:
+
+```javascript
+const { MongoClient, ObjectId } = require('mongodb');
+
+const MONGODB_URI = 'mongodb://localhost:30016/';
+const DB_NAME = 'sima';
+const COLLECTION_NAME = 'jobs';
+
+// Districts and cities mapping
+const districts = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6'];
+const districtCities = {
+  'd1': ['c13', 'c14', ...], // North
+  'd2': ['c1', 'c2', ...],   // South
+  // ... other districts
+};
+
+// Real users from database
+const users = [
+  {
+    _id: new ObjectId('...'),
+    firstName: 'Vladislav',
+    lastName: 'Iokhim',
+    email: 'vladonchik@gmail.com'
+  },
+  // ... more users
+];
+
+// Copy images from existing job document
+const exampleImages = [...]; // From existing job
+
+async function populateDatabase() {
+  const client = new MongoClient(MONGODB_URI);
+  await client.connect();
+  const db = client.db(DB_NAME);
+  const collection = db.collection(COLLECTION_NAME);
+  
+  const documents = [];
+  const ADS_PER_USER = 100;
+  
+  users.forEach((user) => {
+    const phoneNumber = generatePhoneNumber(); // Same for all user's ads
+    
+    for (let i = 0; i < ADS_PER_USER; i++) {
+      // Every 10 ads share same district/city
+      const groupIndex = Math.floor(i / 10);
+      const districtIndex = groupIndex % 6;
+      const district = districts[districtIndex];
+      const cityList = districtCities[district];
+      const city = cityList[Math.floor(Math.random() * cityList.length)];
+      
+      documents.push({
+        _id: new ObjectId(),
+        publicId: generatePublicId(),
+        user: user._id,
+        title: `Job Title ${i + 1}`, // Required field
+        district: district,
+        city: city,
+        description: 'Lorem ipsum...',
+        contactName: `${user.firstName} ${user.lastName}`,
+        contactPrimaryPhone: phoneNumber,
+        contactEmail: user.email,
+        acceptTerms: true,
+        images: exampleImages, // Copy from existing
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        __v: 0
+      });
+    }
+  });
+  
+  // Insert in batches of 50
+  const batchSize = 50;
+  for (let i = 0; i < documents.length; i += batchSize) {
+    const batch = documents.slice(i, i + batchSize);
+    await collection.insertMany(batch);
+  }
+}
+```
+
+**Key differences from Professional Services:**
+- No `category` or `subCategory` fields
+- Has `title` field (required)
+- Uses `contactName`, `contactPrimaryPhone`, `contactEmail` (Standard Ad Pattern)
+- Simpler distribution: only district/city grouping (every 10 ads)
 
 ## Troubleshooting
 
