@@ -43,6 +43,7 @@ export const ServiceCardHeader = styled.header`
   display: flex;
   align-items: center;
   gap: 5px;
+
 `;
 export const ServiceCardFooter = styled.footer`
   height: 100px;

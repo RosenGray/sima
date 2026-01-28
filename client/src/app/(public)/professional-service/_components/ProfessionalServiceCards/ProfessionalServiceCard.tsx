@@ -36,7 +36,10 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
           <Badge size="2" color="gray" variant="outline">
             {service.category.russianDisplayName}
           </Badge>
-          <Badge size="2" color="green" variant="soft"> ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</Badge>
+
+          <Badge size="2" color="green" variant="soft">
+            {service.subCategory.russianDisplayName}
+          </Badge>
 
         </ServiceCardHeader>
         <ServiceCardImages>
