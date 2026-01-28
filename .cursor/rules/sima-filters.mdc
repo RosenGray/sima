@@ -51,6 +51,8 @@ This guide covers implementing filters for listing pages, including search param
 
 ### Step 2a: Sorting Params (URL-driven)
 
+**📚 For comprehensive sorting implementation guide, see: `sima-sorting` skill**
+
 Sorting is managed via URL params just like filters, so users can share/bookmark results.
 
 - **Param naming**: section-specific (recommended: `sort`)
@@ -66,6 +68,13 @@ params.set("sort", nextSort);
 params.set("page", "1");
 router.replace(`${pathname}?${params.toString()}`);
 ```
+
+**Note**: The `sima-sorting` skill provides complete implementation details for:
+- UI component (`SortFilters`) usage
+- Client header component pattern (`CarsHeaderClient`)
+- Repository pattern (parseSortString, buildSortObject)
+- Section-specific sort options configuration
+- Security best practices
 
 ### Step 3: Update Repository getAll Method
 
@@ -184,6 +193,8 @@ Never pass raw user input directly into `.sort()`. Use:
 - **parsing/validation** against an allowlist of supported sort values for that section
 - **mapping** from user-facing sort fields to DB field names
 - **fallback** to a default sort if invalid/undefined
+
+**📚 See `sima-sorting` skill for complete repository sorting implementation pattern**
 
 Example pattern (cars uses this approach):
 
