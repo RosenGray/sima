@@ -106,6 +106,7 @@ export async function editSpecialVehicleAd(
 
     // Update special vehicle using repository
     const formDataValue = result.value as SpecialVehicleFormData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { images: _, ...specialVehicleData } = formDataValue;
     await specialVehicleRepository.edit(context.specialVehiclePublicId, {
       ...specialVehicleData,

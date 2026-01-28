@@ -1,7 +1,7 @@
 import { Motorcycle, IMotorcycle } from "../models/Motorcycle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedMotorcycle } from "../types/motorcycle.types";
-import { FilterQuery } from "mongoose";
+import type { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
 export interface MotorcycleSearchFilters {

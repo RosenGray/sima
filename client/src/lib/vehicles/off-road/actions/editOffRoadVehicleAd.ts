@@ -94,6 +94,7 @@ export async function editOffRoadVehicleAd(
 
     // Update off-road vehicle using repository
     const formDataValue = result.value as OffRoadVehicleFormData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { images: _, ...offRoadVehicleData } = formDataValue;
     await offRoadVehicleRepository.edit(context.offRoadVehiclePublicId, {
       ...offRoadVehicleData,

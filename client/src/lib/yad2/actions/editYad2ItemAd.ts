@@ -99,6 +99,7 @@ export async function editYad2ItemAd(
 
     // Update yad2 item using repository
     const formDataValue = result.value as Yad2ItemFormData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { images: _, ...yad2ItemData } = formDataValue;
     await yad2ItemRepository.edit(context.yad2ItemPublicId, {
       ...yad2ItemData,

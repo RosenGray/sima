@@ -103,6 +103,7 @@ export async function editMotorcycleAd(
 
     // Update motorcycle using repository
     const formDataValue = result.value as MotorcycleFormData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { images: _, ...motorcycleData } = formDataValue;
     await motorcycleRepository.edit(context.motorcyclePublicId, {
       ...motorcycleData,

@@ -94,6 +94,7 @@ export async function editScooterAd(
 
     // Update scooter using repository
     const formDataValue = result.value as ScooterFormData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { images: _, ...scooterData } = formDataValue;
     await scooterRepository.edit(context.scooterPublicId, {
       ...scooterData,
