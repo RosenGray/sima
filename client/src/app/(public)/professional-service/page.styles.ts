@@ -6,9 +6,8 @@ export const ProfessionalsPageContainer = styled(Container)`
  padding-bottom: 40px;
 `;
 
-export const Title = styled(Heading)`
+export const Title = styled(Heading)``;
 
-`;
 export const ProfessionalsServicesGrid = styled(Grid)``;
 
 export const StickyPaginationWrapper = styled(Box)`
@@ -27,4 +26,13 @@ export const StickyPaginationWrapper = styled(Box)`
   border-radius: 10px;
   max-width: calc(100% - 2em);
   margin: 0 auto;
+`;
+
+export const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1em;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 `;

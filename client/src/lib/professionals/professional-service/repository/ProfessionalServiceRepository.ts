@@ -12,6 +12,69 @@ export interface ProfessionalServiceSearchFilters {
   city?: string[];
 }
 
+type SortField = "date";
+type SortDirection = "asc" | "desc";
+
+interface SortOptions {
+  field: SortField;
+  direction: SortDirection;
+}
+
+/**
+ * Parse sort string (e.g., "date_desc") into SortOptions object
+ * Returns null for invalid values (will use default sort)
+ */
+function parseSortString(sort?: string): SortOptions | null {
+  if (!sort || typeof sort !== "string") {
+    return null;
+  }
+
+  const parts = sort.split("_");
+  if (parts.length !== 2) {
+    return null;
+  }
+
+  const [field, direction] = parts;
+
+  const validFields: SortField[] = ["date"];
+  const validDirections: SortDirection[] = ["asc", "desc"];
+
+  if (
+    !validFields.includes(field as SortField) ||
+    !validDirections.includes(direction as SortDirection)
+  ) {
+    return null;
+  }
+
+  return {
+    field: field as SortField,
+    direction: direction as SortDirection,
+  };
+}
+
+/**
+ * Build MongoDB sort object from SortOptions
+ * Maps user-friendly field names to MongoDB field names
+ */
+function buildSortObject(sortOptions: SortOptions | null): Record<string, 1 | -1> {
+  // Default sort: newest first (date_desc)
+  if (!sortOptions) {
+    return { createdAt: -1 };
+  }
+
+  // Map sort fields to MongoDB field names
+  const fieldMap: Record<SortField, string> = {
+    date: "createdAt",
+  };
+
+  const mongoField = fieldMap[sortOptions.field];
+  const mongoDirection = sortOptions.direction === "asc" ? 1 : -1;
+
+  return {
+    [mongoField]: mongoDirection,
+  };
+}
+
 interface PaginatedResponse {
   data: SerilizeProfessionalService[];
   totalCount: number;
@@ -27,12 +90,14 @@ class ProfessionalServiceRepository {
    * @param searchFilters - Object containing search criteria
    * @param currentPage - Current page number (1-based)
    * @param pageSize - Number of items per page (default: 10)
+   * @param sort - Sort string (e.g., "date_desc", "date_asc")
    * @returns Promise<PaginatedResponse> - Paginated response with data and metadata
    */
   async getAll(
     searchFilters: ProfessionalServiceSearchFilters = {},
     currentPage: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    sort?: string
   ): Promise<PaginatedResponse> {
     try {
       await connectDB();
@@ -104,12 +169,16 @@ class ProfessionalServiceRepository {
       const totalCount = await ProfessionalService.countDocuments(searchFilter);
       const totalPages = Math.ceil(totalCount / pageSize);
 
+      // Parse and build sort object
+      const sortOptions = parseSortString(sort);
+      const sortObject = buildSortObject(sortOptions);
+
       // Fetch paginated results
       const professionalServices = await ProfessionalService.find(searchFilter)
         .populate("category")
         .populate("subCategory")
         .populate("user")
-        .sort({ createdAt: -1 }) // Sort by newest first
+        .sort(sortObject)
         .skip(skip)
         .limit(pageSize);
 
