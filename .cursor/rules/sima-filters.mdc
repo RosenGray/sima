@@ -1,0 +1,2627 @@
+---
+description: Filter implementation guidelines for listing pages (business logic, database, UI)
+globs:
+alwaysApply: true
+---
+
+# Filter Implementation Guidelines
+
+## Overview
+
+This guide covers implementing filters for listing pages, including search params processing, repository filtering, database queries, and UI components. In practice, listing pages usually combine **filters + sorting + pagination**; this doc now covers sorting as a first-class, URL-driven control alongside filters.
+
+## Implementation Steps
+
+### Step 1: Define Filter Types
+
+1. **Create filter interface in repository file:**
+   ```typescript
+   export interface EntitySearchFilters {
+     filterParam1?: string[];
+     filterParam2?: string[];
+     numericFilter?: string[]; // For range filters like yearFrom/yearTo
+   }
+   ```
+
+2. **Add filter params to page searchParams interface:**
+   ```typescript
+   interface EntityPageProps {
+     searchParams?: Promise<{
+       filterParam1?: string | string[];
+       filterParam2?: string | string[];
+       numericFilter?: string; // For single value filters like yearFrom
+       // Sorting param (section-specific; commonly `sort`)
+       sort?: string;
+       page?: string;
+     }>;
+   }
+   ```
+
+### Step 2: Process Search Params to Filters
+
+1. **Extract filters from searchParams** (handled in page component):
+   ```typescript
+   const filters = searchParamsToFilters(searchParams);
+   ```
+
+2. **Use `searchParamsToFilters` utility** from `@/utils/common`:
+   - Automatically converts `string | string[]` to `string[]`
+   - Excludes `page` by default
+   - Filters out empty/undefined values
+
+### Step 2a: Sorting Params (URL-driven)
+
+Sorting is managed via URL params just like filters, so users can share/bookmark results.
+
+- **Param naming**: section-specific (recommended: `sort`)
+- **Value format**: section-specific (recommended: `${field}_${direction}`), but can vary per section
+- **Pagination coupling**: **always reset `page` to `1` when sort changes**
+- **Preserve filters**: when changing sort, preserve all existing filter params in the URL (modify only `sort` and `page`)
+
+**Client-side sort change pattern (recommended):**
+
+```typescript
+const params = new URLSearchParams(searchParams);
+params.set("sort", nextSort);
+params.set("page", "1");
+router.replace(`${pathname}?${params.toString()}`);
+```
+
+### Step 3: Update Repository getAll Method
+
+#### Method Signature
+
+```typescript
+async getAll(
+  searchFilters: EntitySearchFilters = {},
+  currentPage: number = 1,
+  pageSize: number = 10,
+  sort?: string
+): Promise<PaginatedResponse>
+```
+
+#### Implementation Pattern
+
+1. **Add filter interface and update method signature**
+
+2. **Sanitize filters** (prevent NoSQL injection):
+   ```typescript
+   import sanitize from "mongo-sanitize";
+   
+   const sanitizedFilters: EntitySearchFilters = {
+     filterParam1: sanitize(searchFilters.filterParam1),
+     filterParam2: sanitize(searchFilters.filterParam2),
+   };
+   ```
+
+3. **Build MongoDB query filter:**
+   ```typescript
+   const searchFilter: FilterQuery<typeof Entity> = {};
+   ```
+
+4. **Add filter conditions:**
+   
+   **For string array filters (multiple selection):**
+   ```typescript
+   if (sanitizedFilters.filterParam1) {
+     searchFilter.filterParam1 = { $in: sanitizedFilters.filterParam1 };
+   }
+   ```
+   
+   **For ObjectId array filters (with validation):**
+   ```typescript
+   if (sanitizedFilters.categoryId) {
+     const isValidObjectId = sanitizedFilters.categoryId.every((id) => 
+       mongoose.Types.ObjectId.isValid(id)
+     );
+     if (isValidObjectId) {
+       searchFilter.category = { $in: sanitizedFilters.categoryId };
+     } else {
+       // Invalid ObjectId - return empty results
+       searchFilter._id = new mongoose.Types.ObjectId();
+     }
+   }
+   ```
+   
+   **For numeric range filters (yearFrom/yearTo):**
+   ```typescript
+   // Handle yearFrom (single value, not array)
+   if (sanitizedFilters.yearFrom) {
+     const yearFromNum = Number(sanitizedFilters.yearFrom);
+     if (!Number.isNaN(yearFromNum)) {
+       searchFilter.yearOfManufacture = { $gte: yearFromNum };
+     }
+   }
+   
+   // Handle yearTo (single value, not array)
+   if (sanitizedFilters.yearTo) {
+     const yearToNum = Number(sanitizedFilters.yearTo);
+     if (!Number.isNaN(yearToNum)) {
+       // Combine with existing yearOfManufacture filter if exists
+       searchFilter.yearOfManufacture = {
+         ...searchFilter.yearOfManufacture,
+         $lte: yearToNum,
+       };
+     }
+   }
+   ```
+   
+   **For enum filters:**
+   ```typescript
+   if (sanitizedFilters.district) {
+     searchFilter.district = { $in: sanitizedFilters.district };
+   }
+   ```
+   
+   **For numeric enum array filters (with validation):**
+   ```typescript
+   if (sanitizedFilters.adjustments) {
+     // Convert string array to number array and validate
+     const adjustmentNumbers = sanitizedFilters.adjustments
+       .map((adj) => Number(adj))
+       .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 9);
+     
+     if (adjustmentNumbers.length > 0) {
+       searchFilter.adjustments = { $in: adjustmentNumbers };
+     }
+   }
+   ```
+
+5. **Use filter in query:**
+   ```typescript
+   const totalCount = await Entity.countDocuments(searchFilter);
+   const results = await Entity.find(searchFilter)
+     .populate("user")
+     .sort({ createdAt: -1 }) // default when sort not implemented/invalid
+     .skip(skip)
+     .limit(pageSize);
+   ```
+
+6. **Add sorting safely (server-side whitelist + field mapping)**
+
+Never pass raw user input directly into `.sort()`. Use:
+
+- **parsing/validation** against an allowlist of supported sort values for that section
+- **mapping** from user-facing sort fields to DB field names
+- **fallback** to a default sort if invalid/undefined
+
+Example pattern (cars uses this approach):
+
+```typescript
+type SortDirection = "asc" | "desc";
+type SortField = "date" | "price" | "year"; // section-specific
+
+function parseSortString(sort?: string): { field: SortField; direction: SortDirection } | null {
+  // validate shape + allowlist; return null if invalid
+  return null;
+}
+
+function buildSortObject(
+  sortOptions: { field: SortField; direction: SortDirection } | null
+): Record<string, 1 | -1> {
+  if (!sortOptions) return { createdAt: -1 };
+  const fieldMap: Record<SortField, string> = {
+    date: "createdAt",
+    price: "price",
+    year: "yearOfManufacture",
+  };
+  return { [fieldMap[sortOptions.field]]: sortOptions.direction === "asc" ? 1 : -1 };
+}
+
+const sortObject = buildSortObject(parseSortString(sort));
+const results = await Entity.find(searchFilter).sort(sortObject);
+```
+
+### Step 4: Update Content Component
+
+1. **Update filter interface to match repository:**
+   ```typescript
+   interface EntityContentProps {
+     filters: EntitySearchFilters;
+     currentPage: number;
+     sort?: string;
+   }
+   ```
+
+2. **Pass filters to repository:**
+   ```typescript
+   const entityResponse = await entityRepository.getAll(
+     filters,
+     currentPage,
+     10,
+     sort
+   );
+   ```
+
+### Step 5: Update Page Component
+
+1. **Add filter params to searchParams interface**
+
+2. **Import filter type from repository:**
+   ```typescript
+   import { EntitySearchFilters } from "@/lib/{category}/{entity}/repository/{Entity}Repository";
+   ```
+
+3. **Process filters using utility:**
+   ```typescript
+   // Extract array filters using utility
+   const arrayFilters = searchParamsToFilters(searchParams);
+   
+   // Build filters object with proper types
+   const filters: EntitySearchFilters = {
+     manufacturer: arrayFilters.manufacturer,
+     model: arrayFilters.model,
+     district: arrayFilters.district,
+     city: arrayFilters.city,
+     // Add other array filters here
+   };
+   ```
+
+4. **Handle special cases (single value filters):**
+   
+   **For yearFrom/yearTo (single string values):**
+   ```typescript
+   // Handle yearFrom and yearTo as single values (not arrays) for range queries
+   if (searchParams.yearFrom) {
+     filters.yearFrom = Array.isArray(searchParams.yearFrom) 
+       ? searchParams.yearFrom[0] 
+       : searchParams.yearFrom;
+   }
+   
+   if (searchParams.yearTo) {
+     filters.yearTo = Array.isArray(searchParams.yearTo) 
+       ? searchParams.yearTo[0] 
+       : searchParams.yearTo;
+   }
+   ```
+   
+   **For priceFrom/priceTo (transform from comma-formatted string to number):**
+   ```typescript
+   // Handle price range filters - transform from string (with commas) to number
+   if (searchParams.priceFrom) {
+     const priceFromStr = Array.isArray(searchParams.priceFrom)
+       ? searchParams.priceFrom[0]
+       : searchParams.priceFrom;
+     // Remove commas and parse to number (same logic as PriceFromToSchema)
+     const cleaned = priceFromStr.replace(/,/g, "");
+     const priceFromNum = Number(cleaned);
+     if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+       filters.priceFrom = priceFromNum;
+     }
+   }
+
+   if (searchParams.priceTo) {
+     const priceToStr = Array.isArray(searchParams.priceTo)
+       ? searchParams.priceTo[0]
+       : searchParams.priceTo;
+     // Remove commas and parse to number (same logic as PriceFromToSchema)
+     const cleaned = priceToStr.replace(/,/g, "");
+     const priceToNum = Number(cleaned);
+     if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+       filters.priceTo = priceToNum;
+     }
+   }
+   ```
+   
+   **For color (single string value):**
+   ```typescript
+   // Handle color filter - single string value
+   if (searchParams.color) {
+     filters.color = Array.isArray(searchParams.color)
+       ? searchParams.color[0]
+       : searchParams.color;
+   }
+   ```
+
+5. **Pass filters to content component:**
+   ```typescript
+   const sort = searchParams?.sort; // apply section default if needed
+   <EntityContent filters={filters} currentPage={currentPage} sort={sort} />
+   ```
+
+## Filter Types
+
+### 1. String Array Filters (Multiple Selection)
+
+**Use case:** Multiple values can be selected (e.g., manufacturer, model, district)
+
+**Example:** `manufacturer: ["Toyota", "Honda", "BMW"]`
+
+**Implementation:**
+```typescript
+// Interface
+manufacturer?: string[];
+
+// Query
+if (sanitizedFilters.manufacturer) {
+  searchFilter.manufacturer = { $in: sanitizedFilters.manufacturer };
+}
+```
+
+### 2. ObjectId Array Filters
+
+**Use case:** Filtering by referenced entities (e.g., categoryId, subCategoryId)
+
+**Example:** `categoryId: ["507f1f77bcf86cd799439011", "507f191e810c19729de860ea"]`
+
+**Implementation:**
+```typescript
+// Interface
+categoryId?: string[];
+
+// Query with validation
+if (sanitizedFilters.categoryId) {
+  const isValidObjectId = sanitizedFilters.categoryId.every((id) => 
+    mongoose.Types.ObjectId.isValid(id)
+  );
+  if (isValidObjectId) {
+    searchFilter.category = { $in: sanitizedFilters.categoryId };
+  } else {
+    // Invalid ObjectId - return empty results
+    searchFilter._id = new mongoose.Types.ObjectId();
+  }
+}
+```
+
+### 3. Numeric Range Filters (Single Value)
+
+**Use case:** Range queries for numeric fields (e.g., yearFrom, yearTo, priceFrom, priceTo)
+
+**Example:** `yearFrom: "2020"`, `yearTo: "2024"`
+
+**Implementation:**
+
+**Repository Interface:**
+```typescript
+// Interface - single string value, not array
+yearFrom?: string;
+yearTo?: string;
+```
+
+**Repository Query:**
+```typescript
+// Query - combine with $gte and $lte
+if (sanitizedFilters.yearFrom) {
+  const yearFromNum = Number(sanitizedFilters.yearFrom);
+  if (!Number.isNaN(yearFromNum)) {
+    searchFilter.yearOfManufacture = { $gte: yearFromNum };
+  }
+}
+
+if (sanitizedFilters.yearTo) {
+  const yearToNum = Number(sanitizedFilters.yearTo);
+  if (!Number.isNaN(yearToNum)) {
+    searchFilter.yearOfManufacture = {
+      ...searchFilter.yearOfManufacture,
+      $lte: yearToNum,
+    };
+  }
+}
+```
+
+**UI Component (Using SearchSingleSelect):**
+```typescript
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+
+// Generate year options
+const yearsOptions = useMemo(() => getYearsOptions(), []);
+
+<SearchSingleSelect
+  placeholder="Год от"
+  displayName="год от"
+  paramName="yearFrom"
+  options={yearsOptions}
+  selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+/>
+```
+
+**Note:** For single-select dropdowns like yearFrom/yearTo, use `SearchSingleSelect` instead of text inputs. The component handles URL param synchronization and state management automatically.
+
+### 4. Enum Filters
+
+**Use case:** Filtering by enum values (e.g., district, transmission, engineType)
+
+**Example:** `district: ["Center", "North"]`
+
+**Implementation:**
+```typescript
+// Interface
+district?: string[];
+
+// Query
+if (sanitizedFilters.district) {
+  searchFilter.district = { $in: sanitizedFilters.district };
+}
+```
+
+### 4a. Numeric Enum Array Filters (With Validation)
+
+**Use case:** Filtering by numeric enum values stored in MongoDB array fields (e.g., pet adjustments, feature tags)
+
+**Example:** `adjustments: ["1", "3", "5"]` (PetAdjustments enum values: Spayed=1, Neutered=2, Vaccinated=3, etc.)
+
+**Implementation:**
+```typescript
+// Interface - string array (from URL params)
+adjustments?: string[];
+
+// Query - convert to numbers, validate range, use $in
+if (sanitizedFilters.adjustments) {
+  // Convert string array to number array and validate
+  const adjustmentNumbers = sanitizedFilters.adjustments
+    .map((adj) => Number(adj))
+    .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 9);
+  
+  if (adjustmentNumbers.length > 0) {
+    // Match documents where adjustments array contains any of the selected values
+    searchFilter.adjustments = { $in: adjustmentNumbers };
+  }
+}
+```
+
+**Key Points:**
+- Values come as strings from URL params (`?adjustments=1&adjustments=3`)
+- Convert to numbers and validate against enum range (e.g., 1-9 for PetAdjustments)
+- Filter out invalid values before querying
+- Use `$in` operator to match documents where the array field contains any of the selected values
+- MongoDB stores the field as an array of numbers: `adjustments: [1, 3, 5]`
+
+**Note:** This pattern is used when enum values are stored as numbers in MongoDB (e.g., `PetAdjustments.Spayed = 1`) rather than strings. Always validate the numeric range to match the enum definition.
+
+**UI Component (SearchCheckboxButtonGroup):**
+Use `SearchCheckboxButtonGroup` for adjustments (and similar numeric enum array filters). Options: `{ value: string; label: string; icon?: ReactNode }[]` with `value` as `String(PetAdjustments.*)`. Share options via a lib module (e.g. `@/lib/pets/for-sale/adjustmentOptions`) for both publish form and filters. See "SearchCheckboxButtonGroup Components" in Step 2 and "References" (pets for-sale FiltersClient).
+
+### 5. Price Range Filters (Single Value with Comma Formatting)
+
+**Use case:** Price range inputs with comma formatting (e.g., priceFrom, priceTo)
+
+**Example:** `priceFrom: "10,000"`, `priceTo: "50,000"` (displayed with commas, stored as numbers)
+
+**Implementation:**
+
+**Schema (in `@/lib/common/types/common.types`):**
+```typescript
+export const PriceFromToSchema = z.object({
+  priceFrom: z
+    .string()
+    .optional()
+    .refine((val) => val == null || /^-?\d[\d,]*$/.test(val), {
+      message: "Price must be a numeric string, optionally containing commas.",
+    })
+    .transform((val) => {
+      if (val == null) return undefined;
+      const cleaned = val.replace(/,/g, "");
+      const num = Number(cleaned);
+      return isNaN(num) ? undefined : num;
+    }),
+  priceTo: z
+    .string()
+    .optional()
+    .refine((val) => val == null || /^-?\d[\d,]*$/.test(val), {
+      message: "Price must be a numeric string, optionally containing commas.",
+    })
+    .transform((val) => {
+      if (val == null) return undefined;
+      const cleaned = val.replace(/,/g, "");
+      const num = Number(cleaned);
+      return isNaN(num) ? undefined : num;
+    }),
+});
+```
+
+**UI Component:**
+```typescript
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+
+<PriceTextSearch
+  name="priceFrom"
+  placeholder="0"
+  defaultValue={searchParams.get("priceFrom") ?? undefined}
+/>
+```
+
+**Repository Query:**
+```typescript
+// Interface - single string value, not array (but schema transforms to number)
+priceFrom?: number; // After schema transformation
+priceTo?: number;   // After schema transformation
+
+// Query - values are already numbers after page component transformation
+// Handle priceFrom (minimum price)
+if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
+  const priceFromNum = Number(sanitizedFilters.priceFrom);
+  if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+    searchFilter.price = { $gte: priceFromNum };
+  }
+}
+
+// Handle priceTo (maximum price)
+if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
+  const priceToNum = Number(sanitizedFilters.priceTo);
+  if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+    // Combine with existing price filter if exists
+    if (searchFilter.price) {
+      searchFilter.price = {
+        ...searchFilter.price,
+        $lte: priceToNum,
+      };
+    } else {
+      searchFilter.price = { $lte: priceToNum };
+    }
+  }
+}
+```
+
+**Note:** The schema transforms comma-formatted strings to numbers, so the repository receives numbers, not strings.
+
+### 6. Text Input Filters (Single Value)
+
+**Use case:** Text inputs for single values (e.g., color, text search)
+
+**Example:** `color: "red"`
+
+**Implementation:**
+```typescript
+// Interface - single string value, not array
+color?: string;
+
+// Query - use regex for text search with trim() for safety
+if (sanitizedFilters.color?.trim()) {
+  searchFilter.color = {
+    $regex: sanitizedFilters.color.trim(),
+    $options: "i", // Case-insensitive
+  };
+}
+```
+
+### 7. Text Search Filters (Multi-Field Search)
+
+**Use case:** Full-text search across multiple fields (e.g., productTitle and description)
+
+**Example:** Search for "kukuriku" in both productTitle and description fields
+
+**Implementation:**
+
+**Model Schema (add text index for performance):**
+```typescript
+// Add after schema definition, before export
+yad2ItemSchema.index({
+  productTitle: "text",
+  description: "text",
+});
+```
+
+**Repository Query (using $or with regex):**
+```typescript
+// Interface
+textSearch?: string;
+
+// Query - use $or with regex for case-insensitive partial matching
+if (sanitizedFilters.textSearch?.trim()) {
+  const searchTerm = sanitizedFilters.textSearch.trim();
+  searchFilter.$or = [
+    { productTitle: { $regex: searchTerm, $options: "i" } },
+    { description: { $regex: searchTerm, $options: "i" } },
+  ];
+}
+```
+
+**Note:** 
+- Use `$or` with `$regex` for searching across multiple fields
+- Use `$options: "i"` for case-insensitive matching
+- Text index improves performance but is not required for regex queries
+- Always sanitize and trim the search term before using in query
+
+## Security Best Practices
+
+1. **Always sanitize filters** using `mongo-sanitize` to prevent NoSQL injection
+2. **Validate ObjectIds** before using in queries
+3. **Validate numeric values** before using in range queries
+4. **Use parameterized queries** - never construct queries from user input directly
+
+## Database Indexing
+
+Ensure proper indexes exist for filtered fields:
+
+```typescript
+// In model schema
+manufacturer: {
+  type: String,
+  index: true, // For efficient filtering
+}
+
+yearOfManufacture: {
+  type: Number,
+  index: true, // For range queries
+}
+```
+
+## Filter Processing Utility
+
+The `searchParamsToFilters` utility automatically:
+- Converts `string | string[]` to `string[]`
+- Excludes `page` parameter
+- Filters out empty/undefined values
+- Handles multiple filter values consistently
+
+**Usage:**
+```typescript
+import { searchParamsToFilters } from "@/utils/common";
+
+const filters = searchParamsToFilters(searchParams);
+```
+
+## Common Patterns
+
+### Filter Interface Pattern
+
+```typescript
+export interface EntitySearchFilters {
+  // String array filters (multiple selection)
+  manufacturer?: string[];
+  model?: string[];
+  district?: string[];
+  city?: string[];
+  
+  // ObjectId array filters
+  categoryId?: string[];
+  subCategoryId?: string[];
+  
+  // Numeric enum array filters (with validation)
+  adjustments?: string[]; // Numeric enum values (e.g., PetAdjustments: 1-9)
+  
+  // Numeric range filters (single values - strings in page, numbers in repository)
+  yearFrom?: string;
+  yearTo?: string;
+  priceFrom?: number; // Transformed to number in repository after page processing
+  priceTo?: number;   // Transformed to number in repository after page processing
+  
+  // Text input filters (single values)
+  color?: string;
+  textSearch?: string;
+}
+```
+
+### Repository Method Pattern
+
+```typescript
+async getAll(
+  searchFilters: EntitySearchFilters = {},
+  currentPage: number = 1,
+  pageSize: number = 10
+): Promise<PaginatedResponse> {
+  try {
+    await connectDB();
+    
+    // Sanitize filters
+    const sanitizedFilters: EntitySearchFilters = {
+      manufacturer: sanitize(searchFilters.manufacturer),
+      model: sanitize(searchFilters.model),
+      yearFrom: sanitize(searchFilters.yearFrom),
+      yearTo: sanitize(searchFilters.yearTo),
+      district: sanitize(searchFilters.district),
+      city: sanitize(searchFilters.city),
+      priceFrom: sanitize(searchFilters.priceFrom),
+      priceTo: sanitize(searchFilters.priceTo),
+      color: sanitize(searchFilters.color),
+    };
+    
+    // Build query filter
+    const searchFilter: FilterQuery<typeof Entity> = {};
+    
+    // Add filter conditions
+    if (sanitizedFilters.manufacturer) {
+      searchFilter.manufacturer = { $in: sanitizedFilters.manufacturer };
+    }
+    
+    if (sanitizedFilters.model) {
+      searchFilter.model = { $in: sanitizedFilters.model };
+    }
+    
+    // Year range filters
+    if (sanitizedFilters.yearFrom) {
+      const yearFromNum = Number(sanitizedFilters.yearFrom);
+      if (!Number.isNaN(yearFromNum)) {
+        searchFilter.yearOfManufacture = { $gte: yearFromNum };
+      }
+    }
+    
+    if (sanitizedFilters.yearTo) {
+      const yearToNum = Number(sanitizedFilters.yearTo);
+      if (!Number.isNaN(yearToNum)) {
+        searchFilter.yearOfManufacture = {
+          ...searchFilter.yearOfManufacture,
+          $lte: yearToNum,
+        };
+      }
+    }
+
+    // Add district filter
+    if (sanitizedFilters.district) {
+      searchFilter.district = { $in: sanitizedFilters.district };
+    }
+
+    // Add city filter
+    if (sanitizedFilters.city) {
+      searchFilter.city = { $in: sanitizedFilters.city };
+    }
+    
+    // Add district filter
+    if (sanitizedFilters.district) {
+      searchFilter.district = { $in: sanitizedFilters.district };
+    }
+
+    // Add city filter
+    if (sanitizedFilters.city) {
+      searchFilter.city = { $in: sanitizedFilters.city };
+    }
+    
+    // Price range filters (already numbers after page component transformation)
+    // Handle priceFrom (minimum price)
+    if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
+      const priceFromNum = Number(sanitizedFilters.priceFrom);
+      if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+        searchFilter.price = { $gte: priceFromNum };
+      }
+    }
+
+    // Handle priceTo (maximum price)
+    if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
+      const priceToNum = Number(sanitizedFilters.priceTo);
+      if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+        // Combine with existing price filter if exists
+        if (searchFilter.price) {
+          searchFilter.price = {
+            ...searchFilter.price,
+            $lte: priceToNum,
+          };
+        } else {
+          searchFilter.price = { $lte: priceToNum };
+        }
+      }
+    }
+    
+    // Text input filters (string/text) - use trim() for safety
+    if (sanitizedFilters.color?.trim()) {
+      searchFilter.color = {
+        $regex: sanitizedFilters.color.trim(),
+        $options: "i", // Case-insensitive
+      };
+    }
+    
+    // Calculate pagination
+    const skip = (currentPage - 1) * pageSize;
+    const totalCount = await Entity.countDocuments(searchFilter);
+    const totalPages = Math.ceil(totalCount / pageSize);
+    
+    // Fetch results
+    const results = await Entity.find(searchFilter)
+      .populate("user")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSize);
+    
+    // Serialize and return
+    const serialized = JSON.parse(JSON.stringify(results));
+    
+    return {
+      data: serialized,
+      totalCount,
+      currentPage,
+      totalPages,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    };
+  } catch (error) {
+    console.error("Error fetching entities:", error);
+    throw new Error("Failed to fetch entities");
+  }
+}
+```
+
+## UI Implementation
+
+### Step 1: Create Filters Component Structure
+
+There are three patterns for filter component structure:
+
+#### Pattern 1a: With Wrapper Component + Navigation (e.g., VehicleFilters)
+
+When you need a wrapper component with navigation bar above filters (like `VehicleFilters` for vehicles category):
+
+1. **Create Filters.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC } from "react";
+   import FiltersClient from "./FiltersClient";
+   import VehicleFilters from "../../../_components/Filters/VehicleFilters/VehicleFilters";
+   import { useSearchParams } from "next/navigation";
+
+   const Filters: FC = () => {
+     const searchParams = useSearchParams();
+
+     return (
+       <VehicleFilters activeFiltersCount={searchParams.size - 1}>
+         <FiltersClient />
+       </VehicleFilters>
+     );
+   };
+
+   export default Filters;
+   ```
+
+2. **Create VehicleFilters.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC, ReactNode } from "react";
+   import { useFiltersModal } from "@/components/filters/FiltersContext";
+   // Import styled components and UI elements
+   // Import navigation icons and components
+
+   interface VehicleFiltersProps {
+     children: ReactNode;
+     activeFiltersCount?: number;
+   }
+
+   const VehicleFilters: FC<VehicleFiltersProps> = ({
+     children,
+     activeFiltersCount = 0,
+   }) => {
+     const { isModalOpen, openModal, closeModal } = useFiltersModal();
+
+     return (
+       <>
+         {/* Desktop View - Container */}
+         <VehicleFiltersContainer $isModalOpen={isModalOpen}>
+           <VehicleFiltersHeader>
+             <IconButton onClick={closeModal}>...</IconButton>
+             <Heading>Фильтры</Heading>
+           </VehicleFiltersHeader>
+           <VehicleFiltersNavBar>
+             {/* Navigation bar with category icons */}
+           </VehicleFiltersNavBar>
+           <VehicleFiltersContent>{children}</VehicleFiltersContent>
+         </VehicleFiltersContainer>
+
+         {/* Mobile Filter Button */}
+         <MobileFilterButton onClick={openModal}>
+           <MixerHorizontalIcon />
+           <Text>Фильтры</Text>
+           {activeFiltersCount > 0 && <FiltersCountBadge>{activeFiltersCount}</FiltersCountBadge>}
+         </MobileFilterButton>
+       </>
+     );
+   };
+
+   export default VehicleFilters;
+   ```
+
+   **Key Points:**
+   - Wrapper component provides container/modal structure with navigation
+   - Desktop: Shows as container with header, navigation bar, and content
+   - Mobile: Becomes full-screen modal when `isModalOpen` is true
+   - Uses `FiltersContext` for modal state management
+   - Accepts `activeFiltersCount` prop for badge display
+   - **Use when:** Section has multiple sub-categories with navigation (e.g., vehicles with cars, motorcycles, scooters, etc.)
+
+#### Pattern 1b: With Wrapper Component, No Navigation (e.g., Yad2FiltersWrapper)
+
+When you need a wrapper component without navigation bar (like `Yad2FiltersWrapper` for yad2 section):
+
+1. **Create Filters.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC } from "react";
+   import FiltersClient from "./FiltersClient";
+   import Yad2FiltersWrapper from "./Yad2FiltersWrapper/Yad2FiltersWrapper";
+   import { useSearchParams } from "next/navigation";
+
+   const Filters: FC = () => {
+     const searchParams = useSearchParams();
+
+     return (
+       <Yad2FiltersWrapper activeFiltersCount={searchParams.size - 1}>
+         <FiltersClient />
+       </Yad2FiltersWrapper>
+     );
+   };
+
+   export default Filters;
+   ```
+
+2. **Create Yad2FiltersWrapper.tsx (Client Component):**
+   ```typescript
+   "use client";
+   import { FC, ReactNode } from "react";
+   import { Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+   import { MixerHorizontalIcon, CrossCircledIcon } from "@radix-ui/react-icons";
+   import { useFiltersModal } from "@/components/filters/FiltersContext";
+   import {
+     Yad2FiltersContainer,
+     Yad2FiltersContent,
+     Yad2FiltersHeader,
+     MobileFilterButton,
+     FiltersCountBadge,
+   } from "./Yad2FiltersWrapper.styles";
+
+   interface Yad2FiltersWrapperProps {
+     children: ReactNode;
+     activeFiltersCount?: number;
+   }
+
+   const Yad2FiltersWrapper: FC<Yad2FiltersWrapperProps> = ({
+     children,
+     activeFiltersCount = 0,
+   }) => {
+     const { isModalOpen, openModal, closeModal } = useFiltersModal();
+
+     return (
+       <>
+         {/* Desktop View */}
+         <Yad2FiltersContainer $isModalOpen={isModalOpen}>
+           <Yad2FiltersHeader>
+             <IconButton
+               size="4"
+               variant="ghost"
+               color="gray"
+               onClick={closeModal}
+             >
+               <CrossCircledIcon width="28" height="28" />
+             </IconButton>
+             <Heading size="4">Фильтры</Heading>
+           </Yad2FiltersHeader>
+           <Yad2FiltersContent>{children}</Yad2FiltersContent>
+         </Yad2FiltersContainer>
+
+         {/* Mobile Filter Button */}
+         <MobileFilterButton size="2" variant="soft" onClick={openModal}>
+           <Flex align="center" gap="2">
+             <MixerHorizontalIcon width="18" height="18" />
+             <Text>Фильтры</Text>
+             {activeFiltersCount > 0 && (
+               <FiltersCountBadge>{activeFiltersCount}</FiltersCountBadge>
+             )}
+           </Flex>
+         </MobileFilterButton>
+       </>
+     );
+   };
+
+   export default Yad2FiltersWrapper;
+   ```
+
+3. **Create Yad2FiltersWrapper.styles.ts:**
+   ```typescript
+   "use client";
+   import styled from "styled-components";
+   import { Button, Flex } from "@radix-ui/themes";
+   import { breakpoints } from "@/globals";
+
+   export const Yad2FiltersContainer = styled.div<{ $isModalOpen: boolean }>`
+     transform: translateY(-50%);
+     background: var(--accent-1);
+     min-height: 130px;
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+     border: 1px solid var(--gray-6);
+     display: flex;
+     flex-direction: column;
+     margin: 0 auto;
+     transition: all 0.2s ease;
+     position: relative;
+     border-radius: var(--radius-4);
+
+     @media (max-width: ${breakpoints.sm - 1}px) {
+       position: fixed;
+       inset: 0;
+       transform: translateY(0);
+       opacity: ${({ $isModalOpen }) => ($isModalOpen ? 1 : 0)};
+       z-index: ${({ $isModalOpen }) => ($isModalOpen ? 1000 : -1)};
+       transition: all 0.2s ease;
+     }
+
+     &:hover {
+       border-color: var(--gray-7);
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+     }
+   `;
+
+   export const Yad2FiltersHeader = styled.header`
+     height: 50px;
+     flex-shrink: 0;
+     border-bottom: 0.5px solid var(--gray-6);
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     padding: 0 var(--space-4);
+     background: var(--accent-2);
+     display: none;
+
+     @media (max-width: ${breakpoints.sm - 1}px) {
+       padding: var(--space-4) var(--space-5);
+       display: flex;
+     }
+   `;
+
+   export const Yad2FiltersContent = styled.div`
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     min-height: 0;
+     overflow-y: auto;
+   `;
+
+   export const MobileFilterButton = styled(Button)`
+     display: none;
+     width: 100%;
+     justify-content: center;
+
+     @media (max-width: ${breakpoints.sm - 1}px) {
+       display: flex;
+     }
+   `;
+
+   export const FiltersCountBadge = styled(Flex)`
+     align-items: center;
+     justify-content: center;
+     min-width: 20px;
+     height: 20px;
+     border-radius: var(--radius-full);
+     background: var(--accent-9);
+     color: var(--accent-1);
+     font-size: 11px;
+     font-weight: 600;
+     padding: 0 6px;
+   `;
+   ```
+
+   **Key Points:**
+   - Wrapper component provides container/modal structure without navigation
+   - Desktop: Shows as container with header and content (no navigation bar)
+   - Mobile: Becomes full-screen modal when `isModalOpen` is true
+   - Uses `FiltersContext` for modal state management
+   - Accepts `activeFiltersCount` prop for badge display
+   - **Use when:** Section needs wrapper UI but doesn't have sub-category navigation (e.g., yad2)
+
+#### Pattern 2: Without Wrapper Component (Simple Filters)
+
+When you don't need a wrapper component (most common case):
+
+1. **Create Filters.tsx (Server Component - if fetching data, or Client Component):**
+   ```typescript
+   import { FC } from "react";
+   import { FiltersProvider } from "@/components/filters/FiltersContext";
+   import FiltersClient from "./FiltersClient";
+
+   const Filters: FC = () => {
+     // If fetching data, do it here
+     // const data = await fetchData();
+
+     return (
+       <FiltersProvider>
+         <FiltersClient />
+         {/* or <FiltersClient data={data} /> if passing data */}
+       </FiltersProvider>
+     );
+   };
+
+   export default Filters;
+   ```
+
+2. **Create Filters.styles.ts:**
+
+   **For Pattern 1a or 1b (With Wrapper Component):**
+   ```typescript
+   "use client";
+   import { breakpoints } from "@/globals";
+   import { Box } from "@radix-ui/themes";
+   import styled from "styled-components";
+
+   export const ModalFiltersSection = styled(Box)`
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+   `;
+
+   export const DesktopFiltersWrapper = styled(Box)`
+     height: 100%;
+     flex: 1;
+     display: none;
+     padding: var(--space-3);
+     overflow-x: hidden;
+
+     @media (min-width: ${breakpoints.sm - 1}px) {
+       display: flex;
+       gap: 10px;
+       align-items: center;
+     }
+   `;
+
+   export const FiltersSection = styled(Box)`
+     display: flex;
+     flex-wrap: wrap;
+     gap: 10px;
+     flex: 1;
+     align-items: center;
+     min-width: 0;
+   `;
+
+   export const ButtonsSection = styled(Box)`
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+     flex-shrink: 0;
+     align-items: stretch;
+   `;
+
+  export const MobileFiltersWrapper = styled(Box)`
+    flex: 1;
+    padding-bottom: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    /* Add bottom spacer to prevent content from being hidden behind fixed footer */
+    &:after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 50px; /* Must match MobileFilterFooter height */
+      background: transparent;
+    }
+
+    @media (min-width: ${breakpoints.sm}px) {
+      display: none;
+    }
+  `;
+
+  export const MobileFiltersContent = styled(Box)`
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-3);
+    gap: 10px;
+  `;
+
+  export const MobileFilterFooter = styled(Box)`
+    position: absolute;
+    height: 50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--gray-6);
+    margin-bottom: 0;
+    background: var(--color-background);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  `;
+   ```
+
+   **For Pattern 2 (Without Wrapper Component):**
+   ```typescript
+   "use client";
+   import styled from "styled-components";
+
+   // Empty styles file - will be populated later
+   // Or use shared styles from @/components/filters/Filters.styles
+   ```
+
+3. **Create filters.types.ts (For Text Input Validation):**
+   ```typescript
+   import { z } from "zod";
+   import { PriceFromToSchema } from "@/lib/common/types/common.types";
+
+   // Combine multiple schemas if needed
+   export const EntityFilterSchema = z.object({
+     ...PriceFromToSchema.shape, // Includes priceFrom and priceTo with comma formatting
+     color: z.string().optional(), // or z.number().optional() for numeric
+     // Add other text input fields here
+   });
+
+   export type EntityFilter = z.infer<typeof EntityFilterSchema>;
+   ```
+   
+   **Note:** `PriceFromToSchema` handles:
+   - Validation of comma-formatted numeric strings (regex: `/^-?\d[\d,]*$/`)
+   - Transformation from formatted string to number (removes commas, converts to number)
+   - Optional fields (both `priceFrom` and `priceTo` are optional)
+
+4. **Create FiltersClient.tsx (Client Component):**
+
+### Step 2: FiltersClient Implementation Pattern
+
+#### Overview
+
+FiltersClient supports five types of filters:
+
+1. **Multi-Select Dropdown Filters (SearchMultiSelect)**: Multi-select dropdowns managed via `allSelectedFilterOptions` Map state
+2. **Single-Select Dropdown Filters (SearchSingleSelect)**: Single-select dropdowns managed via `allSelectedFilterOptions` Map state (wraps single value in array)
+3. **Text Input Filters (TextSearch)**: Text inputs managed via controlled state (not FormData)
+4. **Price Input Filters (PriceTextSearch)**: Price inputs with comma formatting, managed via controlled state (not FormData)
+5. **Checkbox-Button-Group Filters (SearchCheckboxButtonGroup)**: Array-of-checkbox filters (e.g. pet adjustments) managed via controlled state (`value: string[]`, `onChange`). Same UI as form `CheckboxButtonGroup` (fieldset, labels, icons) but no Conform/form. Typically in "more filters."
+
+**Important:** When using a wrapper component (Pattern 1), FiltersClient renders differently for desktop vs mobile:
+- **Desktop**: Renders inline filters + "More Filters" button + MoreFiltersModal
+- **Mobile**: Renders all filters inside wrapper modal (which becomes full-screen)
+
+When not using a wrapper component (Pattern 2), FiltersClient handles its own desktop/mobile UI using Dialog or similar.
+
+#### Required Imports
+
+```typescript
+"use client";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
+import { enableMapSet, produce } from "immer";
+import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+import SearchCheckboxButtonGroup from "@/components/filters/SearchCheckboxButtonGroup/SearchCheckboxButtonGroup";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { parseWithZod } from "@conform-to/zod";
+import { MultiValue } from "react-select";
+import {
+  AllSelectedFilterOptionsMap,
+  Option,
+} from "@/components/filters/select/types";
+import { EntityFilter, EntityFilterSchema } from "./filters.types";
+```
+
+#### State Management
+
+```typescript
+// Dropdown filters state (SearchMultiSelect and SearchSingleSelect)
+const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
+  useState<AllSelectedFilterOptionsMap>(
+    new Map([
+      ["filterParam1", []], // Multi-select filter
+      ["filterParam2", []], // Multi-select filter
+      ["yearFrom", []],     // Single-select filter (still uses array internally)
+      ["yearTo", []],       // Single-select filter (still uses array internally)
+    ])
+  );
+
+// Text input filters state (for "more filters" - price, color, etc.)
+const [moreFilters, setMoreFilters] = useState({
+  priceFrom: searchParams.get("priceFrom") ?? "",
+  priceTo: searchParams.get("priceTo") ?? "",
+  color: searchParams.get("color") ?? "",
+  // Array filters (e.g. adjustments): use string[], separate handler
+  adjustments: searchParams.getAll("adjustments"),
+});
+
+// More Filters Modal state (only if using wrapper component pattern)
+const [isMoreFiltersModalOpen, setIsMoreFiltersModalOpen] = useState(false);
+```
+
+**Note:** 
+- Both `SearchMultiSelect` and `SearchSingleSelect` use the same state management pattern. `SearchSingleSelect` internally wraps the single selected option in an array to match the `MultiValue<Option>` interface.
+- Text input filters (price, color) are managed via controlled state, not FormData, for better UX and easier state management.
+- **SearchCheckboxButtonGroup** (array-of-checkbox filters like adjustments): store in `moreFilters.adjustments` as `string[]`, initialize from `searchParams.getAll("adjustments")`. Use a dedicated `handleAdjustmentsChange(values: string[])`; do **not** use `handleMoreFiltersChange` for adjustments. Narrow `handleMoreFiltersChange` key type to scalar keys only (e.g. `"priceFrom" | "priceTo" | "textSearch"`).
+- When using wrapper component pattern, `moreFilters` state is separate and managed independently.
+
+#### Filter Dependencies
+
+```typescript
+// Extract selected values for dependent filters
+const selectedParentIds = allSelectedFilterOptions
+  .get("parentFilter")!
+  .map((option) => option.value);
+
+// Dependent filter options based on parent selection
+const dependentOptions = useMemo(
+  () => getDependentOptionsByParentIds(selectedParentIds),
+  [selectedParentIds]
+);
+```
+
+#### Handler Functions
+
+1. **handleSubmitAllFilters** - Updates URL with selected filters (dropdowns, text/price inputs, and array filters like adjustments):
+   - Build **FormData only from schema keys** (scalar fields: priceFrom, priceTo, textSearch, etc.). Do **not** add array fields (e.g. `adjustments`) to FormData; they are not validated by the filter schema.
+   - After handling dropdowns and schema-validated fields, handle **array filters** (e.g. SearchCheckboxButtonGroup) separately: `_searchParams.delete("adjustments")`, then `moreFilters.adjustments.forEach((v) => _searchParams.append("adjustments", v))`.
+   ```typescript
+   const handleSubmitAllFilters = useCallback(() => {
+     const formData = new FormData();
+     formData.append("priceFrom", moreFilters.priceFrom ?? "");
+     formData.append("priceTo", moreFilters.priceTo ?? "");
+     formData.append("textSearch", moreFilters.textSearch ?? "");
+     // Omit adjustments etc. — not in schema
+     const schemaKeys = Object.keys(FilterSchema.shape);
+     const parseResult = parseWithZod(formData, { schema: FilterSchema });
+
+     const _searchParams = new URLSearchParams(searchParams);
+     _searchParams.set("page", "1");
+     
+     // Handle dropdown filters (SearchMultiSelect and SearchSingleSelect)
+     const params = allSelectedFilterOptions.keys();
+     params.forEach((paramName) => {
+       const options = allSelectedFilterOptions.get(paramName)!;
+       if (options.length > 0) {
+         _searchParams.delete(paramName);
+         options.forEach((option) => {
+           _searchParams.append(paramName, option.value);
+         });
+       } else {
+         _searchParams.delete(paramName);
+       }
+     });
+
+     // Handle schema-validated scalar filters (price, text, etc.)
+     if (parseResult.status === "success") {
+       const values = parseResult.value;
+       schemaKeys.forEach((key) => {
+         _searchParams.delete(key);
+         const value = values[key as keyof FilterType];
+         const valueString = value?.toString();
+         if (valueString && valueString !== "") {
+           _searchParams.append(key, valueString);
+         }
+       });
+     } else if (parseResult.status === "error" && parseResult.error) {
+       const { error } = parseResult;
+       for (let i = 0; i < schemaKeys.length; i++) {
+         const key = schemaKeys[i];
+         _searchParams.delete(key);
+         const errors = error[key];
+         if (errors && errors.length > 0) continue;
+         const value = formData.get(key);
+         const valueString = value?.toString();
+         if (valueString && valueString !== "") {
+           _searchParams.append(key, valueString);
+         }
+       }
+     }
+
+     // Handle array filters (e.g. SearchCheckboxButtonGroup / adjustments)
+     _searchParams.delete("adjustments");
+     moreFilters.adjustments.forEach((v) => _searchParams.append("adjustments", v));
+
+     router.replace(`${pathname}?${_searchParams.toString()}`);
+   }, [moreFilters, searchParams, allSelectedFilterOptions, router, pathname]);
+   ```
+
+2. **handleMoreFiltersChange** - Updates moreFilters state (scalar keys only). When `moreFilters` includes array fields (e.g. `adjustments`), narrow the key type to `"priceFrom" | "priceTo" | "textSearch"` (or equivalent) so array fields are not updated here.
+   ```typescript
+   const handleMoreFiltersChange = useCallback(
+     (key: "priceFrom" | "priceTo" | "textSearch", value: string) => {
+       setMoreFilters((prev) => produce(prev, (draft) => { draft[key] = value; }));
+     },
+     []
+   );
+   ```
+
+3. **handleAdjustmentsChange** - Updates array filters (e.g. SearchCheckboxButtonGroup). Use when `moreFilters` includes `adjustments: string[]`.
+   ```typescript
+   const handleAdjustmentsChange = useCallback((values: string[]) => {
+     setMoreFilters((prev) => ({ ...prev, adjustments: values }));
+   }, []);
+   ```
+
+4. **handleClearMoreFilters** - Clears only moreFilters state (include `adjustments: []` when used):
+   ```typescript
+   const handleClearMoreFilters = useCallback(() => {
+     setMoreFilters({
+       priceFrom: "",
+       priceTo: "",
+       color: "",
+       adjustments: [],
+     });
+   }, []);
+   ```
+
+5. **handleSetAllSelectedFilterOptions** - Updates filter state:
+   ```typescript
+   const handleSetAllSelectedFilterOptions = useCallback(
+     (paramName: string, options: MultiValue<Option>) => {
+       setAllSelectedFilterOptions((prevOptionsMap) => {
+         return produce(prevOptionsMap, (draft) => {
+           draft.set(paramName, [...options]);
+           // Clear dependent filter when parent is cleared
+           if (paramName === "parentFilter" && options.length === 0) {
+             draft.set("dependentFilter", []);
+           }
+         });
+       });
+     },
+     []
+   );
+   ```
+
+6. **handleClearFilters** - Clears all filters (dropdowns, text/price inputs, and array filters). Include `adjustments: []` in `setMoreFilters` when used.
+   ```typescript
+   const handleClearFilters = useCallback(() => {
+     setAllSelectedFilterOptions(
+       new Map([
+         ["filterParam1", []],
+         ["filterParam2", []],
+         ["yearFrom", []],
+         ["yearTo", []],
+       ])
+     );
+     setMoreFilters({
+       priceFrom: "",
+       priceTo: "",
+       color: "",
+       adjustments: [],
+     });
+     router.push(pathname);
+   }, [router, pathname]);
+   ```
+
+#### Search Button Disabled State
+
+Check if search button should be disabled. When `moreFilters` includes both scalar fields (priceFrom, priceTo, textSearch) and array fields (e.g. `adjustments`), check scalar emptiness and `adjustments.length === 0` explicitly — do **not** use `Object.values(moreFilters).every(...)` because arrays are not `undefined`/`""`/`null`.
+
+```typescript
+const isSearchButtonDisabled = useMemo(() => {
+  const optionsFiltersAreDisabled = Array.from(
+    allSelectedFilterOptions.values()
+  ).every((options) => options.length === 0);
+  const moreFiltersScalarEmpty = [
+    moreFilters.priceFrom,
+    moreFilters.priceTo,
+    moreFilters.textSearch,
+  ].every((v) => v === undefined || v === "" || v === null);
+  const moreFiltersAreDisabled =
+    moreFiltersScalarEmpty && moreFilters.adjustments.length === 0;
+  return optionsFiltersAreDisabled && moreFiltersAreDisabled;
+}, [allSelectedFilterOptions, moreFilters]);
+```
+
+#### SearchMultiSelect Components
+
+**Desktop filters (in renderFilters/renderMainFilters):**
+- **CRITICAL: Always use `isPortalTarget` prop** on ALL SearchMultiSelect components in desktop filters
+- This is **MANDATORY** - without it, dropdown menus will be clipped by container overflow constraints
+- Portaled dropdowns render outside the container DOM hierarchy, preventing clipping and z-index issues
+- This must be applied to every SearchMultiSelect in `renderFilters()` or `renderMainFilters()` functions
+
+```typescript
+<SearchMultiSelect
+  displayName="фильтр 1"
+  placeholder="Выберите значение"
+  paramName="filterParam1"
+  options={parentOptions}
+  maxSelectedOptions={3}
+  selectedOptions={allSelectedFilterOptions.get("filterParam1")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  isPortalTarget
+/>
+
+<SearchMultiSelect
+  placeholder="Выберите зависимое значение"
+  displayName="зависимый фильтр"
+  paramName="dependentFilter"
+  options={dependentOptions}
+  isDisabled={selectedParentIds.length === 0}
+  maxSelectedOptions={3}
+  selectedOptions={allSelectedFilterOptions.get("dependentFilter")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  isPortalTarget
+/>
+```
+
+**More filters modal (in renderMoreFilters):**
+- **Always use `menuPosition="fixed"` prop** to ensure dropdown menus render properly inside the modal
+- This prevents dropdowns from being clipped by modal boundaries
+
+```typescript
+<SearchMultiSelect
+  placeholder="Выберите район"
+  displayName="районы"
+  paramName="district"
+  options={areasOptions}
+  maxSelectedOptions={3}
+  selectedOptions={allSelectedFilterOptions.get("district")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  menuPosition="fixed"
+/>
+```
+
+#### SearchSingleSelect Components
+
+For single-select dropdowns (e.g., yearFrom, yearTo, single category selection):
+
+```typescript
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+
+<SearchSingleSelect
+  placeholder="Год от"
+  displayName="год от"
+  paramName="yearFrom"
+  options={yearsOptions}
+  selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+  setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  isPortalTarget={false} // Optional: use portal for z-index control
+/>
+```
+
+**Key differences from SearchMultiSelect:**
+- **Single selection only**: User can select only one option at a time
+- **Same state management**: Uses the same `allSelectedFilterOptions` Map and `handleSetAllSelectedFilterOptions` handler
+- **Internal conversion**: Component internally wraps `SingleValue<Option>` in an array `[option]` to match `MultiValue<Option>` interface
+- **URL param handling**: Uses `searchParams.get(paramName)` instead of `searchParams.getAll(paramName)` for initialization
+- **Portal support**: Has optional `isPortalTarget` prop for controlling menu portal rendering (useful for z-index issues)
+- **No maxSelectedOptions**: Single-select doesn't need `maxSelectedOptions` prop (always 1)
+
+**When to use SearchSingleSelect:**
+- Single value selection (e.g., yearFrom, yearTo, single category)
+- When only one option should be selectable at a time
+- For filters that represent a single choice rather than multiple choices
+
+**When to use SearchMultiSelect:**
+- Multiple value selection (e.g., manufacturer, model, district)
+- When multiple options can be selected simultaneously
+- For filters that represent multiple choices
+
+#### DialogPrimitiveButton Component (For Grouping Related Filters)
+
+When you need to group multiple related filters (e.g., yearFrom and yearTo) in a dropdown dialog:
+
+```typescript
+import DialogPrimitiveButton from "@/components/modals/DialogPrimitiveButton/DialogPrimitiveButton";
+import { getYearDialogButtonTitle } from "./Filters.utils";
+
+// Generate dynamic title based on selected values
+const yearDialogButtonTitle = getYearDialogButtonTitle(allSelectedFilterOptions);
+
+<DialogPrimitiveButton title={yearDialogButtonTitle} showOverlay={true}>
+  <SearchSingleSelect
+    placeholder="Год от"
+    displayName="год от"
+    paramName="yearFrom"
+    options={yearsOptions}
+    selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+    setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  />
+
+  <SearchSingleSelect
+    placeholder="Год до"
+    displayName="год до"
+    paramName="yearTo"
+    options={yearsOptions}
+    selectedOptions={allSelectedFilterOptions.get("yearTo")!}
+    setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+  />
+</DialogPrimitiveButton>
+```
+
+**Key Points:**
+- Creates a button that opens a dropdown dialog
+- Useful for grouping related filters (e.g., year range, price range)
+- Button title can be dynamic based on selected values
+- Dialog positions itself below the button
+- Use `showOverlay={true}` to show backdrop overlay
+- Dialog closes when clicking outside or pressing Escape
+
+#### TextSearch Components
+
+When using controlled state (recommended for wrapper component pattern):
+
+```typescript
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+
+<TextSearch
+  name="color"
+  placeholder="Цвет"
+  type="text"
+  value={moreFilters.color}
+  onChange={(value) => handleMoreFiltersChange("color", value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmitAllFilters();
+    }
+  }}
+/>
+```
+
+**Note:** Always add `onKeyDown` handler to `TextSearch` components to enable Enter key submission. For mobile views inside modals, also call `closeModal()` after `handleSubmitAllFilters()`.
+
+When using uncontrolled state (defaultValue pattern):
+
+```typescript
+<TextSearch
+  name="color"
+  placeholder="Цвет"
+  type="text"
+  defaultValue={searchParams.get("color")?.toString()}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmitAllFilters();
+    }
+  }}
+/>
+```
+
+#### PriceTextSearch Components
+
+For price range filters, use `PriceTextSearch` which automatically formats numbers with commas.
+
+When using controlled state (recommended for wrapper component pattern):
+
+```typescript
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+
+<PriceTextSearch
+  name="priceFrom"
+  placeholder="0"
+  value={moreFilters.priceFrom}
+  onChange={(value) => handleMoreFiltersChange("priceFrom", value)}
+/>
+
+<PriceTextSearch
+  name="priceTo"
+  placeholder="0"
+  value={moreFilters.priceTo}
+  onChange={(value) => handleMoreFiltersChange("priceTo", value)}
+/>
+```
+
+When using uncontrolled state (defaultValue pattern):
+
+```typescript
+<PriceTextSearch
+  name="priceFrom"
+  placeholder="0"
+  defaultValue={searchParams.get("priceFrom") ?? undefined}
+/>
+
+<PriceTextSearch
+  name="priceTo"
+  placeholder="0"
+  defaultValue={searchParams.get("priceTo") ?? undefined}
+/>
+```
+
+**Note:** `PriceTextSearch`:
+- Automatically formats numbers with commas (e.g., "1,000,000") using `formatNumberWithCommas` utility from `@/utils/common`
+- Uses `type="text"` with `pattern="[\d,]*"` and `inputMode="numeric"`
+- Displays currency symbol (₪)
+- Manages internal state for formatted display value
+- Works with `PriceFromToSchema` from `@/lib/common/types/common.types` which validates and transforms comma-formatted strings to numbers
+- Supports both controlled (`value` + `onChange`) and uncontrolled (`defaultValue`) patterns
+
+#### SearchCheckboxButtonGroup Components
+
+For **array-of-checkbox filters** (e.g. pet adjustments, numeric enum arrays): use `SearchCheckboxButtonGroup`. Same UI as form `CheckboxButtonGroup` (fieldset, legend, button-style checkboxes, optional icons) but **no Conform** — controlled via `value: string[]` and `onChange: (value: string[]) => void`. Typically placed in "more filters" (ModalFiltersSection).
+
+```typescript
+import SearchCheckboxButtonGroup from "@/components/filters/SearchCheckboxButtonGroup/SearchCheckboxButtonGroup";
+import { ADJUSTMENT_OPTIONS } from "@/lib/pets/for-sale/adjustmentOptions";
+
+<SearchCheckboxButtonGroup
+  label="Важные особенности"
+  subLabel="Отметьте особенности питомца."
+  options={ADJUSTMENT_OPTIONS}
+  value={moreFilters.adjustments}
+  onChange={handleAdjustmentsChange}
+/>
+```
+
+**Props:** `label`, `subLabel?`, `options: { value: string; label: string; icon?: ReactNode }[]`, `value: string[]`, `onChange: (value: string[]) => void`, `isDisabled?`.
+
+**State:** Store selected values in `moreFilters.adjustments` (or similar), init from `searchParams.getAll("adjustments")`. Use `handleAdjustmentsChange` to update; exclude `adjustments` from `handleMoreFiltersChange` and from FormData/schema. Append each value to URL in `handleSubmitAllFilters` (see Handler Functions).
+
+**When to use:** Numeric enum array filters (e.g. "4a. Numeric Enum Array Filters"), multi-select options rendered as button-style checkboxes. **Reference:** `app/(public)/pets/for-sale/_components/Filters/FiltersClient.tsx`, `lib/pets/for-sale/adjustmentOptions.tsx`.
+
+### Step 3: Create MoreFiltersModal Component (Optional - Only for Wrapper Pattern)
+
+When using wrapper component pattern and you want to separate "more filters" (price, color, etc.) into a separate modal:
+
+1. **Create MoreFiltersModal.tsx:**
+   ```typescript
+   "use client";
+   import { FC, ReactNode } from "react";
+   import { Dialog, Button, IconButton, Heading, Text, Flex } from "@radix-ui/themes";
+   import { Cross2Icon } from "@radix-ui/react-icons";
+   import {
+     MoreFiltersModalContent,
+     MoreFiltersModalHeader,
+     MoreFiltersModalBody,
+     MoreFiltersModalFooter,
+   } from "./MoreFiltersModal.styles";
+
+   interface MoreFiltersModalProps {
+     open: boolean;
+     onOpenChange: (open: boolean) => void;
+     children: ReactNode;
+     onClearMoreFilters: () => void;
+   }
+
+   const MoreFiltersModal: FC<MoreFiltersModalProps> = ({
+     open,
+     onOpenChange,
+     children,
+     onClearMoreFilters,
+   }) => {
+     return (
+       <Dialog.Root open={open} onOpenChange={onOpenChange}>
+         <MoreFiltersModalContent>
+           <MoreFiltersModalHeader>
+             <Flex direction="column" gap="1">
+               <Heading size={{ initial: "4", xs: "5" }}>
+                 Больше фильтров
+               </Heading>
+               <Text size="2" color="gray">
+                 Дополнительные параметры поиска
+               </Text>
+             </Flex>
+             <IconButton
+               variant="ghost"
+               color="gray"
+               onClick={() => onOpenChange(false)}
+               size={{ initial: "2", xs: "3" }}
+             >
+               <Cross2Icon width="20" height="20" />
+             </IconButton>
+           </MoreFiltersModalHeader>
+
+           <MoreFiltersModalBody>{children}</MoreFiltersModalBody>
+
+           <MoreFiltersModalFooter>
+             <Button variant="outline" color="gray" onClick={onClearMoreFilters}>
+               Очистить
+             </Button>
+             <Dialog.Close>
+               <Button variant="outline" color="gray">
+                 Сохранить
+               </Button>
+             </Dialog.Close>
+           </MoreFiltersModalFooter>
+         </MoreFiltersModalContent>
+       </Dialog.Root>
+     );
+   };
+
+   export default MoreFiltersModal;
+   ```
+
+2. **Create MoreFiltersModal.styles.ts:**
+   ```typescript
+   "use client";
+   import styled from "styled-components";
+   import { Dialog, Box } from "@radix-ui/themes";
+
+   export const MoreFiltersModalContent = styled(Dialog.Content)`
+     max-width: 600px !important;
+     width: 90vw;
+     max-height: 80vh;
+     background: var(--accent-1);
+     border-radius: var(--radius-4);
+     padding: 0 !important;
+     display: flex;
+     flex-direction: column;
+     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+     @media (max-width: 768px) {
+       max-width: 100vw !important;
+       width: 100vw;
+       max-height: 100vh;
+       height: 100vh;
+       border-radius: 0;
+     }
+   `;
+
+   export const MoreFiltersModalHeader = styled(Box)`
+     padding: var(--space-4) var(--space-5);
+     border-bottom: 1px solid var(--gray-6);
+     display: flex;
+     align-items: flex-start;
+     justify-content: space-between;
+     background: var(--accent-2);
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+     gap: var(--space-3);
+   `;
+
+   export const MoreFiltersModalBody = styled(Box)`
+     flex: 1;
+     overflow-y: auto;
+     padding: var(--space-5);
+     -webkit-overflow-scrolling: touch;
+   `;
+
+   export const MoreFiltersModalFooter = styled(Box)`
+     padding: var(--space-4) var(--space-5);
+     border-top: 1px solid var(--gray-6);
+     display: flex;
+     justify-content: space-between;
+     background: var(--accent-2);
+     box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+   `;
+   ```
+
+### Step 4: FiltersClient Rendering Patterns
+
+#### Pattern 1: With Wrapper Component (Desktop + Mobile Separation)
+
+When using a wrapper component, FiltersClient renders differently for desktop vs mobile:
+
+```typescript
+return (
+  <>
+    {/* Desktop Filters */}
+    <DesktopFiltersWrapper>
+      <FiltersSection>{renderFilters()}</FiltersSection> {/* Main filters (dropdowns) - wrapped in FiltersSection for flex layout */}
+      <ButtonsSection>
+        <Button onClick={() => setIsMoreFiltersModalOpen(true)}>
+          Больше фильтров
+        </Button>
+        <Button onClick={handleSubmitAllFilters}>Поиск</Button>
+        <Button onClick={handleClearFilters}>Очистить все фильтры</Button>
+      </ButtonsSection>
+    </DesktopFiltersWrapper>
+
+    {/* More Filters Modal (Desktop only) */}
+    <MoreFiltersModal
+      open={isMoreFiltersModalOpen}
+      onOpenChange={setIsMoreFiltersModalOpen}
+      onClearMoreFilters={handleClearMoreFilters}
+    >
+      {renderMoreFilters()} {/* Price, color, etc. */}
+    </MoreFiltersModal>
+
+    {/* Mobile Filters - rendered inside wrapper modal */}
+    <MobileFiltersWrapper>
+      <MobileFiltersContent>
+        {renderMobileFilters()} {/* All filters including more filters */}
+      </MobileFiltersContent>
+      <MobileFilterFooter>
+        <Button onClick={() => { handleSubmitAllFilters(); closeModal(); }}>
+          Поиск
+        </Button>
+        <Button onClick={handleClearFilters}>
+          Очистить все фильтры
+        </Button>
+      </MobileFilterFooter>
+    </MobileFiltersWrapper>
+  </>
+);
+```
+
+**Key Points:**
+- Desktop: Main filters inline + "More Filters" button opens MoreFiltersModal
+- Mobile: All filters rendered inside wrapper modal (which becomes full-screen)
+- Use `useFiltersModal()` hook to access `closeModal` function
+- Separate render functions: `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()`
+
+#### Pattern 2: Without Wrapper Component (Self-Contained)
+
+When not using a wrapper component, FiltersClient handles its own desktop/mobile UI:
+
+```typescript
+const { isModalOpen, openModal, closeModal } = useFiltersModal();
+
+return (
+  <>
+    {/* Desktop View */}
+    <DesktopFiltersWrapper>
+      {renderFilters()}
+      <Button onClick={handleSubmitAllFilters}>Поиск</Button>
+      <Button onClick={handleClearFilters}>Очистить все фильтры</Button>
+    </DesktopFiltersWrapper>
+
+    {/* Mobile Filter Button */}
+    <MobileFilterButton onClick={openModal}>
+      Фильтры
+    </MobileFilterButton>
+
+    {/* Mobile Filters Modal */}
+    <Dialog.Root open={isModalOpen} onOpenChange={closeModal}>
+      <FiltersModalContent>
+        <ModalHeader>
+          <Dialog.Title>Фильтры</Dialog.Title>
+          <IconButton onClick={closeModal}>...</IconButton>
+        </ModalHeader>
+        <ModalBody>
+          {renderFilters()}
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={() => { handleSubmitAllFilters(); closeModal(); }}>
+            Показать результаты
+          </Button>
+          <Button onClick={handleClearFilters}>Очистить</Button>
+        </ModalFooter>
+      </FiltersModalContent>
+    </Dialog.Root>
+  </>
+);
+```
+
+### Step 5: Integration with Page
+
+1. **Import Filters component in page.tsx:**
+   ```typescript
+   import Filters from "./_components/Filters/Filters";
+   import { FiltersProvider } from "@/components/filters/FiltersContext";
+   ```
+
+2. **Wrap Filters in Suspense and FiltersProvider:**
+   ```typescript
+   <Suspense fallback={<LoadingFilters />}>
+     <FiltersProvider>
+       <Filters />
+     </FiltersProvider>
+   </Suspense>
+   ```
+
+   **Note:** If Filters.tsx already wraps FiltersClient with FiltersProvider (Pattern 2), you don't need to wrap again in page.tsx.
+
+### Step 6: Create Filter Schema (For Text Inputs)
+
+When using text input filters, create a Zod schema for validation:
+
+1. **Create `filters.types.ts` in filters directory:**
+   ```typescript
+   import { z } from "zod";
+   import { PriceFromToSchema } from "@/lib/common/types/common.types";
+
+   // Combine multiple schemas if needed
+   export const EntityFilterSchema = z.object({
+     ...PriceFromToSchema.shape,
+     color: z.string().optional(), // Use z.string() for text inputs
+     // Add other text input fields here
+   });
+
+   export type EntityFilter = z.infer<typeof EntityFilterSchema>;
+   ```
+
+2. **Import in FiltersClient:**
+   ```typescript
+   import { parseWithZod } from "@conform-to/zod";
+   import { EntityFilter, EntityFilterSchema } from "./filters.types";
+   ```
+
+3. **Create Filters.utils.ts (Optional - for helper functions):**
+   ```typescript
+   import { AllSelectedFilterOptionsMap } from "@/components/filters/select/types";
+
+   export const getYearDialogButtonTitle = (
+     allSelectedFilterOptions: AllSelectedFilterOptionsMap
+   ) => {
+     const yearFrom = allSelectedFilterOptions.get("yearFrom")?.[0]?.label;
+     const yearTo = allSelectedFilterOptions.get("yearTo")?.[0]?.label;
+
+     if (yearFrom && yearTo) {
+       return `${yearFrom}-${yearTo}`;
+     } else if (yearFrom) {
+       return `Год от ${yearFrom}`;
+     } else if (yearTo) {
+       return `Год до ${yearTo}`;
+     }
+     return "Год";
+   };
+   ```
+
+### Example: Car Filters Implementation (With Dropdowns and Text Inputs)
+
+```typescript
+"use client";
+import {
+  FC,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { enableMapSet, produce } from "immer";
+import SearchMultiSelect from "@/components/filters/select/SearchMultiSelect/SearchMultiSelect";
+import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import {
+  mapVehicleManufacturersToSelectOptions,
+  getVehicleModelsToSelectOptionsByManufacturerIds,
+} from "@/lib/vehicles/cars/vehicleModels";
+import { VehicleManufacturerId } from "@/lib/vehicles/cars/vehicleManufacturers/types/vehicleManufacturer.schema";
+import { MultiValue } from "react-select";
+import {
+  AllSelectedFilterOptionsMap,
+  Option,
+} from "@/components/filters/select/types";
+import { Button } from "@radix-ui/themes";
+import { parseWithZod } from "@conform-to/zod";
+import TextSearch from "@/components/filters/TextSearch/TextSearch";
+import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
+import { CarFilter, CarFilterSchema } from "./filters.types";
+
+enableMapSet();
+
+const FiltersClient: FC = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [allSelectedFilterOptions, setAllSelectedFilterOptions] =
+    useState<AllSelectedFilterOptionsMap>(
+      new Map([
+        ["manufacturer", []],
+        ["model", []],
+        ["yearFrom", []], // Single-select filter
+      ])
+    );
+
+  const selectedManufacturerIds = allSelectedFilterOptions
+    .get("manufacturer")!
+    .map((option) => option.value) as VehicleManufacturerId[];
+
+  const manufacturerOptions = useMemo(
+    () => mapVehicleManufacturersToSelectOptions(),
+    []
+  );
+
+  const modelOptions = useMemo(
+    () => getVehicleModelsToSelectOptionsByManufacturerIds(selectedManufacturerIds),
+    [selectedManufacturerIds]
+  );
+
+  const handleSubmitAllFilters = () => {
+    const formData = new FormData(formRef.current!);
+    const schemaKeys = Object.keys(CarFilterSchema.shape);
+    const parseResult = parseWithZod(formData, { schema: CarFilterSchema });
+
+    const _searchParams = new URLSearchParams(searchParams);
+    _searchParams.set("page", "1");
+    
+    // Handle dropdown filters
+    const params = allSelectedFilterOptions.keys();
+    params.forEach((paramName) => {
+      const options = allSelectedFilterOptions.get(paramName)!;
+      if (options.length > 0) {
+        _searchParams.delete(paramName);
+        options.forEach((option) => {
+          _searchParams.append(paramName, option.value);
+        });
+      } else {
+        _searchParams.delete(paramName);
+      }
+    });
+
+    // Handle text input filters
+    if (parseResult.status === "success") {
+      const values = parseResult.value;
+      schemaKeys.forEach((key) => {
+        _searchParams.delete(key);
+        const value = values[key as keyof CarFilter];
+        const valueString = value?.toString();
+        if (valueString && valueString !== "") {
+          _searchParams.append(key, valueString);
+        }
+      });
+    } else if (parseResult.status === "error" && parseResult.error) {
+      const { error } = parseResult;
+      for (let i = 0; i < schemaKeys.length; i++) {
+        const key = schemaKeys[i];
+        _searchParams.delete(key);
+        const errors = error[key];
+        if (errors && errors.length > 0) continue;
+        const value = formData.get(key);
+        const valueString = value?.toString();
+        if (valueString && valueString !== "") {
+          _searchParams.append(key, valueString);
+        }
+      }
+    }
+
+    router.replace(`${pathname}?${_searchParams.toString()}`);
+  };
+
+  const handleSetAllSelectedFilterOptions = useCallback(
+    (paramName: string, options: MultiValue<Option>) => {
+      setAllSelectedFilterOptions((prevOptionsMap) => {
+        return produce(prevOptionsMap, (draft) => {
+          draft.set(paramName, [...options]);
+          if (paramName === "manufacturer" && options.length === 0) {
+            draft.set("model", []);
+          }
+        });
+      });
+    },
+    []
+  );
+
+  const handleClearFiltersAndClose = () => {
+    setAllSelectedFilterOptions(
+      new Map([
+        ["manufacturer", []],
+        ["model", []],
+        ["yearFrom", []], // Single-select filter
+      ])
+    );
+    router.push(pathname);
+  };
+
+  return (
+    <div>
+      <form
+        ref={formRef}
+        onSubmit={(e) => e.preventDefault()}
+        style={{
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
+        {/* Dropdown filters */}
+        <SearchMultiSelect
+          displayName="производители"
+          placeholder="Выберите производителя"
+          paramName="manufacturer"
+          options={manufacturerOptions}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("manufacturer")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        
+        <SearchMultiSelect
+          placeholder="Выберите модель"
+          displayName="модели"
+          paramName="model"
+          options={modelOptions}
+          isDisabled={selectedManufacturerIds.length === 0}
+          maxSelectedOptions={3}
+          selectedOptions={allSelectedFilterOptions.get("model")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        {/* Single-select filters */}
+        <SearchSingleSelect
+          placeholder="Год от"
+          displayName="год от"
+          paramName="yearFrom"
+          options={yearsOptions}
+          selectedOptions={allSelectedFilterOptions.get("yearFrom")!}
+          setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+
+        {/* Price input filters */}
+        <PriceTextSearch
+          name="priceFrom"
+          placeholder="0"
+          defaultValue={searchParams.get("priceFrom") ?? undefined}
+        />
+        <PriceTextSearch
+          name="priceTo"
+          placeholder="0"
+          defaultValue={searchParams.get("priceTo") ?? undefined}
+        />
+        
+        {/* Text input filters */}
+        <TextSearch
+          name="color"
+          placeholder="Цвет"
+          type="text"
+          defaultValue={searchParams.get("color")?.toString()}
+        />
+
+        {/* Action buttons */}
+        <Button
+          variant="outline"
+          color="gray"
+          onClick={handleSubmitAllFilters}
+          size="3"
+        >
+          Поиск
+        </Button>
+        <Button
+          variant="outline"
+          color="gray"
+          disabled={searchParams.size === 0}
+          onClick={handleClearFiltersAndClose}
+          size="3"
+        >
+          Очистить все фильтры
+        </Button>
+      </form>
+    </div>
+  );
+};
+```
+
+### Best Practices for FiltersClient
+
+1. **Use immer for state updates** - `produce` function for immutable updates
+2. **Use useMemo for computed options** - Prevents unnecessary recalculations
+3. **Use useCallback for handlers** - Prevents unnecessary re-renders
+4. **Initialize state with Map** - Consistent with SearchMultiSelect pattern
+5. **Clear dependent filters** - When parent filter is cleared, clear dependent filters
+6. **Disable dependent filters** - When parent is empty, disable dependent filters
+7. **Use SearchMultiSelect** - Reusable component for all multi-select filters
+8. **Use SearchSingleSelect** - Reusable component for single-select filters (e.g., yearFrom, yearTo)
+9. **Use TextSearch** - Reusable component for regular text input filters
+10. **Use PriceTextSearch** - Reusable component for price input filters with comma formatting
+11. **Use SearchCheckboxButtonGroup** - Reusable component for array-of-checkbox filters (e.g. pet adjustments); same UI as form CheckboxButtonGroup, no Conform. Store in `moreFilters` as `string[]`, use dedicated handler, append each value to URL on submit.
+12. **Controlled state for text inputs** - Use controlled state (`value` + `onChange`) instead of FormData for better UX
+13. **Enter key support** - Always add `onKeyDown` handler to `TextSearch` components to enable Enter key submission (calls `handleSubmitAllFilters()`)
+14. **Validate with Zod** - Use `parseWithZod` with a schema for text input validation (create FormData from state)
+15. **Graceful error handling** - On validation errors, still add non-error fields to URL
+16. **Initialize from URL** - Initialize text inputs with values from `searchParams.get()` in state; use `searchParams.getAll()` for array filters (e.g. adjustments)
+17. **URL synchronization** - All filters update URL params for sharing/bookmarking
+18. **Reset page to 1** - When filters change, reset to first page
+19. **Single-select state** - SearchSingleSelect uses the same Map state pattern, wrapping single value in array internally
+20. **Portal rendering for desktop filters** - **CRITICAL: ALWAYS use `isPortalTarget` prop on EVERY SearchMultiSelect component in desktop view** (renderFilters/renderMainFilters). This is **MANDATORY** - without it, dropdown menus will be clipped by container overflow constraints. Portaled dropdowns render outside the container DOM hierarchy, preventing clipping and z-index issues. Missing this prop will cause dropdowns to be cut off and multi-select dropdowns to close incorrectly.
+21. **Fixed menu position for modal filters** - **ALWAYS use `menuPosition="fixed"` prop on SearchMultiSelect components in more filters modal** (renderMoreFilters) to ensure dropdown menus render properly inside the modal and prevent clipping
+22. **Separate render functions** - Create `renderFilters()`, `renderMobileFilters()`, `renderMoreFilters()` for clarity
+23. **Wrapper pattern** - When using wrapper component, FiltersClient should use `useFiltersModal()` hook to access `closeModal`
+24. **MoreFiltersModal state** - Manage `isMoreFiltersModalOpen` state separately when using wrapper pattern
+25. **Search button disabled state** - Check both dropdown filters and moreFilters state (including array fields like `adjustments.length === 0`) to determine if search button should be disabled
+26. **Multi-field text search** - Use `$or` with `$regex` for searching across multiple fields (e.g., productTitle and description)
+27. **Array filters in moreFilters** - Store as `string[]`; use dedicated handler (e.g. `handleAdjustmentsChange`); exclude from schema/FormData; append each value to URL in `handleSubmitAllFilters`; narrow `handleMoreFiltersChange` key type to scalar keys only
+28. **Flex layout for DesktopFiltersWrapper** - Use flex layout (not grid) with `FiltersSection` wrapping filters (flex: 1, flex-wrap) and `ButtonsSection` for buttons (flex-shrink: 0). This prevents horizontal scrolling when you have more than 4 filters. Add `overflow-x: hidden` to `DesktopFiltersWrapper` only. **DO NOT add overflow-x, max-width, or width constraints to the wrapper container** (e.g., Yad2FiltersContainer, RealEstateFiltersContainer) as this will clip portaled dropdown menus.
+29. **Wrapper container constraints** - Wrapper container (e.g., Yad2FiltersContainer, RealEstateFiltersContainer) should be a simple flex container with basic styling (transform, background, border, border-radius, etc.). **DO NOT add `max-width`, `width: 100%`, or `overflow-x: hidden`** to the wrapper container. These constraints will clip portaled dropdown menus that use `isPortalTarget`. The wrapper container should match the pattern in `yad2/_components/Filters/Yad2FiltersWrapper/Yad2FiltersWrapper.styles.ts`.
+
+### Mobile/Desktop UI Patterns
+
+#### Pattern 1a: With Wrapper Component + Navigation
+
+**Desktop:**
+- Wrapper component shows as container with header and navigation bar
+- FiltersClient renders main filters inline
+- "More Filters" button opens MoreFiltersModal (separate modal)
+- Action buttons (Search, Clear) shown inline
+
+**Mobile:**
+- Wrapper component becomes full-screen modal when opened
+- FiltersClient renders all filters inside wrapper modal
+- Mobile filter button triggers wrapper modal
+- Action buttons shown in footer of wrapper modal
+
+**Example:** `vehicles/cars/_components/Filters/`
+
+#### Pattern 1b: With Wrapper Component, No Navigation
+
+**Desktop:**
+- Wrapper component shows as container with header (no navigation bar)
+- FiltersClient renders main filters inline
+- "More Filters" button opens MoreFiltersModal (separate modal)
+- Action buttons (Search, Clear) shown inline
+
+**Mobile:**
+- Wrapper component becomes full-screen modal when opened
+- FiltersClient renders all filters inside wrapper modal
+- Mobile filter button triggers wrapper modal
+- Action buttons shown in footer of wrapper modal
+
+**Example:** `yad2/_components/Filters/`
+
+**Key Differences from Pattern 1a:**
+- No navigation bar in header
+- Simpler structure for sections without sub-category navigation
+- Same modal behavior and mobile/desktop patterns
+
+#### Pattern 2: Without Wrapper Component
+
+**Desktop:**
+- FiltersClient renders filters inline with action buttons
+- All filters visible at once
+
+**Mobile:**
+- Mobile filter button opens FiltersClient's own modal
+- All filters shown in modal with action buttons in footer
+
+**Example:** `professional-service/_components/Filters/`
+
+**Key Differences:**
+- Pattern 1a/1b: Separates "more filters" into separate modal (desktop only), wrapper handles mobile modal
+- Pattern 1a includes navigation bar, Pattern 1b doesn't
+- Pattern 2: All filters together, FiltersClient handles its own modal
+- All patterns use `FiltersContext` for modal state management
+
+#### Scrollable Content with Fixed Footer
+
+When using `MobileFiltersWrapper` with `MobileFiltersContent` (scrollable) and `MobileFilterFooter` (fixed at bottom), **always add a `&:after` pseudo-element** to `MobileFiltersWrapper` to prevent content from being hidden behind the fixed footer:
+
+```typescript
+export const MobileFiltersWrapper = styled(Box)`
+  /* ... other styles ... */
+  
+  /* Add bottom spacer to prevent content from being hidden behind fixed footer */
+  &:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 50px; /* Must match MobileFilterFooter height */
+    background: transparent;
+  }
+`;
+```
+
+**Why this is needed:**
+- `MobileFiltersContent` has `overflow-y: auto` (scrollable)
+- `MobileFilterFooter` is `position: absolute` at bottom (overlays content)
+- Without the spacer, last filter items can be hidden behind the footer when scrolling
+- The `&:after` pseudo-element creates transparent padding equal to footer height, ensuring all content is accessible above the footer
+
+**Important:** The spacer height must match `MobileFilterFooter` height (typically 50px).
+
+## Implementation Example: Car Filters
+
+### Repository Filter Interface
+
+```typescript
+export interface CarSearchFilters {
+  manufacturer?: string[];
+  model?: string[];
+  yearFrom?: string; // Single value for range filter
+  yearTo?: string;   // Single value for range filter
+  district?: string[];
+  city?: string[];
+  priceFrom?: number; // Transformed to number in page component
+  priceTo?: number;   // Transformed to number in page component
+  color?: string;
+}
+```
+
+### Repository getAll Method
+
+```typescript
+async getAll(
+  searchFilters: CarSearchFilters = {},
+  currentPage: number = 1,
+  pageSize: number = 10
+): Promise<PaginatedResponse> {
+  try {
+    await connectDB();
+
+    // Sanitize all incoming filters
+    const sanitizedFilters: CarSearchFilters = {
+      manufacturer: sanitize(searchFilters.manufacturer),
+      model: sanitize(searchFilters.model),
+      yearFrom: sanitize(searchFilters.yearFrom),
+      yearTo: sanitize(searchFilters.yearTo),
+      district: sanitize(searchFilters.district),
+      city: sanitize(searchFilters.city),
+      priceFrom: sanitize(searchFilters.priceFrom),
+      priceTo: sanitize(searchFilters.priceTo),
+      color: sanitize(searchFilters.color),
+    };
+
+    // Build search filter
+    const searchFilter: FilterQuery<typeof Car> = {};
+
+    // Add manufacturer filter
+    if (sanitizedFilters.manufacturer) {
+      searchFilter.manufacturer = { $in: sanitizedFilters.manufacturer };
+    }
+
+    // Add model filter
+    if (sanitizedFilters.model) {
+      searchFilter.model = { $in: sanitizedFilters.model };
+    }
+
+    // Add year range filters
+    if (sanitizedFilters.yearFrom) {
+      const yearFromNum = Number(sanitizedFilters.yearFrom);
+      if (!Number.isNaN(yearFromNum)) {
+        searchFilter.yearOfManufacture = { $gte: yearFromNum };
+      }
+    }
+
+    if (sanitizedFilters.yearTo) {
+      const yearToNum = Number(sanitizedFilters.yearTo);
+      if (!Number.isNaN(yearToNum)) {
+        if (searchFilter.yearOfManufacture) {
+          searchFilter.yearOfManufacture = {
+            ...searchFilter.yearOfManufacture,
+            $lte: yearToNum,
+          };
+        } else {
+          searchFilter.yearOfManufacture = { $lte: yearToNum };
+        }
+      }
+    }
+
+    // Add district filter
+    if (sanitizedFilters.district) {
+      searchFilter.district = { $in: sanitizedFilters.district };
+    }
+
+    // Add city filter
+    if (sanitizedFilters.city) {
+      searchFilter.city = { $in: sanitizedFilters.city };
+    }
+
+    // Add price range filters
+    // Handle priceFrom (minimum price)
+    if (sanitizedFilters.priceFrom !== undefined && sanitizedFilters.priceFrom !== null) {
+      const priceFromNum = Number(sanitizedFilters.priceFrom);
+      if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+        searchFilter.price = { $gte: priceFromNum };
+      }
+    }
+
+    // Handle priceTo (maximum price)
+    if (sanitizedFilters.priceTo !== undefined && sanitizedFilters.priceTo !== null) {
+      const priceToNum = Number(sanitizedFilters.priceTo);
+      if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+        // Combine with existing price filter if exists
+        if (searchFilter.price) {
+          searchFilter.price = {
+            ...searchFilter.price,
+            $lte: priceToNum,
+          };
+        } else {
+          searchFilter.price = { $lte: priceToNum };
+        }
+      }
+    }
+
+    // Add color filter (text search with regex)
+    if (sanitizedFilters.color?.trim()) {
+      searchFilter.color = {
+        $regex: sanitizedFilters.color.trim(),
+        $options: "i", // Case-insensitive
+      };
+    }
+
+    // ... rest of pagination and query logic
+  } catch (error) {
+    // ... error handling
+  }
+}
+```
+
+### Page Component Filter Processing
+
+```typescript
+import { CarSearchFilters } from "@/lib/vehicles/cars/repository/CarRepository";
+
+interface CarsPageProps {
+  searchParams?: Promise<{
+    manufacturer?: string | string[];
+    model?: string | string[];
+    yearFrom?: string | string[];
+    yearTo?: string | string[];
+    district?: string | string[];
+    city?: string | string[];
+    priceFrom?: string;
+    priceTo?: string;
+    color?: string;
+    page?: string;
+  }>;
+}
+
+const CarsPage: FC<CarsPageProps> = async (props) => {
+  const searchParams = (await props.searchParams) || {};
+  const currentPage = Number(searchParams?.page) || 1;
+
+  // Extract array filters using utility
+  const arrayFilters = searchParamsToFilters(searchParams);
+
+  // Build filters object with proper types
+  const filters: CarSearchFilters = {
+    manufacturer: arrayFilters.manufacturer,
+    model: arrayFilters.model,
+    district: arrayFilters.district,
+    city: arrayFilters.city,
+  };
+
+  // Handle single value filters (yearFrom/yearTo) - not arrays for range queries
+  if (searchParams.yearFrom) {
+    filters.yearFrom = Array.isArray(searchParams.yearFrom)
+      ? searchParams.yearFrom[0]
+      : searchParams.yearFrom;
+  }
+
+  if (searchParams.yearTo) {
+    filters.yearTo = Array.isArray(searchParams.yearTo)
+      ? searchParams.yearTo[0]
+      : searchParams.yearTo;
+  }
+
+  // Handle price range filters - transform from string (with commas) to number
+  if (searchParams.priceFrom) {
+    const priceFromStr = Array.isArray(searchParams.priceFrom)
+      ? searchParams.priceFrom[0]
+      : searchParams.priceFrom;
+    // Remove commas and parse to number (same logic as PriceFromToSchema)
+    const cleaned = priceFromStr.replace(/,/g, "");
+    const priceFromNum = Number(cleaned);
+    if (!Number.isNaN(priceFromNum) && priceFromNum >= 0) {
+      filters.priceFrom = priceFromNum;
+    }
+  }
+
+  if (searchParams.priceTo) {
+    const priceToStr = Array.isArray(searchParams.priceTo)
+      ? searchParams.priceTo[0]
+      : searchParams.priceTo;
+    // Remove commas and parse to number (same logic as PriceFromToSchema)
+    const cleaned = priceToStr.replace(/,/g, "");
+    const priceToNum = Number(cleaned);
+    if (!Number.isNaN(priceToNum) && priceToNum >= 0) {
+      filters.priceTo = priceToNum;
+    }
+  }
+
+  // Handle color filter - single string value
+  if (searchParams.color) {
+    filters.color = Array.isArray(searchParams.color)
+      ? searchParams.color[0]
+      : searchParams.color;
+  }
+
+  const contentKey = JSON.stringify({ ...filters, page: currentPage });
+
+  return (
+    <CarsPageContainer>
+      <Suspense key={contentKey} fallback={<Loading />}>
+        <CarsContent filters={filters} currentPage={currentPage} />
+      </Suspense>
+    </CarsPageContainer>
+  );
+};
+```
+
+## Component Architecture Summary
+
+### Pattern 1: With Wrapper Component
+
+```
+Page.tsx
+  └── FiltersProvider
+      └── Filters.tsx (Client Component)
+          └── WrapperComponent (e.g., VehicleFilters)
+              └── FiltersClient
+                  ├── DesktopFiltersWrapper
+                  │   ├── renderFilters() (main filters)
+                  │   ├── "More Filters" button
+                  │   └── Action buttons
+                  ├── MoreFiltersModal (Desktop only)
+                  │   └── renderMoreFilters() (price, color)
+                  └── MobileFiltersWrapper
+                      ├── renderMobileFilters() (all filters)
+                      └── MobileFilterFooter (action buttons)
+```
+
+### Pattern 2: Without Wrapper Component
+
+```
+Page.tsx
+  └── FiltersProvider
+      └── Filters.tsx (Server/Client Component)
+          └── FiltersClient
+              ├── DesktopFiltersWrapper
+              │   ├── renderFilters() (all filters)
+              │   └── Action buttons
+              ├── MobileFilterButton
+              └── Dialog (Mobile modal)
+                  ├── renderFilters() (all filters)
+                  └── Action buttons
+```
+
+## References
+
+- Follow the pattern established in:
+  - **Pattern 1a (With Wrapper + Navigation):**
+    - `app/(public)/vehicles/_components/Filters/VehicleFilters/VehicleFilters.tsx`
+    - `app/(public)/vehicles/cars/_components/Filters/Filters.tsx`
+    - `app/(public)/vehicles/cars/_components/Filters/FiltersClient.tsx`
+    - `app/(public)/vehicles/cars/_components/modals/MoreFiltersModal/MoreFiltersModal.tsx`
+  - **Pattern 1b (With Wrapper, No Navigation):**
+    - `app/(public)/yad2/_components/Filters/Yad2FiltersWrapper/Yad2FiltersWrapper.tsx`
+    - `app/(public)/yad2/_components/Filters/Filters.tsx`
+    - `app/(public)/yad2/_components/Filters/FiltersClient.tsx`
+    - `app/(public)/yad2/_components/modals/MoreFiltersModal/MoreFiltersModal.tsx`
+  - **Pattern 2 (Without Wrapper):**
+    - `app/(public)/professional-service/_components/Filters/Filters.tsx`
+    - `app/(public)/professional-service/_components/Filters/FiltersClient.tsx`
+  - **Repository Examples:**
+    - `lib/professionals/professional-service/repository/ProfessionalServiceRepository.ts`
+    - `lib/vehicles/cars/repository/CarRepository.ts`
+    - `lib/yad2/repository/Yad2ItemRepository.ts`
+  - **Page Examples:**
+    - `app/(public)/vehicles/cars/page.tsx`
+    - `app/(public)/yad2/page.tsx`
+    - `app/(public)/professional-service/page.tsx`
+    - `app/(public)/pets/for-sale/page.tsx`
+  - **SearchCheckboxButtonGroup / adjustments (pets for-sale):**
+    - `app/(public)/pets/for-sale/_components/Filters/FiltersClient.tsx`
+    - `lib/pets/for-sale/adjustmentOptions.tsx`
+    - `lib/pets/for-sale/repository/PetForSaleRepository.ts`

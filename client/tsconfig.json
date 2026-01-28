@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,15 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "target": "ES2022"
+    }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "src/app/loading.js"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/auth/success/loadingtsx", "src/providers/StyledRegistry", "src/app/api/files/create/routets"],
   "exclude": ["node_modules"]
 }

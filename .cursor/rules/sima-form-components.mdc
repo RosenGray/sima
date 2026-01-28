@@ -1,0 +1,107 @@
+---
+description: Guidelines for using and extending Form components in @/components/Form/
+globs:
+alwaysApply: true
+---
+
+# Form Components Guidelines
+
+## Overview
+
+Form primitives live in `@/components/Form/`. Use these components when building forms (publish-ad, auth, etc.). All Conform-integrated fields use `FieldMetadata` from `@conform-to/react` and receive a `field` prop. Import types from `@/components/Form/types/form.types` (e.g. `FormMode`, `FormModeSchema`).
+
+## Component Map
+
+| Component | Use case | Conform |
+|-----------|----------|---------|
+| `Form` | Form wrapper with `useFormStatus`; passes `formStatus` to children | — |
+| `BasicFormField` | Text/number inputs | `getInputProps(field, { type })` |
+| `SelectSingle` | Single-select dropdowns | `getSelectProps`, `useInputControl` |
+| `Checkbox` | Single checkbox (boolean or "on") | `getInputProps(field, { type: "checkbox" })` |
+| `CheckboxButtonGroup` | Multi-select checkboxes as buttons (e.g. adjustments, tags) | `getFieldsetProps`, `getCollectionProps` |
+| `DropFilesInput` | File upload (drag-and-drop) | `getInputProps(field, { type: "file" })` |
+| `PhoneFormField` | Phone number input | `getInputProps(field, { type: "tel" })` |
+| `PriceFormField` | Price with comma formatting; renders `₪` | `BasicFormField`-backed |
+| `TextAreaField` | Multi-line text | `getTextareaProps(field)` |
+| `AuthTextField` | Auth forms (login, register, etc.); no `field` | — |
+| `FormCard` | Styled `Card` for form sections (e.g. auth) | — |
+
+## Conventions
+
+- **Errors:** Always pass `errors={field.errors}` (or equivalent) to show validation messages. Components render them in red.
+- **Mandatory:** Use `isMandatory` for required fields; `*` is shown next to the label.
+- **Disabled:** Pass `disabled={isPending}` (or `isDisabled` where supported) during submission.
+- **Labels:** Use `label` for all field components except `AuthTextField` (uses `placeholder` as label).
+
+## Per-Component Rules
+
+### BasicFormField
+
+- Extends `TextField.RootProps`. Props: `field`, `type`, `label`, `placeholder`, `size`, `defaultValue`, `dataIsValid`, `errors`, `isMandatory`, `containerStyle`, `disabledAutocomplete`, `anotherLabel`, `showEmailDisclaimer`, `_key`.
+- Use `getInputProps(field, { type })`; support `type="text"`, `"number"`, etc.
+- Use `EmailDisclaimer` via `showEmailDisclaimer` when showing email.
+
+### SelectSingle
+
+- Uses `react-select` and `@/providers/PortalProvider` for `menuPortalTarget`. Props: `field`, `options`, `defaultValue`, `label`, `errors`, `isMandatory`, plus `Props` from react-select.
+- Options: `{ value: string; label: string }[]`. Use `useInputControl` for controlled value.
+
+### Checkbox
+
+- Extends Radix `CheckboxProps`. Props: `field`, `label`, `labelSize`, `size`, `errors`, `isMandatory`.
+- Schema: `z.boolean()` or `z.string().optional().superRefine(/* "on" */)`.
+
+### CheckboxButtonGroup
+
+- **When to use:** Multi-select options as button-style checkboxes (e.g. pet adjustments, feature tags). **For filter UI** (no Conform, no form): use `SearchCheckboxButtonGroup` in `@/components/filters/`; see sima-filters.
+- Props: `field`, `label`, `subLabel?`, `options: { value: string; label: string; icon?: React.ReactNode }[]`, `errors?`, `isDisabled?`, `dataAttrList`, `dataAttrLabel`, `dataAttrInput`.
+- Conform: `getFieldsetProps(field)` on fieldset; `getCollectionProps(field, { type: "checkbox", options: options.map(o => o.value) })`. Same `name`; Conform aggregates into array.
+- Schema: `z.array(z.coerce.number()).optional()` or `z.array(z.string()).optional()`. Option `value` must be string.
+- Default value: **string[]**. Create: `[]`. Edit: `(entity?.field ?? []).map(String)`.
+- Icons: Pass `icon` per option; render inside each button label.
+
+### DropFilesInput
+
+- Props: `field`, `onFilesDrop: (files: File[]) => void`, `files: File[]`, `accept?`, `maxSize?`, `maxFiles?`, `errors?`, `disabled?`, `existingFilesLength?`.
+- Use `useState<File[]>` for `files`; `onFilesDrop` updates state. In `onValidate`, append `files` to formData as `images` (or equivalent).
+- `existingFilesLength`: for edit mode; count existing images not marked for deletion.
+- Use `ImagesPreviewer` separately to show previews and delete.
+
+### PhoneFormField
+
+- Same structure as `BasicFormField` but `type="tel"`. Props: `field`, `label`, `placeholder`, `size`, `defaultValue`, `errors`, `isMandatory`, `_key`.
+
+### PriceFormField
+
+- Wraps `BasicFormField` with `formatNumberWithCommas` from `@/utils/common`. Props: `field`, `label`, `placeholder`, `size`, `defaultValue`, `dataIsValid`, `errors`, `isMandatory`, `anotherLabel`, `showEmailDisclaimer`, `_key`.
+- Uses `type="text"`, `pattern="[\d,]*"`, `inputMode="numeric"`. Renders `₪` as child.
+- Schema: string with regex and `.transform()` to number (see sima-form-creation).
+
+### TextAreaField
+
+- Extends `TextAreaProps`. Props: `field`, `label`, `placeholder`, `size`, `dataIsValid`, `errors`, `isMandatory`, `ref`.
+
+### AuthTextField
+
+- For auth flows only (login, register, reset/replace password). No `field` prop. Props: `dataIsValid`, `errors`, `placeholder`, `size`, `defaultValue`, `_key`, `isMandatory`, plus `TextField.RootProps`.
+- Uses `AuthTextFieldRoot` from `AuthTextField.styles` for invalid-state styling.
+
+### FormCard
+
+- Styled `Card` from `FormCard.styles`. Import: `import { FormCard } from "@/components/Form/FormCard/FormCard.styles"`. Used in auth forms.
+
+### Form
+
+- Props: `children: (formStatus: FormStatus) => ReactNode`, `action`, `noValidate?`, `_key?`. Use with `getFormProps` from Conform when applicable.
+
+## Styling
+
+- Form components use Radix UI (`TextField`, `TextArea`, `Checkbox`, `Card`, etc.) and, where needed, styled-components.
+- Any `.styles.ts` under `Form/` that uses `styled-components` must have `"use client"` at the top (see sima-styling).
+- Prefer Radix responsive props over custom media queries.
+
+## Best Practices
+
+- Use existing Form components instead of creating new form primitives.
+- Keep Conform usage consistent: always pass `field` and `errors`, and use the correct getter (`getInputProps`, `getSelectProps`, `getTextareaProps`, `getFieldsetProps` / `getCollectionProps`).
+- For publish-ad forms, follow sima-form-creation and sima-form-edit-mode; Form components are the building blocks.

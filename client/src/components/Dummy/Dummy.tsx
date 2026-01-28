@@ -1,31 +1,19 @@
-'use client'
-import {  Button, } from '@radix-ui/themes'
+'use client';
+import { useLogger } from '@logtail/next';
 
-// const fetchCurrentUserClient = async () => {
-//   const response = await fetch("http://localhost:3000/api/auth/currentuser", {
-//     credentials: "include",
-//   });
-//   return response.json();
-// };
 
 
 const Dummy = () => {
-
-  const fetchUser = async () => {
-    console.log('kuku');
-     await fetch('/api/auth/signout',{
-      credentials: 'include',
-      method: 'POST'
-    })
-  }
-
+  const log = useLogger();
   return (
-    <div>
-      <Button onClick={fetchUser}>
-         Hello
-      </Button>
+    <div style={{ width: '100%', height: '100%', backgroundColor: 'red' }}>
+      <h1>Dummy</h1>
+      <button onClick={() => {
+        console.log('button clicked with logtail');
+        log.debug('User logged in', { userId: 42 });
+      }}>Click me</button>
     </div>
   )
 }
 
-export default Dummy
+export default Dummy;

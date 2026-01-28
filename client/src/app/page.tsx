@@ -1,53 +1,65 @@
-import Header from "@/components/Header/Header";
-import styles from "./page.module.scss";
-import BannerCarousel from "@/components/BannerCarousel/BannerCarousel";
-import { bannerslides } from "@/components/BannerCarousel/config";
-import Image from 'next/image'
-import bla from './../assets/images/1.png';
-import { config } from "@/utils/config";
+import { Button, Flex, Heading, Text, Box } from "@radix-ui/themes";
+import Header from "../components/Header/Header/Header";
+import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
+import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
 import Dummy from "@/components/Dummy/Dummy";
-import { Box } from "@radix-ui/themes";
-import { customFetch } from "@/fetch/server";
 
-const fetchCurrentUserClient = async () => {
-  'use server'
-  console.log('this is server')
-  const response = await customFetch("/api/auth/signout", {
-    credentials: "include",
-    method: "POST",
-  });
-  console.log('response', response.json())
-  return response.json();
-};
+// const PageContainer = styled(Container)`
+//   min-height: 100vh;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   padding: 2rem;
+//   padding-top: 6rem; /* Add padding to account for fixed header */
+// `;
 
-export default function Home() {
-  
+// const MainContent = styled(Section)`
+//   text-align: center;
+//   max-width: 600px;
+// `;
+
+export default async function Home() {
+  const serviceCategories = await serviceCategoryRepository.getAll();
+
   return (
-    <>
+    <HomePageProvider data={{ serviceCategories }}>
       <Header />
-      <main className={styles.Page}>
-  
-  <form action={fetchCurrentUserClient}>
-    <button type="submit">server</button>
-  </form>
+      <Box pt="6rem">
+        <Box>
+          <Flex direction="column" gap="6" align="center">
+            <Heading size="9" weight="bold">
+              Hello World4
+            </Heading>
 
-        <Dummy/>
+            <Text size="6" color="gray">
+              Welcome to our Marketplace
+            </Text>
 
-      {/* <BannerCarousel slides={bannerslides}/> */}
+            <Text
+              size="4"
+              color="gray"
+              style={{ maxWidth: "500px", lineHeight: "1.6" }}
+            >
+              Discover amazing products, connect with sellers, and build your
+              business in our vibrant marketplace community. Your journey starts
+              here.
+            </Text>
 
-      {/* <Image
-      src={bla}
-      // width={140}
-      /> */}
-
-{/* <img
-      src={bla.src}
-      width={140}
-      /> */}
-      </main>
-
-
-      <footer style={{ height: 60, background: "black" }}>placeholder</footer>
-    </>
+            <Flex gap="4" mt="4">
+              <Button size="3" variant="solid">
+                Get Started
+              </Button>
+              <Button size="3" variant="outline">
+                Learn More
+              </Button>
+            </Flex>
+          </Flex>
+          <div style={{ marginTop: 40, width: "100%" }}>
+            <Dummy /> 9
+          </div>
+        </Box>
+      </Box>
+    </HomePageProvider>
   );
 }

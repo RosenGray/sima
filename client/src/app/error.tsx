@@ -1,44 +1,51 @@
 "use client";
 
-import { Container, Flex, Heading, Text, Button } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
-import styles from "./page.module.scss";
-
+import {
+  ErrorPageContainer,
+  GoBackButton,
+  Message,
+  RetryButton,
+  StyledHeading,
+} from "./error.styles";
 interface ErrorProps {
   error: Error;
   reset: () => void;
 }
 
-export default function ErrorPage({ reset, error }: ErrorProps) {
+export default function ErrorPage({ reset }: ErrorProps) {
   return (
-    <Container size="3" className={styles.errorPage}>
+    <ErrorPageContainer size="3">
       <Flex direction="column" align="center" gap="4">
-        <ExclamationTriangleIcon color="red" className={styles.icon} />
-        <Heading size="8" className={styles.heading}>
+        <ExclamationTriangleIcon
+          color="red"
+          style={{ width: 40, height: 40 }}
+        />
+        <StyledHeading as="h1" size="8">
           Упс! Что-то пошло не так
-        </Heading>
+        </StyledHeading>
 
-        <Text size="4" className={styles.message}>
+        <Message size="4">
           Мы столкнулись с непредвиденной ошибкой. Пожалуйста, попробуйте еще
           раз
-        </Text>
+        </Message>
 
         <Flex gap="4" mt="4">
-          <Button
+          <GoBackButton
             size="3"
             variant="soft"
             onClick={() => (window.location.href = "/")}
-            className={styles.button}
           >
             вернуться домой
-          </Button>
+          </GoBackButton>
 
-          <Button size="3" onClick={reset} className={styles.retryButton}>
+          <RetryButton size="3" onClick={reset}>
             <ReloadIcon width="16" height="16" />
             Попробуйте еще раз
-          </Button>
+          </RetryButton>
         </Flex>
       </Flex>
-    </Container>
+    </ErrorPageContainer>
   );
 }

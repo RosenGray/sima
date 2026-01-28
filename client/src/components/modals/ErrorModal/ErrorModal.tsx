@@ -1,15 +1,14 @@
 import { FC, ReactNode } from "react";
 import { Button, Dialog, Flex } from "@radix-ui/themes";
 import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
-import classes from "./ErrorModal.module.scss";
-import { ErrorsFromServer } from "@/fetch/fetch.types";
+import { ErrorModalContent } from "./ErrorModal.styles";
 
 interface ErrorModalProps extends Dialog.RootProps {
-  errorMessage?: string | ErrorsFromServer[];
+  errorMessage?: string | string[];
 }
 
 const parseErrorMessage = (
-  errorMessage?: string | ErrorsFromServer[]
+  errorMessage?: string | string[]
 ): string | ReactNode => {
   let errorMessageToShow: string | ReactNode =
     "Мы столкнулись с непредвиденной ошибкой. Пожалуйста, попробуйте еще раз";
@@ -21,14 +20,14 @@ const parseErrorMessage = (
     errorMessageToShow = (
       <ul>
         {errorMessage.map((error) => (
-          <li key={error.message}>{error.message}</li>
+          <li key={error}>{error}</li>
         ))}
       </ul>
     );
   }
   return errorMessageToShow;
 };
-//Неверный логин или пароль
+
 const ErrorModal: FC<ErrorModalProps> = ({
   open,
   onOpenChange,
@@ -38,7 +37,7 @@ const ErrorModal: FC<ErrorModalProps> = ({
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content className={classes.ErrorModal__Content}>
+      <ErrorModalContent>
         <Flex
           direction="column"
           align="center"
@@ -56,7 +55,7 @@ const ErrorModal: FC<ErrorModalProps> = ({
           >
             Упс! Что-то пошло не так
           </Dialog.Title>
-          <Dialog.Description size="3">{errorMessageToShow}</Dialog.Description>
+          <div >{errorMessageToShow}</div>
         </Flex>
 
         <Flex gap="3" mt="4" justify="end">
@@ -74,7 +73,7 @@ const ErrorModal: FC<ErrorModalProps> = ({
             вернуться домой
           </Button>
         </Flex>
-      </Dialog.Content>
+      </ErrorModalContent>
     </Dialog.Root>
   );
 };

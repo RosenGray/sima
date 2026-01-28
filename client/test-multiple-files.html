@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Multiple File Upload</title>
+</head>
+<body>
+    <h1>Test Multiple File Upload</h1>
+    
+    <form id="uploadForm">
+        <div>
+            <label>Folder Name:</label>
+            <input type="text" name="folderName" value="test-folder" required>
+        </div>
+        <div>
+            <label>User ID:</label>
+            <input type="text" name="userId" value="test-user" required>
+        </div>
+        <div>
+            <label>Files (select multiple):</label>
+            <input type="file" name="files" multiple accept="image/*,.pdf,.txt,.doc,.docx">
+        </div>
+        <button type="submit">Upload Files</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            // Debug: Log what we're sending
+            console.log('FormData entries:');
+            for (const [key, value] of formData.entries()) {
+                if (value instanceof File) {
+                    console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+                } else {
+                    console.log(`${key}: ${value}`);
+                }
+            }
+            
+            // Debug: Check files specifically
+            const files = formData.getAll('files');
+            console.log(`Found ${files.length} files:`, files);
+            
+            try {
+                const response = await fetch('/api/files/create', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -10,10 +10,12 @@ COPY package-lock.json ./
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the app’s source code
+# Copy the rest of the app's source code
+# Note: .env.production is included via .dockerignore configuration (public env vars only)
 COPY . .
 
-# Build the Next.js app
+# Build the Next.js app with NODE_ENV=production to ensure .env.production is loaded
+ENV NODE_ENV=production
 RUN npm run build
 
 # Stage 2: Serve the app with a lightweight server
@@ -22,7 +24,12 @@ FROM node:alpine
 WORKDIR /app
 
 # Copy the built files from the 'builder' stage
+# .env.production should already be included from the builder stage
 COPY --from=builder /app ./
+
+# Ensure NODE_ENV is set for runtime (Next.js loads .env.production at runtime when NODE_ENV=production)
+# Note: This can be overridden by Kubernetes env vars if needed
+ENV NODE_ENV=production
 
 # Install only production dependencies (for a lighter image)
 RUN npm install --production
@@ -32,3 +39,4 @@ EXPOSE 3000
 
 # Start the app in production mode
 CMD ["npm", "run", "start"]
+

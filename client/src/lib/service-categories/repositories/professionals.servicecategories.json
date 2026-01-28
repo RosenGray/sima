@@ -1,0 +1,121 @@
+[{
+  "key": "ConstructionRepair",
+  "displayName": "Construction & Repair",
+  "description": "Services related to construction, renovation, and structural repairs",
+  "russianDisplayName": "Строительство и Ремонт",
+  "russianDescription": "Услуги, связанные со строительством, ремонтом и конструкционными работами",
+  "navItem": {
+    "label": "Строительство и Ремонт",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "ApplianceRepair",
+  "displayName": "Appliance Repair",
+  "description": "Repair and maintenance services for household and commercial appliances",
+  "russianDisplayName": "Ремонт Техники",
+  "russianDescription": "Услуги по ремонту и обслуживанию бытовой и коммерческой техники",
+  "navItem": {
+    "label": "Ремонт Техники",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "Legal",
+  "displayName": "Legal Services",
+  "description": "Legal consultation and services including documentation and representation",
+  "russianDisplayName": "Юридические Услуги",
+  "russianDescription": "Юридические консультации и услуги, включая документацию и представительство",
+  "navItem": {
+    "label": "Юридические Услуги",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "Medical",
+  "displayName": "Medical Services",
+  "description": "Healthcare and medical consultation services",
+  "russianDisplayName": "Медицинские Услуги",
+  "russianDescription": "Услуги здравоохранения и медицинские консультации",
+  "navItem": {
+    "label": "Медицинские Услуги",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "Transportation",
+  "displayName": "Transportation",
+  "description": "Transportation and logistics services for people and goods",
+  "russianDisplayName": "Транспорт",
+  "russianDescription": "Транспортные и логистические услуги для людей и грузов",
+  "navItem": {
+    "label": "Транспорт",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "SecurityInstallation",
+  "displayName": "Security Installation",
+  "description": "Installation and maintenance of security systems and equipment",
+  "russianDisplayName": "Установка Безопасности",
+  "russianDescription": "Установка и обслуживание систем безопасности и оборудования",
+  "navItem": {
+    "label": "Установка Безопасности",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "ItAdvertising",
+  "displayName": "IT & Advertising",
+  "description": "IT services, digital marketing, and advertising solutions",
+  "russianDisplayName": "IT и Реклама",
+  "russianDescription": "IT-услуги, цифровой маркетинг и рекламные решения",
+  "navItem": {
+    "label": "IT и Реклама",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "Education",
+  "displayName": "Education",
+  "description": "Educational services including tutoring and training programs",
+  "russianDisplayName": "Образование",
+  "russianDescription": "Образовательные услуги, включая репетиторство и учебные программы",
+  "navItem": {
+    "label": "Образование",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "Business",
+  "displayName": "Business Services",
+  "description": "Business consulting and professional services",
+  "russianDisplayName": "Бизнес Услуги",
+  "russianDescription": "Бизнес-консультации и профессиональные услуги",
+  "navItem": {
+    "label": "Бизнес Услуги",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "Household",
+  "displayName": "Household Services",
+  "description": "General household maintenance and cleaning services",
+  "russianDisplayName": "Бытовые Услуги",
+  "russianDescription": "Общее обслуживание дома и клининговые услуги",
+  "navItem": {
+    "label": "Бытовые Услуги",
+    "href": "/professional-service"
+  }
+},
+{
+  "key": "Other",
+  "displayName": "Other",
+  "description": "Other",
+  "russianDescription": "Другое",
+  "russianDisplayName": "Другое",
+  "navItem": {
+    "label": "Другое",
+    "href": "/professional-service"
+  }
+}]

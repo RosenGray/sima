@@ -1,33 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
-import styles from "./LayoutBackground.module.scss";
+import { LayoutBackgroundContainer } from "./LayoutBackground.styles";
+import { useDimensions } from "@/hooks/useDimensions";
 
 const LayoutBackground = () => {
-  const [dimensions, setDimensions] = useState({
-    width: 1920, // Default fallback width
-    height: 1080, // Default fallback height
-  });
-  useEffect(() => {
-    // Update dimensions on mount
-    setDimensions({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-
-    const handleResize = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const dimensions = useDimensions();
 
   return (
-    <div className={styles.LayoutBackground}>
+    <LayoutBackgroundContainer>
       <svg
         width={dimensions.width}
         height={dimensions.height}
@@ -47,6 +26,7 @@ const LayoutBackground = () => {
             "--color-background-image-accent-7": "var(--red-5)",
           } as React.CSSProperties
         }
+        suppressHydrationWarning={true}
       >
         <g>
           <path
@@ -332,7 +312,7 @@ const LayoutBackground = () => {
           </radialGradient>
         </defs>
       </svg>
-    </div>
+    </LayoutBackgroundContainer>
   );
 };
 

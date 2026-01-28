@@ -1,42 +1,91 @@
 "use client";
 
-import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import UserLoginIndicator from "../UserLoginIndicator/UserLoginIndicator";
-import { useTheme } from "next-themes";
-import { Logo } from "@/components/Logo/Logo";
-import { FC, useEffect, useState } from "react";
-import Loader from "@/components/Loader/Loader";
+import { useState } from "react";
 import Link from "next/link";
-import styles from "./SimpleHeader.module.scss";
+import { Flex, Text } from "@radix-ui/themes";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
+import {
+  HeaderContainer,
+  Logo,
+  MobileMenuButton,
+  HamburgerIcon,
+  ActionsContainer,
+  LoginButton,
+  PublishAdButton,
+} from "./../Header.styles";
+import { MobileMenu } from "../MobileMenu";
+import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
+import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
 
-const SimpleHeader: FC = () => {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+export default function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
-  const isDark = resolvedTheme === "dark";
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
-    <header className={styles.Header}>
-      <div className={styles.Header__leftSection}>
-        <Link className={styles.Header__exitButton} href="/publish-ad">
-          Выйти
-        </Link>
-        <UserLoginIndicator buttonSize="3" />
-      </div>
+    <>
+      <HeaderContainer>
+        <Flex justify="between" align="center" height="100%">
+          <MobileMenuButton
+            variant="ghost"
+            size="2"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle mobile menu"
+          >
+            <HamburgerIcon $isOpen={isMobileMenuOpen}>
+              <span />
+              <span />
+              <span />
+            </HamburgerIcon>
+          </MobileMenuButton>
 
-      <div className={styles.Header__rightSection}>
-        {mounted ? (
-          <Logo isDark={isDark} />
-        ) : (
-          <Loader isSpin width={150} height={55} />
-        )}
-      </div>
-    </header>
+          {/* Logo - Center */}
+          <Logo>
+            <Link href="/">
+            <SimaDarkLogo width={200} height={60}  />
+            </Link>
+          </Logo>
+
+          <ActionsContainer>
+            <PublishAdButton asChild variant="solid" size="2">
+              <Link href="/publish-ad">
+                <PlusCircledIcon width="16" height="16" />
+                <Text size="2" weight="medium">
+                  Разместить объявление
+                </Text>
+              </Link>
+            </PublishAdButton>
+            {user ? (
+              <LogoutButton />
+            ) : (
+              <LoginButton asChild variant="surface" size="2">
+                <Link href="/auth/login">
+                  <Text size="2" weight="medium">
+                    Войти
+                  </Text>
+                </Link>
+              </LoginButton>
+            )}
+            <ThemeToggleButton />
+          </ActionsContainer>
+        </Flex>
+      </HeaderContainer>
+
+      {/* Mobile Menu Component */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        navigationItems={[]}
+        onClose={closeMobileMenu}
+      />
+    </>
   );
-};
-
-export default SimpleHeader;
+}

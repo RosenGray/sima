@@ -1,0 +1,838 @@
+---
+description: Page structure guidelines for listing pages with Suspense, loading states, and content components
+globs:
+alwaysApply: true
+---
+
+# Page Structure Guidelines
+
+## Overview
+
+Listing pages (e.g., `/vehicles/cars`, `/professional-service`) should follow a consistent structure using React Suspense for data fetching, separate content components, and proper loading states. This pattern improves performance and user experience.
+
+## Page Structure
+
+### Main Page Component (`page.tsx`)
+
+- **Location**: `app/(public)/{category}/{entity}/page.tsx` (e.g., `app/(public)/vehicles/cars/page.tsx`)
+- **Type**: Server Component (async)
+- **Responsibility**: Extract search params, process filters + sorting + pagination, wrap content in Suspense
+
+#### Required Imports
+
+```typescript
+import { FC, Suspense } from "react";
+import { PageContainer } from "./page.styles";
+import ContentComponent from "./_components/{Entity}Content/{Entity}Content";
+import Loading from "./loading";
+```
+
+#### Search Params Interface
+
+```typescript
+interface EntityPageProps {
+  searchParams?: Promise<{
+    page?: string;
+    // Sorting param (section-specific; commonly `sort`)
+    // sort?: string;
+    // Add other filter params here as needed
+    // filterParam1?: string | string[];
+    // filterParam2?: string | string[];
+  }>;
+}
+```
+
+#### Filter Processing Pattern
+
+```typescript
+const EntityPage: FC<EntityPageProps> = async (props) => {
+  const searchParams = (await props.searchParams) || {};
+
+  // Extract filters - convert to arrays for consistency
+  const filters = Object.keys(searchParams)
+    .filter((key) => key !== "page")
+    .reduce((acc, k) => {
+      const searchParamValue = searchParams[k as keyof typeof searchParams];
+      if (!searchParamValue) return acc;
+      if (Array.isArray(searchParamValue)) {
+        acc[k] = searchParamValue;
+      } else {
+        acc[k] = [searchParamValue];
+      }
+      return acc;
+    }, {} as Record<string, string[]>);
+
+  // Extract current page
+  const currentPage = Number(searchParams?.page) || 1;
+
+  // Sorting (section-specific)
+  // IMPORTANT:
+  // - sorting should be URL-driven (searchParams)
+  // - whenever sort changes in UI, reset page=1
+  // - include `sort` in Suspense key to trigger re-fetch
+  const sort = typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
+
+  // Create unique key for Suspense to trigger re-fetch on filter/page/sort change
+  const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
+
+  return (
+    <PageContainer>
+      <Suspense key={contentKey} fallback={<Loading />}>
+        <ContentComponent
+          filters={filters}
+          currentPage={currentPage}
+          sort={sort}
+        />
+      </Suspense>
+    </PageContainer>
+  );
+};
+```
+
+#### Placeholder Filters (Before Filter Implementation)
+
+When filters are not yet implemented:
+
+```typescript
+// Placeholder filters object - will be populated when filters are implemented
+const filters = {};
+
+// Still create contentKey for future compatibility
+const sort = typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
+const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
+```
+
+#### Sorting UI Placement (Recommended)
+
+To keep the server Content component focused on data/layout, render sorting UI in a **client component** (e.g., `{Entity}HeaderClient`) that:
+
+- reads the current URL params via `useSearchParams()`
+- updates the sort param via `router.replace()`
+- **preserves existing filter params**
+- **resets `page` to `1`** on sort change
+
+This pattern is used in cars (`CarsHeaderClient`) where the sort UI is rendered above the grid and drives URL state.
+
+## Content Component (`{Entity}Content.tsx`)
+
+- **Location**: `app/(public)/{category}/{entity}/_components/{Entity}Content/{Entity}Content.tsx`
+- **Type**: Server Component (async)
+- **Responsibility**: Fetch data (filters + sort + pagination), render content (title, results count, grid, pagination)
+
+#### Required Imports
+
+```typescript
+import { FC } from "react";
+import { entityRepository } from "@/lib/{category}/{entity}/repository/{Entity}Repository";
+import { EntityCards } from "../EntityCards/EntityCards";
+import {
+  EntityGrid,
+  StickyPaginationWrapper,
+  Title,
+} from "../../page.styles";
+import { Text } from "@radix-ui/themes";
+import Pagination from "@/components/Pagination/Pagination";
+```
+
+#### Filters Interface
+
+```typescript
+// Placeholder type for filters - will be replaced when filters are implemented
+interface EntitySearchFilters {
+  // Filters will be added here later
+  // Example:
+  // categoryId?: string[];
+  // district?: string[];
+}
+
+interface EntityContentProps {
+  filters: EntitySearchFilters;
+  currentPage: number;
+  sort?: string;
+}
+```
+
+#### Component Structure
+
+```typescript
+const EntityContent: FC<EntityContentProps> = async ({
+  filters,
+  currentPage,
+  sort,
+}) => {
+  // Fetch data using repository
+  // Note: Repository signature will be updated when filters are implemented
+  const entityResponse = await entityRepository.getAll(filters, currentPage, 10, sort);
+
+  return (
+    <>
+      <Title size="5">Page Title</Title>
+
+      <Text as="p" size="2" color="gray">
+        {entityResponse.totalCount} результатов найдено
+      </Text>
+
+      <EntityGrid
+        mt="25px"
+        gap="3"
+        columns={{
+          initial: "1",
+          xs: "2",
+          md: "3",
+        }}
+        width="auto"
+      >
+        <EntityCards entities={entityResponse.data} />
+      </EntityGrid>
+
+      <StickyPaginationWrapper>
+        <Pagination totalPages={entityResponse.totalPages} />
+      </StickyPaginationWrapper>
+    </>
+  );
+};
+
+export default EntityContent;
+```
+
+#### Repository Integration (Before Filters)
+
+When filters are not yet implemented in repository:
+
+```typescript
+// For now, getAll may not accept filters/sort - will be updated when filtering/sorting are implemented
+const entityResponse = await entityRepository.getAll(currentPage, 10);
+```
+
+## Loading Component (`loading.tsx`)
+
+- **Location**: `app/(public)/{category}/{entity}/loading.tsx`
+- **Type**: Client Component (default export)
+- **Responsibility**: Display skeleton loading state
+
+#### Required Imports
+
+```typescript
+import {
+  LoadingContainer,
+  LoadingGrid,
+  LoadingCard,
+  CardImage,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+  CardPrice,
+  CardButton,
+} from "./loading.styles";
+```
+
+#### Component Structure
+
+```typescript
+export default function Loading() {
+  return (
+    <LoadingContainer>
+      <LoadingGrid>
+        {Array.from({ length: 6 }).map((_, index) => (
+          <LoadingCard key={index}>
+            <CardImage />
+            <CardTitle />
+            <CardDescription />
+            <CardDescription />
+            <CardDescription />
+            <CardFooter>
+              <CardPrice />
+              <CardButton />
+            </CardFooter>
+          </LoadingCard>
+        ))}
+      </LoadingGrid>
+    </LoadingContainer>
+  );
+}
+```
+
+## Loading Styles (`loading.styles.ts`)
+
+- **Location**: `app/(public)/{category}/{entity}/loading.styles.ts`
+- **Type**: Client Component (styled components)
+
+#### Required Styled Components
+
+```typescript
+"use client";
+import styled from "styled-components";
+import { Skeleton, Card, Flex } from "@radix-ui/themes";
+
+export const LoadingContainer = styled.div`
+  padding: var(--space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const LoadingGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-4);
+  width: 100%;
+`;
+
+export const LoadingCard = styled(Card)`
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-3);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: var(--accent-8);
+    box-shadow: 0 4px 12px var(--accent-4);
+  }
+`;
+
+export const CardImage = styled(Skeleton)`
+  width: 100%;
+  height: 200px;
+  border-radius: var(--radius-2);
+  margin-bottom: var(--space-3);
+  background: var(--accent-7);
+`;
+
+export const CardTitle = styled(Skeleton)`
+  width: 80%;
+  height: 1.5rem;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-1);
+  background: var(--accent-7);
+`;
+
+export const CardDescription = styled(Skeleton)`
+  width: 100%;
+  height: 1rem;
+  margin-bottom: var(--space-1);
+  border-radius: var(--radius-1);
+  background: var(--accent-6);
+  
+  &:nth-child(2) {
+    width: 90%;
+  }
+  
+  &:nth-child(3) {
+    width: 70%;
+  }
+`;
+
+export const CardFooter = styled(Flex)`
+  margin-top: var(--space-3);
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const CardPrice = styled(Skeleton)`
+  width: 60px;
+  height: 1.25rem;
+  border-radius: var(--radius-1);
+  background: var(--accent-7);
+`;
+
+export const CardButton = styled(Skeleton)`
+  width: 80px;
+  height: 2rem;
+  border-radius: var(--radius-2);
+  background: var(--accent-7);
+`;
+```
+
+## Page Styles (`page.styles.ts`)
+
+- **Location**: `app/(public)/{category}/{entity}/page.styles.ts`
+- **Type**: Client Component (styled components)
+
+#### Required Styled Components
+
+```typescript
+"use client";
+import styled from "styled-components";
+import { Container, Grid, Heading, Box } from "@radix-ui/themes";
+
+export const PageContainer = styled(Container)`
+  padding-bottom: 40px;
+`;
+
+export const Title = styled(Heading)``;
+
+export const EntityGrid = styled(Grid)``;
+
+export const StickyPaginationWrapper = styled(Box)`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-background);
+  padding: 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--gray-6);
+  border-radius: 10px;
+  max-width: calc(100% - 2em);
+  margin: 0 auto;
+`;
+```
+
+## Key Principles
+
+### 1. Separation of Concerns
+
+- **Main page**: Handles search params extraction and Suspense setup
+- **Content component**: Handles data fetching and rendering
+- **Loading component**: Handles loading state UI
+
+### 2. Suspense Usage
+
+- Always wrap content component in `Suspense`
+- Use `key` prop based on filters + page to force re-fetch on changes
+- Provide appropriate loading fallback component
+
+### 3. Filter Processing
+
+- Extract all search params except `page`
+- Convert single values to arrays for consistency: `param: string | string[]` → `param: string[]`
+- Filter out empty/undefined values
+- Create filter object compatible with repository interface
+
+### 3a. Sorting
+
+- Sorting should be **URL-driven** (based on `searchParams`) to support sharing/bookmarking
+- **Always include sort in the Suspense key** so a sort change refetches server data
+- Sort behavior is **section-specific** (param name + allowed values), but the pipeline should remain the same: `page.tsx` → Content → Repository
+- UI should **preserve filters** and **reset `page` to 1** when sort changes
+
+### 4. Pagination
+
+- Extract `currentPage` from searchParams with fallback to 1
+- Pass `currentPage` to content component
+- Use `StickyPaginationWrapper` for fixed bottom pagination
+- Pass `totalPages` from repository response to `Pagination` component
+
+### 5. Loading States
+
+- Create skeleton components matching the actual card structure
+- Use 6 skeleton cards by default
+- Match styling with actual cards (spacing, layout, colors)
+
+### 6. TypeScript Types
+
+- Define filter interfaces (even as placeholder when not implemented)
+- Use consistent naming: `EntitySearchFilters` for filter type
+- Import serialized entity types from repository/types files
+
+## Repository Pattern
+
+### Current Pattern (Without Filters)
+
+```typescript
+async getAll(
+  currentPage: number = 1,
+  pageSize: number = 10
+): Promise<PaginatedResponse>
+```
+
+### Future Pattern (With Filters + Sorting)
+
+```typescript
+interface EntitySearchFilters {
+  categoryId?: string[];
+  district?: string[];
+  // ... other filters
+}
+
+async getAll(
+  searchFilters: EntitySearchFilters = {},
+  currentPage: number = 1,
+  pageSize: number = 10,
+  sort?: string
+): Promise<PaginatedResponse>
+```
+
+### Paginated Response Interface
+
+```typescript
+interface PaginatedResponse {
+  data: SerializedEntity[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+```
+
+## Best Practices
+
+1. **Always use Suspense** for data fetching in server components
+2. **Always create contentKey** based on filters + page for proper re-fetching
+3. **Always provide loading fallback** - create dedicated loading component
+4. **Process filters consistently** - convert to arrays, filter out empty values
+5. **Use placeholder filter types** - even before implementing filters
+6. **Extract common styled components** - Title, Grid, StickyPaginationWrapper
+7. **Follow naming conventions** - `{Entity}Content`, `{Entity}Grid`, etc.
+8. **Keep components focused** - one responsibility per component
+9. **Use repository pattern** - data fetching logic in repository, not components
+10. **Match loading skeleton** - should closely resemble actual content structure
+
+## Example Structure
+
+```
+app/(public)/{category}/{entity}/
+├── page.tsx                    # Main page with Suspense
+├── page.styles.ts             # Page styled components
+├── loading.tsx                # Loading skeleton component
+├── loading.styles.ts          # Loading styled components
+└── _components/
+    ├── {Entity}Content/
+    │   └── {Entity}Content.tsx
+    └── {Entity}Cards/
+        ├── {Entity}Cards.tsx
+        ├── {Entity}Card.tsx
+        └── {Entity}Card.styles.ts
+```
+
+## Card Component Pattern
+
+### Structure Overview
+
+Card components for listing pages should follow a consistent pattern to ensure proper rendering, clickability, and visual consistency.
+
+### Component Architecture
+
+#### Parent Cards Component (`{Entity}Cards.tsx`)
+
+- **Location**: `app/(public)/{category}/{entity}/_components/{Entity}Cards/{Entity}Cards.tsx`
+- **Type**: Client or Server Component (usually Client if no data fetching)
+- **Responsibility**: Map over entities array and wrap each card with Link
+
+**Pattern:**
+```typescript
+import { Link } from "@radix-ui/themes";
+import {Entity}Card from "./{Entity}Card";
+
+const {Entity}Cards: React.FC<{Entity}CardsProps> = ({ entities }) => {
+  return (
+    <>
+      {entities.map((entity) => (
+        <Link href={`/{category}/{entity}/${entity.publicId}`} key={entity.publicId}>
+          <{Entity}Card entity={entity} />
+        </Link>
+      ))}
+    </>
+  );
+};
+```
+
+**Key Points:**
+- **Link MUST wrap the card** - Use Radix UI `Link` component from `@radix-ui/themes`
+- Link wraps the entire card component, not individual elements
+- Each card is wrapped with its own Link pointing to the detail page
+
+#### Individual Card Component (`{Entity}Card.tsx`)
+
+- **Location**: `app/(public)/{category}/{entity}/_components/{Entity}Cards/{Entity}Card.tsx`
+- **Type**: Client Component ("use client" directive)
+- **Responsibility**: Render card UI structure (NO Link component inside)
+
+**Pattern:**
+```typescript
+"use client";
+import React from "react";
+import Image from "next/image";
+import {
+  {Entity}CardBox,
+  {Entity}Card,
+  {Entity}CardHeader,
+  {Entity}CardImages,
+  {Entity}CardImageContainer,
+  {Entity}CardContent,
+  {Entity}CardFooter,
+} from "./{Entity}Card.styles";
+import { Badge, Text, Heading } from "@radix-ui/themes";
+
+const {Entity}Card: React.FC<{Entity}CardProps> = ({ entity }) => {
+  return (
+    <{Entity}CardBox id={entity.publicId}>
+      <{Entity}Card variant="surface">
+        <{Entity}CardHeader>
+          {/* Badges */}
+        </{Entity}CardHeader>
+        <{Entity}CardImages>
+          {/* Single image or Swiper carousel */}
+        </{Entity}CardImages>
+        <{Entity}CardContent>
+          {/* Title and description */}
+        </{Entity}CardContent>
+        <{Entity}CardFooter>
+          {/* Optional footer content */}
+        </{Entity}CardFooter>
+      </{Entity}Card>
+    </{Entity}CardBox>
+  );
+};
+```
+
+**Key Points:**
+- **NO Link component** - Link is handled by parent Cards component
+- Card structure: Box → Card → Header/Images/Content/Footer
+- Always use Next.js `Image` component with `fill` prop and proper `sizes` attribute
+
+### Card Structure Patterns
+
+#### Pattern 1: Cards with Title (e.g., Jobs, Yad2Items)
+
+For cards that display a title:
+
+```typescript
+<{Entity}CardBox>           // height: 100% (no fixed height)
+  <{Entity}Card>            // flex column, height: 100%
+    <{Entity}CardHeader>    // padding, badges
+    <{Entity}CardImages>     // height: 200px, flex-shrink: 0
+    <{Entity}CardContent>    // flex: 1, title + description
+    <{Entity}CardFooter>     // optional, padding only
+  </{Entity}Card>
+</{Entity}CardBox>
+```
+
+**Styling:**
+- `{Entity}CardBox`: `height: 100%` (not fixed height)
+- `{Entity}CardImages`: Fixed `height: 200px` with `flex-shrink: 0`
+- `{Entity}CardContent`: `flex: 1` to take remaining space
+- Use `Heading` component for title in Content section
+
+#### Pattern 2: Cards without Title (e.g., ProfessionalService)
+
+For cards that only display description:
+
+```typescript
+<{Entity}CardBox>           // height: 400px (fixed)
+  <{Entity}Card>            // flex column, height: 100%
+    <{Entity}CardHeader>    // height: 40px, badges
+    <{Entity}CardImages>     // flex: 1 (takes remaining space)
+    <{Entity}CardFooter>     // height: 100px, description only
+  </{Entity}Card>
+</{Entity}CardBox>
+```
+
+**Styling:**
+- `{Entity}CardBox`: Fixed `height: 400px`
+- `{Entity}CardImages`: `flex: 1` (no `min-height: 0` unless parent has explicit height)
+- `{Entity}CardFooter`: Fixed `height: 100px` with description
+
+### Styled Components Pattern
+
+```typescript
+"use client";
+import styled from "styled-components";
+import { Box, Card, Flex } from "@radix-ui/themes";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/autoplay";
+
+// Pattern 1: With Title (height: 100%)
+export const {Entity}CardBox = styled(Box)`
+  width: 100%;
+  height: 100%;              // Use 100% for cards with title
+  border-radius: var(--radius-3);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+`;
+
+// Pattern 2: Without Title (fixed height)
+export const {Entity}CardBox = styled(Box)`
+  width: 100%;
+  height: 400px;             // Fixed height for cards without title
+  border-radius: var(--radius-3);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+`;
+
+export const {Entity}Card = styled(Card)`
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset var(--shadow-4);
+`;
+
+export const {Entity}CardHeader = styled.header`
+  width: 100%;
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+`;
+
+// Pattern 1: Fixed height images
+export const {Entity}CardImages = styled(Box)`
+  width: 100%;
+  height: 200px;
+  flex-shrink: 0;
+`;
+
+// Pattern 2: Flexible images
+export const {Entity}CardImages = styled(Flex)`
+  flex: 1;
+  // DO NOT use min-height: 0 unless parent has explicit height
+`;
+
+export const {Entity}CardImageContainer = styled(Box)`
+  height: 100%;
+  width: 100%;
+  position: relative;        // Required for Next.js Image with fill
+`;
+
+export const {Entity}CardContent = styled(Flex)`
+  flex: 1;
+  flex-direction: column;
+  padding: var(--space-3);
+  gap: var(--space-2);
+`;
+
+export const {Entity}CardFooter = styled.footer`
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+`;
+
+export const {Entity}CardSwiper = styled(Swiper)`
+  width: 100%;
+  height: 100%;
+`;
+
+export const {Entity}CardSwiperSlide = styled(SwiperSlide)``;
+```
+
+### Image Handling
+
+**Single Image:**
+```typescript
+{images.length === 1 ? (
+  <{Entity}CardImageContainer>
+    <Image
+      src={images[0].url}
+      alt={images[0].originalName}
+      fill
+      style={{ objectFit: "cover" }}
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+    />
+  </{Entity}CardImageContainer>
+) : (
+  // Swiper for multiple images
+)}
+```
+
+**Multiple Images (Swiper):**
+```typescript
+<{Entity}CardSwiper
+  modules={[Autoplay]}
+  autoplay={true}
+  spaceBetween={0}
+  slidesPerView={1}
+>
+  {images.map((image) => (
+    <{Entity}CardSwiperSlide key={image.uniqueName}>
+      <{Entity}CardImageContainer>
+        <Image
+          src={image.url}
+          alt={image.originalName}
+          fill
+          style={{ objectFit: "cover" }}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+        />
+      </{Entity}CardImageContainer>
+    </{Entity}CardSwiperSlide>
+  ))}
+</{Entity}CardSwiper>
+```
+
+**Key Points:**
+- Always use `style={{ objectFit: "cover" }}` for consistent image display
+- Always provide proper `sizes` attribute for responsive images
+- ImageContainer must have `position: relative` and `height: 100%` for `fill` prop to work
+
+### Common Mistakes to Avoid
+
+1. **Link Placement**: ❌ Don't put Link inside Card component. ✅ Put Link in Cards component wrapping Card
+2. **ImageContainer Height**: ❌ Don't forget `height: 100%` and `position: relative` for Next.js Image `fill`
+3. **Flex Images**: ❌ Don't use `min-height: 0` on flex images unless parent has explicit height
+4. **Fixed vs Flexible**: ❌ Don't mix fixed height Box with flex: 1 Images without proper constraints
+5. **Title Placement**: ❌ Don't put title in Footer. ✅ Put title in Content section for cards with titles
+
+### References
+
+- Follow the pattern established in:
+  - `app/(public)/yad2/_components/Yad2ItemCards/Yad2ItemCards.tsx` (with title)
+  - `app/(public)/professional-service/_components/ProfessionalServiceCards/ProfessionalServiceCards.tsx` (without title)
+  - `app/(public)/jobs/_components/JobCards/JobCards.tsx` (with title)
+
+## Common Patterns
+
+### Filter Processing Template
+
+```typescript
+const filters = Object.keys(searchParams)
+  .filter((key) => key !== "page")
+  .reduce((acc, k) => {
+    const searchParamValue = searchParams[k as keyof typeof searchParams];
+    if (!searchParamValue) return acc;
+    if (Array.isArray(searchParamValue)) {
+      acc[k] = searchParamValue;
+    } else {
+      acc[k] = [searchParamValue];
+    }
+    return acc;
+  }, {} as Record<string, string[]>);
+```
+
+### Suspense with Dynamic Key
+
+```typescript
+const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
+
+<Suspense key={contentKey} fallback={<Loading />}>
+  <ContentComponent filters={filters} currentPage={currentPage} sort={sort} />
+</Suspense>
+```
+
+### Grid Layout Pattern
+
+```typescript
+<EntityGrid
+  mt="25px"
+  gap="3"
+  columns={{
+    initial: "1",
+    xs: "2",
+    md: "3",
+  }}
+  width="auto"
+>
+  <EntityCards entities={entityResponse.data} />
+</EntityGrid>
+```
+
+## References
+
+- Follow the pattern established in:
+  - `app/(public)/professional-service/page.tsx`
+  - `app/(public)/vehicles/cars/page.tsx`
+  - `app/(public)/professional-service/_components/ProfessionalServiceContent/ProfessionalServiceContent.tsx`
+  - `app/(public)/vehicles/cars/_components/CarsContent/CarsContent.tsx`

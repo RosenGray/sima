@@ -1,37 +1,33 @@
 import React from "react";
 import Link from "next/link";
-import { Container, Heading, Text, Button, Box, Flex, Theme, IconButton } from "@radix-ui/themes";
-import GoBackButton from "@/components/buttons/GoBackButton/GoBackButton";
+import { Heading, Text, Button, Flex } from "@radix-ui/themes";
+// import GoBackButton from "@/components/buttons/GoBackButton/GoBackButton";
 import { HomeIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import styles from "./page.module.scss";
+import {
+  NotFoundContainer,
+  NotFoundContent,
+  NotFoundErrorCode,
+  NotFoundFirstLineContainer,
+  NotFoundMagnifyingGlassIcon,
+} from "./not-found.styles";
+import GoBackButton from "@/components/buttons/GoBackButton/GoBackButton";
 
 const NotFound = () => {
   return (
-    <Box className={styles.NotFound}>
-      <Container>
-        <Flex
-          direction="column"
-          align="center"
-          className={styles.NotFound__content}
-        >
-          <Heading
-            color="yellow"
-            as="h1"
-            className={styles.NotFound__errorCode}
-          >
+    <NotFoundContainer>
+      <NotFoundContent>
+        <Flex direction="column" align="center">
+          <NotFoundErrorCode color="yellow" as="h1">
             404
-          </Heading>
+          </NotFoundErrorCode>
 
           <Heading as="h2" size="6" mb="2">
-            <span className={styles.NotFound__firstLineContainer}>
+            <NotFoundFirstLineContainer as="p">
               Страница не найдена!
-
-              <IconButton className={styles.NotFound__magnifyingGlassIcon} color="yellow" variant="surface">
-  <MagnifyingGlassIcon width={35} height={35} />
-</IconButton>
-
-
-            </span>
+              <NotFoundMagnifyingGlassIcon color="yellow" variant="surface">
+                <MagnifyingGlassIcon width={35} height={35} />
+              </NotFoundMagnifyingGlassIcon>
+            </NotFoundFirstLineContainer>
             Вы попали на эту страницу по ошибке?
           </Heading>
 
@@ -40,7 +36,7 @@ const NotFound = () => {
             была удалена, переименована или временно недоступна.
           </Text>
 
-          <Flex gap="4" className={styles.buttons}>
+          <Flex justify="center" gap="16px">
             <GoBackButton color="yellow" />
             <Link href="/">
               <Button color="yellow" size="3" variant="surface">
@@ -50,8 +46,8 @@ const NotFound = () => {
             </Link>
           </Flex>
         </Flex>
-      </Container>
-    </Box>
+      </NotFoundContent>
+    </NotFoundContainer>
   );
 };
 

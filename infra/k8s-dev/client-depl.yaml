@@ -13,7 +13,7 @@ spec:
         app: client
     spec:
       hostAliases:
-        - ip: "10.107.202.135"
+        - ip: "10.103.239.197"
           hostnames:
             - "sima.dev"
       containers:
@@ -22,6 +22,8 @@ spec:
           env: 
             - name: NEXT_PUBLIC_API_URL
               value: "http://sima.dev"
+            - name: MONGO_URI
+              value: "mongodb://sima-mongo-srv:27017/sima"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

@@ -1,12 +1,22 @@
 "use client";
 
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { config } from "@/utils/config";
 import { useTheme } from "next-themes";
-import { Box, Text } from "@radix-ui/themes";
-import styles from "./GoogleReCAPTCHA.module.scss";
 import { SubmitButton } from "../buttons/SubmitButton/SubmitButton";
+import { ReCaptchaText, ReCaptchaWrapper } from "./GoogleReCAPTCHA.styles";
+
+declare global {
+  const grecaptcha: {
+    enterprise: {
+      ready: (cb: () => void) => void;
+      execute: (
+        siteKey: string,
+        options: { action: string }
+      ) => Promise<string>;
+    };
+  };
+}
 
 interface ReCAPTCHAProps {
   showText?: boolean;
@@ -25,11 +35,17 @@ const GoogleReCAPTCHA: FC<ReCAPTCHAProps> = ({
 
   const { theme } = useTheme();
 
+  // Reset verification state when theme changes
+  useEffect(() => {
+    setIsVerified(false);
+    setIsPending(false);
+  }, [theme]);
+
   async function handleCaptchaSubmission(token: string | null) {
     try {
       if (token) {
         setIsPending(true);
-        await fetch("/api/recaptcha", {
+        const response = await fetch("/api/recaptcha", {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -37,8 +53,16 @@ const GoogleReCAPTCHA: FC<ReCAPTCHAProps> = ({
           },
           body: JSON.stringify({ token }),
         });
-        setIsVerified(true);
-        setIsPending(false);
+        const r = await response.json();
+        console.log(r);
+        if(r.success){
+          setIsVerified(true);
+          setIsPending(false);
+        }else{
+          setIsVerified(false);
+          setIsPending(false);
+        }
+       
       }
     } catch (error) {
       console.log(error);
@@ -53,45 +77,47 @@ const GoogleReCAPTCHA: FC<ReCAPTCHAProps> = ({
   function handleExpired() {
     setIsVerified(false);
   }
+
   return (
-    <Box className={styles.GoogleReCAPTCHA}>
+    <ReCaptchaWrapper>
       <style>
         {`iframe{
-            border-radius: 10px;
-            border:1px solid var(--hero-card-background-color);
-            width: 155px;
-            height: 138px;
+              border-radius: 10px;
+              border:1px solid var(--hero-card-background-color);
+              width: 155px;
+              height: 138px;
+              }
+          .ReCAPTCHA{
+            // width:100%;
+            // height:100%;
+              // display:inline-block;
+      
             }
-        .ReCAPTCHA{
-          // width:100%;
-          // height:100%;
-            // display:inline-block;
-     
-          }
-                `}
+                  `}
       </style>
       {showText && (
-        <Text className={styles.GoogleReCAPTCHA__Text} size="1" color="gray">
+        <ReCaptchaText size="1" color="gray">
           Подтвердите, что вы не робот
-        </Text>
+        </ReCaptchaText>
       )}
       <ReCAPTCHA
+        key={theme}
         theme={theme === "dark" ? "dark" : "light"}
         size="compact"
         hl="ru"
         className="ReCAPTCHA"
         ref={recaptchaRef}
-        sitekey={config.RECAPTCHA_FRONTNED_SITE_KEY}
+        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_FRONTNED_SITE_KEY || ""}
         onChange={handleChange}
         onExpired={handleExpired}
       />
       <SubmitButton
-        style={{ width: "100%" }}
+        // style={{ width: "100%" }}
         pending={isPending || isLoading}
         disabled={!isVerified}
         text={submitButtonText}
       />
-    </Box>
+    </ReCaptchaWrapper>
   );
 };
 

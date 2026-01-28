@@ -1,37 +1,33 @@
-import { ServerErrorType } from "@sima-board/common";
-import ReplacePasswordFormPage from "./ReplacePasswordFormPage";
-import { verifyResetToken } from "../../_lib/actions";
+import { FC } from "react";
+import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { redirect } from "next/navigation";
-import { getUserSessionData } from "@/utils/auth";
-
+import {
+  TokenValidationReason,
+  validateToken,
+} from "@/lib/auth/services/TokenManager/TokenManager";
+import ReplacePasswordFormPage from "../../_components/ReplacePasswordForm/ReplacePasswordFormPage";
 
 interface TokenPageProps {
-  params: {
-    token: string;
-  };
+  params: Promise<{ token: string }>;
 }
 
-const TokenPage = async ({ params }: TokenPageProps) => {
-  const userSession = await getUserSessionData();
-  if (userSession && userSession.isSessionValid) {
+const TokenPage: FC<TokenPageProps> = async ({ params }) => {
+  const user = await getCurrentUser();
+  if (user) {
     return redirect("/auth/success");
   }
-  const { token } = params;
+  const { token } = await params;
 
-  const response = await verifyResetToken(token);
-  if (!response.ok) {
-    const error = await response.json();
-    switch (error.errorType) {
-      case ServerErrorType.AuthTokenNotFound:
+  const { reason, isValid } = await validateToken(token);
+  if (!isValid) {
+    switch (reason) {
+      case TokenValidationReason.TokenNotFound:
         return <h1>Токен не найден</h1>;
-      case ServerErrorType.AuthTokenExpired:
+      case TokenValidationReason.TokenExpired:
         return <h1>Срок действия токена истек</h1>;
-      case ServerErrorType.AuthInvalidToken:
+      case TokenValidationReason.InvalidToken:
         return <h1>Недействительный токен</h1>;
-      default:
-        return <h1>Произошла ошибка</h1>;
     }
-    return <h1>Недействительный токен</h1>;
   }
 
   return <ReplacePasswordFormPage token={token} />;

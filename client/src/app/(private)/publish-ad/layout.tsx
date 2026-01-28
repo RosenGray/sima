@@ -1,6 +1,8 @@
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
 import type { Metadata } from "next";
-import styles from "./layout.module.scss";
+import { PublishAdLayoutSection } from "./layout.styles";
+import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Публикация нового объявления",
@@ -13,9 +15,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className={styles.PublishAdLayout}>
+    <PublishAdLayoutSection>
       <SimpleHeader />
       <main>{children}</main>
-    </section>
+    </PublishAdLayoutSection>
   );
 }

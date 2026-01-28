@@ -1,42 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Theme as RadixTheme } from "@radix-ui/themes";
 import { ThemeProvider } from "next-themes";
-import Providers from "./providers";
-import { Theme } from "@radix-ui/themes";
-import { config } from "@/utils/config";
 import "@radix-ui/themes/styles.css";
-import "./globals.css";
-import { generateBackblazeUrl } from "@/utils/common";
+import "./../globals.css";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
-import { getUserSessionData } from "@/utils/auth";
+import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
+import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
+import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
+import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
+import { RubikFont } from "@/fonts/fonts";
+import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 
-const inter = Inter({ subsets: ["latin"] });
-
-// Move this outside of the component to avoid hydration mismatch
-const logoUrl = generateBackblazeUrl("public", "sima.dark.logo.png");
+// Mark as dynamic because we use cookies in getCurrentUser
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title:
-    "Русская Доска объявлений Sima - Аренда квартир, Продажа, Автомобили, Вакансии, б/у товары",
+  title: "Sima Marketplace",
   description:
-    "Покупайте, продавайте и находите работу благодаря крупнейшей в стране базе квартир на продажу и аренду, автомобилей, вакансий и товаров",
-  metadataBase: new URL("https://www.sima-board.com"),
-  openGraph: {
-    url: "https://www.sima-board.com/",
-    title: "Sima",
-    description: "Sima - Русская Доска объявлений Израиля",
-    siteName: "Sima",
-    type: "website",
-    images: [
-      {
-        url: logoUrl,
-      },
-    ],
-  },
-  alternates: {
-    canonical: "https://www.sima-board.com/",
-  },
+    "Discover amazing products, connect with sellers, and build your business in our vibrant marketplace community.",
 };
 
 export default async function RootLayout({
@@ -44,38 +26,36 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userSession = await getUserSessionData();
-  const user = userSession?.user;
-  
+  const user = await getCurrentUser();
+
   return (
-    <html lang="ru" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <AuthProvider initialUser={user}>
-          <Providers>
+    <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
+      <body>
+        <StyledComponentsRegistry>
+          <AuthProvider initialUser={user}>
             <ThemeProvider
               attribute="class"
-              defaultTheme="dark"
-              enableSystem={true}
+              enableSystem
+              enableColorScheme
               storageKey="sima-theme"
-              enableColorScheme 
-              disableTransitionOnChange
             >
-              <Theme
+              <RadixTheme
                 className="globalContentOverflowWrapper"
-                id={config.RADIX_THEME_APP_ID}
                 accentColor="red"
+                id={RADIX_THEME_APP_ID}
               >
-                <div className="SimaApp">{children}</div>
+                {user && !user.isEmailVerified && (
+                  <EmailVerificationBanner userEmail={user.email} />
+                )}
+                <PortalProvider>
+                  <div className="SimaApp">{children}</div>
+                </PortalProvider>
+                <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
                 <LayoutBackground />
-              </Theme>
-              <Theme
-                id={config.RADIX_THEME_PORTAL_ID}
-                style={{ height: "auto", minHeight: "auto" }}
-                accentColor="indigo"
-              />
+              </RadixTheme>
             </ThemeProvider>
-          </Providers>
-        </AuthProvider>
+          </AuthProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
