@@ -130,7 +130,7 @@ const EntityDetailClient: React.FC<EntityDetailClientProps> = ({ entity }) => {
 
 ```typescript
 useEffect(() => {
-  if (formState && !formState.success && formState.error) {
+  if (formState && typeof formState === "object" && "error" in formState) {
     setErrorModalOpen(true);
   }
 }, [formState]);
@@ -139,6 +139,11 @@ const handleModalClose = () => {
   setErrorModalOpen(false);
 };
 ```
+
+**Important:** 
+- `formState` from `useActionState` with delete actions typically returns `{ success: boolean, error?: string }` or just a string error
+- Check for errors by checking if `formState` is an object with an `error` property, or if it's a string
+- Use `ErrorModal` with `errorMessage` prop (NOT `errors`), passing the error string or undefined
 
 ### Component Layout Structure
 
@@ -176,12 +181,38 @@ return (
     </ContentGrid>
     
     {/* Modals */}
-    <ImageModal />
-    <ErrorModal />
-    <DeleteConfirmationModalWithServerAction />
+    <ImageModal
+      images={images}
+      currentIndex={selectedImageIndex}
+      open={modalOpen}
+      onOpenChange={setModalOpen}
+      onNavigate={setSelectedImageIndex}
+    />
+    <ErrorModal
+      open={errorModalOpen}
+      onOpenChange={handleModalClose}
+      errorMessage={
+        formState && typeof formState === "object" && "error" in formState
+          ? (formState.error as string)
+          : typeof formState === "string"
+          ? formState
+          : undefined
+      }
+    />
+    <DeleteConfirmationModalWithServerAction
+      open={deleteConfirmationModalOpen}
+      onOpenChange={setDeleteConfirmationModalOpen}
+      onConfirm={formAction}
+      isPending={isPending}
+    />
   </PageContainer>
 );
 ```
+
+**Key Points:**
+- **ImageModal props:** Use `currentIndex` (NOT `initialIndex`), `open`, `onOpenChange`, and `onNavigate` props. The modal manages its own state internally.
+- **ErrorModal props:** Use `errorMessage` prop (NOT `errors`). The prop accepts `string | string[] | undefined`.
+- Handle `formState` structure carefully - it may be an object with `{ success, error }` or just a string error.
 
 ## Image Gallery Implementation
 

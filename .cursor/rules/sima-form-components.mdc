@@ -30,7 +30,7 @@ Form primitives live in `@/components/Form/`. Use these components when building
 
 - **Errors:** Always pass `errors={field.errors}` (or equivalent) to show validation messages. Components render them in red.
 - **Mandatory:** Use `isMandatory` for required fields; `*` is shown next to the label.
-- **Disabled:** Pass `disabled={isPending}` (or `isDisabled` where supported) during submission.
+- **Disabled:** Pass `disabled={isPending}` during submission. **Note:** `Checkbox` uses `disabled` (from Radix), NOT `isDisabled`. Other components may use `isDisabled` - check component props.
 - **Labels:** Use `label` for all field components except `AuthTextField` (uses `placeholder` as label).
 
 ## Per-Component Rules
@@ -48,7 +48,8 @@ Form primitives live in `@/components/Form/`. Use these components when building
 
 ### Checkbox
 
-- Extends Radix `CheckboxProps`. Props: `field`, `label`, `labelSize`, `size`, `errors`, `isMandatory`.
+- Extends Radix `CheckboxProps`. Props: `field`, `label`, `labelSize`, `size`, `errors`, `isMandatory`, `disabled` (NOT `isDisabled`).
+- **Important:** Use `disabled={isPending}` prop, NOT `isDisabled`. The component extends Radix `CheckboxProps` which uses `disabled`.
 - Schema: `z.boolean()` or `z.string().optional().superRefine(/* "on" */)`.
 
 ### CheckboxButtonGroup

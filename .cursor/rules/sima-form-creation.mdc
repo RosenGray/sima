@@ -110,7 +110,9 @@ alwaysApply: true
   - Uses `type="text"` with `pattern="[\d,]*"` and `inputMode="numeric"`
   - Displays currency symbol (₪) as a child element
   - Manages internal state for formatted display value
-- Use `Checkbox` for checkbox fields
+- Use `Checkbox` for checkbox fields with:
+  - `field`, `label`, `size`, `errors`, `disabled={isPending}`, `isMandatory` props
+  - **Important:** Use `disabled` prop, NOT `isDisabled` (extends Radix CheckboxProps)
 - Use `CheckboxButtonGroup` for **arrays of checkboxes** (multi-select) rendered as button-style options:
   - **When to use:** Multi-select fields where each option is a checkbox styled as a button (e.g. pet adjustments, feature tags).
   - **Conform:** Uses `getFieldsetProps(field)` on the fieldset and `getCollectionProps(field, { type: 'checkbox', options: string[] })` for inputs. Each checkbox shares the same `name`; Conform aggregates repeated keys into an array.
@@ -120,7 +122,7 @@ alwaysApply: true
   - **Icons:** Pass `icon` as `React.ReactNode` (e.g. `<SomeIcon width={18} height={18} />` or custom SVG). Render inside each button-style label.
   - **Reference:** `CheckboxButtonGroup` in `@/components/Form/CheckboxButtonGroup/`, usage in `PetForSalePublishForm` (`adjustments`).
 - Always pass `errors={field.errors}` to display validation errors
-- Always pass `isDisabled={isPending}` to disable fields during submission
+- Always pass `disabled={isPending}` to disable fields during submission (use `disabled` for Checkbox, not `isDisabled`)
 
 ## Dependent Dropdowns
 
@@ -179,7 +181,9 @@ alwaysApply: true
 ## Error Handling
 
 - Use `ErrorModal` component to display form errors
+- **ErrorModal props:** Use `errorMessage={form.errors}` prop, NOT `errors`. The prop accepts `string | string[]`.
 - Show modal when `formState` has errors: `useEffect(() => { if (formState) setErrorModalOpen(true); }, [formState])`
+- **Important:** Access form errors via `form.errors` (from Conform's `useForm`), NOT `formState.success` or `formState.error.formErrors`. The `formState` from `useActionState` structure varies by action, but Conform's `form.errors` is the reliable source.
 - Reset form on modal close: `setFormKey((prev) => prev + 1)` and clear selectedFiles
 
 ## Loading States
