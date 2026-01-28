@@ -26,8 +26,6 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
 }) => {
   const { images, publicId, district, city, description } = service;
 
-  console.log(service.category.russianDisplayName);
-
   return (
     <ServiceCardBox id={publicId}>
       <ServiceCard variant="surface">
@@ -38,7 +36,7 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
           <Badge size="2" color="gray" variant="outline">
             {service.category.russianDisplayName}
           </Badge>
-          <Badge size="2" color="green" variant="soft"> {service.subCategory.russianDisplayName}</Badge>
+          <Badge size="2" color="green" variant="soft"> ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</Badge>
 
         </ServiceCardHeader>
         <ServiceCardImages>

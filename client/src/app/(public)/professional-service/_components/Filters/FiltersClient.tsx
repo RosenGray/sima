@@ -59,9 +59,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
         ["city", []],
       ])
     );
-
-  console.log("searchParams'", searchParams.size);
-
+    
   const isSearcButtonDisabled = useMemo(() => {
     return Array.from(allSelectedFilterOptions.values()).every(
       (options) => options.length === 0
