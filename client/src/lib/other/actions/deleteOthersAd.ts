@@ -1,7 +1,8 @@
 "use server";
 
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
-import { IOthers, Others } from "../models/Others";
+import { IOthers } from "../types/others.types";
+import { Others } from "../models/Others";
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
@@ -48,7 +49,7 @@ export async function deleteOthersAd(othersPublicId: string) {
       await fileManager.deleteFiles(
         user.id,
         "other",
-        other.images.map((image) => ({
+        other.images.map((image: { uniqueName: string; versionId?: string }) => ({
           fileName: image.uniqueName,
           versionId: image.versionId,
         }))

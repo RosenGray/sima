@@ -531,7 +531,7 @@ const CommercialRealEstatePublishForm: FC<
                   label="Я согласен с условиями использования"
                   size="3"
                   errors={acceptTerms.errors}
-                  isDisabled={isPending}
+                  disabled={isPending}
                   isMandatory
                 />
               </Flex>
@@ -553,11 +553,7 @@ const CommercialRealEstatePublishForm: FC<
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errors={
-          formState && !formState.success && formState.error
-            ? formState.error.formErrors || []
-            : []
-        }
+        errorMessage={form.errors}
       />
     </>
   );

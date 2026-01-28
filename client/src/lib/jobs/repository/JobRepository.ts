@@ -1,4 +1,5 @@
-import { Job, IJob } from "../models/Job";
+import { Job } from "../models/Job";
+import { IJob } from "../types/job.types";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedJob } from "../types/job.types";
 import { FilterQuery } from "mongoose";

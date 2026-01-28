@@ -1,4 +1,5 @@
-import { Others, IOthers } from "../models/Others";
+import { Others } from "../models/Others";
+import { IOthers } from "../types/others.types";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedOthers } from "../types/others.types";
 import { FilterQuery } from "mongoose";

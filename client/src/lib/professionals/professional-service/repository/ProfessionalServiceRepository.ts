@@ -36,7 +36,7 @@ class ProfessionalServiceRepository {
   ): Promise<PaginatedResponse> {
     try {
       await connectDB();
-      console.log("searchFilters", searchFilters);
+  
 
       // Sanitize all incoming filters to prevent NoSQL injection
       const sanitizedFilters: ProfessionalServiceSearchFilters = {

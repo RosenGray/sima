@@ -1,7 +1,8 @@
 "use server";
 
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
-import { IJob, Job } from "../models/Job";
+import { IJob } from "../types/job.types";
+import { Job } from "../models/Job";
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
@@ -48,7 +49,7 @@ export async function deleteJobAd(jobPublicId: string) {
       await fileManager.deleteFiles(
         user.id,
         "jobs",
-        job.images.map((image) => ({
+        job.images.map((image: { uniqueName: string; versionId?: string }) => ({
           fileName: image.uniqueName,
           versionId: image.versionId,
         }))
