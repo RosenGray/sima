@@ -2,24 +2,35 @@ import { FC } from "react";
 import { jobRepository, JobSearchFilters } from "@/lib/jobs/repository/JobRepository";
 import JobCards from "../JobCards/JobCards";
 import Pagination from "@/components/Pagination/Pagination";
-import { JobGrid, StickyPaginationWrapper, Title } from "../../page.styles";
-import { Text } from "@radix-ui/themes";
+import { JobGrid, StickyPaginationWrapper } from "../../page.styles";
+import { SortOption } from "@/components/SortFilters/SortFilters";
+import JobsHeaderClient from "../JobsHeaderClient/JobsHeaderClient";
 
 interface JobContentProps {
   filters: JobSearchFilters;
   currentPage: number;
+  sort?: string;
 }
 
-const JobContent: FC<JobContentProps> = async ({ filters, currentPage }) => {
-  const jobs = await jobRepository.getAll(filters, currentPage, 10);
+const jobSortOptions: SortOption[] = [
+  {
+    field: "date",
+    label: "Дата",
+    ascLabel: "Дата (старые → новые)",
+    descLabel: "Дата (новые → старые)",
+  },
+];
 
+const JobContent: FC<JobContentProps> = async ({ filters, currentPage, sort }) => {
+  const jobs = await jobRepository.getAll(filters, currentPage, 10, sort);
+console.log(jobs);
   return (
     <>
-      <Title size="5">Вакансии</Title>
-
-      <Text as="p" size="2" color="gray">
-        {jobs.totalCount} результатов найдено
-      </Text>
+      <JobsHeaderClient
+        totalCount={jobs.totalCount}
+        initialSort={sort}
+        sortOptions={jobSortOptions}
+      />
 
       <JobGrid
         mt="25px"
