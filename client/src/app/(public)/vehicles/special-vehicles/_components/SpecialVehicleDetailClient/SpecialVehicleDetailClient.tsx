@@ -98,7 +98,6 @@ const SpecialVehicleDetailClient: React.FC<SpecialVehicleDetailClientProps> = ({
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = specialVehicle;
 

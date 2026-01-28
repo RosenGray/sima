@@ -98,7 +98,6 @@ const AccessoryDetailClient: React.FC<AccessoryDetailClientProps> = ({
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = accessory;
 

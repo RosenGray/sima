@@ -34,7 +34,6 @@ import {
 import { useFiltersModal } from "@/components/filters/FiltersContext";
 import {
   Dialog,
-  Heading,
   IconButton,
 } from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";

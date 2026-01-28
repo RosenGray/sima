@@ -4,7 +4,6 @@ import {
   PropertyKind,
   AirConditioning,
   Parking,
-  AdditionalFeatures,
   Furniture,
   EntryDate,
 } from "./realEstateForSale.types";

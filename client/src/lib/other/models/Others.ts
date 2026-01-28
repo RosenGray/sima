@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 // Import referenced models to ensure they are registered before this model
 import "@/lib/auth/models/User";
-import { FileUploadResponse } from "@/lib/files/uploadFiles";
 import { IOthers } from "../types/others.types";
 
 const imageSchema = new mongoose.Schema(

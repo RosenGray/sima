@@ -48,14 +48,6 @@ import {
 import { ADJUSTMENT_OPTIONS } from "@/lib/pets/for-sale/adjustmentOptions";
 import PriceFormField from "@/components/Form/PriceFormField/PriceFormField";
 import CheckboxButtonGroup from "@/components/Form/CheckboxButtonGroup/CheckboxButtonGroup";
-import {
-  ComponentInstanceIcon,
-  HomeIcon,
-  LightningBoltIcon,
-  PersonIcon,
-  ReaderIcon,
-  SymbolIcon,
-} from "@radix-ui/react-icons";
 
 const areasOptions = mapAreasToSelectOptions();
 

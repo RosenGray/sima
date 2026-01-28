@@ -13,7 +13,7 @@ import {
   AllSelectedFilterOptionsMap,
   Option,
 } from "@/components/filters/select/types";
-import { Button, Text, Flex } from "@radix-ui/themes";
+import { Button, Text } from "@radix-ui/themes";
 import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import {

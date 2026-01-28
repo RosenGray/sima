@@ -1,4 +1,4 @@
-import { Box, Card, Flex } from "@radix-ui/themes";
+import { Box, Card } from "@radix-ui/themes";
 import { styled } from "styled-components";
 
 export const FormShell = styled(Box)`

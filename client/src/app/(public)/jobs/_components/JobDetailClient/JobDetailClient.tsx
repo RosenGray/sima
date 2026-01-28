@@ -72,11 +72,9 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
     district,
     city,
     description,
-    user,
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = job;
 

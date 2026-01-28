@@ -113,7 +113,6 @@ const MotorcycleDetailClient: React.FC<MotorcycleDetailClientProps> = ({
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = motorcycle;
 

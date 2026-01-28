@@ -1,5 +1,3 @@
-import { AllSelectedFilterOptionsMap } from "@/components/filters/select/types";
-
 interface PriceFilters {
   priceFrom: string;
   priceTo: string;

@@ -2,7 +2,6 @@ import { Scooter, IScooter } from "../models/Scooter";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedScooter } from "../types/scooter.types";
 import { FilterQuery } from "mongoose";
-import mongoose from "mongoose";
 import sanitize from "mongo-sanitize";
 
 export interface ScooterSearchFilters {

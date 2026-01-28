@@ -1,5 +1,5 @@
 "use client";
-import { Badge, Card, Box, Flex } from "@radix-ui/themes";
+import { Card, Box, Flex } from "@radix-ui/themes";
 import { Swiper } from "swiper/react";
 import styled from "styled-components";
 

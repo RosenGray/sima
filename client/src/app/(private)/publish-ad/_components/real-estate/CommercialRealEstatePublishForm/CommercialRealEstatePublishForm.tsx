@@ -18,7 +18,6 @@ import {
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
-import { EnvelopeClosedIcon, MobileIcon } from "@radix-ui/react-icons";
 import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";

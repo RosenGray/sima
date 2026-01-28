@@ -14,7 +14,6 @@ import {
   HomeIcon,
   RulerHorizontalIcon,
   LayersIcon,
-  CarIcon,
   LightningBoltIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
@@ -204,7 +203,6 @@ const RealEstateForRentDetailClient: React.FC<RealEstateForRentDetailClientProps
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = realEstate;
 

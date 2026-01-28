@@ -14,7 +14,7 @@ import {
   PetFiltersNavBarItem,
 } from "./PetFilters.styles";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 interface PetCategory {
   id: string;
@@ -55,7 +55,6 @@ const PetFilters: FC<PetFiltersProps> = ({
 }) => {
   const { isModalOpen, openModal, closeModal } = useFiltersModal();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   // Helper function to check if a category is active
   const isCategoryActive = useMemo(() => {

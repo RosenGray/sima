@@ -2,7 +2,6 @@ import { OffRoadVehicle, IOffRoadVehicle } from "../models/OffRoadVehicle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedOffRoadVehicle } from "../types/offRoadVehicle.types";
 import { FilterQuery } from "mongoose";
-import mongoose from "mongoose";
 import sanitize from "mongo-sanitize";
 
 export interface OffRoadVehicleSearchFilters {

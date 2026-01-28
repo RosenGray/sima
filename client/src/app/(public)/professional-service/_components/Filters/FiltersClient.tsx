@@ -15,7 +15,6 @@ import { ServiceCategoryMapping } from "@/lib/professionals/professional-service
 import {
   Dialog,
   Flex,
-  Heading,
   IconButton,
   Button,
   Text,

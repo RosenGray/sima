@@ -107,7 +107,6 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = offRoadVehicle;
 

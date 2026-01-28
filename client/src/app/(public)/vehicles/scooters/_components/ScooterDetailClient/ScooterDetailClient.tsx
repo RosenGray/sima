@@ -88,7 +88,6 @@ const ScooterDetailClient: React.FC<ScooterDetailClientProps> = ({ scooter }) =>
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = scooter;
 

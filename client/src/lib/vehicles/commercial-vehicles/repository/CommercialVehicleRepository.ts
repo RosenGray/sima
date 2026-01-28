@@ -2,7 +2,6 @@ import { CommercialVehicle, ICommercialVehicle } from "../models/CommercialVehic
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedCommercialVehicle } from "../types/commercialVehicle.types";
 import { FilterQuery } from "mongoose";
-import mongoose from "mongoose";
 import sanitize from "mongo-sanitize";
 
 export interface CommercialVehicleSearchFilters {

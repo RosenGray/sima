@@ -129,7 +129,6 @@ const CarDetailClient: React.FC<CarDetailClientProps> = ({ car }) => {
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = car;
 

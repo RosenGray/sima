@@ -26,7 +26,6 @@ import { Button, Text } from "@radix-ui/themes";
 import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { Yad2Filter, Yad2FilterSchema } from "./filters.types";
-import SearchSingleSelect from "@/components/filters/select/SearchSingleSelect/SearchSingleSelect";
 import MoreFiltersModal from "../modals/MoreFiltersModal/MoreFiltersModal";
 import PriceTextSearch from "@/components/filters/PriceTextSearch/PriceTextSearch";
 import TextSearch from "@/components/filters/TextSearch/TextSearch";

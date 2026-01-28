@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -94,7 +94,6 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = accessory;
 

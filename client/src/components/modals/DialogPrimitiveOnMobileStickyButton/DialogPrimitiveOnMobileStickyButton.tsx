@@ -71,7 +71,6 @@ const DialogPrimitiveOnMobileStickyButton: FC<
   titleIsVisible = true,
   showOverlay = true,
   subtitle,
-  subtitleIsVisible = false,
 }) => {
     const { portalTarget } = usePortalTarget();
     const [isModalOpen, setIsModalOpen] = useState(false);

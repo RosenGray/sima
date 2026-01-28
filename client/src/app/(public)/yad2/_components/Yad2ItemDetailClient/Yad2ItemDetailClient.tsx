@@ -100,11 +100,9 @@ const Yad2ItemDetailClient: React.FC<Yad2ItemDetailClientProps> = ({
     productTitle,
     price,
     description,
-    user,
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = yad2Item;
 

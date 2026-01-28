@@ -13,7 +13,7 @@ import {
   AllSelectedFilterOptionsMap,
   Option,
 } from "@/components/filters/select/types";
-import { Button, Text, Flex } from "@radix-ui/themes";
+import { Button, Text } from "@radix-ui/themes";
 import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { RealEstateForRentFilter, RealEstateForRentFilterSchema } from "./filters.types";
@@ -49,6 +49,25 @@ import {
 
 enableMapSet();
 
+type MoreFiltersState = {
+  priceFrom: string;
+  priceTo: string;
+  textSearch: string;
+  airconditioning: string[];
+  balcony: string[];
+  parking: string[];
+  floor: string[];
+  totalflors: string[];
+  additionalFeatures: string[];
+  furniture: string[];
+  entryDate: string[];
+  year: string[];
+  month: string[];
+  day: string[];
+};
+
+type ArrayFilterKey = Exclude<keyof MoreFiltersState, "priceFrom" | "priceTo" | "textSearch">;
+
 const FiltersClient: FC = () => {
   const { closeModal } = useFiltersModal();
   const searchParams = useSearchParams();
@@ -64,7 +83,7 @@ const FiltersClient: FC = () => {
         ["numberOfRooms", []],
       ])
     );
-  const [moreFilters, setMoreFilters] = useState({
+  const [moreFilters, setMoreFilters] = useState<MoreFiltersState>({
     priceFrom: searchParams.get("priceFrom") ?? "",
     priceTo: searchParams.get("priceTo") ?? "",
     textSearch: searchParams.get("textSearch") ?? "",
@@ -218,10 +237,12 @@ const FiltersClient: FC = () => {
   );
 
   const handleArrayFilterChange = useCallback(
-    (key: string, values: string[]) => {
-      setMoreFilters((prev) => produce(prev, (draft) => {
-        (draft as any)[key] = values;
-      }));
+    (key: ArrayFilterKey, values: string[]) => {
+      setMoreFilters((prev) =>
+        produce(prev, (draft) => {
+          draft[key] = values;
+        })
+      );
     },
     []
   );
@@ -603,20 +624,6 @@ const FiltersClient: FC = () => {
       </ModalFiltersSection>
     );
   };
-
-  // Count active filters
-  const activeFiltersCount = useMemo(() => {
-    let count = 0;
-    allSelectedFilterOptions.forEach((options) => {
-      if (options.length > 0) count++;
-    });
-    if (moreFilters.priceFrom || moreFilters.priceTo) count++;
-    if (moreFilters.textSearch) count++;
-    Object.values(moreFilters).forEach((value) => {
-      if (Array.isArray(value) && value.length > 0) count++;
-    });
-    return count;
-  }, [allSelectedFilterOptions, moreFilters]);
 
   return (
     <>

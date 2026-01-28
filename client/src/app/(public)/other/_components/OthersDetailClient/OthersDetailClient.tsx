@@ -72,11 +72,9 @@ const OthersDetailClient: React.FC<OthersDetailClientProps> = ({ others }) => {
     district,
     city,
     description,
-    user,
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = others;
 

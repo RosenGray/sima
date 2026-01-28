@@ -3,7 +3,6 @@ import { Districts } from "@/lib/cities/types/cities.schema";
 import {
   DealKind,
   PropertyKind,
-  AdditionalFeatures,
 } from "./commercialRealEstate.types";
 
 export const SIZE_IN_MB = 5;

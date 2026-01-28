@@ -121,7 +121,6 @@ const CommercialRealEstateDetailClient: React.FC<
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = commercialRealEstate;
 

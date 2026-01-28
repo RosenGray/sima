@@ -107,7 +107,6 @@ const CommercialVehicleDetailClient: React.FC<CommercialVehicleDetailClientProps
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = commercialVehicle;
 

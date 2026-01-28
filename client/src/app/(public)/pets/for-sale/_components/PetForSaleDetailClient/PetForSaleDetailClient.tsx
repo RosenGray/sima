@@ -134,7 +134,6 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
     contactName,
     contactPrimaryPhone,
     contactSecondaryPhone,
-    contactEmail,
     createdAt,
   } = pet;
 
