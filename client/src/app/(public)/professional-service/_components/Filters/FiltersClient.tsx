@@ -168,6 +168,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("categoryId")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
         <SearchMultiSelect
           placeholder="Выберите подкатегорию"
@@ -178,6 +179,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("subCategoryId")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
         <SearchMultiSelect
           placeholder="Выберите район"
@@ -187,6 +189,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("district")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
         <SearchMultiSelect
           displayName="города"
@@ -197,6 +200,7 @@ const FiltersClient: FC<FiltersClientProps> = ({ mappedCategories }) => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("city")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+          isPortalTarget
         />
       </>
     );
