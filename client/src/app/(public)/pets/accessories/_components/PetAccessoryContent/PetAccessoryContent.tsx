@@ -4,36 +4,51 @@ import {
   PetAccessorySearchFilters,
 } from "@/lib/pets/accessories/repository/PetAccessoryRepository";
 import { PetAccessoryCards } from "../PetAccessoryCards/PetAccessoryCards";
-import {
-  EntityGrid,
-  StickyPaginationWrapper,
-  Title,
-} from "../../page.styles";
-import { Text } from "@radix-ui/themes";
+import PetAccessoryHeaderClient from "../PetAccessoryHeaderClient/PetAccessoryHeaderClient";
+import { EntityGrid, StickyPaginationWrapper } from "../../page.styles";
 import Pagination from "@/components/Pagination/Pagination";
+import { SortOption } from "@/components/SortFilters/SortFilters";
 
 interface PetAccessoryContentProps {
   filters: PetAccessorySearchFilters;
   currentPage: number;
+  sort?: string;
 }
+
+const petAccessorySortOptions: SortOption[] = [
+  {
+    field: "date",
+    label: "Дата",
+    ascLabel: "Дата (старые → новые)",
+    descLabel: "Дата (новые → старые)",
+  },
+  {
+    field: "price",
+    label: "Цена",
+    ascLabel: "Цена (низкая → высокая)",
+    descLabel: "Цена (высокая → низкая)",
+  },
+];
 
 const PetAccessoryContent: FC<PetAccessoryContentProps> = async ({
   filters,
   currentPage,
+  sort,
 }) => {
   const accessoriesResponse = await petAccessoryRepository.getAll(
     filters,
     currentPage,
-    10
+    10,
+    sort
   );
 
   return (
     <>
-      <Title size="5">Аксессуары для питомцев</Title>
-
-      <Text as="p" size="2" color="gray">
-        {accessoriesResponse.totalCount} результатов найдено
-      </Text>
+      <PetAccessoryHeaderClient
+        totalCount={accessoriesResponse.totalCount}
+        initialSort={sort}
+        sortOptions={petAccessorySortOptions}
+      />
 
       <EntityGrid
         mt="25px"

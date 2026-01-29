@@ -15,6 +15,71 @@ export interface PetAccessorySearchFilters {
   textSearch?: string; // Free text search from description and title
 }
 
+export type SortField = "date" | "price";
+export type SortDirection = "asc" | "desc";
+export interface SortOptions {
+  field: SortField;
+  direction: SortDirection;
+}
+
+/**
+ * Parse sort string (e.g., "date_desc") into SortOptions object
+ * Returns null for invalid values (will use default sort)
+ */
+function parseSortString(sort?: string): SortOptions | null {
+  if (!sort || typeof sort !== "string") {
+    return null;
+  }
+
+  const parts = sort.split("_");
+  if (parts.length !== 2) {
+    return null;
+  }
+
+  const [field, direction] = parts;
+
+  const validFields: SortField[] = ["date", "price"];
+  const validDirections: SortDirection[] = ["asc", "desc"];
+
+  if (
+    !validFields.includes(field as SortField) ||
+    !validDirections.includes(direction as SortDirection)
+  ) {
+    return null;
+  }
+
+  return {
+    field: field as SortField,
+    direction: direction as SortDirection,
+  };
+}
+
+/**
+ * Build MongoDB sort object from SortOptions
+ * Maps user-friendly field names to MongoDB field names.
+ * Always includes _id as tiebreaker for deterministic pagination when primary field has ties.
+ */
+function buildSortObject(
+  sortOptions: SortOptions | null
+): Record<string, 1 | -1> {
+  if (!sortOptions) {
+    return { createdAt: -1, _id: -1 };
+  }
+
+  const fieldMap: Record<SortField, string> = {
+    date: "createdAt",
+    price: "price",
+  };
+
+  const mongoField = fieldMap[sortOptions.field];
+  const dir = sortOptions.direction === "asc" ? 1 : -1;
+
+  return {
+    [mongoField]: dir,
+    _id: dir,
+  };
+}
+
 interface PaginatedResponse {
   data: SerializedPetAccessory[];
   totalCount: number;
@@ -30,12 +95,14 @@ class PetAccessoryRepository {
    * @param searchFilters - Object containing search criteria
    * @param currentPage - Current page number (1-based)
    * @param pageSize - Number of items per page (default: 10)
+   * @param sort - Sort string (e.g., "date_desc", "price_asc")
    * @returns Promise<PaginatedResponse> - Paginated response with data and metadata
    */
   async getAll(
     searchFilters: PetAccessorySearchFilters = {},
     currentPage: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    sort?: string
   ): Promise<PaginatedResponse> {
     try {
       await connectDB();
@@ -121,10 +188,14 @@ class PetAccessoryRepository {
       const totalCount = await PetAccessory.countDocuments(searchFilter);
       const totalPages = Math.ceil(totalCount / pageSize);
 
-      // Fetch paginated results (default sort by createdAt desc)
+      // Parse and build sort object
+      const sortOptions = parseSortString(sort);
+      const sortObject = buildSortObject(sortOptions);
+
+      // Fetch paginated results
       const accessories = await PetAccessory.find(searchFilter)
         .populate("user")
-        .sort({ createdAt: -1, _id: -1 })
+        .sort(sortObject)
         .skip(skip)
         .limit(pageSize);
 
