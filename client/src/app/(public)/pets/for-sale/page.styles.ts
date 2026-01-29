@@ -25,3 +25,12 @@ export const StickyPaginationWrapper = styled(Box)`
   max-width: calc(100% - 2em);
   margin: 0 auto;
 `;
+
+export const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1em;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+`;

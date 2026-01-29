@@ -26,7 +26,8 @@ interface PetForSalePageProps {
 const PetForSalePage: FC<PetForSalePageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
-  const sort = searchParams?.sort || "date_desc"; // Default to newest first
+  const sort =
+    typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
 
   // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);

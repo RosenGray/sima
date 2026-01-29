@@ -31,8 +31,16 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
       <ServiceCard variant="surface">
         <ServiceCardHeader>
           <Badge size="2" color="blue" variant="soft">
-          {getCityById(city, district as Districts)?.nameRussian}
+            {getCityById(city, district as Districts)?.nameRussian}
           </Badge>
+          <Badge size="2" color="gray" variant="outline">
+            {service.category.russianDisplayName}
+          </Badge>
+
+          <Badge size="2" color="green" variant="soft">
+            {service.subCategory.russianDisplayName}
+          </Badge>
+
         </ServiceCardHeader>
         <ServiceCardImages>
           {images.length === 1 ? (
@@ -45,8 +53,8 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
               autoplay={true}
               spaceBetween={0}
               slidesPerView={1}
-              // onSlideChange={() => console.log("slide change")}
-              // onSwiper={(swiper) => console.log(swiper)}
+            // onSlideChange={() => console.log("slide change")}
+            // onSwiper={(swiper) => console.log(swiper)}
             >
               {images.map((image) => (
                 <ServiceCardSwiperSlide key={image.uniqueName}>
@@ -69,7 +77,7 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
             style={{ display: "block", height: "100%" }}
             as="p"
             color="gray"
-  
+
           >
             {description}
           </Text>

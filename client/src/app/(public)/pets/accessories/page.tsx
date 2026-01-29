@@ -17,6 +17,7 @@ interface PetAccessoryPageProps {
     district?: string | string[];
     city?: string | string[];
     textSearch?: string;
+    sort?: string;
     page?: string;
   }>;
 }
@@ -68,7 +69,9 @@ const PetAccessoryPage: FC<PetAccessoryPageProps> = async (props) => {
       : searchParams.textSearch;
   }
 
-  const contentKey = JSON.stringify({ ...filters, page: currentPage });
+  const sort =
+    typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
+  const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
 
   return (
     <PetAccessoryPageContainer>
@@ -78,7 +81,11 @@ const PetAccessoryPage: FC<PetAccessoryPageProps> = async (props) => {
         </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <PetAccessoryContent filters={filters} currentPage={currentPage} />
+        <PetAccessoryContent
+          filters={filters}
+          currentPage={currentPage}
+          sort={sort}
+        />
       </Suspense>
     </PetAccessoryPageContainer>
   );

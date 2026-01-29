@@ -86,11 +86,23 @@ export default function Header() {
         })),
       ],
     };
+    const jobs = {
+      label: "Работа",
+      subItems: [{ label: "Все", href: "/jobs" }],
+    };
     const vehicles = {
       label: "Транспорт",
       subItems: [{ label: "Все", href: "/vehicles" }],
     };
-    return [services, vehicles];
+    const pets = {
+      label: "Домашние животные",
+      subItems: [
+        { label: "Продажа", href: "/pets/for-sale" },
+        { label: "Отдам бесплатно", href: "/pets/for-free" },
+        { label: "Аксессуары", href: "/pets/accessories" },
+      ],
+    };
+    return [services, jobs, pets, vehicles];
   }, [serviceCategories]);
 
   const toggleMobileMenu = () => {
@@ -123,7 +135,7 @@ export default function Header() {
           {/* Logo - Center */}
           <Logo>
             <Link href="/">
-              <SimaDarkLogo width={200} height={60}  />
+              <SimaDarkLogo width={200} height={60} />
             </Link>
           </Logo>
 

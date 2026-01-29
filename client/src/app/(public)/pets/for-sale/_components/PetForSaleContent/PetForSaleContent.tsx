@@ -7,16 +7,31 @@ import { PetForSaleCards } from "../PetForSaleCards/PetForSaleCards";
 import {
   PetForSaleGrid,
   StickyPaginationWrapper,
-  Title,
 } from "../../page.styles";
-import { Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
+import PetForSaleHeaderClient from "../PetForSaleHeaderClient/PetForSaleHeaderClient";
+import { SortOption } from "@/components/SortFilters/SortFilters";
 
 interface PetForSaleContentProps {
   filters: PetForSaleSearchFilters;
   currentPage: number;
   sort?: string;
 }
+
+const petForSaleSortOptions: SortOption[] = [
+  {
+    field: "date",
+    label: "Дата",
+    ascLabel: "Дата (старые → новые)",
+    descLabel: "Дата (новые → старые)",
+  },
+  {
+    field: "price",
+    label: "Цена",
+    ascLabel: "Цена (низкая → высокая)",
+    descLabel: "Цена (высокая → низкая)",
+  },
+];
 
 const PetForSaleContent: FC<PetForSaleContentProps> = async ({
   filters,
@@ -32,11 +47,11 @@ const PetForSaleContent: FC<PetForSaleContentProps> = async ({
 
   return (
     <>
-      <Title size="5">Питомцы на продажу</Title>
-
-      <Text as="p" size="2" color="gray">
-        {petsResponse.totalCount} результатов найдено
-      </Text>
+      <PetForSaleHeaderClient
+        totalCount={petsResponse.totalCount}
+        initialSort={sort}
+        sortOptions={petForSaleSortOptions}
+      />
 
       <PetForSaleGrid
         mt="25px"

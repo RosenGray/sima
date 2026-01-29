@@ -146,6 +146,9 @@ const ProfessionalServiceDetailClient: React.FC<
         <Badge size="2" color="blue" variant="soft">
           {category.russianDisplayName}
         </Badge>
+        <Badge size="2" color="purple" variant="soft">
+          {subCategory.russianDisplayName}
+        </Badge>
         <Badge size="2" color="green" variant="soft">
           {cityInfo?.nameRussian || "Неизвестный город"}
         </Badge>

@@ -15,7 +15,7 @@ import {
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
 import { SerializedJob } from "@/lib/jobs/types/job.types";
-import { getCityById } from "@/lib/cities";
+import { getCityById, getDistrictById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
 import {
@@ -144,7 +144,7 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
           {cityInfo?.nameRussian || "Неизвестный город"}
         </Badge>
         <Badge size="2" color="gray" variant="outline">
-          {district}
+          {getDistrictById(district as Districts).name}
         </Badge>
         <Badge size="2" color="gray" variant="outline">
           #{publicId}

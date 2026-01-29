@@ -1,5 +1,9 @@
 import { ServiceCategoryMapping } from "../../professionals/professional-service/types/professional-service.scema";
 import { Option } from "@/components/filters/select/types";
+import {
+  SerializeServiceCategory,
+  SerializeServiceSubCategory,
+} from "../types/service-categories.types";
 export const mapServiceCategoriesToSelectOptions = (
   data: ServiceCategoryMapping
 ) => {
@@ -51,4 +55,25 @@ export const mapServiceSubCategoriesToSelectOptionsByCategoryIds = (
       label: subCategory.russianDisplayName,
       fieldKey: 'subCategoryId'
     }));
+};
+
+// Helper function to get category by id
+export const getCategoryById = (
+  id: string,
+  mapping: ServiceCategoryMapping
+): SerializeServiceCategory | undefined => {
+  return mapping[id]?.category;
+};
+
+// Helper function to get subcategory by id
+export const getSubCategoryById = (
+  id: string,
+  categoryId: string,
+  mapping: ServiceCategoryMapping
+): SerializeServiceSubCategory | undefined => {
+  const categoryData = mapping[categoryId];
+  if (!categoryData) {
+    return undefined;
+  }
+  return categoryData.subCategories.find((subCategory) => subCategory.id === id);
 };

@@ -26,6 +26,8 @@ export interface IPetForFree {
   contactEmail: string;
   acceptTerms: boolean;
   images: FileUploadItem[];
+  /** Optional price (e.g. 0 for free, or suggested donation). Default 0. Used for sorting. */
+  price?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -150,6 +152,12 @@ const petForFreeSchema = new mongoose.Schema(
     acceptTerms: {
       type: Boolean,
       required: true,
+    },
+    price: {
+      type: Number,
+      required: false,
+      default: 0,
+      index: true,
     },
     images: {
       type: [imageSchema],

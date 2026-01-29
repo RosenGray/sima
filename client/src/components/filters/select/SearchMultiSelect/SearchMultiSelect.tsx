@@ -23,7 +23,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   isPortalTarget = false,
   menuPosition,
   menuPlacement = "auto",
-  maxMenuHeight = 250,
+  maxMenuHeight = 1000,
   isDisabled,
   ...rest
 }) => {

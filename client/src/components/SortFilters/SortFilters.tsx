@@ -8,6 +8,8 @@ import {
   SortFiltersListItem,
 } from "./SortFilters.styles";
 
+
+
 export interface SortOption {
   field: string;
   label: string;
@@ -59,24 +61,24 @@ const SortFilters: FC<SortFiltersProps> = ({
       const descSort = `${option.field}_desc`;
       const ascOption = option.ascLabel
         ? {
-            field: option.field,
-            direction: "asc" as const,
-            label: option.ascLabel,
-            href: generateSortLink(option.field, "asc"),
-            isActive: currentSort === ascSort,
-            sort: ascSort,
-          }
+          field: option.field,
+          direction: "asc" as const,
+          label: option.ascLabel,
+          href: generateSortLink(option.field, "asc"),
+          isActive: currentSort === ascSort,
+          sort: ascSort,
+        }
         : null;
 
       const descOption = option.descLabel
         ? {
-            field: option.field,
-            direction: "desc" as const,
-            label: option.descLabel,
-            href: generateSortLink(option.field, "desc"),
-            isActive: currentSort === descSort,
-            sort: descSort,
-          }
+          field: option.field,
+          direction: "desc" as const,
+          label: option.descLabel,
+          href: generateSortLink(option.field, "desc"),
+          isActive: currentSort === descSort,
+          sort: descSort,
+        }
         : null;
 
       return [ascOption, descOption].filter(Boolean) as SortItem[];

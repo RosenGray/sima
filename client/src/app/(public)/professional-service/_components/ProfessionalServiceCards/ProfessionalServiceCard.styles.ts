@@ -42,7 +42,8 @@ export const ServiceCardHeader = styled.header`
   height: 40px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 5px;
+
 `;
 export const ServiceCardFooter = styled.footer`
   height: 100px;

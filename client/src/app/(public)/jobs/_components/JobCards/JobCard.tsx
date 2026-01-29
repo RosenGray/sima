@@ -15,7 +15,7 @@ import {
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedJob } from "@/lib/jobs/types/job.types";
-import { getCityById } from "@/lib/cities";
+import { getCityById, getDistrictById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface JobCardProps {
@@ -26,6 +26,7 @@ const JobCardComponent: React.FC<JobCardProps> = ({ job }) => {
   const { images, publicId, district, city, title, description } = job;
 
   const location = getCityById(city, district as Districts);
+  const _district = getDistrictById(district as Districts);
   const locationName = location?.nameRussian || "";
 
   return (
@@ -38,7 +39,7 @@ const JobCardComponent: React.FC<JobCardProps> = ({ job }) => {
             </Badge>
           )}
           <Badge size="2" color="gray" variant="outline">
-            {district}
+            {_district.name}
           </Badge>
         </JobCardHeader>
         <JobCardImages>

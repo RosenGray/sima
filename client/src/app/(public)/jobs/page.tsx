@@ -12,6 +12,7 @@ interface JobsPageProps {
     district?: string | string[];
     city?: string | string[];
     textSearch?: string;
+    sort?: string;
     page?: string;
   }>;
 }
@@ -36,7 +37,11 @@ const JobsPage: FC<JobsPageProps> = async (props) => {
       : searchParams.textSearch;
   }
 
-  const contentKey = JSON.stringify({ ...filters, page: currentPage });
+  // Extract sort param
+  const sort = typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
+
+  // Include sort in Suspense key to trigger re-fetch on sort change
+  const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
 
   return (
     <JobsPageContainer>
@@ -44,7 +49,7 @@ const JobsPage: FC<JobsPageProps> = async (props) => {
         <Filters />
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <JobContent filters={filters} currentPage={currentPage} />
+        <JobContent filters={filters} currentPage={currentPage} sort={sort} />
       </Suspense>
     </JobsPageContainer>
   );

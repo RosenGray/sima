@@ -12,6 +12,7 @@ interface ProfessionalsPageProps {
     city?: string | string[];
     subCategoryId?: string | string[];
     district?: string | string[];
+    sort?: string;
     page?: string;
   }>;
 }
@@ -34,8 +35,11 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
 
   const currentPage = Number(searchParams?.page) || 1;
 
+  // Sorting (URL-driven)
+  const sort = typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
+
   // Create a unique key based on search params to force re-render on filter change
-  const contentKey = JSON.stringify({ ...filters, page: currentPage });
+  const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
 
   return (
     <ProfessionalsPageContainer>
@@ -46,6 +50,7 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
         <ProfessionalServiceContent
           filters={filters}
           currentPage={currentPage}
+          sort={sort}
         />
       </Suspense>
     </ProfessionalsPageContainer>

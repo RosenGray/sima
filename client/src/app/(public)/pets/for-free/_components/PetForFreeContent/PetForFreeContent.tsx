@@ -7,16 +7,25 @@ import { PetForFreeCards } from "../PetForFreeCards/PetForFreeCards";
 import {
   PetForFreeGrid,
   StickyPaginationWrapper,
-  Title,
 } from "../../page.styles";
-import { Text } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
+import PetForFreeHeaderClient from "../PetForFreeHeaderClient/PetForFreeHeaderClient";
+import { SortOption } from "@/components/SortFilters/SortFilters";
 
 interface PetForFreeContentProps {
   filters: PetForFreeSearchFilters;
   currentPage: number;
   sort?: string;
 }
+
+const petForFreeSortOptions: SortOption[] = [
+  {
+    field: "date",
+    label: "Дата",
+    ascLabel: "Дата (старые → новые)",
+    descLabel: "Дата (новые → старые)",
+  },
+];
 
 const PetForFreeContent: FC<PetForFreeContentProps> = async ({
   filters,
@@ -32,11 +41,11 @@ const PetForFreeContent: FC<PetForFreeContentProps> = async ({
 
   return (
     <>
-      <Title size="5">Питомцы отдают бесплатно</Title>
-
-      <Text as="p" size="2" color="gray">
-        {petsResponse.totalCount} результатов найдено
-      </Text>
+      <PetForFreeHeaderClient
+        totalCount={petsResponse.totalCount}
+        initialSort={sort}
+        sortOptions={petForFreeSortOptions}
+      />
 
       <PetForFreeGrid
         mt="25px"

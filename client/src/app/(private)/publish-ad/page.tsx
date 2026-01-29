@@ -2,11 +2,10 @@
 
 import { Heading, Text } from "@radix-ui/themes";
 import { PublishAdPageContainer, PublishAdGrid } from "./page.styles";
-import { IdCardIcon, HeartFilledIcon, CameraIcon } from "@radix-ui/react-icons";
 import IconCard from "@/components/IconCard/IconCard";
 import HandymanIcon from "@/components/svg/Handyman/Handyman";
-import HouseIcon from "@/components/svg/House/House";
-import TransportIcon from "@/components/svg/Transport/Transport";
+import JobOfferIcon from "@/components/svg/JobOffer/JobOffer";
+import DogIcon from "@/components/svg/pets/Dog/Dog";
 
 interface PublishAdCategory {
   id: string;
@@ -24,43 +23,46 @@ const categories: PublishAdCategory[] = [
     icon: <HandymanIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/professional-service/create",
   },
-  {
-    id: "real-estate",
-    title: "Недвижимость",
-    description:
-      "Продажа или аренда квартир, домов и коммерческой недвижимости",
-    icon: <HouseIcon viewBox={{ width: 120, height: 120 }} />,
-    href: "/publish-ad/real-estate",
-  },
-  {
-    id: "vehicles",
-    title: "Транспорт",
-    description:
-      "Продажа автомобилей, мотоциклов и других транспортных средств",
-    icon: <TransportIcon viewBox={{ width: 120, height: 120 }} />,
-    href: "/publish-ad/vehicles",
-  },
-  {
+    {
     id: "jobs",
     title: "Работа",
     description: "Предложения работы и вакансии для специалистов",
-    icon: <IdCardIcon width="32" height="32" />,
+    icon: <JobOfferIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/jobs/create",
   },
-  {
-    id: "dating",
-    title: "Знакомства",
-    description: "Поиск новых знакомств и общения",
-    icon: <HeartFilledIcon width="32" height="32" />,
-    href: "/publish-ad/dating",
+    {
+    id: "pets",
+    title: "Домашние животные",
+    description: "Продажа, отдача бесплатно и поиск домашних животных",
+    icon: <DogIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/pets",
   },
-  {
-    id: "electronics",
-    title: "Электроника",
-    description: "Техника, гаджеты и электронные устройства",
-    icon: <CameraIcon width="32" height="32" />,
-    href: "/publish-ad/electronics",
-  },
+  //   {
+  //   id: "vehicles",
+  //   title: "Транспорт",
+  //   description:
+  //     "Продажа автомобилей, мотоциклов и других транспортных средств",
+  //   icon: <TransportIcon viewBox={{ width: 120, height: 120 }} />,
+  //   href: "/publish-ad/vehicles",
+  // },
+
+  // {
+  //   id: "real-estate",
+  //   title: "Недвижимость",
+  //   description:
+  //     "Продажа или аренда квартир, домов и коммерческой недвижимости",
+  //   icon: <HouseIcon viewBox={{ width: 120, height: 120 }} />,
+  //   href: "/publish-ad/real-estate",
+  // },
+
+
+  // {
+  //   id: "electronics",
+  //   title: "Электроника",
+  //   description: "Техника, гаджеты и электронные устройства",
+  //   icon: <CameraIcon width="32" height="32" />,
+  //   href: "/publish-ad/electronics",
+  // },
 ];
 
 const PublishAdPage = () => {

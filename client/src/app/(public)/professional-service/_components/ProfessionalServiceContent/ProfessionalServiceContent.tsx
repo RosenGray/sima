@@ -5,31 +5,44 @@ import Pagination from "@/components/Pagination/Pagination";
 import {
   ProfessionalsServicesGrid,
   StickyPaginationWrapper,
-  Title,
 } from "../../page.styles";
-import { Text } from "@radix-ui/themes";
+import { SortOption } from "@/components/SortFilters/SortFilters";
+import ProfessionalServiceHeaderClient from "../ProfessionalServiceHeaderClient/ProfessionalServiceHeaderClient";
 
 interface ProfessionalServiceContentProps {
   filters: ProfessionalServiceSearchFilters;
   currentPage: number;
+  sort?: string;
 }
+
+const professionalServiceSortOptions: SortOption[] = [
+  {
+    field: "date",
+    label: "Дата",
+    ascLabel: "Старые → новые",
+    descLabel: "Новые → старые",
+  },
+];
 
 const ProfessionalServiceContent: FC<ProfessionalServiceContentProps> = async ({
   filters,
   currentPage,
+  sort,
 }) => {
   const professionalServices = await professionalServiceRepository.getAll(
     filters,
-    currentPage
+    currentPage,
+    10,
+    sort
   );
 
   return (
     <>
-      <Title size="5">Услуги специалистов</Title>
-
-      <Text as="p" size="2" color="gray">
-        {professionalServices.totalCount} результатов найдено
-      </Text>
+      <ProfessionalServiceHeaderClient
+        totalCount={professionalServices.totalCount}
+        initialSort={sort}
+        sortOptions={professionalServiceSortOptions}
+      />
 
       <ProfessionalsServicesGrid
         mt="25px"

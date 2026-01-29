@@ -140,7 +140,6 @@ export const ModalFiltersSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  border: 1px solid green;
 `;
 
 export const ModalFooter = styled(Box)`
