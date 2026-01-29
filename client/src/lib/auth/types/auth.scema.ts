@@ -63,6 +63,7 @@ export const SerializedUserSchema = z.object({
   role: z.nativeEnum(UserRole),
   hasPrivateProfessionalPage: z.boolean().optional(),
   isEmailVerified: z.boolean(),
+  lastSeenAt: z.string().optional(),
 });
 
 export const ResetPasswordSchema = z.object({

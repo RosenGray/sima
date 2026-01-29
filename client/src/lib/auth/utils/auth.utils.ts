@@ -36,9 +36,29 @@ export async function getCurrentUser(): Promise<SerializedUser | null> {
     if (!decoded) return null;
 
     await connectDB();
-    const user = await User.findOne<SerializedUser>({ email: decoded.email });
-    if(!user) return null;
-    return JSON.parse(JSON.stringify(user)) as SerializedUser;
+    const user = await User.findOne({ email: decoded.email });
+    if (!user) return null;
+
+    const now = new Date();
+    const throttleMs = 5 * 60 * 1000; // 5 minutes
+    const lastSeenAtMs = user.lastSeenAt
+      ? new Date(user.lastSeenAt).getTime()
+      : 0;
+    const shouldUpdate =
+      !user.lastSeenAt || now.getTime() - lastSeenAtMs > throttleMs;
+
+    if (shouldUpdate) {
+      await User.updateOne(
+        { _id: user._id },
+        { $set: { lastSeenAt: now } }
+      );
+    }
+
+    const serialized = JSON.parse(JSON.stringify(user)) as SerializedUser;
+    if (shouldUpdate) {
+      serialized.lastSeenAt = now.toISOString();
+    }
+    return serialized;
   } catch (_error) {
     console.log("error", _error);
     return null;

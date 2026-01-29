@@ -21,6 +21,7 @@ import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
+import UserLastSeen from "@/components/UserLastSeen/UserLastSeen";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
 
@@ -168,7 +169,10 @@ export default function Header() {
               </Link>
             </PublishAdButton>
             {user ? (
-              <LogoutButton />
+              <>
+                <UserLastSeen lastSeenAt={user.lastSeenAt} />
+                <LogoutButton />
+              </>
             ) : (
               <LoginButton asChild variant="surface" size="2">
                 <Link href="/auth/login">
