@@ -70,10 +70,10 @@ const JobsHeaderClient: FC<JobsHeaderClientProps> = ({
       </Box>
 
       <DialogPrimitiveOnMobileStickyButton
-        buttonVariant="ghost"
+        buttonVariant="soft"
         titleIsVisible={true}
         title={sortTitle}
-        subtitle="Сортировка по"
+        subtitle="Сортировка"
         subtitleIsVisible={true}
         showOverlay={false}
       >

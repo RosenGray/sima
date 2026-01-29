@@ -3,7 +3,9 @@
 import { Heading, Text } from "@radix-ui/themes";
 import { PetsPageContainer, PetsGrid } from "./page.styles";
 import IconCard from "@/components/IconCard/IconCard";
-import DogIcon from "@/components/svg/Dog/Dog";
+import ForSaleIcon from "@/components/svg/pets/ForSale/ForSale";
+import ForFreeIcon from "@/components/svg/pets/ForFree/ForFree";
+import AccessoriesIcon from "@/components/svg/pets/Accessories/Accessories";
 
 interface PetCategory {
   id: string;
@@ -18,21 +20,21 @@ const petCategories: PetCategory[] = [
     id: "for-sale",
     title: "Продажа",
     description: "Продажа домашних животных",
-    icon: <DogIcon viewBox={{ width: 120, height: 120 }} />,
+    icon: <ForSaleIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/pets/for-sale/create",
   },
   {
     id: "for-free",
     title: "Отдам бесплатно",
     description: "Отдать домашних животных бесплатно",
-    icon: <DogIcon viewBox={{ width: 120, height: 120 }} />,
+    icon: <ForFreeIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/pets/for-free/create",
   },
   {
     id: "accessories",
     title: "Аксессуары",
     description: "Аксессуары для домашних животных",
-    icon: <DogIcon viewBox={{ width: 120, height: 120 }} />,
+    icon: <AccessoriesIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/pets/accessories/create",
   },
 ];

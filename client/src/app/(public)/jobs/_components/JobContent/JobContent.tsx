@@ -23,7 +23,7 @@ const jobSortOptions: SortOption[] = [
 
 const JobContent: FC<JobContentProps> = async ({ filters, currentPage, sort }) => {
   const jobs = await jobRepository.getAll(filters, currentPage, 10, sort);
-console.log(jobs);
+
   return (
     <>
       <JobsHeaderClient
