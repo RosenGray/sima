@@ -183,7 +183,7 @@ class CommercialRealEstateRepository {
         searchFilter
       )
         .populate("user")
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
         .limit(pageSize);
 

@@ -57,14 +57,15 @@ function parseSortString(sort?: string): SortOptions | null {
 
 /**
  * Build MongoDB sort object from SortOptions
- * Maps user-friendly field names to MongoDB field names
+ * Maps user-friendly field names to MongoDB field names.
+ * Always includes _id as tiebreaker for deterministic pagination when primary field has ties.
  */
 function buildSortObject(
   sortOptions: SortOptions | null
 ): Record<string, 1 | -1> {
   // Default sort: newest first (date_desc)
   if (!sortOptions) {
-    return { createdAt: -1 };
+    return { createdAt: -1, _id: -1 };
   }
 
   // Map sort fields to MongoDB field names
@@ -75,10 +76,11 @@ function buildSortObject(
   };
 
   const mongoField = fieldMap[sortOptions.field];
-  const mongoDirection = sortOptions.direction === "asc" ? 1 : -1;
+  const dir = sortOptions.direction === "asc" ? 1 : -1;
 
   return {
-    [mongoField]: mongoDirection,
+    [mongoField]: dir,
+    _id: dir,
   };
 }
 

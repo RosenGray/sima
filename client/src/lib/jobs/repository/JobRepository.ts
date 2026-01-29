@@ -54,12 +54,16 @@ function parseSortString(sort?: string): SortOptions | null {
 
 /**
  * Build MongoDB sort object from SortOptions
- * Maps user-friendly field names to MongoDB field names
+ * Maps user-friendly field names to MongoDB field names.
+ * Always includes _id as tiebreaker for deterministic pagination when primary field has ties.
  */
 function buildSortObject(sortOptions: SortOptions | null): Record<string, 1 | -1> {
   // Default sort: newest first (date_desc)
+  const mongoField = "createdAt";
+  const mongoDirection: 1 | -1 = !sortOptions || sortOptions.direction === "desc" ? -1 : 1;
+
   if (!sortOptions) {
-    return { createdAt: -1 };
+    return { [mongoField]: mongoDirection, _id: mongoDirection };
   }
 
   // Map sort fields to MongoDB field names
@@ -67,11 +71,12 @@ function buildSortObject(sortOptions: SortOptions | null): Record<string, 1 | -1
     date: "createdAt",
   };
 
-  const mongoField = fieldMap[sortOptions.field];
-  const mongoDirection = sortOptions.direction === "asc" ? 1 : -1;
+  const field = fieldMap[sortOptions.field];
+  const dir = sortOptions.direction === "asc" ? 1 : -1;
 
   return {
-    [mongoField]: mongoDirection,
+    [field]: dir,
+    _id: dir,
   };
 }
 

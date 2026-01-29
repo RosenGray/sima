@@ -99,7 +99,7 @@ class SpecialVehicleRepository {
       // Fetch paginated results
       const specialVehicles = await SpecialVehicle.find(searchFilter)
         .populate("user")
-        .sort({ createdAt: -1 }) // Sort by newest first
+        .sort({ createdAt: -1, _id: -1 }) // Sort by newest first; _id tiebreaker for stable pagination
         .skip(skip)
         .limit(pageSize);
 

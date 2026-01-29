@@ -147,7 +147,7 @@ class ScooterRepository {
       // Fetch paginated results
       const scooters = await Scooter.find(searchFilter)
         .populate("user")
-        .sort({ createdAt: -1 }) // Sort by newest first
+        .sort({ createdAt: -1, _id: -1 }) // Sort by newest first; _id tiebreaker for stable pagination
         .skip(skip)
         .limit(pageSize);
 

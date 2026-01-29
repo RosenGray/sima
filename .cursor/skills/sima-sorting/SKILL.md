@@ -253,12 +253,13 @@ function parseSortString(sort?: string): SortOptions | null {
 ```typescript
 /**
  * Build MongoDB sort object from SortOptions
- * Maps user-friendly field names to MongoDB field names
+ * Maps user-friendly field names to MongoDB field names.
+ * Always includes _id as tiebreaker for deterministic pagination when primary field has ties.
  */
 function buildSortObject(sortOptions: SortOptions | null): Record<string, 1 | -1> {
   // Default sort: newest first (date_desc)
   if (!sortOptions) {
-    return { createdAt: -1 };
+    return { createdAt: -1, _id: -1 };
   }
 
   // Map sort fields to MongoDB field names
@@ -271,17 +272,19 @@ function buildSortObject(sortOptions: SortOptions | null): Record<string, 1 | -1
   };
 
   const mongoField = fieldMap[sortOptions.field];
-  const mongoDirection = sortOptions.direction === 'asc' ? 1 : -1;
+  const dir = sortOptions.direction === 'asc' ? 1 : -1;
 
   return {
-    [mongoField]: mongoDirection,
+    [mongoField]: dir,
+    _id: dir,
   };
 }
 ```
 
 **Key Points:**
 - Maps user-friendly field names to actual MongoDB field names
-- Default sort when `sortOptions` is null: `{ createdAt: -1 }` (newest first)
+- **Always include `_id` as tiebreaker** (same direction as primary field). Without it, documents with identical sort values (e.g. same `createdAt`) have undefined order, causing duplicate/missing results across paginated pages.
+- Default sort when `sortOptions` is null: `{ createdAt: -1, _id: -1 }` (newest first)
 - MongoDB uses `1` for ascending, `-1` for descending
 - Field mapping is section-specific
 
@@ -616,9 +619,10 @@ Sorting works alongside filters:
 
 ## Default Sort Behavior
 
-- **Default sort**: `{ createdAt: -1 }` (newest first)
+- **Default sort**: `{ createdAt: -1, _id: -1 }` (newest first; `_id` tiebreaker for stable pagination)
 - **Applied when**: No sort param, invalid sort param, or `parseSortString` returns `null`
 - **Override**: Each section can define its own default in `buildSortObject`
+- **Tiebreaker**: Always include `_id` in sort (same direction as primary field) so pagination is deterministic when primary field has ties
 
 ## Best Practices
 

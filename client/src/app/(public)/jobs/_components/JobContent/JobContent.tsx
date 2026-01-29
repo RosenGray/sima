@@ -16,8 +16,8 @@ const jobSortOptions: SortOption[] = [
   {
     field: "date",
     label: "Дата",
-    ascLabel: "Дата (старые → новые)",
-    descLabel: "Дата (новые → старые)",
+    ascLabel: "(старые → новые)",
+    descLabel: "(новые → старые)",
   },
 ];
 

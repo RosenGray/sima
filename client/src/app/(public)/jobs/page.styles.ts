@@ -3,12 +3,15 @@ import styled from "styled-components";
 import { Container, Grid, Heading, Box } from "@radix-ui/themes";
 
 export const JobsPageContainer = styled(Container)`
-  padding-bottom: 40px;
+  padding-bottom: 75px;
+
 `;
 
 export const Title = styled(Heading)``;
 
-export const JobGrid = styled(Grid)``;
+export const JobGrid = styled(Grid)`
+
+`;
 
 export const StickyPaginationWrapper = styled(Box)`
   position: fixed;
