@@ -51,6 +51,8 @@ import {
 } from "@/lib/pets/for-sale/actions/deletePetForSaleAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PETS_FOR_SALE } from "@/providers/LikesProvider/LikesProvider";
 
 interface PetForSaleDetailClientProps {
   pet: SerializedPetForSale;
@@ -172,9 +174,17 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {animalName} {kindName}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {animalName} {kindName}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_PETS_FOR_SALE}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">

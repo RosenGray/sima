@@ -1,0 +1,94 @@
+---
+description: Likes/favorites flow for ads (LikeButton, LikesProvider, entity types, guest vs auth)
+globs:
+alwaysApply: true
+---
+
+# Likes / Favorites Guidelines
+
+## Overview
+
+Ads can be "liked" (favorites) from listing cards and detail pages. Likes are stored in the database for authenticated users and in localStorage for guests; guest likes are merged into the user account on login. Use the shared `LikeButton` component and `LikesProvider`; add an entity-type constant when introducing likes for a new section.
+
+## Architecture
+
+- **Client:** `LikeButton` (client), `LikesProvider` (client), `likesStorage` (localStorage, SSR-safe).
+- **Server:** `addLike`, `removeLike`, `mergeGuestLikes` (server actions), `AdLike` model, `LikesRepository.getLikedAdIdsByUser`.
+- **Layout:** Root layout fetches liked IDs for the current user and passes them to `LikesProvider` as `initialLikedIds`.
+
+## LikeButton Usage
+
+- **Props:** `entityType: string`, `publicId: string`, optional `className`, `size` (default 18), `stopPropagation` (default true).
+- **Context:** Must be used inside `LikesProvider` (uses `useLikes()`).
+
+### On listing cards (inside Link)
+
+- Wrap the card with `Link` in the parent Cards component; do **not** put `Link` inside the card.
+- Render `LikeButton` inside the card with **`stopPropagation={true}`** (default) so clicking the heart does not navigate.
+- Position the button with a styled wrapper (e.g. absolute top-right, z-index above image). Use a wrapper like `LikeButtonWrapper` in the card styles file.
+
+```tsx
+<LikeButtonWrapper>
+  <LikeButton
+    entityType={ENTITY_TYPE_PETS_FOR_SALE}
+    publicId={publicId}
+    size={18}
+    stopPropagation
+  />
+</LikeButtonWrapper>
+```
+
+### On detail page (not inside Link)
+
+- Render `LikeButton` in the header next to the title (e.g. in a Flex with the page title).
+- Use **`stopPropagation={false}`** so normal button behavior applies (no Link involved).
+
+```tsx
+<LikeButton
+  entityType={ENTITY_TYPE_PETS_FOR_SALE}
+  publicId={publicId}
+  size={20}
+  stopPropagation={false}
+/>
+```
+
+## Entity type constant
+
+- Define a string constant per section (e.g. `ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale"`) in `LikesProvider` (or a shared likes constants file) and export it.
+- Use the same value for `entityType` in server actions, localStorage keys (via storage helpers), and `LikeButton` props.
+- When adding likes to a new section, add a new constant and use it everywhere for that section.
+
+## LikesProvider and layout
+
+- **Location:** `client/src/providers/LikesProvider/LikesProvider.tsx`.
+- **Props:** `initialLikedIds: Record<string, string[]>` (entity type → array of public IDs).
+- **Context value:** `isLiked(entityType, publicId): boolean`, `toggle(entityType, publicId): Promise<void>`.
+- Root layout (client app): When user is authenticated, call `getLikedAdIdsByUser(user.id)` and pass the result as `initialLikedIds`. When user is missing, pass `{}`. Wrap the app (inside AuthProvider) with `<LikesProvider initialLikedIds={initialLikedIds}>`.
+
+## Guest vs authenticated behavior
+
+- **Authenticated:** Toggle calls `addLike` / `removeLike` server actions; state updates only on success.
+- **Guest:** Toggle updates localStorage via `getLikedFromStorage` / `setLikedInStorage` / `removeLikedInStorage` and updates provider state; no server call.
+- **Login merge:** When a guest logs in, `LikesProvider` runs `mergeGuestLikes(entityType, guestIds)` once (guarded by ref), then clears localStorage for that entity type and refreshes state from the merge result. Do not run merge on every login—only when transitioning from guest to user.
+
+## Storage and repository
+
+- **Storage:** `client/src/lib/likes/storage/likesStorage.ts`. Keys are `sima-liked-{entityType}`. Use `getLikedFromStorage`, `setLikedInStorage`, `removeLikedInStorage`. All helpers are SSR-safe (no-op or empty when `typeof window === "undefined"`).
+- **Repository:** `getLikedAdIdsByUser(userId)` returns `Record<string, string[]>` for layout hydration. No need for a new repository when adding a new entity type; the same `AdLike` model and repo support multiple entity types.
+
+## Pitfalls
+
+1. **Card navigation:** If `stopPropagation` is omitted or false on a card, clicking the like button will trigger the card Link and navigate. Always use `stopPropagation` (true) for `LikeButton` inside a Link-wrapped card.
+2. **Error handling:** Server actions return `{ success, error? }` or `{ success, liked }`. The UI does not show errors for failed like/unlike; state updates only on success. Consider adding toast or inline error if product requirements require it.
+3. **Dead code:** `addLikedInStorage` exists in storage but is not used; the provider uses `getLikedFromStorage` + `setLikedInStorage` manually. Prefer using the existing helpers consistently or remove unused ones.
+4. **New entity types:** To add likes to another section (e.g. cars): add an entity type constant, use it in `LikeButton` on that section’s cards and detail page, and ensure layout passes `initialLikedIds` that include that type when the backend returns it (already supported by `getLikedAdIdsByUser`).
+
+## References
+
+- LikeButton: `client/src/components/buttons/LikeButton/LikeButton.tsx`
+- LikesProvider: `client/src/providers/LikesProvider/LikesProvider.tsx`
+- Actions: `client/src/lib/likes/actions/likes.actions.ts`
+- Model: `client/src/lib/likes/models/AdLike.ts`
+- Repository: `client/src/lib/likes/repository/LikesRepository.ts`
+- Storage: `client/src/lib/likes/storage/likesStorage.ts`
+- Example usage: pets for sale card and detail (`PetForSaleCard`, `PetForSaleDetailClient`)
