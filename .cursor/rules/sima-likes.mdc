@@ -20,6 +20,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 - **Props:** `entityType: string`, `publicId: string`, optional `className`, `size` (default 18), `stopPropagation` (default true).
 - **Context:** Must be used inside `LikesProvider` (uses `useLikes()`).
+- **Styling:** LikeButton renders with `cursor: pointer` for clear clickability on both cards and detail pages.
 
 ### On listing cards (inside Link)
 
@@ -67,7 +68,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 ## Guest vs authenticated behavior
 
-- **Authenticated:** Toggle calls `addLike` / `removeLike` server actions; state updates only on success.
+- **Authenticated:** Toggle uses optimistic update: UI updates immediately, then `addLike` / `removeLike` run in background; state reverts if the server fails.
 - **Guest:** Toggle updates localStorage via `getLikedFromStorage` / `setLikedInStorage` / `removeLikedInStorage` and updates provider state; no server call.
 - **Login merge:** When a guest logs in, `LikesProvider` runs `mergeGuestLikes(entityType, guestIds)` once (guarded by ref), then clears localStorage for that entity type and refreshes state from the merge result. Do not run merge on every login—only when transitioning from guest to user.
 

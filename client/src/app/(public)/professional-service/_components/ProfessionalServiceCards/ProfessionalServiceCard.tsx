@@ -10,11 +10,14 @@ import {
   ServiceCardImageContainer,
   ServiceCardSwiper,
   ServiceCardSwiperSlide,
+  LikeButtonWrapper,
 } from "./ProfessionalServiceCard.styles";
 import { Badge, Text } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { getCityById } from "@/lib/cities";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/providers/LikesProvider/LikesProvider";
 import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface ProfessionalServiceCardProps {
@@ -29,6 +32,14 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   return (
     <ServiceCardBox id={publicId}>
       <ServiceCard variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <ServiceCardHeader>
           <Badge size="2" color="blue" variant="soft">
             {getCityById(city, district as Districts)?.nameRussian}

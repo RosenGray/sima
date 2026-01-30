@@ -41,6 +41,7 @@ const LikeButton: FC<LikeButtonProps> = ({
       color={liked ? "red" : "gray"}
       size="2"
       className={className}
+      style={{ cursor: "pointer" }}
       onClick={handleClick}
       aria-pressed={liked}
       aria-label={liked ? "Убрать из избранного" : "Добавить в избранное"}

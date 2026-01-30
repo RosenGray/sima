@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -41,6 +41,8 @@ import {
   ButtonGroup,
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/providers/LikesProvider/LikesProvider";
 import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
@@ -59,7 +61,6 @@ const ProfessionalServiceDetailClient: React.FC<
     deleteProfessionalServiceAdByPublicId,
     undefined
   );
-  console.log(formState);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
@@ -112,11 +113,19 @@ const ProfessionalServiceDetailClient: React.FC<
   return (
     <PageContainer size="4">
       {/* Header Section */}
-      {isOwner && (
-        <HeaderSection>
+      <HeaderSection>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
           <PageTitle size="8" weight="bold">
             {subCategory.russianDisplayName}
           </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
+        {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
               <Link
@@ -140,8 +149,8 @@ const ProfessionalServiceDetailClient: React.FC<
               {isPending ? <Spinner size="3" /> : "Удалить"}
             </Button>
           </ButtonGroup>
-        </HeaderSection>
-      )}
+        )}
+      </HeaderSection>
       <BadgeContainer>
         <Badge size="2" color="blue" variant="soft">
           {category.russianDisplayName}

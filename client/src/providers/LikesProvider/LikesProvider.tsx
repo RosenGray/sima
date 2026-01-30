@@ -21,6 +21,12 @@ import {
 } from "@/lib/likes/storage/likesStorage";
 
 export const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
+export const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
+
+const ENTITY_TYPES_WITH_GUEST_MERGE = [
+  ENTITY_TYPE_PETS_FOR_SALE,
+  ENTITY_TYPE_PROFESSIONAL_SERVICE,
+] as const;
 
 type LikedIdsByEntity = Record<string, Set<string>>;
 
@@ -57,9 +63,11 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
     if (user) return;
     setLikedIdsByEntity((prev) => {
       const next = { ...prev };
-      const fromStorage = getLikedFromStorage(ENTITY_TYPE_PETS_FOR_SALE);
-      if (fromStorage.length > 0) {
-        next[ENTITY_TYPE_PETS_FOR_SALE] = new Set(fromStorage);
+      for (const entityType of ENTITY_TYPES_WITH_GUEST_MERGE) {
+        const fromStorage = getLikedFromStorage(entityType);
+        if (fromStorage.length > 0) {
+          next[entityType] = new Set(fromStorage);
+        }
       }
       return next;
     });
@@ -72,21 +80,33 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
 
     if (!user || mergeDoneRef.current || !wasGuest) return;
 
-    const guestIds = getLikedFromStorage(ENTITY_TYPE_PETS_FOR_SALE);
-    if (guestIds.length === 0) {
+    const entityTypesWithGuestLikes = ENTITY_TYPES_WITH_GUEST_MERGE.filter(
+      (entityType) => getLikedFromStorage(entityType).length > 0
+    );
+    if (entityTypesWithGuestLikes.length === 0) {
       mergeDoneRef.current = true;
       return;
     }
 
     mergeDoneRef.current = true;
-    mergeGuestLikes(ENTITY_TYPE_PETS_FOR_SALE, guestIds).then((result) => {
-      setLikedInStorage(ENTITY_TYPE_PETS_FOR_SALE, []);
-      if (result.success && result.likedIds) {
-        setLikedIdsByEntity((prev) => ({
-          ...prev,
-          [ENTITY_TYPE_PETS_FOR_SALE]: new Set(result.likedIds),
-        }));
-      }
+    Promise.all(
+      entityTypesWithGuestLikes.map((entityType) => {
+        const guestIds = getLikedFromStorage(entityType);
+        return mergeGuestLikes(entityType, guestIds).then((result) => {
+          setLikedInStorage(entityType, []);
+          return { entityType, result };
+        });
+      })
+    ).then((results) => {
+      setLikedIdsByEntity((prev) => {
+        const next = { ...prev };
+        for (const { entityType, result } of results) {
+          if (result.success && result.likedIds) {
+            next[entityType] = new Set(result.likedIds);
+          }
+        }
+        return next;
+      });
     });
   }, [user]);
 
@@ -100,20 +120,34 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
   const toggle = useCallback(
     async (entityType: string, publicId: string) => {
       const currentlyLiked = likedIdsByEntity[entityType]?.has(publicId) ?? false;
+      const nextLiked = !currentlyLiked;
+
+      // Optimistic update: apply immediately for instant feedback
+      setLikedIdsByEntity((prev) => {
+        const set = new Set(prev[entityType] ?? []);
+        if (nextLiked) {
+          set.add(publicId);
+        } else {
+          set.delete(publicId);
+        }
+        return { ...prev, [entityType]: set };
+      });
 
       if (user) {
         const action = currentlyLiked ? removeLike : addLike;
         const result = await action(entityType, publicId);
-        if (!result.success) return;
-        setLikedIdsByEntity((prev) => {
-          const set = new Set(prev[entityType] ?? []);
-          if (result.liked) {
-            set.add(publicId);
-          } else {
-            set.delete(publicId);
-          }
-          return { ...prev, [entityType]: set };
-        });
+        if (!result.success) {
+          // Revert on server failure
+          setLikedIdsByEntity((prev) => {
+            const set = new Set(prev[entityType] ?? []);
+            if (currentlyLiked) {
+              set.add(publicId);
+            } else {
+              set.delete(publicId);
+            }
+            return { ...prev, [entityType]: set };
+          });
+        }
       } else {
         if (currentlyLiked) {
           removeLikedInStorage(entityType, publicId);
@@ -123,15 +157,6 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
             setLikedInStorage(entityType, [...arr, publicId]);
           }
         }
-        setLikedIdsByEntity((prev) => {
-          const set = new Set(prev[entityType] ?? []);
-          if (currentlyLiked) {
-            set.delete(publicId);
-          } else {
-            set.add(publicId);
-          }
-          return { ...prev, [entityType]: set };
-        });
       }
     },
     [user, likedIdsByEntity]

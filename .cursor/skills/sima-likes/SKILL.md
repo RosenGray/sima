@@ -43,6 +43,7 @@ If your section is the first one using likes, the constant already exists (e.g. 
 4. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 18).
 5. In the card styles file, add a wrapper for positioning (e.g. `LikeButtonWrapper`):
    - Position absolute, top-right (e.g. `top: var(--space-2); right: var(--space-2);`), `z-index: 1` so the button sits above the image.
+   - LikeButton applies `cursor: pointer` by default for clear clickability on both cards and detail pages.
 6. Wrap `LikeButton` with this styled wrapper inside the card (e.g. inside the main Card, so it overlays the image area).
 
 **Important:** The parent Cards component should wrap each card with `Link`; the card itself must not contain a `Link` around the whole content. The like button lives inside the card and stops propagation so only the button click is handled.
@@ -55,6 +56,7 @@ Reference: `client/src/app/(public)/pets/for-sale/_components/PetForSaleCards/Pe
 2. Import `LikeButton` and the entity type constant (same as step 2).
 3. In the header section (e.g. next to the page title), render `LikeButton` with **`stopPropagation={false}`** so normal button behavior applies (no Link).
 4. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 20).
+5. LikeButton applies `cursor: pointer` by default for clear clickability.
 
 Reference: `client/src/app/(public)/pets/for-sale/_components/PetForSaleDetailClient/PetForSaleDetailClient.tsx` (LikeButton in HeaderSection next to PageTitle).
 
@@ -67,6 +69,10 @@ If the section should support guest likes that merge on login:
 
 If you only add one new section and the product does not require guest merge for that section yet, you can defer this step; authenticated likes will still work.
 
+## Optimistic updates
+
+- The like toggle uses **optimistic updates**: the UI (heart color) changes immediately on click; the server action runs in the background. If the server fails, the state reverts. This avoids the 0.1–0.5s delay when waiting for the server.
+
 ## Step 5: Verify layout hydration
 
 - Root layout should already call `getLikedAdIdsByUser(user.id)` when `user` exists and pass the result as `initialLikedIds` to `LikesProvider`. `getLikedAdIdsByUser` returns all entity types for that user; no layout change is needed when adding a new entity type.
@@ -75,8 +81,8 @@ If you only add one new section and the product does not require guest merge for
 ## Checklist
 
 - [ ] Entity type constant defined and exported from LikesProvider (or shared constants).
-- [ ] LikeButton on listing card with `stopPropagation` true and wrapper for position (e.g. top-right).
-- [ ] LikeButton on detail page with `stopPropagation` false.
+- [ ] LikeButton on listing card with `stopPropagation` true and wrapper for position (e.g. top-right). LikeButton uses `cursor: pointer` by default.
+- [ ] LikeButton on detail page with `stopPropagation` false. LikeButton uses `cursor: pointer` by default.
 - [ ] Same `entityType` and `publicId` used in both places.
 - [ ] Layout wraps app with LikesProvider and passes initialLikedIds (already done if likes exist for another section).
 - [ ] If guest merge is required for the new section, extend merge effect in LikesProvider for the new entity type.
