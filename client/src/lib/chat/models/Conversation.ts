@@ -15,6 +15,8 @@ export interface IAdSnapshot {
 export interface IConversation {
   id: string;
   publicId: string;
+  /** Deterministic key: sorted participant IDs + entityType + entityPublicId. Used for unique index (array fields create multikey indexes and break uniqueness per conversation). */
+  conversationKey: string;
   participants: mongoose.Types.ObjectId[];
   adSnapshot: IAdSnapshot;
   deletedByUserIds: mongoose.Types.ObjectId[];
@@ -38,6 +40,12 @@ const adSnapshotSchema = new mongoose.Schema<IAdSnapshot>(
 const conversationSchema = new mongoose.Schema<IConversation>(
   {
     publicId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    conversationKey: {
       type: String,
       required: true,
       unique: true,
@@ -71,11 +79,10 @@ const conversationSchema = new mongoose.Schema<IConversation>(
   }
 );
 
-// One conversation per (user1, user2, entityType, entityPublicId)
-conversationSchema.index(
-  { participants: 1, "adSnapshot.entityType": 1, "adSnapshot.entityPublicId": 1 },
-  { unique: true }
-);
+// One conversation per (participant set + ad). Cannot use participants array in unique index
+// because MongoDB multikey index would create one entry per participant and block multiple
+// conversations about the same ad (e.g. owner+user2 and owner+user3). conversationKey
+// is a single string (sorted participant IDs + entityType + entityPublicId) so unique works.
 
 export const Conversation =
   mongoose.models.Conversation ||

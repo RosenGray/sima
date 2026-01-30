@@ -29,6 +29,16 @@ function sortParticipantIds(a: string, b: string): [string, string] {
   return a < b ? [a, b] : [b, a];
 }
 
+/** Deterministic key for one conversation per (participant set + ad). */
+function buildConversationKey(
+  p0: string,
+  p1: string,
+  entityType: string,
+  entityPublicId: string
+): string {
+  return `${p0}_${p1}_${entityType}_${entityPublicId}`;
+}
+
 export class ChatRepository {
   async getOrCreateConversation(
     userId: string,
@@ -47,17 +57,36 @@ export class ChatRepository {
 
     const [p0, p1] = sortParticipantIds(uid, ownerId);
     const participantIds = [toObjectId(p0), toObjectId(p1)];
+    const conversationKey = buildConversationKey(
+      p0,
+      p1,
+      sanitize(adEntityType),
+      sanitize(adPublicId)
+    );
 
-    // Find existing conversation (same participants + ad) so we don't create a duplicate
-    let conv = await Conversation.findOne({
-      participants: { $all: participantIds },
-      "adSnapshot.entityType": sanitize(adEntityType),
-      "adSnapshot.entityPublicId": sanitize(adPublicId),
-    });
+    // Find existing conversation by deterministic key (avoids multikey unique index issues)
+    let conv = await Conversation.findOne({ conversationKey });
+
+    // Backfill conversationKey for docs created before this field existed
+    if (!conv) {
+      conv = await Conversation.findOne({
+        participants: { $all: participantIds },
+        "adSnapshot.entityType": sanitize(adEntityType),
+        "adSnapshot.entityPublicId": sanitize(adPublicId),
+      });
+      if (conv) {
+        await Conversation.updateOne(
+          { _id: conv._id },
+          { $set: { conversationKey } }
+        );
+        conv.conversationKey = conversationKey;
+      }
+    }
 
     if (!conv) {
       conv = await Conversation.create({
         publicId: nanoid(10),
+        conversationKey,
         participants: participantIds,
         adSnapshot: {
           entityType: adSnapshot.entityType,
