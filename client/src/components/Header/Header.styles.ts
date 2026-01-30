@@ -36,13 +36,15 @@ export const Nav = styled.nav`
   @media (min-width: 768px) {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
+
   }
 `;
 
 export const NavItem = styled.div`
   position: relative;
   cursor: pointer;
+
   
   &:hover > div:last-child {
     opacity: 1;

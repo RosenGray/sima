@@ -103,7 +103,25 @@ export default function Header() {
         { label: "Аксессуары", href: "/pets/accessories" },
       ],
     };
-    return [services, jobs, pets, vehicles];
+    const other = {
+      label: "Другое",
+      subItems: [
+        { label: "Все", href: "/other" },
+      ],
+    };
+    const realEstate = {
+      label: "Недвижимость",
+      subItems: [
+        { label: "Все", href: "/real-estate" },
+      ],
+    };
+    const yad2 = {
+      label: "Куплю-Продаю",
+      subItems: [
+        { label: "Все", href: "/yad2" },
+      ],
+    };
+    return [services, jobs, pets, vehicles, other, realEstate, yad2];
   }, [serviceCategories]);
 
   const toggleMobileMenu = () => {

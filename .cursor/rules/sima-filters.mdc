@@ -1606,11 +1606,12 @@ const yearDialogButtonTitle = getYearDialogButtonTitle(allSelectedFilterOptions)
 
 **Key Points:**
 - Creates a button that opens a dropdown dialog
+- **Dialog header:** The dialog includes a header with the title and a close button (IconButton with Cross2Icon, `aria-label="Закрыть"`). All usages get this automatically.
 - Useful for grouping related filters (e.g., year range, price range)
 - Button title can be dynamic based on selected values
 - Dialog positions itself below the button
-- Use `showOverlay={true}` to show backdrop overlay
-- Dialog closes when clicking outside or pressing Escape
+- **showOverlay:** Use `showOverlay={true}` (default) for a modal-like backdrop; use `showOverlay={false}` for filter dropdowns when a lighter feel is desired (e.g. price filter in pets/for-sale). Dialog closes when clicking the close button, outside (if overlay is shown), or pressing Escape
+- **Optional (more filters):** In "more filters" you can show both a DialogPrimitiveButton for price/year and inline PriceTextSearch or SearchSingleSelect fields so users can edit without opening the dialog (see pets/for-sale FiltersClient)
 
 #### TextSearch Components
 
