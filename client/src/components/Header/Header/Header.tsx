@@ -169,10 +169,7 @@ export default function Header() {
               </Link>
             </PublishAdButton>
             {user ? (
-              <>
-                <UserLastSeen lastSeenAt={user.lastSeenAt} />
-                <LogoutButton />
-              </>
+              <LogoutButton />
             ) : (
               <LoginButton asChild variant="surface" size="2">
                 <Link href="/auth/login">

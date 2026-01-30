@@ -36,27 +36,40 @@ export async function getCurrentUser(): Promise<SerializedUser | null> {
     if (!decoded) return null;
 
     await connectDB();
-    const user = await User.findOne({ email: decoded.email });
-    if (!user) return null;
 
     const now = new Date();
     const throttleMs = 5 * 60 * 1000; // 5 minutes
-    const lastSeenAtMs = user.lastSeenAt
-      ? new Date(user.lastSeenAt).getTime()
-      : 0;
+
+    type LeanUser = { _id: unknown; lastSeenAt?: Date | string; [k: string]: unknown };
+    const found = (await User.findOne({ email: decoded.email }).lean()) as LeanUser | null;
+    if (!found) return null;
+
+    const lastSeenAt = found.lastSeenAt
+      ? new Date(found.lastSeenAt)
+      : null;
+    const lastSeenAtMs = lastSeenAt ? lastSeenAt.getTime() : 0;
     const shouldUpdate =
-      !user.lastSeenAt || now.getTime() - lastSeenAtMs > throttleMs;
+      !lastSeenAt || now.getTime() - lastSeenAtMs > throttleMs;
 
     if (shouldUpdate) {
       await User.updateOne(
-        { _id: user._id },
+        { email: decoded.email },
         { $set: { lastSeenAt: now } }
       );
     }
 
-    const serialized = JSON.parse(JSON.stringify(user)) as SerializedUser;
-    if (shouldUpdate) {
-      serialized.lastSeenAt = now.toISOString();
+    const userDoc = shouldUpdate
+      ? ((await User.findOne({ email: decoded.email }).lean()) as LeanUser | null) ?? found
+      : found;
+
+    const serialized = JSON.parse(JSON.stringify(userDoc)) as SerializedUser;
+    const docId = userDoc._id as { toString?: () => string } | undefined;
+    serialized.id = docId?.toString?.() ?? "";
+    if (userDoc.lastSeenAt) {
+      serialized.lastSeenAt =
+        typeof userDoc.lastSeenAt === "string"
+          ? userDoc.lastSeenAt
+          : new Date(userDoc.lastSeenAt).toISOString();
     }
     return serialized;
   } catch (_error) {

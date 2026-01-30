@@ -53,6 +53,7 @@ export default async function RootLayout({
                 {user && !user.isEmailVerified && (
                   <EmailVerificationBanner userEmail={user.email} />
                 )}
+                
                 <PortalProvider>
                   <div className="SimaApp">{children}</div>
                 </PortalProvider>

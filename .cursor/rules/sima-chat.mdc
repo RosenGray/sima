@@ -1,0 +1,936 @@
+# Chat System Guidelines
+
+## Overview
+
+The chat system enables messaging between users about specific ads. Conversations are tied to specific ads with snapshots, support message threading, and use polling for updates. This document provides rules and patterns for implementing and maintaining chat functionality.
+
+## When to Use Chat
+
+Use chat functionality when:
+- Users need to communicate about specific ads (vehicles, pets, real estate, etc.)
+- Buyers want to contact sellers with questions
+- You need conversation threading tied to specific entities
+- Real-time-like messaging is required (via polling)
+
+## Core Principles
+
+1. **One conversation per ad per user pair**: Prevent duplicate conversations using unique compound index
+2. **Ad snapshots**: Store ad data at conversation creation (handles deleted ads gracefully)
+3. **Soft delete initially**: Use `deletedByUserIds` array, then hard delete if needed
+4. **Security first**: Always sanitize inputs, verify ownership, check authentication
+5. **Polling for updates**: Use 30-second intervals for new messages (30,000ms)
+6. **Throttled activity tracking**: Update `lastSeenAt` every 5 minutes maximum
+
+## Database Models
+
+### Conversation Model Structure
+
+```typescript
+// Location: lib/chat/models/Conversation.ts
+
+export interface IAdSnapshot {
+  entityType: string;        // e.g., "pets-for-sale", "cars"
+  entityPublicId: string;    // Public ID of the ad
+  title: string;             // Display title
+  thumbnailUrl: string;      // Ad thumbnail image
+  price?: number;            // Optional price
+  adLink: string;            // Link to ad detail page
+  adRemoved: boolean;        // Whether ad was deleted
+}
+
+export interface IConversation {
+  id: string;
+  publicId: string;                       // nanoid(10)
+  participants: mongoose.Types.ObjectId[]; // Exactly 2 user IDs
+  adSnapshot: IAdSnapshot;
+  deletedByUserIds: mongoose.Types.ObjectId[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+```
+
+**Required Indexes**:
+- `publicId`: unique
+- `participants`: regular index
+- `deletedByUserIds`: regular index
+- `{ participants: 1, "adSnapshot.entityType": 1, "adSnapshot.entityPublicId": 1 }`: unique compound (prevents duplicates)
+
+### Message Model Structure
+
+```typescript
+// Location: lib/chat/models/Message.ts
+
+export interface IMessage {
+  id: string;
+  conversation: mongoose.Types.ObjectId; // Reference to Conversation
+  sender: mongoose.Types.ObjectId;       // Reference to User
+  body: string;                          // Message text
+  createdAt?: Date;
+}
+```
+
+**Required Indexes**:
+- `conversation`: regular index
+- `sender`: regular index
+- `{ conversation: 1, createdAt: 1 }`: compound index for efficient retrieval
+
+## Server Actions Pattern
+
+### Action Naming Convention
+
+- `getOrCreateChat`: Creates or retrieves conversation
+- `getChatList`: Retrieves all user conversations
+- `getChatWithMessages`: Retrieves specific conversation with messages
+- `sendMessage`: Sends message in conversation
+- `deleteChat`: Deletes conversation for user
+
+### Action Return Types
+
+All actions use discriminated union return types:
+
+```typescript
+export type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
+// Examples:
+export type GetOrCreateChatResult =
+  | { success: true; chatId: string }
+  | { success: false; error: string };
+
+export type SendMessageResult =
+  | { success: true; message: SerializedMessage }
+  | { success: false; error: string };
+```
+
+### Security Validation in Actions
+
+Every action MUST:
+
+1. **Check authentication**:
+```typescript
+const user = await getCurrentUser();
+if (!user) {
+  return { success: false, error: "Войдите в аккаунт" };
+}
+```
+
+2. **Sanitize all inputs**:
+```typescript
+import sanitize from "mongo-sanitize";
+
+const sanitizedEntityType = sanitize(entityType);
+const sanitizedPublicId = sanitize(publicId);
+```
+
+3. **Verify ownership/participation**:
+```typescript
+const conv = await Conversation.findOne({
+  publicId: sanitize(conversationPublicId),
+  participants: toObjectId(userId), // User must be participant
+  deletedByUserIds: { $ne: toObjectId(userId) }, // Not deleted by user
+});
+
+if (!conv) return null;
+```
+
+## Repository Pattern
+
+### Repository Location
+
+Place chat repository in: `lib/chat/repository/ChatRepository.ts`
+
+### Repository Methods Pattern
+
+#### getOrCreateConversation
+
+**Purpose**: Create or retrieve conversation between users for an ad
+
+**Key Points**:
+- Prevent self-chat (userId === adOwnerId)
+- Sort participant IDs consistently
+- Use compound index to find existing conversation
+- Create new conversation if not found
+
+```typescript
+async getOrCreateConversation(
+  userId: string,
+  adOwnerId: string,
+  adEntityType: string,
+  adPublicId: string,
+  adSnapshot: IAdSnapshot
+): Promise<{ publicId: string }> {
+  await connectDB();
+
+  const uid = sanitize(userId);
+  const ownerId = sanitize(adOwnerId);
+  
+  if (uid === ownerId) {
+    throw new Error("Cannot create chat with yourself");
+  }
+
+  // Sort for consistent ordering
+  const [p0, p1] = sortParticipantIds(uid, ownerId);
+  const participantIds = [toObjectId(p0), toObjectId(p1)];
+
+  // Find existing conversation
+  let conv = await Conversation.findOne({
+    participants: { $all: participantIds },
+    "adSnapshot.entityType": sanitize(adEntityType),
+    "adSnapshot.entityPublicId": sanitize(adPublicId),
+  });
+
+  if (!conv) {
+    conv = await Conversation.create({
+      publicId: nanoid(10),
+      participants: participantIds,
+      adSnapshot,
+      deletedByUserIds: [],
+    });
+  }
+
+  return { publicId: conv.publicId };
+}
+```
+
+#### createMessage
+
+**Purpose**: Create new message and update conversation timestamp
+
+**Key Points**:
+- Verify user is participant
+- Trim message body
+- Reject empty messages
+- Update conversation `updatedAt`
+
+```typescript
+async createMessage(
+  conversationPublicId: string,
+  userId: string,
+  body: string
+): Promise<SerializedMessage | null> {
+  await connectDB();
+
+  const uid = toObjectId(sanitize(userId));
+  const conv = await Conversation.findOne({
+    publicId: sanitize(conversationPublicId),
+    participants: uid,
+    deletedByUserIds: { $ne: uid },
+  });
+
+  if (!conv) return null;
+
+  const trimmed = String(body).trim();
+  if (!trimmed) return null;
+
+  const msg = await Message.create({
+    conversation: conv._id,
+    sender: uid,
+    body: trimmed,
+  });
+
+  // Update conversation timestamp
+  await Conversation.updateOne(
+    { _id: conv._id },
+    { $set: { updatedAt: new Date() } }
+  );
+
+  return {
+    id: msg._id.toString(),
+    conversationId: conv.publicId,
+    senderId: userId,
+    body: msg.body,
+    createdAt: msg.createdAt!.toISOString(),
+  };
+}
+```
+
+#### deleteConversationForUser
+
+**Purpose**: Hard delete conversation (removes all messages and conversation document)
+
+**Note**: Current implementation uses hard delete. Consider soft delete for data retention.
+
+```typescript
+async deleteConversationForUser(
+  conversationPublicId: string,
+  userId: string
+): Promise<boolean> {
+  await connectDB();
+
+  const uid = toObjectId(sanitize(userId));
+  const conv = await Conversation.findOne({
+    publicId: sanitize(conversationPublicId),
+    participants: uid,
+  });
+
+  if (!conv) return false;
+
+  // Hard delete: remove all messages and conversation
+  await Message.deleteMany({ conversation: conv._id });
+  await Conversation.deleteOne({ _id: conv._id });
+  return true;
+}
+```
+
+## Frontend Implementation
+
+### Page Structure
+
+#### Main Chat Page (`/chat`)
+
+**Purpose**: Show conversation list only (no active chat)
+
+```typescript
+// Location: app/(private)/chat/page.tsx
+
+const ChatPage: FC = async () => {
+  const user = await requireAuthOrRedirectTo("/auth/login");
+  const listResult = await getChatList();
+
+  const list = listResult.success ? listResult.list : [];
+
+  return (
+    <ChatClient
+      initialChatList={list}
+      initialSelectedChat={null}
+      initialMessages={null}
+      selectedChatId={null}
+      currentUserId={user.id}
+    />
+  );
+};
+```
+
+#### Chat Detail Page (`/chat/[chatId]`)
+
+**Purpose**: Show conversation list + active chat
+
+```typescript
+// Location: app/(private)/chat/[chatId]/page.tsx
+
+const ChatIdPage: FC<ChatIdPageProps> = async ({ params }) => {
+  const user = await requireAuthOrRedirectTo("/auth/login");
+  const { chatId } = await params;
+
+  const [listResult, chatResult] = await Promise.all([
+    getChatList(),
+    getChatWithMessages(chatId),
+  ]);
+
+  const list = listResult.success ? listResult.list : [];
+
+  if (!chatResult.success || !chatResult.chat) {
+    notFound();
+  }
+
+  return (
+    <ChatClient
+      initialChatList={list}
+      initialSelectedChat={chatResult.chat}
+      initialMessages={chatResult.chat.messages}
+      selectedChatId={chatId}
+      currentUserId={user.id}
+    />
+  );
+};
+```
+
+### ChatClient Component
+
+**Purpose**: Main layout component managing list + active chat panels
+
+**Key Features**:
+- Split-pane layout (desktop) vs toggle layout (mobile)
+- Polling for new messages every 30 seconds
+- State management for chat list and messages
+
+**State Management**:
+```typescript
+const [chatList, setChatList] = useState(initialChatList);
+const [selectedChat, setSelectedChat] = useState(initialSelectedChat);
+const [messages, setMessages] = useState(initialMessages ?? []);
+```
+
+**Polling Pattern**:
+```typescript
+const POLL_INTERVAL_MS = 30_000;
+
+const refreshChat = useCallback(async (chatId: string) => {
+  const result = await getChatWithMessages(chatId);
+  if (result.success && result.chat) {
+    setSelectedChat(result.chat);
+    setMessages(result.chat.messages);
+  }
+}, []);
+
+useEffect(() => {
+  if (!selectedChatId) return;
+  const interval = setInterval(() => {
+    refreshChat(selectedChatId);
+  }, POLL_INTERVAL_MS);
+  return () => clearInterval(interval);
+}, [selectedChatId, refreshChat]);
+```
+
+**Responsive Layout**:
+```typescript
+<ChatLayoutCard>
+  <ChatListPanel $hideOnMobile={!!selectedChatId}>
+    <ChatList list={chatList} activeChatId={selectedChatId} />
+  </ChatListPanel>
+
+  <ActiveChatPanel $hideOnMobile={!selectedChatId}>
+    {selectedChat ? (
+      <>
+        <ChatBackBar align="center" gap="2">
+          <Button size="1" variant="ghost" asChild>
+            <Link href="/chat">
+              <ArrowLeftIcon />
+              К списку чатов
+            </Link>
+          </Button>
+        </ChatBackBar>
+        <ActiveChat
+          chat={{ ...selectedChat, messages }}
+          currentUserId={currentUserId}
+          onMessagesUpdate={handleMessagesUpdate}
+        />
+      </>
+    ) : (
+      <PlaceholderPanel>
+        <p>Выберите чат</p>
+      </PlaceholderPanel>
+    )}
+  </ActiveChatPanel>
+</ChatLayoutCard>
+```
+
+### ActiveChat Component
+
+**Purpose**: Display active conversation with messages and input
+
+**Key Features**:
+- Header with participant info and context menu
+- Ad snapshot sub-header
+- Scrollable message list
+- Message input with Enter key support
+- Different styling for own vs other messages
+
+**Message Input Pattern**:
+```typescript
+const handleSend = useCallback(async () => {
+  const body = inputValue.trim();
+  if (!body || sending) return;
+  setSending(true);
+  const result = await sendMessage(chat.publicId, body);
+  setSending(false);
+  if (result.success && result.message) {
+    setMessages((prev) => [...prev, result.message!]);
+    setInputValue("");
+    onMessagesUpdate?.([...messages, result.message]);
+  }
+}, [chat.publicId, inputValue, sending, messages, onMessagesUpdate]);
+
+const handleKeyDown = useCallback(
+  (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  },
+  [handleSend]
+);
+```
+
+**Message Bubbles**:
+```typescript
+<MessageList>
+  {messages.map((msg) => (
+    <MessageBubble key={msg.id} $isOwn={msg.senderId === currentUserId}>
+      <Text size="2">{msg.body}</Text>
+    </MessageBubble>
+  ))}
+</MessageList>
+```
+
+### ChatList and ChatListItem Components
+
+**ChatList**: Simple list wrapper with header
+
+```typescript
+<>
+  <ChatListHeader align="center">
+    <Heading size="4">Чаты</Heading>
+  </ChatListHeader>
+  <ChatListScroll>
+    {list.length === 0 ? (
+      <div style={{ padding: "var(--space-4)", color: "var(--gray-11)" }}>
+        Пока нет диалогов.
+      </div>
+    ) : (
+      list.map((item) => (
+        <ChatListItem
+          key={item.publicId}
+          item={item}
+          isActive={activeChatId === item.publicId}
+        />
+      ))
+    )}
+  </ChatListScroll>
+</>
+```
+
+**ChatListItem**: Individual conversation item
+
+**Key Points**:
+- Wrap entire item with Link (no Link inside)
+- Show ad thumbnail, title, participant name, price
+- Display last message snippet
+- Show timestamp
+- Highlight active conversation
+
+```typescript
+<Link href={`/chat/${item.publicId}`} style={{ textDecoration: "none" }}>
+  <ChatListItemBox $active={isActive}>
+    <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "flex-start" }}>
+      <ChatListItemThumbnailWrap>
+        <Image
+          src={item.adSnapshot.thumbnailUrl || "/placeholder.png"}
+          alt=""
+          fill
+          style={{ objectFit: "cover" }}
+          sizes="48px"
+        />
+        {item.adSnapshot.adRemoved && (
+          <ChatListItemRemovedBadge>Снято</ChatListItemRemovedBadge>
+        )}
+      </ChatListItemThumbnailWrap>
+      <ChatListItemContent>
+        <Text size="2" weight="bold" truncate>
+          {item.adSnapshot.title}
+        </Text>
+        <Text size="1" color="gray">
+          {name} {formatPrice(item.adSnapshot.price)}
+        </Text>
+        {item.lastMessageSnippet && (
+          <Text size="1" color="gray" truncate>
+            {item.lastMessageSnippet}
+          </Text>
+        )}
+      </ChatListItemContent>
+      {item.lastMessageAt && (
+        <Text size="1" color="gray" style={{ flexShrink: 0 }}>
+          {formatDate(item.lastMessageAt)}
+        </Text>
+      )}
+    </div>
+  </ChatListItemBox>
+</Link>
+```
+
+## Styling Guidelines
+
+### ChatClient Styles
+
+```typescript
+// Location: app/(private)/chat/_components/ChatClient/ChatClient.styles.ts
+
+export const ChatLayoutCard = styled(Card)`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 600px;
+  height: 100%;
+  overflow: hidden;
+
+  @media (max-width: ${breakpoints.md - 1}px) {
+    flex-direction: column;
+    min-height: 500px;
+  }
+`;
+
+export const ChatListPanel = styled(Box)<{ $hideOnMobile: boolean }>`
+  width: 100%;
+  max-width: 360px;
+  min-width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--gray-6);
+  background: var(--gray-2);
+
+  @media (max-width: ${breakpoints.md - 1}px) {
+    max-width: none;
+    min-height: 200px;
+    display: ${({ $hideOnMobile }) => ($hideOnMobile ? "none" : "flex")};
+    border-right: none;
+    border-bottom: 1px solid var(--gray-6);
+  }
+`;
+
+export const ActiveChatPanel = styled(Box)<{ $hideOnMobile: boolean }>`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+
+  @media (max-width: ${breakpoints.md - 1}px) {
+    display: ${({ $hideOnMobile }) => ($hideOnMobile ? "none" : "flex")};
+    min-height: 400px;
+  }
+`;
+
+export const ChatBackBar = styled(Flex)`
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--gray-6);
+  display: none;
+
+  @media (max-width: ${breakpoints.md - 1}px) {
+    display: flex;
+  }
+`;
+```
+
+### ActiveChat Styles
+
+```typescript
+// Location: app/(private)/chat/_components/ActiveChat/ActiveChat.styles.ts
+
+export const MessageBubble = styled(Box)<{ $isOwn: boolean }>`
+  max-width: 75%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-3);
+  align-self: ${({ $isOwn }) => ($isOwn ? "flex-end" : "flex-start")};
+  background: ${({ $isOwn }) => ($isOwn ? "var(--accent-9)" : "var(--gray-4)")};
+  color: ${({ $isOwn }) => ($isOwn ? "white" : "var(--gray-12)")};
+`;
+
+export const InputStripe = styled(Flex)`
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--gray-6);
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-background);
+`;
+
+export const AdSubHeader = styled(Flex)`
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--gray-6);
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--gray-2);
+`;
+```
+
+## Integration with Entity Detail Pages
+
+### Add Contact Seller Button
+
+In entity detail page (e.g., `CarDetailClient.tsx`, `PetForSaleDetailClient.tsx`):
+
+1. **Add State**:
+```typescript
+const [chatLoading, setChatLoading] = useState(false);
+const [chatError, setChatError] = useState<string | null>(null);
+```
+
+2. **Add Handler**:
+```typescript
+const handleContactSeller = async () => {
+  if (chatLoading || !isAuthenticated || isOwner) return;
+  setChatLoading(true);
+  setChatError(null);
+  const result = await getOrCreateChat("entity-type", entity.publicId);
+  
+  if (result.success && result.chatId) {
+    router.push(`/chat/${result.chatId}`);
+  } else if (!result.success && result.error) {
+    setChatError(result.error);
+    setChatLoading(false);
+    setErrorModalOpen(true);
+  }
+};
+```
+
+3. **Add Button**:
+```typescript
+<ContactSection>
+  {isAuthenticated && !isOwner && (
+    <Button
+      size="3"
+      onClick={handleContactSeller}
+      disabled={chatLoading}
+      style={{ width: "100%" }}
+    >
+      {chatLoading ? <Spinner /> : "Написать продавцу"}
+    </Button>
+  )}
+  
+  {!isAuthenticated && (
+    <Text size="2" color="gray">
+      Войдите, чтобы написать продавцу
+    </Text>
+  )}
+</ContactSection>
+```
+
+### Update getOrCreateChat for New Entity
+
+Add entity type handling in `lib/chat/actions/getOrCreateChat.ts`:
+
+```typescript
+import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
+
+const ENTITY_TYPE_CARS = "cars";
+const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
+
+export async function getOrCreateChat(
+  adEntityType: string,
+  adPublicId: string
+): Promise<GetOrCreateChatResult> {
+  // ... authentication check ...
+
+  // Validate entity type
+  if (![ENTITY_TYPE_CARS, ENTITY_TYPE_PETS_FOR_SALE].includes(adEntityType)) {
+    return { success: false, error: "Этот тип объявления не поддерживается" };
+  }
+
+  // Fetch entity based on type
+  let entity: any;
+  let adOwnerId: string;
+  
+  if (adEntityType === ENTITY_TYPE_CARS) {
+    entity = await carRepository.getByPublicId(adPublicId);
+  } else if (adEntityType === ENTITY_TYPE_PETS_FOR_SALE) {
+    entity = await petForSaleRepository.getByPublicId(adPublicId);
+  }
+  
+  if (!entity) {
+    return { success: false, error: "Объявление не найдено" };
+  }
+
+  adOwnerId = typeof entity.user === "object" ? entity.user.id : entity.user;
+  if (adOwnerId === user.id) {
+    return { success: false, error: "Нельзя начать чат с самим собой" };
+  }
+
+  // Create ad snapshot based on entity type
+  const thumbnailUrl = entity.images?.[0]?.url ?? "";
+  let title: string;
+  
+  if (adEntityType === ENTITY_TYPE_CARS) {
+    title = [entity.manufacturer, entity.model, entity.city].filter(Boolean).join(" • ");
+  } else {
+    title = [entity.animal, entity.kind, entity.city].filter(Boolean).join(" • ");
+  }
+  
+  const adLink = `/${adEntityType.replace("-", "/")}/${entity.publicId}`;
+
+  const adSnapshot = {
+    entityType: adEntityType,
+    entityPublicId: entity.publicId,
+    title,
+    thumbnailUrl,
+    price: entity.price,
+    adLink,
+    adRemoved: false,
+  };
+
+  try {
+    const { publicId } = await chatRepository.getOrCreateConversation(
+      user.id,
+      adOwnerId,
+      adEntityType,
+      adPublicId,
+      adSnapshot
+    );
+    return { success: true, chatId: publicId };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Не удалось создать чат";
+    return { success: false, error: message };
+  }
+}
+```
+
+## User Activity Tracking
+
+### Add lastSeenAt to User Model
+
+If not already present:
+
+```typescript
+// Location: lib/auth/models/User.ts
+
+interface IUser {
+  // ... other fields
+  lastSeenAt?: Date;
+}
+
+const userSchema = new mongoose.Schema<IUser>({
+  // ... other fields
+  lastSeenAt: {
+    type: Date,
+    required: false,
+  },
+});
+```
+
+### Update getCurrentUser with Throttling
+
+```typescript
+// Location: lib/auth/utils/auth.utils.ts
+
+export async function getCurrentUser(): Promise<SerializedUser | null> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SIMA_AUTH_SESSION_CONFIG.name)?.value;
+    if (!token) return null;
+
+    const decoded = jwt.verify(token, process.env.JWT_KEY!) as { email: string };
+    if (!decoded) return null;
+
+    await connectDB();
+
+    const now = new Date();
+    const throttleMs = 5 * 60 * 1000; // 5 minutes
+
+    type LeanUser = { _id: unknown; lastSeenAt?: Date | string; [k: string]: unknown };
+    const found = (await User.findOne({ email: decoded.email }).lean()) as LeanUser | null;
+    if (!found) return null;
+
+    const lastSeenAt = found.lastSeenAt ? new Date(found.lastSeenAt) : null;
+    const lastSeenAtMs = lastSeenAt ? lastSeenAt.getTime() : 0;
+    const shouldUpdate = !lastSeenAt || now.getTime() - lastSeenAtMs > throttleMs;
+
+    if (shouldUpdate) {
+      await User.updateOne(
+        { email: decoded.email },
+        { $set: { lastSeenAt: now } }
+      );
+    }
+
+    // Fetch updated user if needed
+    const userDoc = shouldUpdate
+      ? ((await User.findOne({ email: decoded.email }).lean()) as LeanUser | null) ?? found
+      : found;
+
+    // Serialize and return
+    const serialized = JSON.parse(JSON.stringify(userDoc)) as SerializedUser;
+    const docId = userDoc._id as { toString?: () => string } | undefined;
+    serialized.id = docId?.toString?.() ?? "";
+    if (userDoc.lastSeenAt) {
+      serialized.lastSeenAt =
+        typeof userDoc.lastSeenAt === "string"
+          ? userDoc.lastSeenAt
+          : new Date(userDoc.lastSeenAt).toISOString();
+    }
+    return serialized;
+  } catch (error) {
+    return null;
+  }
+}
+```
+
+## Middleware Configuration
+
+Add `/chat` to protected routes:
+
+```typescript
+// Location: middleware.ts
+
+const protectedRoutes = [
+  "/dashboard",
+  "/profile",
+  "/settings",
+  "/admin",
+  "/api/protected",
+  "/publish-ad",
+  "/chat", // Add this
+];
+```
+
+## Best Practices
+
+### Security
+
+1. **Always sanitize**: Use `mongo-sanitize` on all user inputs
+2. **Verify participation**: Check user is participant before allowing access
+3. **Prevent self-chat**: Always validate `userId !== adOwnerId`
+4. **Whitelist entity types**: Use explicit whitelist, don't trust user input
+5. **Check authentication**: Use `getCurrentUser()` in all actions
+
+### Performance
+
+1. **Use indexes**: Ensure all required indexes are created
+2. **Throttle updates**: Only update `lastSeenAt` every 5 minutes
+3. **Use lean queries**: Use `.lean()` for read-only operations
+4. **Limit queries**: Use `.limit()` when fetching recent items
+5. **Polling interval**: Use 30 seconds (not too frequent)
+
+### UX
+
+1. **Show loading states**: Display spinner during operations
+2. **Disable during operations**: Prevent duplicate submissions
+3. **Empty states**: Show helpful message when empty
+4. **Enter key support**: Allow Enter to send (Shift+Enter for new line)
+5. **Mobile responsive**: Toggle between list and chat on mobile
+6. **Last seen display**: Format and display in chat header
+
+### Data Integrity
+
+1. **Ad snapshots**: Store ad data at creation (handles deleted ads)
+2. **Unique conversations**: Use compound index to prevent duplicates
+3. **Sort participants**: Always sort participant IDs consistently
+4. **Update timestamps**: Update conversation `updatedAt` on new messages
+5. **Hard delete carefully**: Consider soft delete for data retention
+
+## Common Pitfalls
+
+1. **Forgetting to sanitize inputs**: Always use `mongo-sanitize`
+2. **Not checking participation**: Verify user is participant before allowing access
+3. **Inconsistent participant ordering**: Always sort participant IDs
+4. **Missing indexes**: Ensure all required indexes are created
+5. **Not throttling lastSeenAt**: Update only every 5 minutes
+6. **Polling too frequently**: Use 30-second intervals
+7. **Not handling empty messages**: Always trim and validate
+8. **Forgetting mobile layout**: Test responsive behavior
+9. **Not updating conversation timestamp**: Update `updatedAt` on new message
+10. **Mixing entity type formats**: Use consistent format (e.g., "pets-for-sale" not "pets_for_sale")
+
+## File Naming Conventions
+
+- Models: `Conversation.ts`, `Message.ts`
+- Repository: `ChatRepository.ts`
+- Actions: `getOrCreateChat.ts`, `sendMessage.ts`, etc.
+- Types: `chat.types.ts`
+- Components: `ChatClient.tsx`, `ActiveChat.tsx`, etc.
+- Styles: `ChatClient.styles.ts`, `ActiveChat.styles.ts`, etc.
+
+## Testing Checklist
+
+- [ ] Create conversation from ad detail page
+- [ ] Prevent self-chat
+- [ ] Prevent duplicate conversations
+- [ ] Send messages successfully
+- [ ] Receive messages via polling
+- [ ] Delete conversation
+- [ ] Navigate between conversations
+- [ ] Mobile layout works correctly
+- [ ] Empty states display
+- [ ] Last seen displays and updates
+- [ ] Ad snapshot displays correctly
+- [ ] Authentication enforced
+- [ ] Error handling works
+- [ ] Loading states display
+
+## References
+
+- Skill: `.cursor/skills/sima-chat/SKILL.md`
+- Example: `app/(private)/chat/`
+- Integration: `app/(public)/pets/for-sale/_components/PetForSaleDetailClient/PetForSaleDetailClient.tsx`
+- Repository: `lib/chat/repository/ChatRepository.ts`
+- Actions: `lib/chat/actions/`
