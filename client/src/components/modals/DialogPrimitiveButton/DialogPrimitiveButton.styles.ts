@@ -74,11 +74,20 @@ export const DialogContentContainer = styled(Box)`
   /* Additional container styling if needed */
 `;
 
+export const DialogHeader = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: 12px;
+`;
+
 export const DialogPrimitiveButtonTitle = styled(Dialog.Title)`
-  margin: 0 0 12px 0;
+  margin: 0;
   font-weight: 700;
   color: var(--gray-12);
   font-size: 20px;
   line-height: 26px;
-  margin-bottom: 12px;
+  flex: 1;
+  min-width: 0;
 `;

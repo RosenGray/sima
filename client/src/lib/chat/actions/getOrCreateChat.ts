@@ -3,16 +3,22 @@
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { chatRepository } from "../repository/ChatRepository";
 import { petForSaleRepository } from "@/lib/pets/for-sale/repository/PetForSaleRepository";
+import { petForFreeRepository } from "@/lib/pets/for-free/repository/PetForFreeRepository";
+import { petAccessoryRepository } from "@/lib/pets/accessories/repository/PetAccessoryRepository";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { jobRepository } from "@/lib/jobs/repository/JobRepository";
 import type { AdSnapshot } from "../types/chat.types";
 
 const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
+const ENTITY_TYPE_PETS_FOR_FREE = "pets-for-free";
+const ENTITY_TYPE_PETS_ACCESSORIES = "pets-accessories";
 const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
 const ENTITY_TYPE_JOBS = "jobs";
 
 const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_FOR_SALE,
+  ENTITY_TYPE_PETS_FOR_FREE,
+  ENTITY_TYPE_PETS_ACCESSORIES,
   ENTITY_TYPE_PROFESSIONAL_SERVICE,
   ENTITY_TYPE_JOBS,
 ] as const;
@@ -57,6 +63,49 @@ export async function getOrCreateChat(
       thumbnailUrl: pet.images?.[0]?.url ?? "",
       price: pet.price,
       adLink: `/pets/for-sale/${pet.publicId}`,
+      adRemoved: false,
+    };
+  } else if (adEntityType === ENTITY_TYPE_PETS_FOR_FREE) {
+    const petForFree = await petForFreeRepository.getByPublicId(adPublicId);
+    if (!petForFree) {
+      return { success: false, error: "Объявление не найдено" };
+    }
+
+    adOwnerId = typeof petForFree.user === "object" ? petForFree.user.id : petForFree.user;
+    if (adOwnerId === user.id) {
+      return { success: false, error: "Нельзя начать чат с самим собой" };
+    }
+
+    const titleForFree =
+      [petForFree.animal, petForFree.kind, petForFree.city].filter(Boolean).join(" • ") || "Питомец";
+    adSnapshot = {
+      entityType: ENTITY_TYPE_PETS_FOR_FREE,
+      entityPublicId: petForFree.publicId,
+      title: titleForFree,
+      thumbnailUrl: petForFree.images?.[0]?.url ?? "",
+      adLink: `/pets/for-free/${petForFree.publicId}`,
+      adRemoved: false,
+    };
+  } else if (adEntityType === ENTITY_TYPE_PETS_ACCESSORIES) {
+    const accessory = await petAccessoryRepository.getByPublicId(adPublicId);
+    if (!accessory) {
+      return { success: false, error: "Объявление не найдено" };
+    }
+
+    adOwnerId = typeof accessory.user === "object" ? accessory.user.id : accessory.user;
+    if (adOwnerId === user.id) {
+      return { success: false, error: "Нельзя начать чат с самим собой" };
+    }
+
+    const titleAccessory =
+      [accessory.title, accessory.city].filter(Boolean).join(" • ") || "Аксессуар";
+    adSnapshot = {
+      entityType: ENTITY_TYPE_PETS_ACCESSORIES,
+      entityPublicId: accessory.publicId,
+      title: titleAccessory,
+      thumbnailUrl: accessory.images?.[0]?.url ?? "",
+      price: accessory.price,
+      adLink: `/pets/accessories/${accessory.publicId}`,
       adRemoved: false,
     };
   } else if (adEntityType === ENTITY_TYPE_PROFESSIONAL_SERVICE) {
