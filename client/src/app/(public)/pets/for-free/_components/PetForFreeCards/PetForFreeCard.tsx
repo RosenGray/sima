@@ -11,6 +11,7 @@ import {
   PetForFreeCardSwiper,
   PetForFreeCardSwiperSlide,
   PetForFreeCardContent,
+  LikeButtonWrapper,
 } from "./PetForFreeCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
@@ -19,6 +20,8 @@ import { PetGender, PetAge } from "@/lib/pets/for-sale/types/petForSale.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getAnimalById, getAnimalKindById } from "@/lib/pets/animals";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PETS_FOR_FREE } from "@/providers/LikesProvider/LikesProvider";
 
 interface PetForFreeCardProps {
   pet: SerializedPetForFree;
@@ -66,6 +69,14 @@ const PetForFreeCard: React.FC<PetForFreeCardProps> = ({ pet }) => {
   return (
     <PetForFreeCardBox id={publicId}>
       <PetForFreeCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_PETS_FOR_FREE}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <PetForFreeCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

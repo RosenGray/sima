@@ -45,6 +45,8 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deletePetForFreeAdWithRedirect } from "@/lib/pets/for-free/actions/deletePetForFreeAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PETS_FOR_FREE } from "@/providers/LikesProvider/LikesProvider";
 
 interface PetForFreeDetailClientProps {
   pet: SerializedPetForFree;
@@ -154,9 +156,17 @@ const PetForFreeDetailClient: React.FC<PetForFreeDetailClientProps> = ({
   return (
     <PageContainer size="4">
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {animalName} {kindName}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {animalName} {kindName}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_PETS_FOR_FREE}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
