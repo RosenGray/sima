@@ -4,14 +4,17 @@ import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { chatRepository } from "../repository/ChatRepository";
 import { petForSaleRepository } from "@/lib/pets/for-sale/repository/PetForSaleRepository";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
+import { jobRepository } from "@/lib/jobs/repository/JobRepository";
 import type { AdSnapshot } from "../types/chat.types";
 
 const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
 const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
+const ENTITY_TYPE_JOBS = "jobs";
 
 const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_FOR_SALE,
   ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  ENTITY_TYPE_JOBS,
 ] as const;
 
 export type GetOrCreateChatResult =
@@ -77,6 +80,27 @@ export async function getOrCreateChat(
       title,
       thumbnailUrl: service.images?.[0]?.url ?? "",
       adLink: `/professional-service/${service.publicId}`,
+      adRemoved: false,
+    };
+  } else if (adEntityType === ENTITY_TYPE_JOBS) {
+    const job = await jobRepository.getByPublicId(adPublicId);
+    if (!job) {
+      return { success: false, error: "Объявление не найдено" };
+    }
+
+    adOwnerId = typeof job.user === "object" ? job.user.id : job.user;
+    if (adOwnerId === user.id) {
+      return { success: false, error: "Нельзя начать чат с самим собой" };
+    }
+
+    const jobTitle =
+      [job.title, job.city].filter(Boolean).join(" • ") || "Вакансия";
+    adSnapshot = {
+      entityType: ENTITY_TYPE_JOBS,
+      entityPublicId: job.publicId,
+      title: jobTitle,
+      thumbnailUrl: job.images?.[0]?.url ?? "",
+      adLink: `/jobs/${job.publicId}`,
       adRemoved: false,
     };
   } else {
