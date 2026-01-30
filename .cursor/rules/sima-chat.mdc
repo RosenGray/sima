@@ -14,7 +14,7 @@ Use chat functionality when:
 
 ## Core Principles
 
-1. **One conversation per ad per user pair**: Prevent duplicate conversations using unique compound index
+1. **One conversation per ad per user pair**: Prevent duplicate conversations using a **conversationKey** (single string) unique index. Do not use a unique index on the `participants` array—MongoDB multikey indexes create one entry per array element and would block multiple users from messaging the same ad owner (E11000).
 2. **Ad snapshots**: Store ad data at conversation creation (handles deleted ads gracefully)
 3. **Soft delete initially**: Use `deletedByUserIds` array, then hard delete if needed
 4. **Security first**: Always sanitize inputs, verify ownership, check authentication
@@ -41,6 +41,7 @@ export interface IAdSnapshot {
 export interface IConversation {
   id: string;
   publicId: string;                       // nanoid(10)
+  conversationKey: string;                // Deterministic: sorted participant IDs + entityType + entityPublicId (used for unique index)
   participants: mongoose.Types.ObjectId[]; // Exactly 2 user IDs
   adSnapshot: IAdSnapshot;
   deletedByUserIds: mongoose.Types.ObjectId[];
@@ -51,9 +52,9 @@ export interface IConversation {
 
 **Required Indexes**:
 - `publicId`: unique
+- `conversationKey`: unique (one conversation per participant pair + ad; do not use unique on `participants` array—multikey index causes E11000 when multiple users message same ad)
 - `participants`: regular index
 - `deletedByUserIds`: regular index
-- `{ participants: 1, "adSnapshot.entityType": 1, "adSnapshot.entityPublicId": 1 }`: unique compound (prevents duplicates)
 
 ### Message Model Structure
 
@@ -148,11 +149,16 @@ Place chat repository in: `lib/chat/repository/ChatRepository.ts`
 
 **Key Points**:
 - Prevent self-chat (userId === adOwnerId)
-- Sort participant IDs consistently
-- Use compound index to find existing conversation
-- Create new conversation if not found
+- Sort participant IDs consistently and build deterministic **conversationKey** (e.g. `p0_p1_entityType_entityPublicId`)
+- Find existing conversation by **conversationKey** (avoids multikey unique index issues)
+- Backfill **conversationKey** for docs created before this field existed (find by participants + ad, then update)
+- Create new conversation with **conversationKey** if not found
 
 ```typescript
+function buildConversationKey(p0: string, p1: string, entityType: string, entityPublicId: string): string {
+  return `${p0}_${p1}_${entityType}_${entityPublicId}`;
+}
+
 async getOrCreateConversation(
   userId: string,
   adOwnerId: string,
@@ -164,25 +170,31 @@ async getOrCreateConversation(
 
   const uid = sanitize(userId);
   const ownerId = sanitize(adOwnerId);
-  
-  if (uid === ownerId) {
-    throw new Error("Cannot create chat with yourself");
-  }
+  if (uid === ownerId) throw new Error("Cannot create chat with yourself");
 
-  // Sort for consistent ordering
   const [p0, p1] = sortParticipantIds(uid, ownerId);
   const participantIds = [toObjectId(p0), toObjectId(p1)];
+  const conversationKey = buildConversationKey(p0, p1, sanitize(adEntityType), sanitize(adPublicId));
 
-  // Find existing conversation
-  let conv = await Conversation.findOne({
-    participants: { $all: participantIds },
-    "adSnapshot.entityType": sanitize(adEntityType),
-    "adSnapshot.entityPublicId": sanitize(adPublicId),
-  });
+  let conv = await Conversation.findOne({ conversationKey });
+
+  // Backfill conversationKey for docs created before this field existed
+  if (!conv) {
+    conv = await Conversation.findOne({
+      participants: { $all: participantIds },
+      "adSnapshot.entityType": sanitize(adEntityType),
+      "adSnapshot.entityPublicId": sanitize(adPublicId),
+    });
+    if (conv) {
+      await Conversation.updateOne({ _id: conv._id }, { $set: { conversationKey } });
+      conv.conversationKey = conversationKey;
+    }
+  }
 
   if (!conv) {
     conv = await Conversation.create({
       publicId: nanoid(10),
+      conversationKey,
       participants: participantIds,
       adSnapshot,
       deletedByUserIds: [],
@@ -883,23 +895,24 @@ const protectedRoutes = [
 ### Data Integrity
 
 1. **Ad snapshots**: Store ad data at creation (handles deleted ads)
-2. **Unique conversations**: Use compound index to prevent duplicates
-3. **Sort participants**: Always sort participant IDs consistently
+2. **Unique conversations**: Use **conversationKey** (single string) unique index to prevent duplicates. Do not use a unique index on `participants` + ad—MongoDB multikey index on the array would block multiple conversations about the same ad (E11000).
+3. **Sort participants**: Always sort participant IDs consistently when building conversationKey
 4. **Update timestamps**: Update conversation `updatedAt` on new messages
 5. **Hard delete carefully**: Consider soft delete for data retention
 
 ## Common Pitfalls
 
-1. **Forgetting to sanitize inputs**: Always use `mongo-sanitize`
-2. **Not checking participation**: Verify user is participant before allowing access
-3. **Inconsistent participant ordering**: Always sort participant IDs
-4. **Missing indexes**: Ensure all required indexes are created
-5. **Not throttling lastSeenAt**: Update only every 5 minutes
-6. **Polling too frequently**: Use 30-second intervals
-7. **Not handling empty messages**: Always trim and validate
-8. **Forgetting mobile layout**: Test responsive behavior
-9. **Not updating conversation timestamp**: Update `updatedAt` on new message
-10. **Mixing entity type formats**: Use consistent format (e.g., "pets-for-sale" not "pets_for_sale")
+1. **Unique index on participants array**: Do not use a unique compound index on `(participants, adSnapshot.entityType, adSnapshot.entityPublicId)`—MongoDB multikey index creates one entry per participant and causes E11000 when multiple users message the same ad. Use **conversationKey** (single string) instead.
+2. **Forgetting to sanitize inputs**: Always use `mongo-sanitize`
+3. **Not checking participation**: Verify user is participant before allowing access
+4. **Inconsistent participant ordering**: Always sort participant IDs when building conversationKey
+5. **Missing indexes**: Ensure conversationKey (unique), participants, and other required indexes exist
+6. **Not throttling lastSeenAt**: Update only every 5 minutes
+7. **Polling too frequently**: Use 30-second intervals
+8. **Not handling empty messages**: Always trim and validate
+9. **Forgetting mobile layout**: Test responsive behavior
+10. **Not updating conversation timestamp**: Update `updatedAt` on new message
+11. **Mixing entity type formats**: Use consistent format (e.g., "pets-for-sale" not "pets_for_sale")
 
 ## File Naming Conventions
 
@@ -926,6 +939,16 @@ const protectedRoutes = [
 - [ ] Authentication enforced
 - [ ] Error handling works
 - [ ] Loading states display
+
+## One-Time Migration (Conversation Uniqueness Fix)
+
+If the app previously used a unique compound index on `(participants, adSnapshot.entityType, adSnapshot.entityPublicId)`, run once from `client/`:
+
+```bash
+node scripts/drop-conversations-old-index.js
+```
+
+This drops the old index (which caused E11000 when multiple users messaged the same ad owner) and backfills **conversationKey** for existing conversations. Requires `MONGO_URI` or `MONGODB_URI` (or `DB_USERNAME`/`DB_PASSWORD` with `NODE_ENV=production`).
 
 ## References
 

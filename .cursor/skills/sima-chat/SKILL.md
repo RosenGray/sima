@@ -76,6 +76,7 @@ graph TB
 interface IConversation {
   id: string;
   publicId: string; // nanoid(10)
+  conversationKey: string; // Deterministic: sorted participant IDs + entityType + entityPublicId (used for unique index)
   participants: mongoose.Types.ObjectId[]; // Array of 2 user IDs
   adSnapshot: IAdSnapshot; // Snapshot of the ad at conversation creation
   deletedByUserIds: mongoose.Types.ObjectId[]; // Users who deleted this chat
@@ -96,9 +97,9 @@ interface IAdSnapshot {
 
 **Indexes**:
 - `publicId`: unique index
+- `conversationKey`: unique index (one conversation per participant pair + ad). Do not use a unique index on `participants` + ad—MongoDB multikey index on the array creates one entry per participant and causes E11000 when multiple users message the same ad owner.
 - `participants`: index
 - `deletedByUserIds`: index
-- `{ participants: 1, "adSnapshot.entityType": 1, "adSnapshot.entityPublicId": 1 }`: unique compound index (prevents duplicate conversations)
 
 ### Message Model
 
@@ -583,9 +584,13 @@ export const InputStripe = styled(Flex)`
 
 ### getOrCreateConversation
 
-Creates or retrieves a conversation between two users for a specific ad:
+Creates or retrieves a conversation between two users for a specific ad. Uses a deterministic **conversationKey** (sorted participant IDs + entityType + entityPublicId) for the unique index; do not use a unique index on the `participants` array (MongoDB multikey index would cause E11000 when multiple users message the same ad).
 
 ```typescript
+function buildConversationKey(p0: string, p1: string, entityType: string, entityPublicId: string): string {
+  return `${p0}_${p1}_${entityType}_${entityPublicId}`;
+}
+
 async getOrCreateConversation(
   userId: string,
   adOwnerId: string,
@@ -595,25 +600,31 @@ async getOrCreateConversation(
 ): Promise<{ publicId: string }> {
   await connectDB();
 
-  // Prevent self-chat
-  if (userId === adOwnerId) {
-    throw new Error("Cannot create chat with yourself");
-  }
+  if (userId === adOwnerId) throw new Error("Cannot create chat with yourself");
 
-  // Sort participant IDs for consistent ordering
   const [p0, p1] = sortParticipantIds(userId, adOwnerId);
   const participantIds = [toObjectId(p0), toObjectId(p1)];
+  const conversationKey = buildConversationKey(p0, p1, sanitize(adEntityType), sanitize(adPublicId));
 
-  // Find existing conversation (prevents duplicates)
-  let conv = await Conversation.findOne({
-    participants: { $all: participantIds },
-    "adSnapshot.entityType": sanitize(adEntityType),
-    "adSnapshot.entityPublicId": sanitize(adPublicId),
-  });
+  let conv = await Conversation.findOne({ conversationKey });
+
+  // Backfill conversationKey for docs created before this field existed
+  if (!conv) {
+    conv = await Conversation.findOne({
+      participants: { $all: participantIds },
+      "adSnapshot.entityType": sanitize(adEntityType),
+      "adSnapshot.entityPublicId": sanitize(adPublicId),
+    });
+    if (conv) {
+      await Conversation.updateOne({ _id: conv._id }, { $set: { conversationKey } });
+      conv.conversationKey = conversationKey;
+    }
+  }
 
   if (!conv) {
     conv = await Conversation.create({
       publicId: nanoid(10),
+      conversationKey,
       participants: participantIds,
       adSnapshot,
       deletedByUserIds: [],
@@ -714,7 +725,7 @@ async createMessage(
 
 ### Performance
 
-1. **Use indexes**: Ensure proper indexes on `participants`, `conversation`, and `createdAt`
+1. **Use indexes**: Ensure proper indexes on `conversationKey` (unique), `participants`, `conversation`, and `createdAt`. Do not create a unique index on `participants` + ad (multikey index causes E11000).
 2. **Limit message queries**: Use `.limit()` when fetching recent messages
 3. **Throttle lastSeenAt updates**: Only update every 5 minutes to reduce DB writes
 4. **Use lean queries**: Use `.lean()` for read-only queries to improve performance
@@ -735,9 +746,9 @@ async createMessage(
 
 1. **Soft delete**: Use `deletedByUserIds` array instead of hard delete initially
 2. **Ad snapshots**: Store ad data at conversation creation (handles deleted ads)
-3. **Unique conversations**: Use compound index to prevent duplicate conversations
+3. **Unique conversations**: Use **conversationKey** (single string) unique index to prevent duplicates. Do not use a unique index on `participants` + ad—MongoDB multikey index on the array causes E11000 when multiple users message the same ad owner.
 4. **Update conversation timestamp**: Update `updatedAt` when new message is sent
-5. **Sort participants**: Always sort participant IDs consistently
+5. **Sort participants**: Always sort participant IDs consistently when building conversationKey
 
 ## Error Handling
 
@@ -762,6 +773,20 @@ async createMessage(
 5. **Conversation not found**:
    - Check: `getConversationByPublicId()` returns null
    - Use: `notFound()` for page-level 404
+
+6. **E11000 duplicate key (conversations)**:
+   - Cause: Unique index on `participants` (array) + ad creates a multikey index; multiple conversations about the same ad (e.g. owner+user2 and owner+user3) collide on (owner, ad).
+   - Fix: Use **conversationKey** (single string: sorted participant IDs + entityType + entityPublicId) with a unique index. Run one-time migration: `node scripts/drop-conversations-old-index.js` from `client/`.
+
+## One-Time Migration (Conversation Uniqueness)
+
+If the app previously used a unique compound index on `(participants, adSnapshot.entityType, adSnapshot.entityPublicId)`, run once from `client/`:
+
+```bash
+node scripts/drop-conversations-old-index.js
+```
+
+This drops the old index and backfills **conversationKey** for existing conversations. Requires `MONGO_URI` or `MONGODB_URI` (or `DB_USERNAME`/`DB_PASSWORD` with `NODE_ENV=production`). See `client/scripts/drop-conversations-old-index.js`.
 
 ## Testing Checklist
 
@@ -827,6 +852,7 @@ client/src/
 - Entity integration: `client/src/app/(public)/pets/for-sale/_components/PetForSaleDetailClient/PetForSaleDetailClient.tsx`
 - Repository pattern: `client/src/lib/chat/repository/ChatRepository.ts`
 - Server actions: `client/src/lib/chat/actions/`
+- One-time migration: `client/scripts/drop-conversations-old-index.js`
 
 ## Future Enhancements
 
