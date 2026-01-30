@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -40,6 +40,8 @@ import {
   ButtonGroup,
 } from "./JobDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_JOBS } from "@/providers/LikesProvider/LikesProvider";
 import { deleteJobAdWithRedirect } from "@/lib/jobs/actions/deleteJobAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
@@ -108,9 +110,17 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
     <PageContainer size="4">
       {/* Header Section with Title and Owner Actions */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {title}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {title}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_JOBS}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">

@@ -10,7 +10,6 @@ export const ChatPageContainer = styled(Box)`
   margin: 0 auto;
   height: 100%;
 
-
   @media (min-width: ${breakpoints.md}px) {
     padding: var(--space-6);
   }

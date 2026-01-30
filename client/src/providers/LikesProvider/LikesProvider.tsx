@@ -22,10 +22,12 @@ import {
 
 export const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
 export const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
+export const ENTITY_TYPE_JOBS = "jobs";
 
 const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_PETS_FOR_SALE,
   ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  ENTITY_TYPE_JOBS,
 ] as const;
 
 type LikedIdsByEntity = Record<string, Set<string>>;

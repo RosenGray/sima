@@ -11,12 +11,15 @@ import {
   JobCardSwiperSlide,
   JobCardContent,
   JobCardFooter,
+  LikeButtonWrapper,
 } from "./JobCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedJob } from "@/lib/jobs/types/job.types";
 import { getCityById, getDistrictById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_JOBS } from "@/providers/LikesProvider/LikesProvider";
 
 interface JobCardProps {
   job: SerializedJob;
@@ -32,6 +35,14 @@ const JobCardComponent: React.FC<JobCardProps> = ({ job }) => {
   return (
     <JobCardBox id={publicId}>
       <JobCard variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_JOBS}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <JobCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">
