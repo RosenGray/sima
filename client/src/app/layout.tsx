@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Theme as RadixTheme } from "@radix-ui/themes";
 import { ThemeProvider } from "next-themes";
 import "@radix-ui/themes/styles.css";
@@ -36,6 +37,10 @@ export default async function RootLayout({
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
       <body>
+        <Script
+          src="https://acc-landing.vercel.app/accessibilik.min.js"
+          strategy="afterInteractive"
+        />
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <LikesProvider initialLikedIds={initialLikedIds}>
