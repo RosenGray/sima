@@ -3,6 +3,9 @@ import Header from "../components/Header/Header/Header";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
 import Dummy from "@/components/Dummy/Dummy";
+import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
+import type { BannerSlideItem } from "@/components/BannerCarousel/BannerCarousel.types";
+import { navItems } from "@/components/Header/Header/navItems";
 
 // const PageContainer = styled(Container)`
 //   min-height: 100vh;
@@ -19,12 +22,36 @@ import Dummy from "@/components/Dummy/Dummy";
 //   max-width: 600px;
 // `;
 
+function buildBannerItems(): BannerSlideItem[] {
+  const servicesEntry: BannerSlideItem = {
+    href: "/professional-service",
+    label: "Услуги специалистов",
+    imageDesktop: "https://picsum.photos/seed/banner0/1200/250",
+    imageMobile: "https://picsum.photos/seed/banner0m/800/250",
+  };
+  const fromNav = navItems.map((item, index) => {
+    const first = item.subItems[0];
+    const seed = index + 1;
+    return {
+      href: first!.href,
+      label: first!.label,
+      imageDesktop: `https://picsum.photos/seed/banner${seed}/1200/250`,
+      imageMobile: `https://picsum.photos/seed/banner${seed}m/800/250`,
+    } satisfies BannerSlideItem;
+  });
+  return [servicesEntry, ...fromNav];
+}
+
 export default async function Home() {
   const serviceCategories = await serviceCategoryRepository.getAll();
+  const bannerItems = buildBannerItems();
 
   return (
     <HomePageProvider data={{ serviceCategories }}>
-      <Header />
+      {/* <Header /> */}
+      <Box width="100%" style={{ width: "100%" }}>
+        <BannerCarousel items={bannerItems} autoplay loop />
+      </Box>
       <Box pt="7rem">
         <Box>
           <Flex direction="column" gap="6" align="center">
