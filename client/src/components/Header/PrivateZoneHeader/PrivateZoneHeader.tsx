@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Flex, Text } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 import { PersonIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import {
   MobileMenuButton,
@@ -23,6 +23,7 @@ import {
 import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
 import { Logo } from "../Header.styles";
 import { DropdownMenu } from "@/components/DropdownMenu";
+import { ThemeToggleButton } from "@/components/ThemeToggleButton/ThemeToggleButton";
 import { logoutUser } from "@/lib/auth/actions/logout";
 
 export default function PrivateZoneHeader() {
@@ -69,7 +70,7 @@ export default function PrivateZoneHeader() {
                 <SimaDarkLogo width={200} height={60} />
               </Link>
             </Logo>
-            <PrivateZoneTitle>Личная зона</PrivateZoneTitle>
+            <PrivateZoneTitle>Личный кабинет</PrivateZoneTitle>
           </PrivateZoneHeaderLeft>
 
           <PrivateZoneActionsContainer>
@@ -103,6 +104,7 @@ export default function PrivateZoneHeader() {
                 triggerMode="hover"
               />
             )}
+            <ThemeToggleButton />
           </PrivateZoneActionsContainer>
         </PrivateZoneHeaderTopRow>
       </PrivateZoneHeaderContainer>
