@@ -63,7 +63,7 @@ export default function MobileMenu({ isOpen, navigationItems, onClose }: MobileM
             <Link href="/publish-ad" onClick={onClose}>
               <PlusCircledIcon width="18" height="18" />
               <Text size="2" weight="bold">
-                Разместить объявление
+                Добавить объявление
               </Text>
             </Link>
           </MobilePublishAdButton>
