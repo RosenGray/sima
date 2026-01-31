@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Text, Box } from "@radix-ui/themes";
+import { Button, Flex, Heading, Text, Box, Container } from "@radix-ui/themes";
 import Header from "../components/Header/Header/Header";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
@@ -49,9 +49,8 @@ export default async function Home() {
   return (
     <HomePageProvider data={{ serviceCategories }}>
       {/* <Header /> */}
-      <Box width="100%" style={{ width: "100%" }}>
-        <BannerCarousel items={bannerItems} autoplay loop />
-      </Box>
+      <Container>
+      <BannerCarousel items={bannerItems} autoplay loop />
       <Box pt="7rem">
         <Box>
           <Flex direction="column" gap="6" align="center">
@@ -87,6 +86,7 @@ export default async function Home() {
           </div>
         </Box>
       </Box>
+      </Container>
     </HomePageProvider>
   );
 }
