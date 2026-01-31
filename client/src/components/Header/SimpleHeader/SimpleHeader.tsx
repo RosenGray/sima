@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { PersonIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import {
   Logo,
   MobileMenuButton,
@@ -12,17 +12,20 @@ import {
   LoginButton,
   PublishAdButton,
   SimpleHeaderContainer,
+  DropdownMenuTrigger,
 } from "./../Header.styles";
 import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
 import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
+import { logoutUser } from "@/lib/auth/actions/logout";
+import { DropdownMenu } from "@/components/DropdownMenu";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
-
+  const firstName = user?.firstName;
+  const lastName = user?.lastName;
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -51,7 +54,7 @@ export default function Header() {
           {/* Logo - Center */}
           <Logo>
             <Link href="/">
-            <SimaDarkLogo width={200} height={60}  />
+              <SimaDarkLogo width={200} height={60} />
             </Link>
           </Logo>
 
@@ -60,15 +63,28 @@ export default function Header() {
               <Link href="/publish-ad">
                 <PlusCircledIcon width="16" height="16" />
                 <Text size="2" weight="medium">
-                  Разместить объявление
+                  Добавить объявление
                 </Text>
               </Link>
             </PublishAdButton>
             {user ? (
-              <LogoutButton />
+              <DropdownMenu trigger={<DropdownMenuTrigger>
+                <Text size="2" weight="medium">
+                  {firstName?.charAt(0)}
+                  {lastName?.charAt(0)}
+                </Text>
+              </DropdownMenuTrigger>} items={[{
+                type: "action",
+                label: "Выйти",
+                icon: <PersonIcon width="18" height="18" />,
+                onClick: async () => {
+                  await logoutUser();
+                },
+              }]} triggerMode="hover" />
             ) : (
               <LoginButton asChild variant="surface" size="2">
                 <Link href="/auth/login">
+                  <PersonIcon width="18" height="18" />
                   <Text size="2" weight="medium">
                     Войти
                   </Text>
@@ -80,11 +96,12 @@ export default function Header() {
         </Flex>
       </SimpleHeaderContainer>
 
-      {/* Mobile Menu Component */}
+      {/* Mobile Menu Component - same as normal header but no category nav (NavigationItemsContainer) */}
       <MobileMenu
         isOpen={isMobileMenuOpen}
         navigationItems={[]}
         onClose={closeMobileMenu}
+        user={user}
       />
     </>
   );

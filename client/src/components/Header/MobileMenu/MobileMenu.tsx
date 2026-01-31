@@ -196,19 +196,21 @@ export default function MobileMenu({
           })}
         </MobileMenuNavSection>
 
-        {/* Category navigation (Услуги, Работа, Транспорт, etc.) */}
-        <NavigationItemsContainer>
-          {navigationItems.map((item) => (
-            <NavMobileItem
-              key={item.label}
-              label={item.label}
-              subItems={item.subItems}
-              isExpanded={expandedCategory === item.label}
-              onToggle={() => toggleCategory(item.label)}
-              onSubItemClick={handleSubItemClick}
-            />
-          ))}
-        </NavigationItemsContainer>
+        {/* Category navigation (Услуги, Работа, Транспорт, etc.) - only when navigationItems provided (e.g. main header; hidden in SimpleHeader) */}
+        {navigationItems.length > 0 && (
+          <NavigationItemsContainer>
+            {navigationItems.map((item) => (
+              <NavMobileItem
+                key={item.label}
+                label={item.label}
+                subItems={item.subItems}
+                isExpanded={expandedCategory === item.label}
+                onToggle={() => toggleCategory(item.label)}
+                onSubItemClick={handleSubItemClick}
+              />
+            ))}
+          </NavigationItemsContainer>
+        )}
       </MobileMenuContainer>
     </>
   );
