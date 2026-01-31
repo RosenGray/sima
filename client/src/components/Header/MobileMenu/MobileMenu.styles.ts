@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import Link from 'next/link';
-import { Button } from '@radix-ui/themes';
+import styled from "styled-components";
+import Link from "next/link";
+import { Button } from "@radix-ui/themes";
 
 export const MobileMenuOverlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;

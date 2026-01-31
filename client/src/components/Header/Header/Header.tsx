@@ -6,6 +6,8 @@ import { Flex, Text } from "@radix-ui/themes";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import {
   HeaderContainer,
+  HeaderTopRow,
+  HeaderBottomRow,
   Logo,
   Nav,
   NavItem,
@@ -117,9 +119,7 @@ export default function Header() {
     };
     const yad2 = {
       label: "Куплю-Продаю",
-      subItems: [
-        { label: "Все", href: "/yad2" },
-      ],
+      subItems: [{ label: "Все", href: "/yad2" }],
     };
     return [services, jobs, pets, vehicles, other, realEstate, yad2];
   }, [serviceCategories]);
@@ -136,47 +136,27 @@ export default function Header() {
   return (
     <>
       <HeaderContainer>
-        <Flex justify="between" align="center" height="100%">
-          {/* Mobile Menu Button - Left side on mobile */}
-          <MobileMenuButton
-            variant="ghost"
-            size="2"
-            onClick={toggleMobileMenu}
-            aria-label="Toggle mobile menu"
-          >
-            <HamburgerIcon $isOpen={isMobileMenuOpen}>
-              <span />
-              <span />
-              <span />
-            </HamburgerIcon>
-          </MobileMenuButton>
-
-          {/* Logo - Center */}
-          <Logo>
-            <Link href="/">
-              <SimaDarkLogo width={200} height={60} />
-            </Link>
-          </Logo>
-
-          {/* Desktop Navigation - Hidden on mobile */}
-          <Nav>
-            {navigationItems.map((item) => (
-              <NavItem key={item.label}>
-                <Text size="3" weight="medium">
-                  {item.label}
-                </Text>
-                <DropdownMenu>
-                  {item.subItems.map((subItem) => (
-                    <DropdownItem key={subItem?.label} href={subItem?.href}>
-                      <Text size="2">{subItem?.label}</Text>
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </NavItem>
-            ))}
-          </Nav>
-
-          {/* Right-side Actions: Publish Ad + Login + Theme Toggle */}
+        {/* Top row: Logo left, Actions right (hamburger on mobile only) */}
+        <HeaderTopRow>
+          <Flex align="center" gap="2">
+            <MobileMenuButton
+              variant="ghost"
+              size="2"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle mobile menu"
+            >
+              <HamburgerIcon $isOpen={isMobileMenuOpen}>
+                <span />
+                <span />
+                <span />
+              </HamburgerIcon>
+            </MobileMenuButton>
+            <Logo>
+              <Link style={{display: "flex", alignItems: "center", justifyContent: "center"}} href="/">
+                <SimaDarkLogo width={200} height={60} />
+              </Link>
+            </Logo>
+          </Flex>
           <ActionsContainer>
             <PublishAdButton asChild variant="solid" size="2">
               <Link href="/publish-ad">
@@ -199,7 +179,27 @@ export default function Header() {
             )}
             <ThemeToggleButton />
           </ActionsContainer>
-        </Flex>
+        </HeaderTopRow>
+
+        {/* Bottom row: Nav in the middle (desktop only) */}
+        <HeaderBottomRow>
+          <Nav>
+            {navigationItems.map((item) => (
+              <NavItem key={item.label}>
+                <Text size="2" weight="medium">
+                  {item.label}
+                </Text>
+                <DropdownMenu>
+                  {item.subItems.map((subItem) => (
+                    <DropdownItem key={subItem?.label} href={subItem?.href}>
+                      <Text size="2">{subItem?.label}</Text>
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </NavItem>
+            ))}
+          </Nav>
+        </HeaderBottomRow>
       </HeaderContainer>
 
       {/* Mobile Menu Component */}

@@ -25,7 +25,7 @@ export default async function Home() {
   return (
     <HomePageProvider data={{ serviceCategories }}>
       <Header />
-      <Box pt="6rem">
+      <Box pt="7rem">
         <Box>
           <Flex direction="column" gap="6" align="center">
             <Heading size="9" weight="bold">
