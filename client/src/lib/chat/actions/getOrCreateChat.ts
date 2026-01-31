@@ -8,6 +8,7 @@ import { petAccessoryRepository } from "@/lib/pets/accessories/repository/PetAcc
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { jobRepository } from "@/lib/jobs/repository/JobRepository";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
+import { offRoadVehicleRepository } from "@/lib/vehicles/off-road/repository/OffRoadVehicleRepository";
 import type { AdSnapshot } from "../types/chat.types";
 
 const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
@@ -16,6 +17,7 @@ const ENTITY_TYPE_PETS_ACCESSORIES = "pets-accessories";
 const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
 const ENTITY_TYPE_JOBS = "jobs";
 const ENTITY_TYPE_CARS = "cars";
+const ENTITY_TYPE_OFF_ROAD = "off-road";
 
 const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -24,6 +26,7 @@ const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PROFESSIONAL_SERVICE,
   ENTITY_TYPE_JOBS,
   ENTITY_TYPE_CARS,
+  ENTITY_TYPE_OFF_ROAD,
 ] as const;
 
 export type GetOrCreateChatResult =
@@ -176,6 +179,29 @@ export async function getOrCreateChat(
       thumbnailUrl: car.images?.[0]?.url ?? "",
       price: car.price,
       adLink: `/vehicles/cars/${car.publicId}`,
+      adRemoved: false,
+    };
+  } else if (adEntityType === ENTITY_TYPE_OFF_ROAD) {
+    const offRoadVehicle = await offRoadVehicleRepository.getByPublicId(adPublicId);
+    if (!offRoadVehicle) {
+      return { success: false, error: "Объявление не найдено" };
+    }
+
+    adOwnerId = typeof offRoadVehicle.user === "object" ? offRoadVehicle.user.id : offRoadVehicle.user;
+    if (adOwnerId === user.id) {
+      return { success: false, error: "Нельзя начать чат с самим собой" };
+    }
+
+    const offRoadTitle =
+      [offRoadVehicle.manufacturer, offRoadVehicle.model, offRoadVehicle.city].filter(Boolean).join(" • ") ||
+      "Внедорожник";
+    adSnapshot = {
+      entityType: ENTITY_TYPE_OFF_ROAD,
+      entityPublicId: offRoadVehicle.publicId,
+      title: offRoadTitle,
+      thumbnailUrl: offRoadVehicle.images?.[0]?.url ?? "",
+      price: offRoadVehicle.price,
+      adLink: `/vehicles/off-road/${offRoadVehicle.publicId}`,
       adRemoved: false,
     };
   } else {
