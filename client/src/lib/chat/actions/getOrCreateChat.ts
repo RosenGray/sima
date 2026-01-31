@@ -7,6 +7,7 @@ import { petForFreeRepository } from "@/lib/pets/for-free/repository/PetForFreeR
 import { petAccessoryRepository } from "@/lib/pets/accessories/repository/PetAccessoryRepository";
 import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { jobRepository } from "@/lib/jobs/repository/JobRepository";
+import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import type { AdSnapshot } from "../types/chat.types";
 
 const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
@@ -14,6 +15,7 @@ const ENTITY_TYPE_PETS_FOR_FREE = "pets-for-free";
 const ENTITY_TYPE_PETS_ACCESSORIES = "pets-accessories";
 const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
 const ENTITY_TYPE_JOBS = "jobs";
+const ENTITY_TYPE_CARS = "cars";
 
 const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -21,6 +23,7 @@ const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_ACCESSORIES,
   ENTITY_TYPE_PROFESSIONAL_SERVICE,
   ENTITY_TYPE_JOBS,
+  ENTITY_TYPE_CARS,
 ] as const;
 
 export type GetOrCreateChatResult =
@@ -150,6 +153,29 @@ export async function getOrCreateChat(
       title: jobTitle,
       thumbnailUrl: job.images?.[0]?.url ?? "",
       adLink: `/jobs/${job.publicId}`,
+      adRemoved: false,
+    };
+  } else if (adEntityType === ENTITY_TYPE_CARS) {
+    const car = await carRepository.getByPublicId(adPublicId);
+    if (!car) {
+      return { success: false, error: "Объявление не найдено" };
+    }
+
+    adOwnerId = typeof car.user === "object" ? car.user.id : car.user;
+    if (adOwnerId === user.id) {
+      return { success: false, error: "Нельзя начать чат с самим собой" };
+    }
+
+    const carTitle =
+      [car.manufacturer, car.model, car.city].filter(Boolean).join(" • ") ||
+      "Автомобиль";
+    adSnapshot = {
+      entityType: ENTITY_TYPE_CARS,
+      entityPublicId: car.publicId,
+      title: carTitle,
+      thumbnailUrl: car.images?.[0]?.url ?? "",
+      price: car.price,
+      adLink: `/vehicles/cars/${car.publicId}`,
       adRemoved: false,
     };
   } else {
