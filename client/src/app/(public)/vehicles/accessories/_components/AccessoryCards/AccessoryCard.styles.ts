@@ -73,3 +73,10 @@ export const AccessoryCardFooter = styled(Flex)`
   flex-wrap: wrap;
   margin-top: auto;
 `;
+
+export const LikeButtonWrapper = styled(Box)`
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
+`;

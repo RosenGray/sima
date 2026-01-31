@@ -41,6 +41,8 @@ import {
 } from "./AccessoryDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteAccessoryAdWithRedirect } from "@/lib/vehicles/accessories/actions/deleteAccessoryAd";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_VEHICLES_ACCESSORIES } from "@/providers/LikesProvider/LikesProvider";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import {
@@ -144,6 +146,12 @@ const AccessoryDetailClient: React.FC<AccessoryDetailClientProps> = ({
       <HeaderSection>
         <PageTitle size="8" weight="bold">
           {title}
+          <LikeButton
+            entityType={ENTITY_TYPE_VEHICLES_ACCESSORIES}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
         </PageTitle>
         {isOwner && (
           <ButtonGroup>
