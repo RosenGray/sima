@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Avatar, Flex } from "@radix-ui/themes";
 import { ExitIcon } from "@radix-ui/react-icons";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { logoutUser } from "@/lib/auth/actions/logout";
 import { PRIVATE_ZONE_NAV_LINKS } from "../../constants/privateZoneNavLinks";
@@ -21,6 +22,8 @@ import {
 
 export default function PrivateZoneSidebarContent() {
   const { user } = useAuth();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const fullName =
     user?.firstName && user?.lastName
@@ -43,8 +46,8 @@ export default function PrivateZoneSidebarContent() {
           fallback={initials}
           radius="full"
           style={{
-            backgroundColor: "var(--gray-9)",
-            color: "var(--gray-1)",
+            backgroundColor: isDark ? "var(--gray-5)" : "var(--gray-9)",
+            color: isDark ? "var(--gray-12)" : "var(--gray-1)",
             fontWeight: 600,
           }}
         />

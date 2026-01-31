@@ -19,13 +19,15 @@ export const SidebarUserBlock = styled(Flex)`
 export const SidebarUserName = styled.span`
   font-size: var(--font-size-4);
   font-weight: 600;
-  color: var(--gray-1);
+  /* gray-12: dark text on light sidebar (light theme), light text on dark sidebar (dark theme) */
+  color: var(--gray-12);
   text-align: center;
 `;
 
 export const SidebarUserEmail = styled.span`
   font-size: var(--font-size-2);
-  color: var(--gray-9);
+  /* gray-11: readable on both light and dark sidebar */
+  color: var(--gray-11);
   text-align: center;
 `;
 
@@ -45,7 +47,7 @@ export const SidebarNavLink = styled(Flex)`
   cursor: pointer;
   transition: background 0.2s ease;
   text-decoration: none;
-  color: var(--gray-1);
+  color: var(--gray-12);
 
   &:hover {
     background: var(--gray-a4);
@@ -62,11 +64,11 @@ export const SidebarLogoutBlock = styled(Flex)`
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
   margin-top: var(--space-4);
-  border-top: 1px solid var(--gray-8);
+  border-top: 1px solid var(--gray-6);
   cursor: pointer;
   border-radius: var(--radius-3);
   transition: background 0.2s ease;
-  color: var(--gray-1);
+  color: var(--gray-12);
 
   &:hover {
     background: var(--gray-a4);
