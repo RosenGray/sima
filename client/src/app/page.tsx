@@ -8,6 +8,8 @@ import type { BannerSlideItem } from "@/components/BannerCarousel/BannerCarousel
 import { CategoryLinks } from "@/components/CategoryLinks/CategoryLinks";
 import type { CategoryLinkItem } from "@/components/CategoryLinks/CategoryLinks.types";
 import { navItems } from "@/components/Header/Header/navItems";
+import { ListingCardCarousel } from "@/components/ListingCardCarousel/ListingCardCarousel";
+import type { ListingCardCarouselItem } from "@/components/ListingCardCarousel/ListingCardCarousel.types";
 
 // const PageContainer = styled(Container)`
 //   min-height: 100vh;
@@ -56,10 +58,58 @@ function buildCategoryItems(): CategoryLinkItem[] {
   });
 }
 
+const LISTING_CARD_CAROUSEL_ITEMS: ListingCardCarouselItem[] = [
+  {
+    imageUrl: "https://picsum.photos/seed/listing1/400/200",
+    title: "נכס מדהים פינתי 145 מ\"ר למאפיה, קונדטוריה...",
+    subtitle: "מקום מושלם לעסק. גישה נוחה, חניה.",
+    city: "רמת גן",
+    price: "₪ 30,000",
+    href: "/professional-service",
+  },
+  {
+    imageUrl: "https://picsum.photos/seed/listing2/400/200",
+    title: "דירת גן מרווחת עם גינה פרטית",
+    subtitle: "3 חדרים, 85 מ\"ר. שקט וירוק.",
+    city: "תל אביב",
+    price: "₪ 12,500",
+    href: "/vehicles/cars",
+  },
+  {
+    imageUrl: "https://picsum.photos/seed/listing3/400/200",
+    title: "משרדים במרכז העסקים",
+    subtitle: "קומה 12, נוף פנורמי. מיזוג מלא.",
+    city: "חיפה",
+    price: "₪ 8,000",
+    href: "/jobs",
+  },
+  {
+    imageUrl: "https://picsum.photos/seed/listing4/400/200",
+    title: "סטודיו מעוצב ליד הים",
+    subtitle: "ריהוט מלא. מרפסת. 5 דקות לחוף.",
+    city: "הרצליה",
+    price: "₪ 6,200",
+    href: "/yad2",
+  },
+  {
+    imageUrl: "https://picsum.photos/seed/listing5/400/200",
+    title: "וילה פרטית עם בריכה",
+    subtitle: "5 חדרים, 250 מ\"ר. גינה מטופחת.",
+    city: "כפר סבא",
+    price: "₪ 25,000",
+    href: "/real-estate/for-sale",
+  },
+];
+
+function buildListingCardCarouselItems(): ListingCardCarouselItem[] {
+  return LISTING_CARD_CAROUSEL_ITEMS;
+}
+
 export default async function Home() {
   const serviceCategories = await serviceCategoryRepository.getAll();
   const bannerItems = buildBannerItems();
   const categoryItems = buildCategoryItems();
+  const listingCardCarouselItems = buildListingCardCarouselItems();
 
   return (
     <HomePageProvider data={{ serviceCategories }}>
@@ -67,6 +117,9 @@ export default async function Home() {
       <Container>
       <BannerCarousel items={bannerItems} autoplay loop />
       <CategoryLinks items={categoryItems} ariaLabel="Категории" />
+      <Box pt="4">
+        <ListingCardCarousel items={listingCardCarouselItems} ariaLabel="Карточки объявлений" />
+      </Box>
       <Box pt="7rem">
         <Box>
           <Flex direction="column" gap="6" align="center">
