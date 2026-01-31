@@ -29,6 +29,7 @@ import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
 import { NavigationItems, renderLinkOrDropdown } from "../Header.utils";
 import { navItems } from "./navItems";
 import { DropdownMenu as DropdownMenuComponent } from "@/components/DropdownMenu";
+import { logoutUser } from "@/lib/auth/actions/logout";
 
 export default function Header() {
   const { serviceCategories } = useHomePage();
@@ -112,9 +113,9 @@ export default function Header() {
               </DropdownMenuTrigger>} items={[{
                 type: "action",
                 label: "Выйти",
-                shortcut: "Ctrl+L",
-                onClick: () => {
-                  console.log("Logout");
+                icon: <PersonIcon width="18" height="18" />,
+                onClick: async () => {
+                  await logoutUser();
                 },
               }]} triggerMode="hover" />
             ) : (
