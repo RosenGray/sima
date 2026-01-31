@@ -5,6 +5,8 @@ import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
 import Dummy from "@/components/Dummy/Dummy";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import type { BannerSlideItem } from "@/components/BannerCarousel/BannerCarousel.types";
+import { CategoryLinks } from "@/components/CategoryLinks/CategoryLinks";
+import type { CategoryLinkItem } from "@/components/CategoryLinks/CategoryLinks.types";
 import { navItems } from "@/components/Header/Header/navItems";
 
 // const PageContainer = styled(Container)`
@@ -42,15 +44,29 @@ function buildBannerItems(): BannerSlideItem[] {
   return [servicesEntry, ...fromNav];
 }
 
+function buildCategoryItems(): CategoryLinkItem[] {
+  return navItems.map((item, index) => {
+    const first = item.subItems[0];
+    const seed = index + 1;
+    return {
+      href: first!.href,
+      label: item.label,
+      imageUrl: `https://picsum.photos/seed/category${seed}/150/150`,
+    };
+  });
+}
+
 export default async function Home() {
   const serviceCategories = await serviceCategoryRepository.getAll();
   const bannerItems = buildBannerItems();
+  const categoryItems = buildCategoryItems();
 
   return (
     <HomePageProvider data={{ serviceCategories }}>
       {/* <Header /> */}
       <Container>
       <BannerCarousel items={bannerItems} autoplay loop />
+      <CategoryLinks items={categoryItems} ariaLabel="Категории" />
       <Box pt="7rem">
         <Box>
           <Flex direction="column" gap="6" align="center">
