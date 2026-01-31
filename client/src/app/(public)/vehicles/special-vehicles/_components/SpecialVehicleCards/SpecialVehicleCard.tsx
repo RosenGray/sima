@@ -11,7 +11,10 @@ import {
   SpecialVehicleCardSwiper,
   SpecialVehicleCardSwiperSlide,
   SpecialVehicleCardContent,
+  LikeButtonWrapper,
 } from "./SpecialVehicleCard.styles";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_SPECIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedSpecialVehicle } from "@/lib/vehicles/special-vehicles/types/specialVehicle.types";
@@ -68,6 +71,14 @@ const SpecialVehicleCard: React.FC<SpecialVehicleCardProps> = ({
   return (
     <SpecialVehicleCardBox id={publicId}>
       <SpecialVehicleCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_SPECIAL_VEHICLES}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <SpecialVehicleCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

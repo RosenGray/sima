@@ -30,6 +30,7 @@ export const ENTITY_TYPE_OFF_ROAD = "vehicles-off-road";
 export const ENTITY_TYPE_COMMERCIAL_VEHICLES = "vehicles-commercial";
 export const ENTITY_TYPE_MOTORCYCLES = "vehicles-motorcycles";
 export const ENTITY_TYPE_SCOOTERS = "vehicles-scooters";
+export const ENTITY_TYPE_SPECIAL_VEHICLES = "vehicles-special-vehicles";
 
 const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -42,6 +43,7 @@ const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_COMMERCIAL_VEHICLES,
   ENTITY_TYPE_MOTORCYCLES,
   ENTITY_TYPE_SCOOTERS,
+  ENTITY_TYPE_SPECIAL_VEHICLES,
 ] as const;
 
 type LikedIdsByEntity = Record<string, Set<string>>;
