@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -47,6 +47,8 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteCarAdWithRedirect } from "@/lib/vehicles/cars/actions/deleteCarAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_CARS } from "@/providers/LikesProvider/LikesProvider";
 
 interface CarDetailClientProps {
   car: SerializedCar;
@@ -162,9 +164,17 @@ const CarDetailClient: React.FC<CarDetailClientProps> = ({ car }) => {
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {manufacturer} {model}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {manufacturer} {model}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_CARS}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
