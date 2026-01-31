@@ -11,26 +11,26 @@ const ForFreeIcon = ({ width, height, viewBox = { width: 100, height: 100 } }: F
         <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox={`0 0 ${viewBox?.width} ${viewBox?.height}`} fill="none">
             <defs>
                 <linearGradient id="dogGrad" x1="0%" y1="0%" x2="0%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#fde68a" />
-                    <stop offset="0.5" stop-color="#fbbf24" />
-                    <stop offset="1" stop-color="#f59e0b" />
+                    <stop offset="0" stopColor="#fde68a" />
+                    <stop offset="0.5" stopColor="#fbbf24" />
+                    <stop offset="1" stopColor="#f59e0b" />
                 </linearGradient>
                 <linearGradient id="catGrad" x1="0%" y1="0%" x2="0%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#c4b5fd" />
-                    <stop offset="1" stop-color="#7c3aed" />
+                    <stop offset="0" stopColor="#c4b5fd" />
+                    <stop offset="1" stopColor="#7c3aed" />
                 </linearGradient>
                 <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="0%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#6ee7b7" />
-                    <stop offset="0.5" stop-color="#10b981" />
-                    <stop offset="1" stop-color="#059669" />
+                    <stop offset="0" stopColor="#6ee7b7" />
+                    <stop offset="0.5" stopColor="#10b981" />
+                    <stop offset="1" stopColor="#059669" />
                 </linearGradient>
                 <radialGradient id="heartGrad" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#f9a8d4" />
-                    <stop offset="1" stop-color="#db2777" />
+                    <stop offset="0" stopColor="#f9a8d4" />
+                    <stop offset="1" stopColor="#db2777" />
                 </radialGradient>
                 <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#d1fae5" stop-opacity="0.3" />
-                    <stop offset="1" stop-color="#fce7f3" stop-opacity="0.4" />
+                    <stop offset="0" stopColor="#d1fae5" stop-opacity="0.3" />
+                    <stop offset="1" stopColor="#fce7f3" stop-opacity="0.4" />
                 </linearGradient>
             </defs>
             <circle cx="60" cy="60" r="58" fill="url(#bgGrad)" />

@@ -114,7 +114,7 @@ export async function editCarAd(
       formErrors: ["Неизвестная ошибка"],
     });
   }
-  revalidatePath("/cars", "layout"); // Explicitly revalidate the layout
-  redirect("/cars");
+  revalidatePath("/vehicles/cars", "layout"); // Explicitly revalidate the layout
+  redirect("/vehicles/cars");
 }
 

@@ -6,6 +6,7 @@ import IconCard from "@/components/IconCard/IconCard";
 import HandymanIcon from "@/components/svg/Handyman/Handyman";
 import JobOfferIcon from "@/components/svg/JobOffer/JobOffer";
 import DogIcon from "@/components/svg/pets/Dog/Dog";
+import TransportIcon from "@/components/svg/Transport/Transport";
 
 interface PublishAdCategory {
   id: string;
@@ -37,14 +38,14 @@ const categories: PublishAdCategory[] = [
     icon: <DogIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/pets",
   },
-  //   {
-  //   id: "vehicles",
-  //   title: "Транспорт",
-  //   description:
-  //     "Продажа автомобилей, мотоциклов и других транспортных средств",
-  //   icon: <TransportIcon viewBox={{ width: 120, height: 120 }} />,
-  //   href: "/publish-ad/vehicles",
-  // },
+    {
+    id: "vehicles",
+    title: "Транспорт",
+    description:
+      "Продажа автомобилей, мотоциклов и других транспортных средств",
+    icon: <TransportIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/vehicles",
+  },
 
   // {
   //   id: "real-estate",

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Button } from "@radix-ui/themes";
+import Link from "next/link";
 
 export const HeaderContainer = styled.header`
   position: fixed;
@@ -116,7 +117,7 @@ export const DropdownMenu = styled.div`
   }
 `;
 
-export const DropdownItem = styled.a`
+export const NavLikItem = styled(Link)`
   display: block;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-2);

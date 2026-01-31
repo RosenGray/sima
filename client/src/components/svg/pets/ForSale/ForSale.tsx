@@ -11,22 +11,22 @@ const ForSaleIcon = ({ width, height, viewBox = { width: 100, height: 100 } }: F
         <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox={`0 0 ${viewBox?.width} ${viewBox?.height}`} fill="none">
             <defs>
                 <linearGradient id="dogGrad" x1="0%" y1="0%" x2="0%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#fbbf24" />
-                    <stop offset="0.5" stop-color="#f59e0b" />
-                    <stop offset="1" stop-color="#d97706" />
+                    <stop offset="0" stopColor="#fbbf24" />
+                    <stop offset="0.5" stopColor="#f59e0b" />
+                    <stop offset="1" stopColor="#d97706" />
                 </linearGradient>
                 <linearGradient id="catGrad" x1="0%" y1="0%" x2="0%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#cbd5e1" />
-                    <stop offset="1" stop-color="#64748b" />
+                    <stop offset="0" stopColor="#cbd5e1" />
+                    <stop offset="1" stopColor="#64748b" />
                 </linearGradient>
                 <linearGradient id="tagGrad" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#fef3c7" />
-                    <stop offset="0.5" stop-color="#fbbf24" />
-                    <stop offset="1" stop-color="#f59e0b" />
+                    <stop offset="0" stopColor="#fef3c7" />
+                    <stop offset="0.5" stopColor="#fbbf24" />
+                    <stop offset="1" stopColor="#f59e0b" />
                 </linearGradient>
                 <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#fef3c7" stop-opacity="0.3" />
-                    <stop offset="1" stop-color="#fde68a" stop-opacity="0.4" />
+                    <stop offset="0" stopColor="#fef3c7" stop-opacity="0.3" />
+                    <stop offset="1" stopColor="#fde68a" stop-opacity="0.4" />
                 </linearGradient>
             </defs>
             <circle cx="60" cy="60" r="58" fill="url(#bgGrad)" />

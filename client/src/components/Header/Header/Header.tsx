@@ -12,7 +12,7 @@ import {
   Nav,
   NavItem,
   DropdownMenu,
-  DropdownItem,
+  NavLikItem,
   MobileMenuButton,
   HamburgerIcon,
   ActionsContainer,
@@ -23,55 +23,10 @@ import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
-import UserLastSeen from "@/components/UserLastSeen/UserLastSeen";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
-
-// const navigationItems = [
-//   {
-//     label: "Услуги специалистов",
-//     subItems: [
-//       { label: "Все", href: "/professional-service" },
-//       {
-//         label: "Electronics",
-//         href: "/professional-service?categoryId=6902000307fc0b06bd2a4294",
-//       },
-//       {
-//         label: "Fashion",
-//         href: "/professional-service?categoryId=6902000307fc0b06bd2a428a",
-//       },
-//       { label: "Home & Garden", href: "/professional-service?categoryId=3" },
-//       { label: "Sports", href: "/professional-service?categoryId=4" },
-//     ],
-//   },
-//   {
-//     label: "Sellers",
-//     subItems: [
-//       { label: "Find Sellers", href: "/sellers" },
-//       { label: "Become a Seller", href: "/sellers/join" },
-//       { label: "Seller Resources", href: "/sellers/resources" },
-//       { label: "Success Stories", href: "/sellers/stories" },
-//     ],
-//   },
-//   {
-//     label: "Community",
-//     subItems: [
-//       { label: "Forums", href: "/community/forums" },
-//       { label: "Events", href: "/community/events" },
-//       { label: "Blog", href: "/community/blog" },
-//       { label: "Support", href: "/community/support" },
-//     ],
-//   },
-//   {
-//     label: "About",
-//     subItems: [
-//       { label: "Our Story", href: "/about" },
-//       { label: "Team", href: "/about/team" },
-//       { label: "Careers", href: "/about/careers" },
-//       { label: "Contact", href: "/about/contact" },
-//     ],
-//   },
-// ];
+import { renderLinkOrDropdown } from "../Header.utils";
+import { navItems } from "./navItems";
 
 export default function Header() {
   const { serviceCategories } = useHomePage();
@@ -81,6 +36,7 @@ export default function Header() {
   const navigationItems = useMemo(() => {
     const services = {
       label: "Услуги специалистов",
+      type: "dropdown",
       subItems: [
         { label: "Все", href: "/professional-service" },
         ...serviceCategories.map((category) => ({
@@ -89,39 +45,8 @@ export default function Header() {
         })),
       ],
     };
-    const jobs = {
-      label: "Работа",
-      subItems: [{ label: "Все", href: "/jobs" }],
-    };
-    const vehicles = {
-      label: "Транспорт",
-      subItems: [{ label: "Все", href: "/vehicles" }],
-    };
-    const pets = {
-      label: "Домашние животные",
-      subItems: [
-        { label: "Продажа", href: "/pets/for-sale" },
-        { label: "Отдам бесплатно", href: "/pets/for-free" },
-        { label: "Аксессуары", href: "/pets/accessories" },
-      ],
-    };
-    const other = {
-      label: "Другое",
-      subItems: [
-        { label: "Все", href: "/other" },
-      ],
-    };
-    const realEstate = {
-      label: "Недвижимость",
-      subItems: [
-        { label: "Все", href: "/real-estate" },
-      ],
-    };
-    const yad2 = {
-      label: "Куплю-Продаю",
-      subItems: [{ label: "Все", href: "/yad2" }],
-    };
-    return [services, jobs, pets, vehicles, other, realEstate, yad2];
+
+    return [services, ...navItems];
   }, [serviceCategories]);
 
   const toggleMobileMenu = () => {
@@ -152,7 +77,14 @@ export default function Header() {
               </HamburgerIcon>
             </MobileMenuButton>
             <Logo>
-              <Link style={{display: "flex", alignItems: "center", justifyContent: "center"}} href="/">
+              <Link
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                href="/"
+              >
                 <SimaDarkLogo width={200} height={60} />
               </Link>
             </Logo>
@@ -186,16 +118,16 @@ export default function Header() {
           <Nav>
             {navigationItems.map((item) => (
               <NavItem key={item.label}>
-                <Text size="2" weight="medium">
-                  {item.label}
-                </Text>
-                <DropdownMenu>
-                  {item.subItems.map((subItem) => (
-                    <DropdownItem key={subItem?.label} href={subItem?.href}>
-                      <Text size="2">{subItem?.label}</Text>
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
+                {renderLinkOrDropdown(item)}
+                {item.type === "dropdown" && (
+                  <DropdownMenu>
+                    {item.subItems.map((subItem) => (
+                      <NavLikItem key={subItem?.label} href={subItem?.href}>
+                        <Text size="2">{subItem?.label}</Text>
+                      </NavLikItem>
+                    ))}
+                  </DropdownMenu>
+                )}
               </NavItem>
             ))}
           </Nav>
