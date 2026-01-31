@@ -9,6 +9,7 @@ import { professionalServiceRepository } from "@/lib/professionals/professional-
 import { jobRepository } from "@/lib/jobs/repository/JobRepository";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import { offRoadVehicleRepository } from "@/lib/vehicles/off-road/repository/OffRoadVehicleRepository";
+import { commercialVehicleRepository } from "@/lib/vehicles/commercial-vehicles/repository/CommercialVehicleRepository";
 import type { AdSnapshot } from "../types/chat.types";
 
 const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
@@ -18,6 +19,7 @@ const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
 const ENTITY_TYPE_JOBS = "jobs";
 const ENTITY_TYPE_CARS = "cars";
 const ENTITY_TYPE_OFF_ROAD = "off-road";
+const ENTITY_TYPE_COMMERCIAL_VEHICLES = "commercial-vehicles";
 
 const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -27,6 +29,7 @@ const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_JOBS,
   ENTITY_TYPE_CARS,
   ENTITY_TYPE_OFF_ROAD,
+  ENTITY_TYPE_COMMERCIAL_VEHICLES,
 ] as const;
 
 export type GetOrCreateChatResult =
@@ -202,6 +205,29 @@ export async function getOrCreateChat(
       thumbnailUrl: offRoadVehicle.images?.[0]?.url ?? "",
       price: offRoadVehicle.price,
       adLink: `/vehicles/off-road/${offRoadVehicle.publicId}`,
+      adRemoved: false,
+    };
+  } else if (adEntityType === ENTITY_TYPE_COMMERCIAL_VEHICLES) {
+    const commercialVehicle = await commercialVehicleRepository.getByPublicId(adPublicId);
+    if (!commercialVehicle) {
+      return { success: false, error: "Объявление не найдено" };
+    }
+
+    adOwnerId = typeof commercialVehicle.user === "object" ? commercialVehicle.user.id : commercialVehicle.user;
+    if (adOwnerId === user.id) {
+      return { success: false, error: "Нельзя начать чат с самим собой" };
+    }
+
+    const commercialTitle =
+      [commercialVehicle.manufacturer, commercialVehicle.model, commercialVehicle.city].filter(Boolean).join(" • ") ||
+      "Коммерческий транспорт";
+    adSnapshot = {
+      entityType: ENTITY_TYPE_COMMERCIAL_VEHICLES,
+      entityPublicId: commercialVehicle.publicId,
+      title: commercialTitle,
+      thumbnailUrl: commercialVehicle.images?.[0]?.url ?? "",
+      price: commercialVehicle.price,
+      adLink: `/vehicles/commercial-vehicles/${commercialVehicle.publicId}`,
       adRemoved: false,
     };
   } else {
