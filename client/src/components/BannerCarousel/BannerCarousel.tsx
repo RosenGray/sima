@@ -57,7 +57,6 @@ export function BannerCarousel({
         loop={loop}
         wrapperTag="ul"
         aria-label={ariaLabel}
-        data-nagish={dataNagish ?? "banner-carousel-list"}
         autoplay={
           autoplayConfig
             ? {
@@ -72,7 +71,6 @@ export function BannerCarousel({
             key={`${item.href}-${index}`}
             tag="li"
             aria-label="שקופית"
-            data-nagish="banner-carousel-item"
           >
             <SlideContent item={item} />
           </SwiperSlide>
@@ -99,7 +97,6 @@ function SlideContent({ item }: { item: BannerSlideItem }) {
           style={{ objectFit: "cover" }}
           loading="lazy"
           decoding="async"
-          data-nagish="svg-slide-image"
         />
       </ImageWrapper>
       <ImageWrapper className="mobile-only">
@@ -112,7 +109,6 @@ function SlideContent({ item }: { item: BannerSlideItem }) {
           style={{ objectFit: "cover" }}
           loading="lazy"
           decoding="async"
-          data-nagish="svg-slide-image"
         />
       </ImageWrapper>
     </>
@@ -123,7 +119,6 @@ function SlideContent({ item }: { item: BannerSlideItem }) {
       <SlideLink
         as={Link as React.ElementType}
         href={item.href}
-        data-nagish="homepage-banner-link"
         aria-label={ariaLabel}
       >
         {content}
@@ -136,7 +131,6 @@ function SlideContent({ item }: { item: BannerSlideItem }) {
       href={item.href}
       target="_blank"
       rel="noreferrer"
-      data-nagish="homepage-banner-link"
       aria-label={ariaLabel}
     >
       {content}

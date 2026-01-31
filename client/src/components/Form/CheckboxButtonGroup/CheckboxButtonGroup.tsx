@@ -69,7 +69,6 @@ const CheckboxButtonGroup: FC<CheckboxButtonGroupProps> = ({
       <ButtonList
         columns={{ initial: "1", xs: "2", md: "3" }}
         gap={{ initial: "3", md: "4" }}
-        data-nagish={dataAttrList}
       >
         {collectionProps.map((props) => {
           const { key, ...inputProps } = props;
@@ -80,12 +79,10 @@ const CheckboxButtonGroup: FC<CheckboxButtonGroupProps> = ({
               key={key}
               htmlFor={props.id}
               data-testid="check-button"
-              data-nagish={dataAttrLabel}
             >
               <HiddenCheckboxInput
                 {...inputProps}
                 disabled={isDisabled}
-                data-nagish={dataAttrInput}
               />
               <IconTextWrapper>
                 {icon && icon}

@@ -12,6 +12,7 @@ export const BannerCarouselViewport = styled(Box)`
   height: 250px;
   overflow: hidden;
   position: relative;
+  border-radius: 14px;
 
   &.hideScrollbar {
     -ms-overflow-style: none;
