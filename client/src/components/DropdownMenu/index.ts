@@ -8,4 +8,5 @@ export type {
   DropdownMenuSubmenuItem,
   DropdownMenuSubmenuItemContent,
   DropdownMenuItemColor,
+  DropdownMenuTriggerMode,
 } from "./DropdownMenu.types";

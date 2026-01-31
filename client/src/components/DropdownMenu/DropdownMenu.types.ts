@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 
 /**
+ * How the dropdown menu opens: click the trigger, or hover over the trigger.
+ */
+export type DropdownMenuTriggerMode = "click" | "hover";
+
+/**
  * Radix Themes color values for menu items (e.g. destructive actions use "red")
  */
 export type DropdownMenuItemColor =

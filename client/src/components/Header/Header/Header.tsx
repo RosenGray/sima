@@ -112,10 +112,11 @@ export default function Header() {
               </DropdownMenuTrigger>} items={[{
                 type: "action",
                 label: "Выйти",
+                shortcut: "Ctrl+L",
                 onClick: () => {
-                 console.log("Logout");
+                  console.log("Logout");
                 },
-              }]} />
+              }]} triggerMode="hover" />
             ) : (
               <LoginButton asChild variant="surface" size="2">
                 <Link href="/auth/login">
