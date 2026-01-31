@@ -8,6 +8,7 @@ import {
 } from "../Header.styles";
 import { MobileMenu } from "../MobileMenu";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import { PRIVATE_ZONE_NAV_LINKS } from "@/app/(private)/private-zone/constants/privateZoneNavLinks";
 import { PrivateZoneHeaderContainer } from "./PrivateZoneHeader.styles";
 
 export default function PrivateZoneHeader() {
@@ -46,6 +47,7 @@ export default function PrivateZoneHeader() {
         navigationItems={[]}
         onClose={closeMobileMenu}
         user={user}
+        userNavLinks={PRIVATE_ZONE_NAV_LINKS}
       />
     </>
   );

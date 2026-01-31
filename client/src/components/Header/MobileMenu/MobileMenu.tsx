@@ -37,8 +37,17 @@ import NavMobileItem from "./NavMobileItem";
 import { SerializedUser } from "@/lib/auth/types/auth.scema";
 import { logoutUser } from "@/lib/auth/actions/logout";
 
+/** User nav link item shape (label, href, icon, optional badge/active) */
+export interface UserNavLinkItem {
+  label: string;
+  href: string;
+  icon: React.ElementType;
+  badge?: number;
+  active?: boolean;
+}
+
 /** User nav links (Home, Chat, Liked Ads, etc.) - placeholder hrefs where feature does not exist yet */
-const USER_NAV_LINKS = [
+const USER_NAV_LINKS: UserNavLinkItem[] = [
   { label: "Главная", href: "/", icon: HomeIcon },
   { label: "Чат", href: "/chat", icon: ChatBubbleIcon },
   {
@@ -59,7 +68,7 @@ const USER_NAV_LINKS = [
     href: "#",
     icon: QuestionMarkCircledIcon,
   },
-] as const;
+];
 
 interface NavigationItem {
   label: string;
@@ -74,6 +83,8 @@ interface MobileMenuProps {
   navigationItems: NavigationItem[];
   onClose: () => void;
   user?: SerializedUser | null;
+  /** Optional user nav links; when not provided, uses default USER_NAV_LINKS */
+  userNavLinks?: UserNavLinkItem[];
 }
 
 const PRIVATE_AREA_HREF = "/private-zone";
@@ -83,7 +94,9 @@ export default function MobileMenu({
   navigationItems,
   onClose,
   user,
+  userNavLinks,
 }: MobileMenuProps) {
+  const navLinks = userNavLinks ?? USER_NAV_LINKS;
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const handleLogout = async () => {
@@ -174,20 +187,20 @@ export default function MobileMenu({
 
         {/* User nav links (Home, Chat, Liked Ads, Recent Searches, etc.) */}
         <MobileMenuNavSection>
-          {USER_NAV_LINKS.map((item) => {
+          {navLinks.map((item) => {
             const Icon = item.icon;
             return (
               <MobileMenuNavLink
                 key={item.label}
                 href={item.href}
                 onClick={onClose}
-                $active={"active" in item && item.active}
+                $active={item.active === true}
               >
                 <MobileMenuNavLinkContent>
                   <Icon width="20" height="20" />
                   <MobileMenuNavLinkLabel>{item.label}</MobileMenuNavLinkLabel>
                 </MobileMenuNavLinkContent>
-                {"badge" in item && typeof item.badge === "number" && (
+                {typeof item.badge === "number" && (
                   <MobileMenuNavLinkBadge>{item.badge}</MobileMenuNavLinkBadge>
                 )}
               </MobileMenuNavLink>

@@ -26,11 +26,13 @@ export const PrivateZoneContentRow = styled(Box)`
 export const PrivateZoneSidebar = styled.aside`
   width: 240px;
   flex-shrink: 0;
-  background: var(--blue-9);
+  background: var(--gray-12);
   display: none;
 
   @media (min-width: 768px) {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 `;
 

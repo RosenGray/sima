@@ -6,6 +6,7 @@ import {
   PrivateZoneMain,
 } from "./layout.styles";
 import PrivateZoneHeader from "@/components/Header/PrivateZoneHeader/PrivateZoneHeader";
+import PrivateZoneSidebarContent from "./_components/PrivateZoneSidebarContent/PrivateZoneSidebarContent";
 import { requireAuthOrRedirectTo } from "@/lib/auth/utils/auth.utils";
 
 export const metadata: Metadata = {
@@ -24,7 +25,9 @@ export default async function PrivateZoneLayout({
     <PrivateZoneLayoutSection>
       <PrivateZoneHeader />
       <PrivateZoneContentRow>
-        <PrivateZoneSidebar />
+        <PrivateZoneSidebar>
+          <PrivateZoneSidebarContent />
+        </PrivateZoneSidebar>
         <PrivateZoneMain>{children}</PrivateZoneMain>
       </PrivateZoneContentRow>
     </PrivateZoneLayoutSection>
