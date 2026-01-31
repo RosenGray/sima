@@ -103,7 +103,6 @@ export default function Header() {
               </Link>
             </PublishAdButton>
             {user ? (
-              // <LogoutButton />
               <DropdownMenuComponent trigger={<DropdownMenuTrigger>
                 <Text size="2" weight="medium">
                   {firstName?.charAt(0)}

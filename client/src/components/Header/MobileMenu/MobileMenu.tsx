@@ -76,8 +76,7 @@ interface MobileMenuProps {
   user?: SerializedUser | null;
 }
 
-// Placeholder route for private area; can be replaced with /chat or a dedicated /private-area page later
-const PRIVATE_AREA_HREF = "/private-area";
+const PRIVATE_AREA_HREF = "/private-zone";
 
 export default function MobileMenu({
   isOpen,
