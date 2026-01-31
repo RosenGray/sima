@@ -1,10 +1,14 @@
 "use client";
 import styled from "styled-components";
 import { Button } from "@radix-ui/themes";
-import { HeaderContainer, Logo, ActionsContainer } from "../Header.styles";
+import { HeaderContainer, ActionsContainer } from "../Header.styles";
 
 export const PrivateZoneHeaderContainer = styled(HeaderContainer)`
   min-height: var(--simple-header-height);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const PrivateZoneHeaderTopRow = styled.div`
@@ -29,8 +33,8 @@ export const PrivateZoneTitle = styled.span`
   color: var(--gray-12);
   white-space: nowrap;
 
-  @media (max-width: 480px) {
-    font-size: var(--font-size-3);
+  @media (max-width: 767px) {
+    display: none;
   }
 `;
 
@@ -42,6 +46,10 @@ export const PrivateZonePublishAdButton = styled(Button)`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
 
   &:hover {
     background: var(--accent-10);

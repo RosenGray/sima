@@ -26,8 +26,10 @@ export const PrivateZoneContentRow = styled(Box)`
 export const PrivateZoneSidebar = styled.aside`
   width: 240px;
   flex-shrink: 0;
+  border-right: 1px solid var(--gray-6);
   /* Light theme: gray-2 = light sidebar; Dark theme: gray-2 = dark sidebar (Radix inverts) */
-  background: var(--gray-2);
+
+  background: var(--accent-1);
   display: none;
 
   @media (min-width: 768px) {
@@ -40,5 +42,4 @@ export const PrivateZoneSidebar = styled.aside`
 export const PrivateZoneMain = styled.main`
   flex: 1;
   min-width: 0;
-  background: var(--yellow-4);
 `;
