@@ -11,25 +11,25 @@ const JobOfferIcon = ({ width, height, viewBox = { width: 100, height: 100 } }: 
         <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox={`0 0 ${viewBox?.width} ${viewBox?.height}`} fill="none">
             <defs>
                 <linearGradient id="docGrad" x1="0%" y1="0%" x2="0%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#ffffff" />
-                    <stop offset="1" stop-color="#f9fafb" />
+                    <stop offset="0" stopColor="#ffffff" />
+                    <stop offset="1" stopColor="#f9fafb" />
                 </linearGradient>
                 <linearGradient id="highlightGrad" x1="0%" y1="0%" x2="0%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#fef3c7" />
-                    <stop offset="0.5" stop-color="#fbbf24" />
-                    <stop offset="1" stop-color="#f59e0b" />
+                    <stop offset="0" stopColor="#fef3c7" />
+                    <stop offset="0.5" stopColor="#fbbf24" />
+                    <stop offset="1" stopColor="#f59e0b" />
                 </linearGradient>
                 <linearGradient id="handshakeGrad" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#fde68a" />
-                    <stop offset="1" stop-color="#f59e0b" />
+                    <stop offset="0" stopColor="#fde68a" />
+                    <stop offset="1" stopColor="#f59e0b" />
                 </linearGradient>
                 <radialGradient id="sealGrad" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#f87171" />
-                    <stop offset="1" stop-color="#dc2626" />
+                    <stop offset="0" stopColor="#f87171" />
+                    <stop offset="1" stopColor="#dc2626" />
                 </radialGradient>
                 <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#3b82f6" stop-opacity="0.08" />
-                    <stop offset="1" stop-color="#fbbf24" stop-opacity="0.12" />
+                    <stop offset="0" stopColor="#3b82f6" stop-opacity="0.08" />
+                    <stop offset="1" stopColor="#fbbf24" stop-opacity="0.12" />
                 </linearGradient>
             </defs>
             <circle cx="60" cy="60" r="58" fill="url(#bgGrad)" />

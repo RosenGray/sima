@@ -1,6 +1,7 @@
-import styled from 'styled-components';
-import Link from 'next/link';
-import { Button } from '@radix-ui/themes';
+"use client";
+import styled from "styled-components";
+import Link from "next/link";
+import { Box, Button } from "@radix-ui/themes";
 
 export const MobileMenuOverlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;
@@ -53,6 +54,85 @@ export const MobileMenuContainer = styled.div<{ $isOpen: boolean }>`
   }
 `;
 
+export const MobileMenuTopBar = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-6);
+`;
+
+export const MobileMenuLogoutLink = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--gray-11);
+  cursor: pointer;
+  text-decoration: underline;
+  &:hover {
+    color: var(--gray-12);
+  }
+`;
+
+export const MobileMenuCloseButton = styled(Box)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const MobileMenuUserSection = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-6);
+  gap: var(--space-3);
+`;
+
+export const MobileMenuUserInfo = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  flex: 1;
+`;
+
+export const MobileMenuUserName = styled(Box)`
+  font-weight: bold;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  color: var(--gray-12);
+`;
+
+export const MobileMenuPrivateAreaLink = styled(Link)`
+  font-size: 0.875rem;
+  color: var(--accent-11);
+  text-decoration: underline;
+  &:hover {
+    color: var(--accent-12);
+  }
+`;
+
+export const MobileMenuAvatar = styled(Box)`
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--accent-9);
+  background: var(--gray-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-12);
+`;
+
 export const NavMobileItemContainer = styled.div`
   margin-bottom: 0.5rem;
 `;
@@ -60,6 +140,61 @@ export const NavMobileItemContainer = styled.div`
 export const MobileMenuActionsSection = styled.div`
   padding: 1rem;
   border-bottom: 1px solid var(--gray-6);
+`;
+
+/** User nav links section (Home, Chat, Liked Ads, etc.) - list style like the image */
+export const MobileMenuNavSection = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-bottom: 1px solid var(--gray-6);
+`;
+
+export const MobileMenuNavLink = styled(Link)<{ $active?: boolean }>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--gray-12);
+  background-color: ${(props) =>
+    props.$active ? "var(--blue-3)" : "transparent"};
+  border-radius: 0;
+  transition: background-color 0.2s ease;
+  gap: var(--space-2);
+  &:hover {
+    background-color: var(--blue-3);
+  }
+`;
+
+export const MobileMenuNavLinkContent = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 1;
+`;
+
+export const MobileMenuNavLinkLabel = styled.span`
+  font-size: 1rem;
+  font-weight: 500;
+  color: inherit;
+`;
+
+export const MobileMenuNavLinkBadge = styled(Box)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: var(--accent-9);
+  color: var(--accent-1);
+  font-size: 0.75rem;
+  font-weight: 600;
 `;
 
 export const MobilePublishAdButton = styled(Button)`
@@ -88,30 +223,32 @@ export const NavMobileItemHeader = styled.div<{ $isExpanded: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  background-color: ${props => props.$isExpanded ? 'var(--gray-3)' : 'transparent'};
-  border-radius: var(--radius-2);
+  background-color: ${(props) =>
+    props.$isExpanded ? "var(--blue-3)" : "transparent"};
+  border-radius: 0;
   transition: background-color 0.2s ease;
-  
+
   &:hover {
-    background-color: var(--gray-2);
+    background-color: var(--blue-3);
   }
 `;
 
 export const NavMobileItemTitle = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: bold;
+  gap: var(--space-2);
+  font-weight: 500;
   font-size: 1rem;
-  color: var(--accent-9);
+  color: var(--gray-12);
 `;
 
 export const NavMobileItemArrow = styled.div<{ $isExpanded: boolean }>`
   font-size: 0.75rem;
   color: var(--gray-10);
-  transform: ${props => props.$isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};
+  transform: ${(props) =>
+    props.$isExpanded ? "rotate(180deg)" : "rotate(0deg)"};
   transition: transform 0.2s ease;
 `;
 
@@ -123,15 +260,17 @@ export const NavMobileItemSubMenu = styled.div`
 
 export const NavMobileSubItem = styled(Link)`
   display: block;
-  padding: 0.5rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  color: var(--gray-11);
-  border-radius: var(--radius-2);
+  color: var(--gray-12);
+  border-radius: 0;
   transition: all 0.2s ease;
   text-decoration: none;
-  
+  font-size: 1rem;
+  font-weight: 500;
+
   &:hover {
-    background-color: var(--gray-3);
+    background-color: var(--blue-3);
     color: var(--gray-12);
   }
 `;

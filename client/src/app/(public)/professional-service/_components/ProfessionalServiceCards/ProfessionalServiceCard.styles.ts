@@ -22,9 +22,15 @@ export const ServiceCard = styled(Card)`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-
   box-shadow: inset var(--shadow-4);
+  position: relative;
+`;
 
+export const LikeButtonWrapper = styled.div`
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
 `;
 
 export const ServiceCardImages = styled(Flex)`

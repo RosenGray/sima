@@ -1,6 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
@@ -11,6 +12,7 @@ import {
   IdCardIcon,
   Pencil1Icon,
   TrashIcon,
+  ChatBubbleIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
@@ -51,6 +53,9 @@ import {
 } from "@/lib/pets/for-sale/actions/deletePetForSaleAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PETS_FOR_SALE } from "@/providers/LikesProvider/LikesProvider";
+import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface PetForSaleDetailClientProps {
   pet: SerializedPetForSale;
@@ -114,10 +119,28 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
     useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
+  const router = useRouter();
 
   const isOwner = thisUserIsOwner(pet.user.id);
+
+  const handleContactSeller = async () => {
+    if (chatLoading || !isAuthenticated || isOwner) return;
+    setChatLoading(true);
+    setChatError(null);
+    const result = await getOrCreateChat("pets-for-sale", pet.publicId);
+ 
+    if (result.success && result.chatId) {
+      router.push(`/chat/${result.chatId}`);
+    } else if (!result.success && result.error) {
+      setChatError(result.error);
+      setChatLoading(false);
+      setErrorModalOpen(true);
+    }
+  };
 
   const {
     images,
@@ -160,6 +183,18 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
+    setChatError(null);
+  };
+
+  const renderChatButton = () => {
+    if (isAuthenticated && !isOwner) {
+      return (
+        <Button size="3" variant="soft" disabled={chatLoading} onClick={handleContactSeller}>
+          {chatLoading ? <Spinner size="3" /> : <ChatBubbleIcon width="18" height="18" />}
+          Написать продавцу
+        </Button>
+      );
+    }
   };
 
   useEffect(() => {
@@ -172,9 +207,18 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {animalName} {kindName}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {animalName} {kindName}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_PETS_FOR_SALE}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+          {renderChatButton()}
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
@@ -294,6 +338,7 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
                 {formatPrice(price)}
               </Text>
             </InfoRow>
+            
             {adjustments && adjustments.length > 0 && (
               <InfoRow>
                 <Flex gap="2" wrap="wrap">
@@ -339,6 +384,9 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
             <ContactItem>
               <EnvelopeClosedIcon width="18" height="18" />
               <Text size="3">*** ***********</Text>
+            </ContactItem>
+            <ContactItem>
+              {renderChatButton()}
             </ContactItem>
 
             {isAuthenticated ? (
@@ -389,7 +437,7 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={formState?.error}
+        errorMessage={chatError ?? (formState as { error?: string } | undefined)?.error}
       />
       <DeleteConfirmationModalWithServerAction
         open={deleteConfirmationModalOpen}

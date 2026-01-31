@@ -1,7 +1,8 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -11,6 +12,7 @@ import {
   IdCardIcon,
   Pencil1Icon,
   TrashIcon,
+  ChatBubbleIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
@@ -41,9 +43,12 @@ import {
   ButtonGroup,
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/providers/LikesProvider/LikesProvider";
 import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface ProfessionalServiceDetailClientProps {
   service: SerilizeProfessionalService;
@@ -59,16 +64,53 @@ const ProfessionalServiceDetailClient: React.FC<
     deleteProfessionalServiceAdByPublicId,
     undefined
   );
-  console.log(formState);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
     useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
+  const router = useRouter();
 
   const isOwner = thisUserIsOwner(service.user.id);
+
+  const handleContactProvider = async () => {
+    if (chatLoading || !isAuthenticated || isOwner) return;
+    setChatLoading(true);
+    setChatError(null);
+    const result = await getOrCreateChat("professional-service", service.publicId);
+
+    if (result.success && result.chatId) {
+      router.push(`/chat/${result.chatId}`);
+    } else if (!result.success && result.error) {
+      setChatError(result.error);
+      setChatLoading(false);
+      setErrorModalOpen(true);
+    }
+  };
+
+  const renderChatButton = () => {
+    if (isAuthenticated && !isOwner) {
+      return (
+        <Button
+          size="3"
+          variant="soft"
+          disabled={chatLoading}
+          onClick={handleContactProvider}
+        >
+          {chatLoading ? (
+            <Spinner size="3" />
+          ) : (
+            <ChatBubbleIcon width="18" height="18" />
+          )}
+          Написать исполнителю
+        </Button>
+      );
+    }
+  };
 
   const {
     images,
@@ -101,6 +143,7 @@ const ProfessionalServiceDetailClient: React.FC<
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
+    setChatError(null);
   };
 
   useEffect(() => {
@@ -112,11 +155,20 @@ const ProfessionalServiceDetailClient: React.FC<
   return (
     <PageContainer size="4">
       {/* Header Section */}
-      {isOwner && (
-        <HeaderSection>
+      <HeaderSection>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
           <PageTitle size="8" weight="bold">
             {subCategory.russianDisplayName}
           </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+          {renderChatButton()}
+        </Flex>
+        {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
               <Link
@@ -140,8 +192,8 @@ const ProfessionalServiceDetailClient: React.FC<
               {isPending ? <Spinner size="3" /> : "Удалить"}
             </Button>
           </ButtonGroup>
-        </HeaderSection>
-      )}
+        )}
+      </HeaderSection>
       <BadgeContainer>
         <Badge size="2" color="blue" variant="soft">
           {category.russianDisplayName}
@@ -248,6 +300,16 @@ const ProfessionalServiceDetailClient: React.FC<
               <Text size="3">*** ***********</Text>
             </ContactItem>
 
+            <ContactItem>
+              {isAuthenticated && !isOwner
+                ? renderChatButton()
+                : !isAuthenticated && (
+                    <Text size="2" color="gray">
+                      Войдите, чтобы написать исполнителю
+                    </Text>
+                  )}
+            </ContactItem>
+
             {isAuthenticated ? (
               <ContactItem>
                 <MobileIcon width="18" height="18" />
@@ -286,7 +348,10 @@ const ProfessionalServiceDetailClient: React.FC<
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={formState?.error}
+        errorMessage={
+          chatError ??
+          (formState as { error?: string } | undefined)?.error
+        }
       />
       <DeleteConfirmationModalWithServerAction
         open={deleteConfirmationModalOpen}

@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Flex, Link, Spinner } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -43,6 +43,8 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteSpecialVehicleAdWithRedirect } from "@/lib/vehicles/special-vehicles/actions/deleteSpecialVehicleAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_SPECIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
 import {
   getSpecialVehicleCategoryById,
 } from "@/lib/vehicles/special-vehicles/specialVehicleCategories";
@@ -142,9 +144,17 @@ const SpecialVehicleDetailClient: React.FC<SpecialVehicleDetailClientProps> = ({
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {title}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {title}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_SPECIAL_VEHICLES}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">

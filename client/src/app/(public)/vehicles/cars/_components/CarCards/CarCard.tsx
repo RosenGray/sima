@@ -11,8 +11,11 @@ import {
   CarCardSwiper,
   CarCardSwiperSlide,
   CarCardContent,
+  LikeButtonWrapper,
 } from "./CarCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_CARS } from "@/providers/LikesProvider/LikesProvider";
 import { Autoplay } from "swiper/modules";
 import { SerializedCar } from "@/lib/vehicles/cars/types/cars.types";
 import { TransmissionType, EngineType } from "@/lib/vehicles/cars/types/cars.types";
@@ -71,6 +74,14 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
   return (
     <CarCardBox id={publicId}>
       <CarCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_CARS}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <CarCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

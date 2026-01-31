@@ -11,7 +11,10 @@ import {
   ScooterCardSwiper,
   ScooterCardSwiperSlide,
   ScooterCardContent,
+  LikeButtonWrapper,
 } from "./ScooterCard.styles";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_SCOOTERS } from "@/providers/LikesProvider/LikesProvider";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedScooter } from "@/lib/vehicles/scooters/types/scooter.types";
@@ -36,6 +39,14 @@ const ScooterCard: React.FC<ScooterCardProps> = ({ scooter }) => {
   return (
     <ScooterCardBox id={publicId}>
       <ScooterCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_SCOOTERS}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <ScooterCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

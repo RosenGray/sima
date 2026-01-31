@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -20,6 +20,8 @@ import { TransmissionType } from "@/lib/vehicles/cars/types/cars.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
+import { useRouter } from "next/navigation";
+import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 import {
   PageContainer,
@@ -46,6 +48,8 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteOffRoadVehicleAdWithRedirect } from "@/lib/vehicles/off-road/actions/deleteOffRoadVehicleAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_OFF_ROAD } from "@/providers/LikesProvider/LikesProvider";
 
 interface OffRoadVehicleDetailClientProps {
   offRoadVehicle: SerializedOffRoadVehicle;
@@ -73,6 +77,7 @@ const formatPrice = (price: number): string => {
 };
 
 const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({ offRoadVehicle }) => {
+  const router = useRouter();
   const deleteOffRoadVehicleAdByPublicId = deleteOffRoadVehicleAdWithRedirect.bind(null, offRoadVehicle.publicId);
 
   const [formState, formAction, isPending] = useActionState(
@@ -84,6 +89,8 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
     useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
 
@@ -130,6 +137,21 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
     setErrorModalOpen(false);
   };
 
+  const handleContactSeller = async () => {
+    if (chatLoading || !isAuthenticated || isOwner) return;
+    setChatLoading(true);
+    setChatError(null);
+    const result = await getOrCreateChat("off-road", offRoadVehicle.publicId);
+
+    if (result.success && result.chatId) {
+      router.push(`/chat/${result.chatId}`);
+    } else if (!result.success && result.error) {
+      setChatError(result.error);
+      setChatLoading(false);
+      setErrorModalOpen(true);
+    }
+  };
+
   useEffect(() => {
     if (formState && !formState.success && formState.error) {
       setErrorModalOpen(true);
@@ -140,9 +162,17 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {manufacturer} {model}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {manufacturer} {model}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_OFF_ROAD}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
@@ -361,6 +391,23 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
                 </Text>
               </ContactItem>
             )}
+
+            {isAuthenticated && !isOwner && (
+              <Button
+                size="3"
+                onClick={handleContactSeller}
+                disabled={chatLoading}
+                style={{ width: "100%", marginTop: "var(--space-3)" }}
+              >
+                {chatLoading ? <Spinner /> : "Написать продавцу"}
+              </Button>
+            )}
+
+            {!isAuthenticated && (
+              <Text size="2" color="gray" style={{ marginTop: "var(--space-3)", display: "block", textAlign: "center" }}>
+                Войдите, чтобы написать продавцу
+              </Text>
+            )}
           </ContactSection>
 
           {/* Meta Information */}
@@ -384,7 +431,7 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={formState?.error}
+        errorMessage={chatError || formState?.error}
       />
       <DeleteConfirmationModalWithServerAction
         open={deleteConfirmationModalOpen}

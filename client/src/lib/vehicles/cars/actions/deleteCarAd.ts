@@ -78,8 +78,8 @@ export async function deleteCarAdWithRedirect(carPublicId: string) {
   const result = await deleteCarAd(carPublicId);
 
   if (result.success) {
-    revalidatePath("/cars");
-    redirect("/cars");
+    revalidatePath("/vehicles/cars");
+    redirect("/vehicles/cars");
   }
 
   return result;

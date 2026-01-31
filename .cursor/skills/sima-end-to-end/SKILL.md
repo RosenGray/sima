@@ -1076,7 +1076,7 @@ Use this checklist when implementing a new category within a section:
   - Use `SearchMultiSelect` for multi-select filters
   - Use `SearchSingleSelect` for single-select filters
   - Use `SearchCheckboxButtonGroup` for array-of-checkbox filters (e.g. pet adjustments) in "more filters"
-  - Use `DialogPrimitiveButton` to group related filters
+  - Use `DialogPrimitiveButton` to group related filters (dialog includes header with title and close button; use `showOverlay` per sima-filters)
   - Use `PriceTextSearch` for price range (if applicable)
   - Render desktop and mobile filter layouts
 

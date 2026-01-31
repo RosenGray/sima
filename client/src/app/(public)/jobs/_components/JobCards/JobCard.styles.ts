@@ -23,6 +23,14 @@ export const JobCard = styled(Card)`
   display: flex;
   flex-direction: column;
   box-shadow: inset var(--shadow-4);
+  position: relative;
+`;
+
+export const LikeButtonWrapper = styled.div`
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
 `;
 
 export const JobCardHeader = styled.header`

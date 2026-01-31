@@ -19,7 +19,10 @@ import {
   Option,
 } from "@/components/filters/select/types";
 import { Button, Text } from "@radix-ui/themes";
-import { MagnifyingGlassIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
+import {
+  MagnifyingGlassIcon,
+  MixerHorizontalIcon,
+} from "@radix-ui/react-icons";
 import { parseWithZod } from "@conform-to/zod";
 import { PetForSaleFilter, PetForSaleFilterSchema } from "./filters.types";
 import MoreFiltersModal from "../modals/MoreFiltersModal/MoreFiltersModal";
@@ -55,7 +58,7 @@ const FiltersClient: FC = () => {
         ["kind", []],
         ["district", []],
         ["city", []],
-      ])
+      ]),
     );
   const [moreFilters, setMoreFilters] = useState({
     priceFrom: searchParams.get("priceFrom") ?? "",
@@ -66,7 +69,7 @@ const FiltersClient: FC = () => {
 
   const isSearchButtonDisabled = useMemo(() => {
     const optionsFiltersAreDisabled = Array.from(
-      allSelectedFilterOptions.values()
+      allSelectedFilterOptions.values(),
     ).every((options) => options.length === 0);
     const moreFiltersScalarEmpty = [
       moreFilters.priceFrom,
@@ -161,7 +164,7 @@ const FiltersClient: FC = () => {
         });
       });
     },
-    []
+    [],
   );
 
   const handleClearFilters = useCallback(() => {
@@ -171,7 +174,7 @@ const FiltersClient: FC = () => {
         ["kind", []],
         ["district", []],
         ["city", []],
-      ])
+      ]),
     );
     setMoreFilters({
       priceFrom: "",
@@ -199,33 +202,30 @@ const FiltersClient: FC = () => {
 
   const kindOptions = useMemo(
     () => getKindsToSelectOptionsByAnimalIds(selectedAnimalIds),
-    [selectedAnimalIds]
+    [selectedAnimalIds],
   );
 
   const areasOptions = useMemo(() => mapAreasToSelectOptions(), []);
 
   const citiesOptions = useMemo(
     () => getCitiesToSelectOptionsByDistrictIds(selectedDistricts),
-    [selectedDistricts]
+    [selectedDistricts],
   );
 
   const handleMoreFiltersChange = useCallback(
-    (
-      key: "priceFrom" | "priceTo" | "textSearch",
-      value: string
-    ) => {
+    (key: "priceFrom" | "priceTo" | "textSearch", value: string) => {
       setMoreFilters((prevMoreFilters) => {
         return produce(prevMoreFilters, (draft) => {
           draft[key] = value;
         });
       });
     },
-    []
+    [],
   );
 
   const priceDialogButtonTitle = getPriceDialogButtonTitle(
     moreFilters.priceFrom,
-    moreFilters.priceTo
+    moreFilters.priceTo,
   );
 
   const renderFilters = () => {
@@ -256,7 +256,7 @@ const FiltersClient: FC = () => {
 
         <DialogPrimitiveButton
           title={priceDialogButtonTitle}
-          showOverlay={true}
+          showOverlay={false}
         >
           <PriceTextSearch
             name="priceFrom"
@@ -298,6 +298,19 @@ const FiltersClient: FC = () => {
           maxSelectedOptions={3}
           selectedOptions={allSelectedFilterOptions.get("kind")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
+        />
+        <PriceTextSearch
+          name="priceFrom"
+          placeholder="От"
+          value={moreFilters.priceFrom}
+          onChange={(value) => handleMoreFiltersChange("priceFrom", value)}
+        />
+
+        <PriceTextSearch
+          name="priceTo"
+          placeholder="До"
+          value={moreFilters.priceTo}
+          onChange={(value) => handleMoreFiltersChange("priceTo", value)}
         />
       </>
     );

@@ -1,15 +1,74 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Text } from '@radix-ui/themes';
-import { PlusCircledIcon } from '@radix-ui/react-icons';
-import { 
-  MobileMenuOverlay, 
-  MobileMenuContainer, 
-  NavigationItemsContainer,
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { Text, IconButton } from "@radix-ui/themes";
+import {
+  PlusCircledIcon,
+  Cross2Icon,
+  HomeIcon,
+  ChatBubbleIcon,
+  HeartIcon,
+  CounterClockwiseClockIcon,
+  BellIcon,
+  QuestionMarkCircledIcon,
+} from "@radix-ui/react-icons";
+import {
+  MobileMenuOverlay,
+  MobileMenuContainer,
+  MobileMenuTopBar,
+  MobileMenuLogoutLink,
+  MobileMenuCloseButton,
+  MobileMenuUserSection,
+  MobileMenuUserInfo,
+  MobileMenuUserName,
+  MobileMenuPrivateAreaLink,
+  MobileMenuAvatar,
   MobileMenuActionsSection,
-  MobilePublishAdButton
-} from './MobileMenu.styles';
-import NavMobileItem from './NavMobileItem';
+  MobilePublishAdButton,
+  MobileMenuNavSection,
+  MobileMenuNavLink,
+  MobileMenuNavLinkContent,
+  MobileMenuNavLinkLabel,
+  MobileMenuNavLinkBadge,
+  NavigationItemsContainer,
+} from "./MobileMenu.styles";
+import NavMobileItem from "./NavMobileItem";
+import { SerializedUser } from "@/lib/auth/types/auth.scema";
+import { logoutUser } from "@/lib/auth/actions/logout";
+
+/** User nav link item shape (label, href, icon, optional badge/active) */
+export interface UserNavLinkItem {
+  label: string;
+  href: string;
+  icon: React.ElementType;
+  badge?: number;
+  active?: boolean;
+}
+
+/** User nav links (Home, Chat, Liked Ads, etc.) - placeholder hrefs where feature does not exist yet */
+const USER_NAV_LINKS: UserNavLinkItem[] = [
+  { label: "Главная", href: "/", icon: HomeIcon },
+  { label: "Чат", href: "/chat", icon: ChatBubbleIcon },
+  {
+    label: "Понравившиеся",
+    href: "/private-area#liked",
+    icon: HeartIcon,
+    badge: 6,
+  },
+  {
+    label: "Недавние поиски",
+    href: "#",
+    icon: CounterClockwiseClockIcon,
+    active: true,
+  },
+  { label: "Уведомления", href: "#", icon: BellIcon },
+  {
+    label: "Служба поддержки",
+    href: "#",
+    icon: QuestionMarkCircledIcon,
+  },
+];
 
 interface NavigationItem {
   label: string;
@@ -23,10 +82,27 @@ interface MobileMenuProps {
   isOpen: boolean;
   navigationItems: NavigationItem[];
   onClose: () => void;
+  user?: SerializedUser | null;
+  /** Optional user nav links; when not provided, uses default USER_NAV_LINKS */
+  userNavLinks?: UserNavLinkItem[];
 }
 
-export default function MobileMenu({ isOpen, navigationItems, onClose }: MobileMenuProps) {
+const PRIVATE_AREA_HREF = "/private-zone";
+
+export default function MobileMenu({
+  isOpen,
+  navigationItems,
+  onClose,
+  user,
+  userNavLinks,
+}: MobileMenuProps) {
+  const navLinks = userNavLinks ?? USER_NAV_LINKS;
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    onClose();
+    await logoutUser();
+  };
 
   const toggleCategory = (categoryLabel: string) => {
     setExpandedCategory(expandedCategory === categoryLabel ? null : categoryLabel);
@@ -57,31 +133,96 @@ export default function MobileMenu({ isOpen, navigationItems, onClose }: MobileM
 
       {/* Mobile Menu Container */}
       <MobileMenuContainer $isOpen={isOpen}>
-        {/* Publish Ad Section */}
+        {/* Top bar: Logout (left when authenticated), Close (right) */}
+        <MobileMenuTopBar>
+          {user ? (
+            <MobileMenuLogoutLink type="button" onClick={handleLogout}>
+              Выйти
+            </MobileMenuLogoutLink>
+          ) : (
+            <span />
+          )}
+          <MobileMenuCloseButton>
+            <IconButton
+              variant="ghost"
+              color="gray"
+              size="2"
+              onClick={onClose}
+              aria-label="Закрыть меню"
+            >
+              <Cross2Icon width="20" height="20" />
+            </IconButton>
+          </MobileMenuCloseButton>
+        </MobileMenuTopBar>
+
+        {/* User section: full name, Private Area link, avatar (only when authenticated) */}
+        {user && (
+          <MobileMenuUserSection>
+            <MobileMenuUserInfo>
+              <MobileMenuUserName as="p">
+                {user.firstName} {user.lastName}
+              </MobileMenuUserName>
+              <MobileMenuPrivateAreaLink href={PRIVATE_AREA_HREF} onClick={onClose}>
+                Личный кабинет
+              </MobileMenuPrivateAreaLink>
+            </MobileMenuUserInfo>
+            <MobileMenuAvatar as="div">
+              {user.firstName?.[0]}
+              {user.lastName?.[0]}
+            </MobileMenuAvatar>
+          </MobileMenuUserSection>
+        )}
+
+        {/* Publish Ad button (between user section and user nav links) */}
         <MobileMenuActionsSection>
           <MobilePublishAdButton asChild variant="solid" size="3">
             <Link href="/publish-ad" onClick={onClose}>
               <PlusCircledIcon width="18" height="18" />
               <Text size="2" weight="bold">
-                Разместить объявление
+                Добавить объявление
               </Text>
             </Link>
           </MobilePublishAdButton>
         </MobileMenuActionsSection>
 
-        {/* Navigation Items */}
-        <NavigationItemsContainer>
-          {navigationItems.map((item) => (
-            <NavMobileItem
-              key={item.label}
-              label={item.label}
-              subItems={item.subItems}
-              isExpanded={expandedCategory === item.label}
-              onToggle={() => toggleCategory(item.label)}
-              onSubItemClick={handleSubItemClick}
-            />
-          ))}
-        </NavigationItemsContainer>
+        {/* User nav links (Home, Chat, Liked Ads, Recent Searches, etc.) */}
+        <MobileMenuNavSection>
+          {navLinks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <MobileMenuNavLink
+                key={item.label}
+                href={item.href}
+                onClick={onClose}
+                $active={item.active === true}
+              >
+                <MobileMenuNavLinkContent>
+                  <Icon width="20" height="20" />
+                  <MobileMenuNavLinkLabel>{item.label}</MobileMenuNavLinkLabel>
+                </MobileMenuNavLinkContent>
+                {typeof item.badge === "number" && (
+                  <MobileMenuNavLinkBadge>{item.badge}</MobileMenuNavLinkBadge>
+                )}
+              </MobileMenuNavLink>
+            );
+          })}
+        </MobileMenuNavSection>
+
+        {/* Category navigation (Услуги, Работа, Транспорт, etc.) - only when navigationItems provided (e.g. main header; hidden in SimpleHeader) */}
+        {navigationItems.length > 0 && (
+          <NavigationItemsContainer>
+            {navigationItems.map((item) => (
+              <NavMobileItem
+                key={item.label}
+                label={item.label}
+                subItems={item.subItems}
+                isExpanded={expandedCategory === item.label}
+                onToggle={() => toggleCategory(item.label)}
+                onSubItemClick={handleSubItemClick}
+              />
+            ))}
+          </NavigationItemsContainer>
+        )}
       </MobileMenuContainer>
     </>
   );

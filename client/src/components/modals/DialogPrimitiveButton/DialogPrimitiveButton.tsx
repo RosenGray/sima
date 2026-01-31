@@ -1,13 +1,15 @@
 "use client";
 import { FC, ReactNode, useRef, useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Button } from "@radix-ui/themes";
+import { Button, IconButton } from "@radix-ui/themes";
+import { Cross2Icon } from "@radix-ui/react-icons";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
   DialogPrimitiveButtonContent,
   DialogPrimitiveButtonOverlay,
   DialogContentContainer,
   DialogPrimitiveButtonTitle,
+  DialogHeader,
 } from "./DialogPrimitiveButton.styles";
 import { Responsive } from "@radix-ui/themes/dist/esm/props/prop-def.js";
 import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
@@ -143,7 +145,19 @@ const DialogPrimitiveButton: FC<DialogPrimitiveButtonProps> = ({
             maxWidth: getMaxWidthStyle(),
           }}
         >
-          {renderDialogTitle()}
+          <DialogHeader>
+            {renderDialogTitle()}
+            <Dialog.Close asChild>
+              <IconButton
+                variant="ghost"
+                color="gray"
+                size="3"
+                aria-label="Закрыть"
+              >
+                <Cross2Icon width="20" height="20" />
+              </IconButton>
+            </Dialog.Close>
+          </DialogHeader>
           <DialogContentContainer>{children}</DialogContentContainer>
         </DialogPrimitiveButtonContent>
       </Dialog.Portal>

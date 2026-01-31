@@ -6,7 +6,9 @@ import "./../globals.css";
 import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
+import { getLikedAdIdsByUser } from "@/lib/likes/repository/LikesRepository";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
+import { LikesProvider } from "@/providers/LikesProvider/LikesProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
@@ -27,12 +29,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+  const initialLikedIds = user
+    ? await getLikedAdIdsByUser(user.id)
+    : {};
 
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
       <body>
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
+            <LikesProvider initialLikedIds={initialLikedIds}>
             <ThemeProvider
               attribute="class"
               enableSystem
@@ -47,6 +53,7 @@ export default async function RootLayout({
                 {user && !user.isEmailVerified && (
                   <EmailVerificationBanner userEmail={user.email} />
                 )}
+                
                 <PortalProvider>
                   <div className="SimaApp">{children}</div>
                 </PortalProvider>
@@ -54,6 +61,7 @@ export default async function RootLayout({
                 <LayoutBackground />
               </RadixTheme>
             </ThemeProvider>
+            </LikesProvider>
           </AuthProvider>
         </StyledComponentsRegistry>
       </body>

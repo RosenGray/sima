@@ -1,7 +1,8 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -11,6 +12,7 @@ import {
   IdCardIcon,
   Pencil1Icon,
   TrashIcon,
+  ChatBubbleIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
@@ -40,9 +42,12 @@ import {
   ButtonGroup,
 } from "./JobDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_JOBS } from "@/providers/LikesProvider/LikesProvider";
 import { deleteJobAdWithRedirect } from "@/lib/jobs/actions/deleteJobAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface JobDetailClientProps {
   job: SerializedJob;
@@ -60,10 +65,48 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
     useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
+  const router = useRouter();
 
   const isOwner = thisUserIsOwner(job.user.id);
+
+  const handleContactEmployer = async () => {
+    if (chatLoading || !isAuthenticated || isOwner) return;
+    setChatLoading(true);
+    setChatError(null);
+    const result = await getOrCreateChat("jobs", job.publicId);
+
+    if (result.success && result.chatId) {
+      router.push(`/chat/${result.chatId}`);
+    } else if (!result.success && result.error) {
+      setChatError(result.error);
+      setErrorModalOpen(true);
+    }
+    setChatLoading(false);
+  };
+
+  const renderChatButton = () => {
+    if (isAuthenticated && !isOwner) {
+      return (
+        <Button
+          size="3"
+          variant="soft"
+          disabled={chatLoading}
+          onClick={handleContactEmployer}
+        >
+          {chatLoading ? (
+            <Spinner size="3" />
+          ) : (
+            <ChatBubbleIcon width="18" height="18" />
+          )}
+          Написать работодателю
+        </Button>
+      );
+    }
+  };
 
   const {
     images,
@@ -96,6 +139,7 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
+    setChatError(null);
   };
 
   useEffect(() => {
@@ -108,9 +152,17 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
     <PageContainer size="4">
       {/* Header Section with Title and Owner Actions */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {title}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {title}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_JOBS}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
@@ -267,6 +319,17 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
               <Text size="3">*** ***********</Text>
             </ContactItem>
 
+            {/* Chat - Authenticated non-owners only */}
+            <ContactItem>
+              {isAuthenticated && !isOwner
+                ? renderChatButton()
+                : !isAuthenticated && (
+                    <Text size="2" color="gray">
+                      Войдите, чтобы написать работодателю
+                    </Text>
+                  )}
+            </ContactItem>
+
             {/* Phone - Visible Only if Authenticated */}
             {isAuthenticated ? (
               <>
@@ -316,7 +379,10 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={formState?.error}
+        errorMessage={
+          chatError ??
+          (formState as { error?: string } | undefined)?.error
+        }
       />
       <DeleteConfirmationModalWithServerAction
         open={deleteConfirmationModalOpen}

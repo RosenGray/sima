@@ -11,8 +11,11 @@ import {
   CommercialVehicleCardSwiper,
   CommercialVehicleCardSwiperSlide,
   CommercialVehicleCardContent,
+  LikeButtonWrapper,
 } from "./CommercialVehicleCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_COMMERCIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
 import { Autoplay } from "swiper/modules";
 import { SerializedCommercialVehicle } from "@/lib/vehicles/commercial-vehicles/types/commercialVehicle.types";
 import { TransmissionType } from "@/lib/vehicles/cars/types/cars.types";
@@ -53,6 +56,14 @@ const CommercialVehicleCard: React.FC<CommercialVehicleCardProps> = ({ commercia
   return (
     <CommercialVehicleCardBox id={publicId}>
       <CommercialVehicleCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_COMMERCIAL_VEHICLES}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <CommercialVehicleCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

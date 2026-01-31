@@ -19,6 +19,7 @@ export interface IUser {
   hasPrivateProfessionalPage?: boolean;
   acceptMarketing?: boolean;
   role: UserRole;
+  lastSeenAt?: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -80,6 +81,10 @@ const userSchema = new mongoose.Schema<IUser>(
       type: Boolean,
       required: false,
       default: false,
+    },
+    lastSeenAt: {
+      type: Date,
+      required: false,
     },
   },
   {

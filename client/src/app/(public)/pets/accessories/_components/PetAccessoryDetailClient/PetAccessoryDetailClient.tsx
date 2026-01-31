@@ -1,7 +1,8 @@
 "use client";
-import React, { useActionState, useEffect, useState } from "react";
+import React, { useActionState, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -11,6 +12,7 @@ import {
   IdCardIcon,
   Pencil1Icon,
   TrashIcon,
+  ChatBubbleIcon,
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
@@ -46,6 +48,9 @@ import {
 } from "@/lib/pets/accessories/actions/deletePetAccessoryAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_PETS_ACCESSORIES } from "@/providers/LikesProvider/LikesProvider";
+import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface PetAccessoryDetailClientProps {
   accessory: SerializedPetAccessory;
@@ -62,6 +67,7 @@ const formatPrice = (price: number): string => {
 const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
   accessory,
 }) => {
+  const router = useRouter();
   const deleteAccessoryAdByPublicId = deletePetAccessoryAdWithRedirect.bind(
     null,
     accessory.publicId
@@ -76,10 +82,37 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
     useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const { user: currentUser, thisUserIsOwner } = useAuth();
   const isAuthenticated = !!currentUser;
 
   const isOwner = thisUserIsOwner(accessory.user.id);
+
+  const handleContactSeller = useCallback(async () => {
+    if (chatLoading || !isAuthenticated || isOwner) return;
+    setChatLoading(true);
+    setChatError(null);
+    const result = await getOrCreateChat("pets-accessories", accessory.publicId);
+    if (result.success && result.chatId) {
+      router.push(`/chat/${result.chatId}`);
+    } else {
+      setChatError(result.error ?? null);
+      setErrorModalOpen(true);
+    }
+    setChatLoading(false);
+  }, [accessory.publicId, chatLoading, isAuthenticated, isOwner, router]);
+
+  const renderChatButton = () => {
+    if (isAuthenticated && !isOwner) {
+      return (
+        <Button size="3" variant="soft" disabled={chatLoading} onClick={handleContactSeller}>
+          {chatLoading ? <Spinner size="3" /> : <ChatBubbleIcon width="18" height="18" />}
+          Написать продавцу
+        </Button>
+      );
+    }
+  };
 
   const {
     images,
@@ -120,6 +153,7 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
 
   const handleModalClose = () => {
     setErrorModalOpen(false);
+    setChatError(null);
   };
 
   useEffect(() => {
@@ -132,9 +166,18 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {title}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {title}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_PETS_ACCESSORIES}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+          {renderChatButton()}
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">
@@ -288,6 +331,10 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
               <Text size="3">*** ***********</Text>
             </ContactItem>
 
+            <ContactItem>
+              {renderChatButton()}
+            </ContactItem>
+
             {isAuthenticated ? (
               <>
                 <ContactItem>
@@ -336,7 +383,7 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={formState?.error}
+        errorMessage={chatError ?? formState?.error}
       />
       <DeleteConfirmationModalWithServerAction
         open={deleteConfirmationModalOpen}
