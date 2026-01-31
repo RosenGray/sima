@@ -23,7 +23,6 @@ import {
 import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
 import { NavigationItems, renderLinkOrDropdown } from "../Header.utils";
@@ -158,6 +157,7 @@ export default function Header() {
         isOpen={isMobileMenuOpen}
         navigationItems={navigationItems}
         onClose={closeMobileMenu}
+        user={user}
       />
     </>
   );
