@@ -25,6 +25,10 @@ export const HeaderContainer = styled.header`
   }
 `;
 
+export const SimpleHeaderContainer = styled(HeaderContainer)`
+  min-height: var(--simple-header-height);
+`;
+
 export const HeaderTopRow = styled.div`
   display: flex;
   align-items: center;

@@ -10,8 +10,11 @@ import {
   MotorcycleCardImageContainer,
   MotorcycleCardSwiper,
   MotorcycleCardContent,
+  LikeButtonWrapper,
 } from "./MotorcycleCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_MOTORCYCLES } from "@/providers/LikesProvider/LikesProvider";
 import { Autoplay } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
 import { SerializedMotorcycle } from "@/lib/vehicles/motorcycles/types/motorcycle.types";
@@ -68,6 +71,14 @@ const MotorcycleCard: React.FC<MotorcycleCardProps> = ({ motorcycle }) => {
   return (
     <MotorcycleCardBox id={publicId}>
       <MotorcycleCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_MOTORCYCLES}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <MotorcycleCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

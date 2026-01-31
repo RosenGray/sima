@@ -5,13 +5,13 @@ import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import {
-  HeaderContainer,
   Logo,
   MobileMenuButton,
   HamburgerIcon,
   ActionsContainer,
   LoginButton,
   PublishAdButton,
+  SimpleHeaderContainer,
 } from "./../Header.styles";
 import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
@@ -33,7 +33,7 @@ export default function Header() {
 
   return (
     <>
-      <HeaderContainer>
+      <SimpleHeaderContainer>
         <Flex justify="between" align="center" height="100%">
           <MobileMenuButton
             variant="ghost"
@@ -78,7 +78,7 @@ export default function Header() {
             <ThemeToggleButton />
           </ActionsContainer>
         </Flex>
-      </HeaderContainer>
+      </SimpleHeaderContainer>
 
       {/* Mobile Menu Component */}
       <MobileMenu
