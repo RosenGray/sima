@@ -223,3 +223,12 @@ export const PublishAdButton = styled(Button)`
     background: var(--accent-10);
   }
 `;
+
+export const DropdownMenuTrigger = styled(Button)`
+border:1px solid red;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 40px;
+  height: 40px;
+`;

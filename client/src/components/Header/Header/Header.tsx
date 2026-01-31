@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { PersonIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import {
   HeaderContainer,
   HeaderTopRow,
@@ -18,6 +18,7 @@ import {
   ActionsContainer,
   LoginButton,
   PublishAdButton,
+  DropdownMenuTrigger,
 } from "./../Header.styles";
 import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
@@ -25,13 +26,16 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { LogoutButton } from "../../buttons/LogoutButton/LogoutButton";
 import { useHomePage } from "@/providers/HomePageProvider/HomePageProvider";
 import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
-import { renderLinkOrDropdown } from "../Header.utils";
+import { NavigationItems, renderLinkOrDropdown } from "../Header.utils";
 import { navItems } from "./navItems";
+import { DropdownMenu as DropdownMenuComponent } from "@/components/DropdownMenu";
 
 export default function Header() {
   const { serviceCategories } = useHomePage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
+  const firstName = user?.firstName;
+  const lastName = user?.lastName;
 
   const navigationItems = useMemo(() => {
     const services = {
@@ -46,7 +50,7 @@ export default function Header() {
       ],
     };
 
-    return [services, ...navItems];
+    return [services, ...navItems] as NavigationItems;
   }, [serviceCategories]);
 
   const toggleMobileMenu = () => {
@@ -94,15 +98,28 @@ export default function Header() {
               <Link href="/publish-ad">
                 <PlusCircledIcon width="16" height="16" />
                 <Text size="2" weight="medium">
-                  Разместить объявление
+                  Добавить объявление
                 </Text>
               </Link>
             </PublishAdButton>
             {user ? (
-              <LogoutButton />
+              // <LogoutButton />
+              <DropdownMenuComponent trigger={<DropdownMenuTrigger>
+                <Text size="2" weight="medium">
+                  {firstName?.charAt(0)}
+                  {lastName?.charAt(0)}
+                </Text>
+              </DropdownMenuTrigger>} items={[{
+                type: "action",
+                label: "Выйти",
+                onClick: () => {
+                 console.log("Logout");
+                },
+              }]} />
             ) : (
               <LoginButton asChild variant="surface" size="2">
                 <Link href="/auth/login">
+                  <PersonIcon width="18" height="18" />
                   <Text size="2" weight="medium">
                     Войти
                   </Text>
