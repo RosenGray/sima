@@ -26,6 +26,8 @@ export const ENTITY_TYPE_JOBS = "jobs";
 export const ENTITY_TYPE_PETS_ACCESSORIES = "pets-accessories";
 export const ENTITY_TYPE_PETS_FOR_FREE = "pets-for-free";
 export const ENTITY_TYPE_CARS = "vehicles-cars";
+export const ENTITY_TYPE_OFF_ROAD = "vehicles-off-road";
+export const ENTITY_TYPE_COMMERCIAL_VEHICLES = "vehicles-commercial";
 
 const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -34,6 +36,8 @@ const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_PETS_ACCESSORIES,
   ENTITY_TYPE_PETS_FOR_FREE,
   ENTITY_TYPE_CARS,
+  ENTITY_TYPE_OFF_ROAD,
+  ENTITY_TYPE_COMMERCIAL_VEHICLES,
 ] as const;
 
 type LikedIdsByEntity = Record<string, Set<string>>;

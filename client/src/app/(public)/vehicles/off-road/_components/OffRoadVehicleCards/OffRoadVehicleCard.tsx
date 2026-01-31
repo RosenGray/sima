@@ -11,8 +11,11 @@ import {
   OffRoadVehicleCardSwiper,
   OffRoadVehicleCardSwiperSlide,
   OffRoadVehicleCardContent,
+  LikeButtonWrapper,
 } from "./OffRoadVehicleCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_OFF_ROAD } from "@/providers/LikesProvider/LikesProvider";
 import { Autoplay } from "swiper/modules";
 import { SerializedOffRoadVehicle } from "@/lib/vehicles/off-road/types/offRoadVehicle.types";
 import { TransmissionType } from "@/lib/vehicles/cars/types/cars.types";
@@ -53,6 +56,14 @@ const OffRoadVehicleCard: React.FC<OffRoadVehicleCardProps> = ({ offRoadVehicle 
   return (
     <OffRoadVehicleCardBox id={publicId}>
       <OffRoadVehicleCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_OFF_ROAD}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <OffRoadVehicleCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">
