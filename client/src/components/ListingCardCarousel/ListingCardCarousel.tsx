@@ -18,6 +18,7 @@ const DEFAULT_ARIA_LABEL = "Карточки объявлений";
 
 export function ListingCardCarousel({
   items,
+  infinite = false,
   ariaLabel = DEFAULT_ARIA_LABEL,
   className,
 }: ListingCardCarouselProps) {
@@ -33,7 +34,7 @@ export function ListingCardCarousel({
         type="button"
         aria-label="Предыдущий слайд"
         onClick={() => swiperRef.current?.slidePrev()}
-        disabled={isBeginning}
+        disabled={!infinite && isBeginning}
         style={{ left: 0 }}
       >
         <ChevronLeftIcon width={24} height={24} />
@@ -42,12 +43,13 @@ export function ListingCardCarousel({
         type="button"
         aria-label="Следующий слайд"
         onClick={() => swiperRef.current?.slideNext()}
-        disabled={isEnd}
+        disabled={!infinite && isEnd}
         style={{ right: 0 }}
       >
         <ChevronRightIcon width={24} height={24} />
       </NavButton>
       <ListingCardCarouselSwiper
+        loop={infinite}
         spaceBetween={16}
         slidesPerView={1}
         onSwiper={(swiper) => {

@@ -118,7 +118,7 @@ export default async function Home() {
       <BannerCarousel items={bannerItems} autoplay loop />
       <CategoryLinks items={categoryItems} ariaLabel="Категории" />
       <Box pt="4">
-        <ListingCardCarousel items={listingCardCarouselItems} ariaLabel="Карточки объявлений" />
+        <ListingCardCarousel items={listingCardCarouselItems} infinite ariaLabel="Карточки объявлений" />
       </Box>
       <Box pt="7rem">
         <Box>
