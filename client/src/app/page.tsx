@@ -113,8 +113,8 @@ export default async function Home() {
 
   return (
     <HomePageProvider data={{ serviceCategories }}>
-      {/* <Header /> */}
-      <Container>
+      <Header />
+      {/* <Container>
       <BannerCarousel items={bannerItems} autoplay loop />
       <CategoryLinks items={categoryItems} ariaLabel="Категории" />
       <Box pt="4">
@@ -155,7 +155,7 @@ export default async function Home() {
           </div>
         </Box>
       </Box>
-      </Container>
+      </Container> */}
     </HomePageProvider>
   );
 }

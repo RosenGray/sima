@@ -42,7 +42,7 @@ export const navItems: NavigationItems = [
     subItems: [{ label: "Все", href: "/real-estate" }],
   },
   {
-    label: "Куплю-Продаю",
+    label: "Куплю-Продам",
     type: "link",
     subItems: [{ label: "Все", href: "/yad2" }],
   },

@@ -14,6 +14,8 @@ import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry"
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
 import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
+import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
+import Accessibilik from "accessibility-react-widget";
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
@@ -37,10 +39,11 @@ export default async function RootLayout({
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
       <body>
-        <Script
-          src="https://acc-landing.vercel.app/accessibilik.min.js"
+        {/* <Script
+          src="https://cdn.jsdelivr.net/npm/sienna-accessibility@latest/dist/sienna-accessibility.umd.js"
           strategy="afterInteractive"
-        />
+          defer
+        /> */}
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <LikesProvider initialLikedIds={initialLikedIds}>
@@ -60,7 +63,7 @@ export default async function RootLayout({
                 )}
                 
                 <PortalProvider>
-           
+                  <Accessibilik />
                   <div className="SimaApp">{children}</div>
                 </PortalProvider>
                 <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
