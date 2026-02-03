@@ -15,12 +15,40 @@ import {
   ANNUAL_PAYMENTS_OPTIONS,
 } from "../types/realEstateForRent.schema";
 
-// Map PropertyKind enum to select options
+// Russian labels for PropertyKind (aligned with homeless.co.il/rent "סוג הנכס" dropdown, translated to Russian).
+const PROPERTY_KIND_LABELS: Record<PropertyKind, string> = {
+  [PropertyKind.Apartment]: "Квартира",
+  [PropertyKind.Loft]: "Лофт",
+  [PropertyKind.GardenApartment]: "Квартира с садом",
+  [PropertyKind.Penthouse]: "Пентхаус",
+  [PropertyKind.Duplex]: "Дуплекс",
+  [PropertyKind.TourismAndVacation]: "Туризм и отдых",
+  [PropertyKind.Basement]: "Подвал/партер",
+  [PropertyKind.Triplex]: "Триплекс",
+  [PropertyKind.HousingUnit]: "Жилая единица",
+  [PropertyKind.StudioLoft]: "Студия/лофт",
+  [PropertyKind.PrivateHouseCottage]: "Частный дом/коттедж",
+  [PropertyKind.TwoFamily]: "Двухквартирный дом",
+  [PropertyKind.FarmAgricultural]: "Ферма/участок (нахала)",
+  [PropertyKind.AuxiliaryFarm]: "Вспомогательное хозяйство",
+  [PropertyKind.Other]: "Другое",
+  [PropertyKind.Plots]: "Участки",
+  [PropertyKind.ProtectedHousing]: "Дом престарелых",
+  [PropertyKind.ResidentialBuilding]: "Жилой дом",
+  [PropertyKind.Storage]: "Складское помещение",
+  [PropertyKind.Parking]: "Парковка",
+  [PropertyKind.PurchaseGroupRight]: "Группа покупки/право на объект",
+};
+
+export function formatPropertyKind(kind: PropertyKind): string {
+  return PROPERTY_KIND_LABELS[kind] ?? "";
+}
+
 const propertyKindOptions = Object.values(PropertyKind)
   .filter((value): value is PropertyKind => typeof value === "number")
   .map((value) => ({
     value: value.toString(),
-    label: value === PropertyKind.Apartment ? "Квартира" : "Лофт",
+    label: PROPERTY_KIND_LABELS[value],
   }));
 
 // Map AirConditioning enum to select options

@@ -20,13 +20,13 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
 import { SerializedRealEstateForRent } from "@/lib/real-estate/for-rent/types/realEstateForRent.types";
 import {
-  PropertyKind,
   AirConditioning,
   Parking,
   AdditionalFeatures,
   Furniture,
   EntryDate,
 } from "@/lib/real-estate/for-rent/types/realEstateForRent.types";
+import { formatPropertyKind } from "@/lib/real-estate/for-rent/utils/realEstateOptions";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
@@ -63,10 +63,6 @@ interface RealEstateForRentDetailClientProps {
 }
 
 // Helper functions to format enum values
-const formatPropertyKind = (propertyKind: PropertyKind): string => {
-  return propertyKind === PropertyKind.Apartment ? "Квартира" : "Лофт";
-};
-
 const formatAirConditioning = (airconditioning: AirConditioning): string => {
   switch (airconditioning) {
     case AirConditioning.None:

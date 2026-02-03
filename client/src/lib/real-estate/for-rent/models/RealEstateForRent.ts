@@ -100,7 +100,9 @@ const realEstateForRentSchema = new mongoose.Schema(
     propertyKind: {
       type: Number,
       required: true,
-      enum: [PropertyKind.Apartment, PropertyKind.Loft],
+      enum: Object.values(PropertyKind).filter(
+        (v): v is PropertyKind => typeof v === "number"
+      ),
       index: true,
     },
     district: {
