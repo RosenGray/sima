@@ -52,7 +52,10 @@ export const createRealEstateForSaleSchema = ({
         invalid_type_error: "Тип недвижимости должен быть числом",
       })
       .refine(
-        (val) => val === PropertyKind.Apartment || val === PropertyKind.Loft,
+        (val) =>
+          Object.values(PropertyKind).filter(
+            (v): v is PropertyKind => typeof v === "number"
+          ).includes(val as PropertyKind),
         {
           message: "Неверное значение типа недвижимости",
         }

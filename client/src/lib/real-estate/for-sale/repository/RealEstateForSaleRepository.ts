@@ -1,6 +1,6 @@
 import { RealEstateForSale, IRealEstateForSale } from "../models/RealEstateForSale";
 import connectDB from "@/lib/mongo/mongodb";
-import { SerializedRealEstateForSale } from "../types/realEstateForSale.types";
+import { PropertyKind, SerializedRealEstateForSale } from "../types/realEstateForSale.types";
 import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
 import sanitize from "mongo-sanitize";
@@ -76,11 +76,19 @@ class RealEstateForSaleRepository {
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof RealEstateForSale> = {};
 
+      const validPropertyKindValues = Object.values(PropertyKind).filter(
+        (v): v is PropertyKind => typeof v === "number"
+      );
+
       // Add propertyKind filter
       if (sanitizedFilters.propertyKind) {
         const propertyKindNumbers = sanitizedFilters.propertyKind
           .map((pk) => Number(pk))
-          .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 2);
+          .filter(
+            (num) =>
+              !Number.isNaN(num) &&
+              validPropertyKindValues.includes(num as PropertyKind)
+          );
 
         if (propertyKindNumbers.length > 0) {
           searchFilter.propertyKind = { $in: propertyKindNumbers };

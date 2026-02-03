@@ -38,8 +38,12 @@ export const navItems: NavigationItems = [
   },
   {
     label: "Недвижимость",
-    type: "link",
-    subItems: [{ label: "Все", href: "/real-estate" }],
+    type: "dropdown",
+    subItems: [
+      { label: "Продажа", href: "/real-estate/for-sale/" },
+      { label: "Аренда", href: "/real-estate/for-rent/" },
+      { label: "Коммерческая недвижимость", href: "/real-estate/commercial-real-estate/" },
+    ],
   },
   {
     label: "Куплю-Продам",
