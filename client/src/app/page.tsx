@@ -11,6 +11,9 @@ import { navItems } from "@/components/Header/Header/navItems";
 import { ListingCardCarousel } from "@/components/ListingCardCarousel/ListingCardCarousel";
 import type { ListingCardCarouselItem } from "@/components/ListingCardCarousel/ListingCardCarousel.types";
 
+
+
+
 // const PageContainer = styled(Container)`
 //   min-height: 100vh;
 //   display: flex;
@@ -114,6 +117,9 @@ export default async function Home() {
   return (
     <HomePageProvider data={{ serviceCategories }}>
       <Header />
+
+
+
       {/* <Container>
       <BannerCarousel items={bannerItems} autoplay loop />
       <CategoryLinks items={categoryItems} ariaLabel="Категории" />

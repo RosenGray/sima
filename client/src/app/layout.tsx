@@ -14,8 +14,10 @@ import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry"
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
 import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
-import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
+// import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
 import Accessibilik from "accessibility-react-widget";
+
+
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
