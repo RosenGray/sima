@@ -141,10 +141,21 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   useEffect(() => {
     menuIsOpenRef.current = menuIsOpen;
   }, [menuIsOpen]);
-  
+
   useEffect(() => {
     isDisabledRef.current = isDisabled;
   }, [isDisabled]);
+
+  // Focus the input when menu opens on desktop so user can type to filter.
+  // (Custom mousedown handler prevents default, so the input never gets focus otherwise.)
+  useEffect(() => {
+    if (isMobile || !menuIsOpen || !containerRef.current) return;
+    const input = containerRef.current.querySelector<HTMLInputElement>("input");
+    if (input) {
+      const t = requestAnimationFrame(() => input.focus());
+      return () => cancelAnimationFrame(t);
+    }
+  }, [menuIsOpen, isMobile]);
 
   // Use native event listeners ONLY on desktop - for handling Radix Dialog blocking react-select
   // On mobile, let react-select handle events naturally
