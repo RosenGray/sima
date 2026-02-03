@@ -4,255 +4,340 @@ import {
 } from "./types/yad2Category.schema";
 
 export const yad2Categories: Record<Yad2CategoryId, Yad2Category> = {
-  ELECTRONICS: {
-    id: "ELECTRONICS",
-    name: "Electronics",
-    russianName: "Электроника",
-    subCategories: [
-      {
-        id: "ELECTRONICS_SMARTPHONES",
-        name: "Smartphones",
-        russianName: "Смартфоны",
-      },
-      {
-        id: "ELECTRONICS_LAPTOPS",
-        name: "Laptops",
-        russianName: "Ноутбуки",
-      },
-      {
-        id: "ELECTRONICS_TABLETS",
-        name: "Tablets",
-        russianName: "Планшеты",
-      },
-      {
-        id: "ELECTRONICS_CAMERAS",
-        name: "Cameras",
-        russianName: "Фотоаппараты",
-      },
-      {
-        id: "ELECTRONICS_HEADPHONES",
-        name: "Headphones",
-        russianName: "Наушники",
-      },
-      {
-        id: "ELECTRONICS_GAMING_CONSOLES",
-        name: "Gaming Consoles",
-        russianName: "Игровые консоли",
-      },
-    ],
+  "44": {
+    id: "44",
+    name: "מוצרי חשמל",
+    russianName: "Бытовая техника и электроника",
+    subCategories: [],
   },
-  FURNITURE: {
-    id: "FURNITURE",
-    name: "Furniture",
+  "45": {
+    id: "45",
+    name: "ריהוט",
     russianName: "Мебель",
-    subCategories: [
-      {
-        id: "FURNITURE_CHAIRS",
-        name: "Chairs",
-        russianName: "Стулья",
-      },
-      {
-        id: "FURNITURE_TABLES",
-        name: "Tables",
-        russianName: "Столы",
-      },
-      {
-        id: "FURNITURE_SOFAS",
-        name: "Sofas",
-        russianName: "Диваны",
-      },
-      {
-        id: "FURNITURE_BEDS",
-        name: "Beds",
-        russianName: "Кровати",
-      },
-      {
-        id: "FURNITURE_CABINETS",
-        name: "Cabinets",
-        russianName: "Шкафы",
-      },
-      {
-        id: "FURNITURE_DESKS",
-        name: "Desks",
-        russianName: "Письменные столы",
-      },
-    ],
+    subCategories: [],
   },
-  CLOTHING: {
-    id: "CLOTHING",
-    name: "Clothing",
-    russianName: "Одежда",
-    subCategories: [
-      {
-        id: "CLOTHING_MENS",
-        name: "Men's Clothing",
-        russianName: "Мужская одежда",
-      },
-      {
-        id: "CLOTHING_WOMENS",
-        name: "Women's Clothing",
-        russianName: "Женская одежда",
-      },
-      {
-        id: "CLOTHING_SHOES",
-        name: "Shoes",
-        russianName: "Обувь",
-      },
-      {
-        id: "CLOTHING_ACCESSORIES",
-        name: "Accessories",
-        russianName: "Аксессуары",
-      },
-      {
-        id: "CLOTHING_BAGS",
-        name: "Bags",
-        russianName: "Сумки",
-      },
-    ],
+  "46": {
+    id: "46",
+    name: "תכולת דירה",
+    russianName: "Содержимое квартиры",
+    subCategories: [],
   },
-  SPORTS_EQUIPMENT: {
-    id: "SPORTS_EQUIPMENT",
-    name: "Sports Equipment",
-    russianName: "Спортивное оборудование",
-    subCategories: [
-      {
-        id: "SPORTS_EQUIPMENT_BICYCLES",
-        name: "Bicycles",
-        russianName: "Велосипеды",
-      },
-      {
-        id: "SPORTS_EQUIPMENT_FITNESS",
-        name: "Fitness Equipment",
-        russianName: "Фитнес оборудование",
-      },
-      {
-        id: "SPORTS_EQUIPMENT_OUTDOOR",
-        name: "Outdoor Gear",
-        russianName: "Туристическое снаряжение",
-      },
-      {
-        id: "SPORTS_EQUIPMENT_ACCESSORIES",
-        name: "Sports Accessories",
-        russianName: "Спортивные аксессуары",
-      },
-    ],
+  "47": {
+    id: "47",
+    name: "כלי נגינה",
+    russianName: "Музыкальные инструменты",
+    subCategories: [],
   },
-  BOOKS: {
-    id: "BOOKS",
-    name: "Books",
-    russianName: "Книги",
-    subCategories: [
-      {
-        id: "BOOKS_FICTION",
-        name: "Fiction",
-        russianName: "Художественная литература",
-      },
-      {
-        id: "BOOKS_NON_FICTION",
-        name: "Non-Fiction",
-        russianName: "Нехудожественная литература",
-      },
-      {
-        id: "BOOKS_TEXTBOOKS",
-        name: "Textbooks",
-        russianName: "Учебники",
-      },
-      {
-        id: "BOOKS_CHILDREN",
-        name: "Children's Books",
-        russianName: "Детские книги",
-      },
-      {
-        id: "BOOKS_COMICS",
-        name: "Comics",
-        russianName: "Комиксы",
-      },
-    ],
+  "48": {
+    id: "48",
+    name: "סלולרי",
+    russianName: "Мобильные телефоны",
+    subCategories: [],
   },
-  HOME_GARDEN: {
-    id: "HOME_GARDEN",
-    name: "Home & Garden",
-    russianName: "Дом и сад",
-    subCategories: [
-      {
-        id: "HOME_GARDEN_KITCHEN",
-        name: "Kitchen Items",
-        russianName: "Кухонная утварь",
-      },
-      {
-        id: "HOME_GARDEN_GARDEN_TOOLS",
-        name: "Garden Tools",
-        russianName: "Садовый инвентарь",
-      },
-      {
-        id: "HOME_GARDEN_DECOR",
-        name: "Decor",
-        russianName: "Декор",
-      },
-      {
-        id: "HOME_GARDEN_APPLIANCES",
-        name: "Appliances",
-        russianName: "Бытовая техника",
-      },
-    ],
+  "49": {
+    id: "49",
+    name: "מחשבים וציוד נלווה",
+    russianName: "Компьютеры и периферия",
+    subCategories: [],
   },
-  TOYS: {
-    id: "TOYS",
-    name: "Toys",
-    russianName: "Игрушки",
-    subCategories: [
-      {
-        id: "TOYS_ACTION_FIGURES",
-        name: "Action Figures",
-        russianName: "Фигурки",
-      },
-      {
-        id: "TOYS_BOARD_GAMES",
-        name: "Board Games",
-        russianName: "Настольные игры",
-      },
-      {
-        id: "TOYS_PUZZLES",
-        name: "Puzzles",
-        russianName: "Пазлы",
-      },
-      {
-        id: "TOYS_EDUCATIONAL",
-        name: "Educational Toys",
-        russianName: "Обучающие игрушки",
-      },
-    ],
+  "51": {
+    id: "51",
+    name: "סטריאו ונגנים",
+    russianName: "Стереосистемы и плееры",
+    subCategories: [],
   },
-  JEWELRY: {
-    id: "JEWELRY",
-    name: "Jewelry",
+  "53": {
+    id: "53",
+    name: "יד-שניה לנשים",
+    russianName: "Секонд-хенд для женщин",
+    subCategories: [],
+  },
+  "54": {
+    id: "54",
+    name: "לתינוק ולילד",
+    russianName: "Для малышей и детей",
+    subCategories: [],
+  },
+  "55": {
+    id: "55",
+    name: "ציוד ספורט",
+    russianName: "Спортивный инвентарь",
+    subCategories: [],
+  },
+  "57": {
+    id: "57",
+    name: "אופניים",
+    russianName: "Велосипеды",
+    subCategories: [],
+  },
+  "63": {
+    id: "63",
+    name: "צילום",
+    russianName: "Фото и видеотехника",
+    subCategories: [],
+  },
+  "64": {
+    id: "64",
+    name: "אבדות",
+    russianName: "Потерянные вещи",
+    subCategories: [],
+  },
+  "65": {
+    id: "65",
+    name: "למסירה",
+    russianName: "Отдам даром",
+    subCategories: [],
+  },
+  "66": {
+    id: "66",
+    name: "שונות",
+    russianName: "Разное",
+    subCategories: [],
+  },
+  "67": {
+    id: "67",
+    name: "אספנות",
+    russianName: "Коллекционирование",
+    subCategories: [],
+  },
+  "68": {
+    id: "68",
+    name: "ציוד משרדי",
+    russianName: "Офисное оборудование",
+    subCategories: [],
+  },
+  "152": {
+    id: "152",
+    name: "משחקים וקונסולות",
+    russianName: "Игры и консоли",
+    subCategories: [],
+  },
+  "155": {
+    id: "155",
+    name: "כלי מטבח",
+    russianName: "Кухонная утварь",
+    subCategories: [],
+  },
+  "167": {
+    id: "167",
+    name: "ציוד לדיג'יי ואולפנים",
+    russianName: "Оборудование для диджеев и студий",
+    subCategories: [],
+  },
+  "188": {
+    id: "188",
+    name: "צעצועי ילדים",
+    russianName: "Детские игрушки",
+    subCategories: [],
+  },
+  "228": {
+    id: "228",
+    name: "מיגון לבית ולעסק",
+    russianName: "Защита для дома и бизнеса",
+    subCategories: [],
+  },
+  "229": {
+    id: "229",
+    name: "קורקינטים",
+    russianName: "Самокаты",
+    subCategories: [],
+  },
+  "230": {
+    id: "230",
+    name: "כלי עבודה",
+    russianName: "Инструменты",
+    subCategories: [],
+  },
+  "298": {
+    id: "298",
+    name: "קמפינג ונופש",
+    russianName: "Кемпинг и отдых",
+    subCategories: [],
+  },
+  "302": {
+    id: "302",
+    name: "תכשיטים",
     russianName: "Ювелирные изделия",
-    subCategories: [
-      {
-        id: "JEWELRY_RINGS",
-        name: "Rings",
-        russianName: "Кольца",
-      },
-      {
-        id: "JEWELRY_NECKLACES",
-        name: "Necklaces",
-        russianName: "Ожерелья",
-      },
-      {
-        id: "JEWELRY_WATCHES",
-        name: "Watches",
-        russianName: "Часы",
-      },
-      {
-        id: "JEWELRY_BRACELETS",
-        name: "Bracelets",
-        russianName: "Браслеты",
-      },
-      {
-        id: "JEWELRY_EARRINGS",
-        name: "Earrings",
-        russianName: "Серьги",
-      },
-    ],
+    subCategories: [],
+  },
+  "303": {
+    id: "303",
+    name: "משקפיים",
+    russianName: "Очки",
+    subCategories: [],
+  },
+  "306": {
+    id: "306",
+    name: "לחתן ולכלה",
+    russianName: "Для молодожёнов",
+    subCategories: [],
+  },
+  "309": {
+    id: "309",
+    name: "חפצי נוי",
+    russianName: "Декор и предметы интерьера",
+    subCategories: [],
+  },
+  "310": {
+    id: "310",
+    name: "יודאיקה",
+    russianName: "Иудаика",
+    subCategories: [],
+  },
+  "311": {
+    id: "311",
+    name: "פורים",
+    russianName: "Пурим",
+    subCategories: [],
+  },
+  "316": {
+    id: "316",
+    name: "אלטרנטיבי",
+    russianName: "Альтернативное",
+    subCategories: [],
+  },
+  "317": {
+    id: "317",
+    name: "סוכות",
+    russianName: "Суккот",
+    subCategories: [],
+  },
+  "321": {
+    id: "321",
+    name: "סטוקים",
+    russianName: "Стоковая одежда",
+    subCategories: [],
+  },
+  "350": {
+    id: "350",
+    name: "ביגוד ואביזרים",
+    russianName: "Одежда и аксессуары",
+    subCategories: [],
+  },
+  "351": {
+    id: "351",
+    name: "כלים סניטריים",
+    russianName: "Сантехника",
+    subCategories: [],
+  },
+  "352": {
+    id: "352",
+    name: "לבית",
+    russianName: "Для дома",
+    subCategories: [],
+  },
+  "353": {
+    id: "353",
+    name: "לגינה",
+    russianName: "Для сада",
+    subCategories: [],
+  },
+  "354": {
+    id: "354",
+    name: "למטייל ולמתגייס",
+    russianName: "Для туристов и призывников",
+    subCategories: [],
+  },
+  "355": {
+    id: "355",
+    name: "מוסיקה וסרטים",
+    russianName: "Музыка и фильмы",
+    subCategories: [],
+  },
+  "357": {
+    id: "357",
+    name: "מנויים וכרטיסים",
+    russianName: "Абонементы и билеты",
+    subCategories: [],
+  },
+  "359": {
+    id: "359",
+    name: "ספרות ומאמרים",
+    russianName: "Книги и пресса",
+    subCategories: [],
+  },
+  "360": {
+    id: "360",
+    name: "עסקים למכירה/למסירה",
+    russianName: "Готовый бизнес",
+    subCategories: [],
+  },
+  "361": {
+    id: "361",
+    name: "ציוד לתעשייה",
+    russianName: "Промышленное оборудование",
+    subCategories: [],
+  },
+  "362": {
+    id: "362",
+    name: "ציוד סיעודי/רפואי",
+    russianName: "Медтехника и уход",
+    subCategories: [],
+  },
+  "363": {
+    id: "363",
+    name: "קוסמטיקה וטיפוח",
+    russianName: "Косметика и уход",
+    subCategories: [],
+  },
+  "364": {
+    id: "364",
+    name: "קופונים/שוברי זיכוי/שונות",
+    russianName: "Купоны, сертификаты, разное",
+    subCategories: [],
+  },
+  "365": {
+    id: "365",
+    name: "תקשורת",
+    russianName: "Связь и телеком",
+    subCategories: [],
+  },
+  "366": {
+    id: "366",
+    name: "אומנות",
+    russianName: "Искусство",
+    subCategories: [],
+  },
+  "376": {
+    id: "376",
+    name: "מבנים ניידים",
+    russianName: "Мобильные сооружения",
+    subCategories: [],
+  },
+  "377": {
+    id: "377",
+    name: "מוצרי Apple",
+    russianName: "Продукция Apple",
+    subCategories: [],
+  },
+  "378": {
+    id: "378",
+    name: "סטריאו",
+    russianName: "Стереосистемы",
+    subCategories: [],
+  },
+  "379": {
+    id: "379",
+    name: "ספרות וחומרי לימוד",
+    russianName: "Книги и учебные материалы",
+    subCategories: [],
+  },
+  "380": {
+    id: "380",
+    name: "ציוד לאירועים",
+    russianName: "Оборудование для мероприятий",
+    subCategories: [],
+  },
+  "381": {
+    id: "381",
+    name: "ציוד לבית ספר",
+    russianName: "Школьные принадлежности",
+    subCategories: [],
+  },
+  "221": {
+    id: "221",
+    name: "ציוד לעסקים",
+    russianName: "Оборудование для бизнеса",
+    subCategories: [],
   },
 };
