@@ -1,5 +1,5 @@
 "use client";
-import { FC, useId, useEffect, useState, useCallback, useRef } from "react";
+import { FC, useId, useEffect, useLayoutEffect, useState, useCallback, useRef } from "react";
 import React from "react";
 import { Option, CustomSelectProps, SearchMultiSelectProps } from "../types";
 import Select, { StylesConfig, GroupBase, MultiValue } from "react-select";
@@ -11,6 +11,9 @@ import ValueContainer from "./ValueContainer";
 import CustomMenu from "./CustomMenu";
 import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
 import { useDropdownCoordination } from "@/components/filters/FiltersContext";
+
+const VIEWPORT_PADDING = 24;
+const MIN_MENU_HEIGHT = 200;
 
 const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   label,
@@ -24,6 +27,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   menuPosition,
   menuPlacement = "auto",
   maxMenuHeight = 1000,
+  useDynamicMaxMenuHeight = true,
   isDisabled,
   ...rest
 }) => {
@@ -33,6 +37,9 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
   const id = useId();
   const dropdownId = `multi-select-${paramName}-${id}`;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [dynamicMaxMenuHeight, setDynamicMaxMenuHeight] = useState<
+    number | null
+  >(null);
   const paramValues = searchParams.getAll(paramName);
   const [_menuPosition, setMenuPosition] = useState(menuPosition);
   const paramSelectionOptions = options.filter((opt) =>
@@ -146,6 +153,26 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
     isDisabledRef.current = isDisabled;
   }, [isDisabled]);
 
+  // Compute viewport-aware maxMenuHeight when menu opens
+  useLayoutEffect(() => {
+    if (!useDynamicMaxMenuHeight || !menuIsOpen) {
+      setDynamicMaxMenuHeight(null);
+      return;
+    }
+    const container = containerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom - VIEWPORT_PADDING;
+    const spaceAbove = rect.top - VIEWPORT_PADDING;
+    const available = Math.max(spaceBelow, spaceAbove);
+    const clamped = Math.max(
+      MIN_MENU_HEIGHT,
+      Math.min(maxMenuHeight, available)
+    );
+    setDynamicMaxMenuHeight(clamped);
+  }, [menuIsOpen, useDynamicMaxMenuHeight, maxMenuHeight]);
+
   // Focus the input when menu opens on desktop so user can type to filter.
   // (Custom mousedown handler prevents default, so the input never gets focus otherwise.)
   useEffect(() => {
@@ -220,7 +247,7 @@ const SearchMultiSelect: FC<SearchMultiSelectProps> = ({
         }
         menuPosition={_menuPosition}
         menuPlacement={menuPlacement}
-        maxMenuHeight={maxMenuHeight}
+        maxMenuHeight={dynamicMaxMenuHeight ?? maxMenuHeight}
         value={selectedOptions}
         name={`search-multi-select-${paramName}`}
         instanceId={id}
