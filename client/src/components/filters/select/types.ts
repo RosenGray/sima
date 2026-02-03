@@ -52,6 +52,7 @@ export interface SearchSingleSelectProps
   menuPosition?: "absolute" | "fixed";
   menuPlacement?: "auto" | "bottom" | "top";
   maxMenuHeight?: number;
+  useDynamicMaxMenuHeight?: boolean;
 }
 
 
