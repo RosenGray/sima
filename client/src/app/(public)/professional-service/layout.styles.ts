@@ -16,11 +16,10 @@ export const ProfessionalServiceLayoutSection = styled.section`
   }
 `;
 
-export const ProfessionalServiceLayoutStripe = styled(Box)<{ $src: string }>` 
-  height: 270px;
+/** Container for Next.js Image stripe: relative, fixed height, full width for fill + object-fit */
+export const ProfessionalServiceLayoutStripe = styled(Box)`
   position: relative;
-  background-image: url(${({ $src }) => $src});
-  background-size: cover;
-  background-position: 0px 35%;
-  background-repeat: no-repeat;
+  width: 100%;
+  height: 270px;
+  overflow: hidden;
 `;

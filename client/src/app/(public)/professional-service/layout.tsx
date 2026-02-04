@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import {
   ProfessionalServiceLayoutSection,
   ProfessionalServiceLayoutStripe,
@@ -16,12 +17,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const filePath = generateBackblazeUrl("public", "professionals-stripe.jpeg");
+  const stripeSrc = generateBackblazeUrl("public", "professionals-stripe.jpeg");
 
   return (
     <ProfessionalServiceLayoutSection>
       <SimpleHeader />
-      <ProfessionalServiceLayoutStripe $src={filePath} />
+      <ProfessionalServiceLayoutStripe>
+        <Image
+          src={stripeSrc}
+          alt="Профессиональные услуги"
+          fill
+          sizes="100vw"
+          priority
+          style={{ objectFit: "cover", objectPosition: "0 35%" }}
+        />
+      </ProfessionalServiceLayoutStripe>
       <main>{children}</main>
     </ProfessionalServiceLayoutSection>
   );
