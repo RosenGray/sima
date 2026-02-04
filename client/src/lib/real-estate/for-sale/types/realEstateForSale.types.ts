@@ -1,28 +1,8 @@
 import { IRealEstateForSale } from "../models/RealEstateForSale";
 import { SerializedUser } from "@/lib/auth/types/auth.scema";
 
-export enum PropertyKind {
-  Apartment = 1,
-  GardenApartment = 2,
-  Penthouse = 3,
-  Duplex = 4,
-  TourismAndVacation = 5,
-  Basement = 6,
-  Triplex = 7,
-  HousingUnit = 8,
-  StudioLoft = 9,
-  PrivateHouseCottage = 10,
-  TwoFamily = 11,
-  FarmAgricultural = 12,
-  AuxiliaryFarm = 13,
-  Other = 14,
-  Plots = 15,
-  ProtectedHousing = 16,
-  ResidentialBuilding = 17,
-  Storage = 18,
-  Parking = 19,
-  PurchaseGroupRight = 20,
-}
+// Shared with for-rent flow (single source of truth for PropertyKind)
+export { PropertyKind } from "../../for-rent/types/realEstateForRent.types";
 
 export enum AirConditioning {
   None = 1,
