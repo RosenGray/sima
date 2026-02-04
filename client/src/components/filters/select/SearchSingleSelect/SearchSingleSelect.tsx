@@ -1,5 +1,5 @@
 "use client";
-import { FC, useId, useEffect, useState, useCallback, useRef } from "react";
+import { FC, useId, useEffect, useLayoutEffect, useState, useCallback, useRef } from "react";
 import React from "react";
 import { Option, SearchSingleSelectProps } from "../types";
 import Select, {
@@ -13,6 +13,9 @@ import { styles } from "../select.styles";
 import { useSearchParams } from "next/navigation";
 import { usePortalTarget } from "@/providers/PortalProvider/PortalProvider";
 
+const VIEWPORT_PADDING = 24;
+const MIN_MENU_HEIGHT = 200;
+
 const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   label,
   paramName,
@@ -24,11 +27,17 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   menuPosition,
   menuPlacement = "auto",
   maxMenuHeight = 200,
+  useDynamicMaxMenuHeight = true,
   ...rest
 }) => {
   const { portalTarget } = usePortalTarget();
   const searchParams = useSearchParams();
   const id = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [dynamicMaxMenuHeight, setDynamicMaxMenuHeight] = useState<
+    number | null
+  >(null);
   const paramValue = searchParams.get(paramName);
   const paramSelectionOption = options.find((opt) => opt?.value === paramValue);
   const hasInitialized = useRef(false);
@@ -73,6 +82,26 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
     }
   }, [paramName, paramSelectionOption, setAllSelectedFilterOptions]);
 
+  // Compute viewport-aware maxMenuHeight when menu opens
+  useLayoutEffect(() => {
+    if (!useDynamicMaxMenuHeight || !menuIsOpen) {
+      setDynamicMaxMenuHeight(null);
+      return;
+    }
+    const container = containerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom - VIEWPORT_PADDING;
+    const spaceAbove = rect.top - VIEWPORT_PADDING;
+    const available = Math.max(spaceBelow, spaceAbove);
+    const clamped = Math.max(
+      MIN_MENU_HEIGHT,
+      Math.min(maxMenuHeight, available)
+    );
+    setDynamicMaxMenuHeight(clamped);
+  }, [menuIsOpen, useDynamicMaxMenuHeight, maxMenuHeight]);
+
   const handleChange = useCallback(
     (option: SingleValue<Option>) => {
       if (option) {
@@ -85,7 +114,7 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
   );
 
   return (
-    <Box>
+    <Box ref={containerRef}>
       {label && (
         <Text style={{ lineHeight: "2" }} htmlFor={rest.id} as="label" size="2">
           {label}
@@ -103,7 +132,9 @@ const SearchSingleSelect: FC<SearchSingleSelectProps> = ({
         }
         menuPosition={menuPosition}
         menuPlacement={menuPlacement}
-        maxMenuHeight={maxMenuHeight}
+        maxMenuHeight={dynamicMaxMenuHeight ?? maxMenuHeight}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        onMenuClose={() => setMenuIsOpen(false)}
         value={selectedOptions.length > 0 ? selectedOptions[0] : null}
         name={`search-single-select-${paramName}`}
         instanceId={id}

@@ -1,10 +1,8 @@
 import { IRealEstateForSale } from "../models/RealEstateForSale";
 import { SerializedUser } from "@/lib/auth/types/auth.scema";
 
-export enum PropertyKind {
-  Apartment = 1,
-  Loft = 2,
-}
+// Shared with for-rent flow (single source of truth for PropertyKind)
+export { PropertyKind } from "../../for-rent/types/realEstateForRent.types";
 
 export enum AirConditioning {
   None = 1,

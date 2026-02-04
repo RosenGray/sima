@@ -1,3 +1,8 @@
+---
+name: sima-chat
+description: Chat/messaging system implementation for SIMA. Use when adding chat to entity types, implementing buyer-seller messaging, conversation threads tied to ads, chat UI, or message/chat lifecycle handling.
+---
+
 # Chat System Implementation Skill
 
 ## Overview

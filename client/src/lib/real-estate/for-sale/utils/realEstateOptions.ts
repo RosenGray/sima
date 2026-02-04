@@ -1,5 +1,4 @@
 import {
-  PropertyKind,
   AirConditioning,
   Parking,
   Furniture,
@@ -13,14 +12,13 @@ import {
   FLOOR_OPTIONS,
   BALCONY_OPTIONS,
 } from "../types/realEstateForSale.schema";
+import {
+  formatPropertyKind,
+  getPropertyKindOptions,
+} from "../../for-rent/utils/realEstateOptions";
 
-// Map PropertyKind enum to select options
-const propertyKindOptions = Object.values(PropertyKind)
-  .filter((value): value is PropertyKind => typeof value === "number")
-  .map((value) => ({
-    value: value.toString(),
-    label: value === PropertyKind.Apartment ? "Квартира" : "Лофт",
-  }));
+// Re-export shared PropertyKind options/labels from for-rent (single source of truth)
+export { formatPropertyKind, getPropertyKindOptions };
 
 // Map AirConditioning enum to select options
 const airConditioningOptions = Object.values(AirConditioning)
@@ -121,7 +119,6 @@ export const getBalconyOptions = () =>
     label: value.toString(),
   }));
 
-export const getPropertyKindOptions = () => propertyKindOptions;
 export const getAirConditioningOptions = () => airConditioningOptions;
 export const getParkingOptions = () => parkingOptions;
 export const getFurnitureOptions = () => furnitureOptions;

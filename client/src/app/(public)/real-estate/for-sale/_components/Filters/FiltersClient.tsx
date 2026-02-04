@@ -325,7 +325,7 @@ const FiltersClient: FC = () => {
           placeholder="Выберите тип"
           paramName="propertyKind"
           options={propertyKindOptions}
-          maxSelectedOptions={2}
+          maxSelectedOptions={5}
           selectedOptions={allSelectedFilterOptions.get("propertyKind")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
         />
@@ -372,7 +372,7 @@ const FiltersClient: FC = () => {
           placeholder="Выберите тип"
           paramName="propertyKind"
           options={propertyKindOptions}
-          maxSelectedOptions={2}
+          maxSelectedOptions={5}
           selectedOptions={allSelectedFilterOptions.get("propertyKind")!}
           setAllSelectedFilterOptions={handleSetAllSelectedFilterOptions}
           isPortalTarget

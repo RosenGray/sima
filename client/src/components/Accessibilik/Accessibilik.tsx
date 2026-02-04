@@ -1,6 +1,8 @@
 "use client";
-import Accessibilik from'accessibility-react-widget';
+import Accessibilik from "accessibility-react-widget";
 
-export default function AccessibilikComponent() {
-  return <Accessibilik />;
+const AccessibilikComponent = () => {
+  return <Accessibilik />
 }
+
+export default AccessibilikComponent;

@@ -15,18 +15,13 @@ import {
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedRealEstateForSale } from "@/lib/real-estate/for-sale/types/realEstateForSale.types";
-import { PropertyKind } from "@/lib/real-estate/for-sale/types/realEstateForSale.types";
+import { formatPropertyKind } from "@/lib/real-estate/for-sale/utils/realEstateOptions";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface RealEstateForSaleCardProps {
   realEstate: SerializedRealEstateForSale;
 }
-
-// Helper function to format property kind
-const formatPropertyKind = (propertyKind: PropertyKind): string => {
-  return propertyKind === PropertyKind.Apartment ? "Квартира" : "Лофт";
-};
 
 // Helper function to format price
 const formatPrice = (price: number): string => {

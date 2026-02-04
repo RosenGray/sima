@@ -6,10 +6,8 @@ export enum DealKind {
   Sale = 2,
 }
 
-export enum PropertyKind {
-  Apartment = 1,
-  Loft = 2,
-}
+// Shared with for-rent and for-sale (single source of truth)
+export { PropertyKind } from "../../for-rent/types/realEstateForRent.types";
 
 export enum AdditionalFeatures {
   Shelter = 1,

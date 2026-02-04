@@ -2,6 +2,7 @@ import {
   DealKind,
   PropertyKind,
 } from "../types/commercialRealEstate.types";
+import { formatPropertyKind } from "../../for-rent/utils/realEstateOptions";
 
 // Map DealKind enum to select options
 export const getDealKindOptions = () => {
@@ -13,12 +14,12 @@ export const getDealKindOptions = () => {
     }));
 };
 
-// Map PropertyKind enum to select options
+// Commercial only allows Apartment and Loft; use shared labels from for-rent
+const COMMERCIAL_PROPERTY_KINDS = [PropertyKind.Apartment, PropertyKind.Loft];
+
 export const getPropertyKindOptions = () => {
-  return Object.values(PropertyKind)
-    .filter((value): value is PropertyKind => typeof value === "number")
-    .map((value) => ({
-      value: value.toString(),
-      label: value === PropertyKind.Apartment ? "Квартира" : "Лофт",
-    }));
+  return COMMERCIAL_PROPERTY_KINDS.map((value) => ({
+    value: value.toString(),
+    label: formatPropertyKind(value),
+  }));
 };

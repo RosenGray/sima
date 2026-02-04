@@ -1,6 +1,9 @@
 import { RealEstateForRent, IRealEstateForRent } from "../models/RealEstateForRent";
 import connectDB from "@/lib/mongo/mongodb";
-import { SerializedRealEstateForRent } from "../types/realEstateForRent.types";
+import {
+  PropertyKind,
+  SerializedRealEstateForRent,
+} from "../types/realEstateForRent.types";
 import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
 import sanitize from "mongo-sanitize";
@@ -78,9 +81,16 @@ class RealEstateForRentRepository {
 
       // Add propertyKind filter
       if (sanitizedFilters.propertyKind) {
+        const validPropertyKindValues = Object.values(PropertyKind).filter(
+          (v): v is PropertyKind => typeof v === "number"
+        );
         const propertyKindNumbers = sanitizedFilters.propertyKind
           .map((pk) => Number(pk))
-          .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 2);
+          .filter(
+            (num) =>
+              !Number.isNaN(num) &&
+              validPropertyKindValues.includes(num as PropertyKind)
+          );
 
         if (propertyKindNumbers.length > 0) {
           searchFilter.propertyKind = { $in: propertyKindNumbers };
