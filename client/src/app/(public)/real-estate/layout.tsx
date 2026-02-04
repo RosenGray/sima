@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import {
-  RealEstateLayoutSection,
-  RealEstateLayoutStripe,
-} from "./layout.styles";
+import { RealEstateLayoutSection } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
 import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import SectionStripe from "@/components/SectionStripe/SectionStripe";
 
 export const metadata: Metadata = {
   title: "Недвижимость",
@@ -16,12 +14,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const filePath = generateBackblazeUrl("public", "real-estate-stripe-placeholder.jpeg");
+  const stripeSrc = generateBackblazeUrl("public", "real-estate.png");
 
   return (
     <RealEstateLayoutSection>
       <SimpleHeader />
-      <RealEstateLayoutStripe $src={filePath} />
+      <SectionStripe
+        src={stripeSrc}
+        alt="Недвижимость"
+        objectPosition="0 35%"
+      />
       <main>{children}</main>
     </RealEstateLayoutSection>
   );

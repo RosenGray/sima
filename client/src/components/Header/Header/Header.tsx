@@ -19,7 +19,11 @@ import {
   LoginButton,
   PublishAdButton,
   DropdownMenuTrigger,
+  FavoritesBadgeDesktop,
+  FavoritesBadgeMobile,
+  FavoritesDropdownWrapper,
 } from "./../Header.styles";
+import HeaderFavoritesBadge from "../HeaderFavoritesBadge/HeaderFavoritesBadge";
 import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
@@ -80,6 +84,15 @@ export default function Header() {
                 <span />
               </HamburgerIcon>
             </MobileMenuButton>
+            <FavoritesBadgeMobile>
+              {user ? (
+                <Link href="/private-zone/my-favorites">
+                  <HeaderFavoritesBadge size={32} />
+                </Link>
+              ) : (
+                <HeaderFavoritesBadge size={32} />
+              )}
+            </FavoritesBadgeMobile>
             <Logo>
               <Link
                 style={{
@@ -94,6 +107,18 @@ export default function Header() {
             </Logo>
           </Flex>
           <ActionsContainer>
+            <FavoritesBadgeDesktop>
+              {user ? (
+                <FavoritesDropdownWrapper>
+                  <HeaderFavoritesBadge size={32} />
+                  <DropdownMenu>
+                    <Text size="2">helloworld</Text>
+                  </DropdownMenu>
+                </FavoritesDropdownWrapper>
+              ) : (
+                <HeaderFavoritesBadge size={32} />
+              )}
+            </FavoritesBadgeDesktop>
             <PublishAdButton asChild variant="solid" size="2">
               <Link href="/publish-ad">
                 <PlusCircledIcon width="16" height="16" />
