@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import {
   Yad2LayoutSection,
-  Yad2LayoutStripe,
+
 } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
 import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import SectionStripe from "@/components/SectionStripe/SectionStripe";
 
 export const metadata: Metadata = {
-  title: "Б/у товары",
-  description: "Объявления о б/у товарах",
+  title: "Куплю-Продам товары",
+  description: "Объявления о б/у и новых товарах",
 };
 
 export default function RootLayout({
@@ -16,12 +17,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const filePath = generateBackblazeUrl("public", "yad2-stripe-placeholder.jpeg");
+  const stripeSrc = generateBackblazeUrl("public", "yad2.png");
 
   return (
     <Yad2LayoutSection>
       <SimpleHeader />
-      <Yad2LayoutStripe $src={filePath} />
+      <SectionStripe
+        src={stripeSrc}
+        alt="Куплю-Продам товары"
+        objectPosition="0 40%"
+      />
       <main>{children}</main>
     </Yad2LayoutSection>
   );

@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -53,6 +54,7 @@ type LikedIdsByEntity = Record<string, Set<string>>;
 type LikesContextType = {
   isLiked: (entityType: string, publicId: string) => boolean;
   toggle: (entityType: string, publicId: string) => Promise<void>;
+  totalLikedCount: number;
 };
 
 const LikesContext = createContext<LikesContextType | undefined>(undefined);
@@ -137,6 +139,14 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
     [likedIdsByEntity]
   );
 
+  const totalLikedCount = useMemo(() => {
+    let total = 0;
+    for (const entityType of ENTITY_TYPES_WITH_GUEST_MERGE) {
+      total += likedIdsByEntity[entityType]?.size ?? 0;
+    }
+    return total;
+  }, [likedIdsByEntity]);
+
   const toggle = useCallback(
     async (entityType: string, publicId: string) => {
       const currentlyLiked = likedIdsByEntity[entityType]?.has(publicId) ?? false;
@@ -182,7 +192,7 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
     [user, likedIdsByEntity]
   );
 
-  const value: LikesContextType = { isLiked, toggle };
+  const value: LikesContextType = { isLiked, toggle, totalLikedCount };
 
   return (
     <LikesContext.Provider value={value}>{children}</LikesContext.Provider>

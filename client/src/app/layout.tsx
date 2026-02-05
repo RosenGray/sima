@@ -38,6 +38,7 @@ export default async function RootLayout({
     ? await getLikedAdIdsByUser(user.id)
     : {};
 
+
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
       <body>
@@ -49,6 +50,7 @@ export default async function RootLayout({
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <LikesProvider initialLikedIds={initialLikedIds}>
+            
             <ThemeProvider
               attribute="class"
               enableSystem

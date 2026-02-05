@@ -1,6 +1,9 @@
+"use client";
+
 import styled from "styled-components";
 import { Button } from "@radix-ui/themes";
 import Link from "next/link";
+import { breakpoints } from "@/globals";
 
 export const HeaderContainer = styled.header`
   position: fixed;
@@ -225,10 +228,43 @@ export const PublishAdButton = styled(Button)`
 `;
 
 export const DropdownMenuTrigger = styled(Button)`
-border:1px solid red;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   width: 40px;
   height: 40px;
+`;
+
+export const FavoritesBadgeDesktop = styled.div`
+  display: none;
+  @media (min-width: ${breakpoints.sm}px) {
+    display: inline-flex;
+    align-items: center;
+  }
+`;
+
+export const FavoritesBadgeMobile = styled.div`
+  display: inline-flex;
+  align-items: center;
+  @media (min-width: ${breakpoints.sm}px) {
+    display: none;
+  }
+`;
+
+export const FavoritesDropdownWrapper = styled.div`
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+
+  &:hover > div:last-child {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+`;
+
+export const FavoritesDropdownMenu = styled(DropdownMenu)`
+  min-width: 320px;
+  padding: 0;
 `;
