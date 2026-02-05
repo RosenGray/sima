@@ -263,3 +263,8 @@ export const FavoritesDropdownWrapper = styled.div`
     transform: translateY(0);
   }
 `;
+
+export const FavoritesDropdownMenu = styled(DropdownMenu)`
+  min-width: 320px;
+  padding: 0;
+`;

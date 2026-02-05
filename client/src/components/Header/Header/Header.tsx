@@ -22,8 +22,10 @@ import {
   FavoritesBadgeDesktop,
   FavoritesBadgeMobile,
   FavoritesDropdownWrapper,
+  FavoritesDropdownMenu,
 } from "./../Header.styles";
 import HeaderFavoritesBadge from "../HeaderFavoritesBadge/HeaderFavoritesBadge";
+import FavoritesDropdownContent from "../FavoritesDropdownContent/FavoritesDropdownContent";
 import { MobileMenu } from "../MobileMenu";
 import { ThemeToggleButton } from "../../ThemeToggleButton/ThemeToggleButton";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
@@ -111,9 +113,9 @@ export default function Header() {
               {user ? (
                 <FavoritesDropdownWrapper>
                   <HeaderFavoritesBadge size={32} />
-                  <DropdownMenu>
-                    <Text size="2">helloworld</Text>
-                  </DropdownMenu>
+                  <FavoritesDropdownMenu>
+                    <FavoritesDropdownContent />
+                  </FavoritesDropdownMenu>
                 </FavoritesDropdownWrapper>
               ) : (
                 <HeaderFavoritesBadge size={32} />
