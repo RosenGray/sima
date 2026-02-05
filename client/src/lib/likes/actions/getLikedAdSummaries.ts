@@ -51,127 +51,127 @@ export async function getLikedAdSummaries(): Promise<LikedAdSummary[]> {
   const user = await getCurrentUser();
   if (!user) return [];
 
-  const likedByType = await getLikedAdIdsByUser(user.id);
-  const results: LikedAdSummary[] = [];
+  // const likedByType = await getLikedAdIdsByUser(user.id);
+  // const results: LikedAdSummary[] = [];
 
-  for (const [entityType, publicIds] of Object.entries(likedByType)) {
-    if (!publicIds?.length) continue;
+  // for (const [entityType, publicIds] of Object.entries(likedByType)) {
+  //   if (!publicIds?.length) continue;
 
-    for (const publicId of publicIds) {
-      try {
-        switch (entityType) {
-          case "vehicles-cars": {
-            const entity = await carRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          case "jobs": {
-            const entity = await jobRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            results.push(toSummary(entityType, publicId, entity, entity.title ?? "", null));
-            break;
-          }
-          case "pets-for-sale": {
-            const entity = await petForSaleRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const animal = getAnimalById(entity.animal as Parameters<typeof getAnimalById>[0]);
-            const kind = getAnimalKindById(
-              entity.kind as Parameters<typeof getAnimalKindById>[0],
-              entity.animal as Parameters<typeof getAnimalKindById>[1]
-            );
-            const title = [animal?.russianName, kind?.russianName].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          case "professional-service": {
-            const entity = await professionalServiceRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title =
-              (entity.subCategory as { russianDisplayName?: string })?.russianDisplayName ??
-              (entity.category as { russianDisplayName?: string })?.russianDisplayName ??
-              "";
-            results.push(toSummary(entityType, publicId, entity, title, null));
-            break;
-          }
-          case "pets-accessories": {
-            const entity = await petAccessoryRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            results.push(toSummary(entityType, publicId, entity, entity.title ?? "", entity.price ?? null));
-            break;
-          }
-          case "pets-for-free": {
-            const entity = await petForFreeRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const animal = getAnimalById(entity.animal as Parameters<typeof getAnimalById>[0]);
-            const kind = getAnimalKindById(
-              entity.kind as Parameters<typeof getAnimalKindById>[0],
-              entity.animal as Parameters<typeof getAnimalKindById>[1]
-            );
-            const title = [animal?.russianName, kind?.russianName].filter(Boolean).join(" ");
-            const price = entity.price != null ? entity.price : null;
-            results.push(toSummary(entityType, publicId, entity, title, price));
-            break;
-          }
-          case "vehicles-off-road": {
-            const entity = await offRoadVehicleRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          case "vehicles-commercial": {
-            const entity = await commercialVehicleRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          case "vehicles-motorcycles": {
-            const entity = await motorcycleRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          case "vehicles-scooters": {
-            const entity = await scooterRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          case "vehicles-special-vehicles": {
-            const entity = await specialVehicleRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title = entity.title ?? [entity.category, entity.kind].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          case "vehicles-accessories": {
-            const entity = await accessoryRepository.getByPublicId(publicId);
-            if (!entity) continue;
-            const title = entity.title ?? [entity.category, entity.kind].filter(Boolean).join(" ");
-            results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-            break;
-          }
-          default:
-            results.push({
-              entityType,
-              publicId,
-              href: buildHref(entityType, publicId),
-              thumbnailUrl: null,
-              title: "",
-              description: "",
-              price: null,
-            });
-        }
-      } catch (err) {
-        console.error(`getLikedAdSummaries: failed for ${entityType}/${publicId}`, err);
-      }
-    }
-  }
+  //   for (const publicId of publicIds) {
+  //     try {
+  //       switch (entityType) {
+  //         case "vehicles-cars": {
+  //           const entity = await carRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         case "jobs": {
+  //           const entity = await jobRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           results.push(toSummary(entityType, publicId, entity, entity.title ?? "", null));
+  //           break;
+  //         }
+  //         case "pets-for-sale": {
+  //           const entity = await petForSaleRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const animal = getAnimalById(entity.animal as Parameters<typeof getAnimalById>[0]);
+  //           const kind = getAnimalKindById(
+  //             entity.kind as Parameters<typeof getAnimalKindById>[0],
+  //             entity.animal as Parameters<typeof getAnimalKindById>[1]
+  //           );
+  //           const title = [animal?.russianName, kind?.russianName].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         case "professional-service": {
+  //           const entity = await professionalServiceRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title =
+  //             (entity.subCategory as { russianDisplayName?: string })?.russianDisplayName ??
+  //             (entity.category as { russianDisplayName?: string })?.russianDisplayName ??
+  //             "";
+  //           results.push(toSummary(entityType, publicId, entity, title, null));
+  //           break;
+  //         }
+  //         case "pets-accessories": {
+  //           const entity = await petAccessoryRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           results.push(toSummary(entityType, publicId, entity, entity.title ?? "", entity.price ?? null));
+  //           break;
+  //         }
+  //         case "pets-for-free": {
+  //           const entity = await petForFreeRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const animal = getAnimalById(entity.animal as Parameters<typeof getAnimalById>[0]);
+  //           const kind = getAnimalKindById(
+  //             entity.kind as Parameters<typeof getAnimalKindById>[0],
+  //             entity.animal as Parameters<typeof getAnimalKindById>[1]
+  //           );
+  //           const title = [animal?.russianName, kind?.russianName].filter(Boolean).join(" ");
+  //           const price = entity.price != null ? entity.price : null;
+  //           results.push(toSummary(entityType, publicId, entity, title, price));
+  //           break;
+  //         }
+  //         case "vehicles-off-road": {
+  //           const entity = await offRoadVehicleRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         case "vehicles-commercial": {
+  //           const entity = await commercialVehicleRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         case "vehicles-motorcycles": {
+  //           const entity = await motorcycleRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         case "vehicles-scooters": {
+  //           const entity = await scooterRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         case "vehicles-special-vehicles": {
+  //           const entity = await specialVehicleRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title = entity.title ?? [entity.category, entity.kind].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         case "vehicles-accessories": {
+  //           const entity = await accessoryRepository.getByPublicId(publicId);
+  //           if (!entity) continue;
+  //           const title = entity.title ?? [entity.category, entity.kind].filter(Boolean).join(" ");
+  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
+  //           break;
+  //         }
+  //         default:
+  //           results.push({
+  //             entityType,
+  //             publicId,
+  //             href: buildHref(entityType, publicId),
+  //             thumbnailUrl: null,
+  //             title: "",
+  //             description: "",
+  //             price: null,
+  //           });
+  //       }
+  //     } catch (err) {
+  //       console.error(`getLikedAdSummaries: failed for ${entityType}/${publicId}`, err);
+  //     }
+  //   }
+  // }
 
-  return results;
+  return [];
 }
