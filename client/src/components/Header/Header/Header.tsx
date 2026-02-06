@@ -111,16 +111,14 @@ export default function Header() {
           <ActionsContainer>
             <FavoritesBadgeDesktop>
               {user ? (
-                <h1>logged</h1>
-                // <FavoritesDropdownWrapper>
-                //   <HeaderFavoritesBadge size={32} />
-                //   <FavoritesDropdownMenu>
-                //     <FavoritesDropdownContent />
-                //   </FavoritesDropdownMenu>
-                // </FavoritesDropdownWrapper>
+                <FavoritesDropdownWrapper>
+                  <HeaderFavoritesBadge size={32} />
+                  <FavoritesDropdownMenu>
+                    <FavoritesDropdownContent />
+                  </FavoritesDropdownMenu>
+                </FavoritesDropdownWrapper>
               ) : (
-                <h1>not logged</h1>
-                // <HeaderFavoritesBadge size={32} />
+                <HeaderFavoritesBadge size={32} />
               )}
             </FavoritesBadgeDesktop>
             <PublishAdButton asChild variant="solid" size="2">
