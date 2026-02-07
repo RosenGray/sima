@@ -18,7 +18,7 @@ import { motorcycleRepository } from "@/lib/vehicles/motorcycles/repository/Moto
 import { scooterRepository } from "@/lib/vehicles/scooters/repository/ScooterRepository";
 import { specialVehicleRepository } from "@/lib/vehicles/special-vehicles/repository/SpecialVehicleRepository";
 import { accessoryRepository } from "@/lib/vehicles/accessories/repository/AccessoryRepository";
-import { getAnimalById, getAnimalKindById } from "@/lib/pets/animals";
+
 
 function thumbnailUrl(images: { url: string }[] | undefined): string | null {
   if (images?.length && images[0]?.url) return images[0].url;
