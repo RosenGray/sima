@@ -19,7 +19,7 @@ import { SwiperSlide } from "swiper/react";
 import { SerializedPetAccessory } from "@/lib/pets/accessories/types/petAccessory.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
-import { getAnimalById, getAnimalKindById } from "@/lib/pets/animals";
+import { getAnimalById, getAnimalKindById } from "@/lib/pets/accessories/animals";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
 import {
   PageContainer,

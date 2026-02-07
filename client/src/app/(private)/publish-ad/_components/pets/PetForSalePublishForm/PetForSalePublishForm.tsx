@@ -40,11 +40,8 @@ import {
 import {
   mapAnimalsToSelectOptions,
   getKindsToSelectOptions,
-} from "@/lib/pets/animals";
-import {
-  PetGender,
-  PetAge,
-} from "@/lib/pets/for-sale/types/petForSale.types";
+} from "@/lib/pets/for-sale/animals";
+import { PetGender, PetAge } from "@/lib/pets/for-sale/types/petForSale.types";
 import { ADJUSTMENT_OPTIONS } from "@/lib/pets/for-sale/adjustmentOptions";
 import PriceFormField from "@/components/Form/PriceFormField/PriceFormField";
 import CheckboxButtonGroup from "@/components/Form/CheckboxButtonGroup/CheckboxButtonGroup";
@@ -71,10 +68,10 @@ const ageOptions = Object.values(PetAge)
       value === PetAge.PUPPY
         ? "Щенок"
         : value === PetAge.YOUNG
-          ? "Молодой"
-          : value === PetAge.ADULT
-            ? "Взрослый"
-            : "Старший",
+        ? "Молодой"
+        : value === PetAge.ADULT
+        ? "Взрослый"
+        : "Старший",
     fieldKey: "age",
   }));
 
@@ -100,7 +97,7 @@ const PetForSalePublishForm: FC<PetForSalePublishFormProps> = ({
           toBeDeleted: false,
         })) || []
       );
-    }
+    },
   );
   const imagesToDelete = useMemo(() => {
     return existingImages.filter((image) => image.toBeDeleted);
@@ -117,7 +114,7 @@ const PetForSalePublishForm: FC<PetForSalePublishFormProps> = ({
 
   const [formState, formAction, isPending] = useActionState(
     isCreateMode ? publishPetForSaleAd : updatePetWithImagesToDelete,
-    undefined
+    undefined,
   );
 
   const [form, fields] = useForm({
@@ -202,22 +199,19 @@ const PetForSalePublishForm: FC<PetForSalePublishFormProps> = ({
     adjustments,
   } = fields;
 
-
-
   const animalOptions = useMemo(() => mapAnimalsToSelectOptions(), []);
 
   const kindOptions = useMemo(
-    () =>
-      animal.value ? getKindsToSelectOptions(animal.value as string) : [],
-    [animal.value]
+    () => (animal.value ? getKindsToSelectOptions(animal.value as string) : []),
+    [animal.value],
   );
 
   const citiesOptions = useMemo(
     () =>
       getCitiesToSelectOptions(
-        (district.value as Districts) || Districts.Center
+        (district.value as Districts) || Districts.Center,
       ),
-    [district.value]
+    [district.value],
   );
 
   useEffect(() => {
@@ -236,7 +230,11 @@ const PetForSalePublishForm: FC<PetForSalePublishFormProps> = ({
 
   return (
     <>
-      <form key={formKey.toString()} action={formAction} {...getFormProps(form)}>
+      <form
+        key={formKey.toString()}
+        action={formAction}
+        {...getFormProps(form)}
+      >
         <FormShell
           px={{ initial: "4", sm: "6", md: "8" }}
           py={{ initial: "5", md: "7" }}
@@ -455,14 +453,6 @@ const PetForSalePublishForm: FC<PetForSalePublishFormProps> = ({
             </SectionCard>
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
-                <Box>
-                  <Heading as="h2" size="4">
-                    Важные особенности
-                  </Heading>
-                  <Text color="gray" size="2" mt="2">
-                    Отметьте особенности питомца.
-                  </Text>
-                </Box>
                 <CheckboxButtonGroup
                   field={adjustments}
                   label="Важные особенности"
@@ -575,7 +565,6 @@ const PetForSalePublishForm: FC<PetForSalePublishFormProps> = ({
                 </Flex>
               </Flex>
             </SectionCard>
-
           </Flex>
         </FormShell>
       </form>

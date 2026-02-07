@@ -1,6 +1,16 @@
 import type { ReactNode } from "react";
 import { PetAdjustments } from "./types/petForSale.types";
-import TruckIcon from "@/components/svg/vehicles/Truck/Truck";
+import AdultSuitableIcon from "@/components/svg/pets/AdultSuitable/AdultSuitable";
+import ApartmentSuitableIcon from "@/components/svg/pets/ApartmentSuitable/ApartmentSuitable";
+import CastratedMaleIcon from "@/components/svg/pets/CastratedMale/CastratedMale";
+import ChildFriendlyIcon from "@/components/svg/pets/ChildFriendly/ChildFriendly";
+import DogFriendlyIcon from "@/components/svg/pets/DogFriendly/DogFriendly";
+import SterilizedFemaleIcon from "@/components/svg/pets/SterilizedFemale/SterilizedFemale";
+import TrainedIcon from "@/components/svg/pets/Trained/Trained";
+import VaccinatedIcon from "@/components/svg/pets/Vaccinated/Vaccinated";
+import YardSuitableIcon from "@/components/svg/pets/YardSuitable/YardSuitable";
+
+const iconProps = { width: 24, height: 24, viewBox: { width: 120, height: 120 } };
 
 export interface AdjustmentOption {
   value: string;
@@ -12,46 +22,46 @@ export const ADJUSTMENT_OPTIONS: AdjustmentOption[] = [
   {
     value: String(PetAdjustments.Spayed),
     label: "Стерилизована",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <SterilizedFemaleIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.Neutered),
     label: "Кастрирован",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <CastratedMaleIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.Vaccinated),
     label: "Привит(а)",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <VaccinatedIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.Trained),
     label: "Дрессирован(а)",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <TrainedIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.KidsFriendly),
     label: "Дружелюбен к детям",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <ChildFriendlyIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.YardSuitable),
     label: "Подходит для двора",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <YardSuitableIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.DogsFriendly),
     label: "Дружелюбен к собакам",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <DogFriendlyIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.ApartmentSuitable),
     label: "Подходит для квартиры",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <ApartmentSuitableIcon {...iconProps} />,
   },
   {
     value: String(PetAdjustments.AdultsFriendly),
     label: "Подходит для взрослых",
-    icon: <TruckIcon width={24} height={24} viewBox={{ width: 100, height: 100 }} />,
+    icon: <AdultSuitableIcon {...iconProps} />,
   },
 ];

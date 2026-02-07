@@ -3,6 +3,7 @@ import { z } from "zod";
 export const AnimalKindSchema = z.object({
   id: z.string(),
   russianName: z.string(),
+  name: z.string(),
 });
 
 export const AnimalSchema = z.object({

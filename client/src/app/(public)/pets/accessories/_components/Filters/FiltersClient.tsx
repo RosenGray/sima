@@ -6,7 +6,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   mapAnimalsToSelectOptions,
   getKindsToSelectOptionsByAnimalIds,
-} from "@/lib/pets/animals";
+} from "@/lib/pets/accessories/animals";
 import { AnimalId } from "@/lib/pets/animals/types/animal.schema";
 import {
   getCitiesToSelectOptionsByDistrictIds,

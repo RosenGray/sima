@@ -20,7 +20,7 @@ import { Autoplay } from "swiper/modules";
 import { SerializedPetAccessory } from "@/lib/pets/accessories/types/petAccessory.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
-import { getAnimalById, getAnimalKindById } from "@/lib/pets/animals";
+import { getAnimalById, getAnimalKindById } from "@/lib/pets/accessories/animals";
 
 interface PetAccessoryCardProps {
   accessory: SerializedPetAccessory;

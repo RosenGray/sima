@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Theme as RadixTheme } from "@radix-ui/themes";
 import { ThemeProvider } from "next-themes";
 import "@radix-ui/themes/styles.css";
@@ -17,8 +16,6 @@ import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 // import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
 import Accessibilik from "accessibility-react-widget";
 
-
-
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
 
@@ -34,46 +31,37 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
-  const initialLikedIds = user
-    ? await getLikedAdIdsByUser(user.id)
-    : {};
-
+  const initialLikedIds = user ? await getLikedAdIdsByUser(user.id) : {};
 
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
       <body>
-        {/* <Script
-          src="https://cdn.jsdelivr.net/npm/sienna-accessibility@latest/dist/sienna-accessibility.umd.js"
-          strategy="afterInteractive"
-          defer
-        /> */}
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <LikesProvider initialLikedIds={initialLikedIds}>
-            
-            <ThemeProvider
-              attribute="class"
-              enableSystem
-              enableColorScheme
-              storageKey="sima-theme"
-            >
-              <RadixTheme
-                className="globalContentOverflowWrapper"
-                accentColor="red"
-                id={RADIX_THEME_APP_ID}
+              <ThemeProvider
+                attribute="class"
+                enableSystem
+                enableColorScheme
+                storageKey="sima-theme"
               >
-                {user && !user.isEmailVerified && (
-                  <EmailVerificationBanner userEmail={user.email} />
-                )}
-                
-                <PortalProvider>
-                  <Accessibilik />
-                  <div className="SimaApp">{children}</div>
-                </PortalProvider>
-                <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
-                <LayoutBackground />
-              </RadixTheme>
-            </ThemeProvider>
+                <RadixTheme
+                  className="globalContentOverflowWrapper"
+                  accentColor="red"
+                  id={RADIX_THEME_APP_ID}
+                >
+                  {user && !user.isEmailVerified && (
+                    <EmailVerificationBanner userEmail={user.email} />
+                  )}
+
+                  <PortalProvider>
+                    <Accessibilik />
+                    <div className="SimaApp">{children}</div>
+                  </PortalProvider>
+                  <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
+                  <LayoutBackground />
+                </RadixTheme>
+              </ThemeProvider>
             </LikesProvider>
           </AuthProvider>
         </StyledComponentsRegistry>

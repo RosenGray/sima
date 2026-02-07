@@ -2,10 +2,7 @@
 
 import { FC } from "react";
 import { Text } from "@radix-ui/themes";
-import {
-  getCollectionProps,
-  getFieldsetProps,
-} from "@conform-to/react";
+import { getCollectionProps, getFieldsetProps } from "@conform-to/react";
 import type { FieldMetadata } from "@conform-to/react";
 import {
   ButtonList,
@@ -80,10 +77,7 @@ const CheckboxButtonGroup: FC<CheckboxButtonGroupProps> = ({
               htmlFor={props.id}
               data-testid="check-button"
             >
-              <HiddenCheckboxInput
-                {...inputProps}
-                disabled={isDisabled}
-              />
+              <HiddenCheckboxInput {...inputProps} disabled={isDisabled} />
               <IconTextWrapper>
                 {icon && icon}
                 <Text as="span" size="2" truncate>
