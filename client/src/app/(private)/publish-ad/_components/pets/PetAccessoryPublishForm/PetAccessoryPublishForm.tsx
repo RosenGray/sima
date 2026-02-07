@@ -40,7 +40,7 @@ import {
 import {
   mapAnimalsToSelectOptions,
   getKindsToSelectOptions,
-} from "@/lib/pets/animals";
+} from "@/lib/pets/accessories/animals";
 import PriceFormField from "@/components/Form/PriceFormField/PriceFormField";
 
 const areasOptions = mapAreasToSelectOptions();

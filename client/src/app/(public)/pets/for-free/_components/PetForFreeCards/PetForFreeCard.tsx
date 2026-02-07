@@ -19,7 +19,7 @@ import { SerializedPetForFree } from "@/lib/pets/for-free/types/petForFree.types
 import { PetGender, PetAge } from "@/lib/pets/for-sale/types/petForSale.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
-import { getAnimalById, getAnimalKindById } from "@/lib/pets/animals";
+import { getAnimalById, getAnimalKindById } from "@/lib/pets/for-free/animals";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import { ENTITY_TYPE_PETS_FOR_FREE } from "@/providers/LikesProvider/LikesProvider";
 

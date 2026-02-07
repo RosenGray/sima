@@ -40,7 +40,7 @@ import {
 import {
   mapAnimalsToSelectOptions,
   getKindsToSelectOptions,
-} from "@/lib/pets/animals";
+} from "@/lib/pets/for-sale/animals";
 import {
   PetGender,
   PetAge,

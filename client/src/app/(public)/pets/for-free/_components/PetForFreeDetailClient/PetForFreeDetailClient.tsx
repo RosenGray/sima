@@ -20,7 +20,7 @@ import { SerializedPetForFree } from "@/lib/pets/for-free/types/petForFree.types
 import { PetGender, PetAge, PetAdjustments } from "@/lib/pets/for-sale/types/petForSale.types";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
-import { getAnimalById, getAnimalKindById } from "@/lib/pets/animals";
+import { getAnimalById, getAnimalKindById } from "@/lib/pets/for-free/animals";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
 import {
   PageContainer,
