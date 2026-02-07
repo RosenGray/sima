@@ -780,19 +780,6 @@ export const scooterManufacturersMap = {
       { id: "K0LX25", name: "LX250GY", russianName: "LX250GY" },
     ],
   },
-  CPI001: {
-    id: "CPI001",
-    name: "CPI",
-    russianName: "Си-Пи-Ай / CPI",
-    models: [
-      { id: "A1C9P0", name: "אחר", russianName: "Другое" },
-      { id: "B7K2M8", name: "אראגון 125", russianName: "Арагон 125" },
-      { id: "C8H3S1", name: "הוסאר 125", russianName: "Гусар 125" },
-      { id: "D4H9S7", name: "הוסאר 50", russianName: "Гусар 50" },
-      { id: "E2M6R5", name: "מארס 50", russianName: "Марс 50" },
-      { id: "F9K1N3", name: "קינג 125", russianName: "Кинг 125 / King 125" },
-    ],
-  },
 
   // 2) EVT
   EVT001: {
