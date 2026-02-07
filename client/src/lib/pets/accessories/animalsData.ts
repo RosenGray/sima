@@ -7,83 +7,333 @@ import type { Animal, AnimalId } from "@/lib/pets/animals/types/animal.schema";
  */
 export const animals: Record<AnimalId, Animal> = {
   dog: {
-    id: "dog",
-    russianName: "Собака",
+    id: "dogs",
+    russianName: "Собаки",
     kinds: [
-      { id: "labrador", russianName: "Лабрадор" },
-      { id: "german-shepherd", russianName: "Немецкая овчарка" },
-      { id: "golden-retriever", russianName: "Золотистый ретривер" },
-      { id: "bulldog", russianName: "Бульдог" },
-      { id: "beagle", russianName: "Бигль" },
-      { id: "poodle", russianName: "Пудель" },
-      { id: "rottweiler", russianName: "Ротвейлер" },
-      { id: "yorkshire-terrier", russianName: "Йоркширский терьер" },
-      { id: "dachshund", russianName: "Такса" },
-      { id: "siberian-husky", russianName: "Сибирский хаски" },
+      { id: "4", name: "מלונה", russianName: "Будка" },
+      { id: "2", name: "כלוב", russianName: "Клетка" },
+      { id: "3", name: "כלוב טיסה", russianName: "Вольер (летная клетка)" },
+      { id: "8", name: "נוגדי קרציות", russianName: "Средства от клещей" },
+      { id: "6", name: "קולר", russianName: "Ошейник" },
+      { id: "10", name: "ביגוד", russianName: "Одежда" },
+      {
+        id: "7",
+        name: "ציוד לאילוף",
+        russianName: "Дрессировочное снаряжение",
+      },
+      { id: "9", name: "מכונת תספורת", russianName: "Машинка для стрижки" },
+      { id: "12", name: "מיטה", russianName: "Лежанка" },
+      { id: "73", name: "אחר", russianName: "Другое" },
     ],
   },
   cat: {
-    id: "cat",
-    russianName: "Кошка",
+    id: "cats",
+    russianName: "Кошки",
     kinds: [
-      { id: "persian", russianName: "Персидская" },
-      { id: "siamese", russianName: "Сиамская" },
-      { id: "maine-coon", russianName: "Мейн-кун" },
-      { id: "british-shorthair", russianName: "Британская короткошерстная" },
-      { id: "ragdoll", russianName: "Рэгдолл" },
-      { id: "bengal", russianName: "Бенгальская" },
-      { id: "russian-blue", russianName: "Русская голубая" },
-      { id: "scottish-fold", russianName: "Шотландская вислоухая" },
-      { id: "sphynx", russianName: "Сфинкс" },
-      { id: "norwegian-forest", russianName: "Норвежская лесная" },
+      {
+        id: "aF3kP9",
+        name: "ארגז צרכים",
+        russianName: "Лоток для туалета",
+      },
+      {
+        id: "Q8mL2x",
+        name: "כלוב נשיאה",
+        russianName: "Переноска",
+      },
+      {
+        id: "Z5R1wA",
+        name: "כלי אוכל ושתייה",
+        russianName: "Миски для еды и воды",
+      },
+      {
+        id: "M7Tq4e",
+        name: "משחקים וצעצועים",
+        russianName: "Игрушки",
+      },
+      {
+        id: "H2c9Sx",
+        name: "מיטה",
+        russianName: "Лежанка",
+      },
+      {
+        id: "N6B8dP",
+        name: "חול לחתולים",
+        russianName: "Наполнитель для кошачьего туалета",
+      },
+      {
+        id: "yK4E0V",
+        name: "אחר",
+        russianName: "Другое",
+      },
+    ],
+  },
+  fish: {
+    id: "fish",
+    russianName: "Рыбы",
+    kinds: [
+      {
+        id: "Q7xA2M",
+        name: "אקווריום",
+        russianName: "Аквариум",
+      },
+      {
+        id: "L9KpE4",
+        name: "בית מנורה",
+        russianName: "Корпус для лампы",
+      },
+      {
+        id: "R5Vn8C",
+        name: "דקורציה לאקווריום",
+        russianName: "Декорации для аквариума",
+      },
+      {
+        id: "Z3T6Wq",
+        name: "סלעים לציקלדים",
+        russianName: "Камни для цихлид",
+      },
+      {
+        id: "M8FJ2d",
+        name: "ברז לבלון",
+        russianName: "Кран для баллона",
+      },
+      {
+        id: "H4S9aP",
+        name: "צמחיה לאקווריום",
+        russianName: "Растения для аквариума",
+      },
+      {
+        id: "C6YxN1",
+        name: "אינקובטור",
+        russianName: "Инкубатор",
+      },
+      {
+        id: "E2R7KZ",
+        name: "פילטר",
+        russianName: "Фильтр",
+      },
+      {
+        id: "A9D5mQ",
+        name: "משאבת חמצן",
+        russianName: "Кислородный насос",
+      },
+      {
+        id: "W4J8L6",
+        name: "משאבת אויר",
+        russianName: "Воздушный насос",
+      },
+      {
+        id: "B7U0T9",
+        name: "אחר",
+        russianName: "Другое",
+      },
     ],
   },
   bird: {
-    id: "bird",
-    russianName: "Птица",
+    id: "birds",
+    russianName: "Птицы",
     kinds: [
-      { id: "parrot", russianName: "Попугай" },
-      { id: "canary", russianName: "Канарейка" },
-      { id: "budgerigar", russianName: "Волнистый попугайчик" },
-      { id: "cockatiel", russianName: "Корелла" },
-      { id: "lovebird", russianName: "Неразлучник" },
-      { id: "finch", russianName: "Зяблик" },
-      { id: "cockatoo", russianName: "Какаду" },
-      { id: "macaw", russianName: "Ара" },
-      { id: "african-grey", russianName: "Жако" },
-      { id: "conure", russianName: "Корелла-конур" },
+      {
+        "id": "N4p7Qx",
+        "name": "כלוב",
+        "russianName": "Клетка"
+      },
+      {
+        "id": "T8m2Vf",
+        "name": "כלוב האכלת יד",
+        "russianName": "Клетка для ручного выкармливания"
+      },
+      {
+        "id": "G3k9Ld",
+        "name": "מיכל תערובת",
+        "russianName": "Контейнер для смеси"
+      },
+      {
+        "id": "S6w1Jc",
+        "name": "סטנד לתוכי",
+        "russianName": "Подставка для попугая"
+      },
+      {
+        "id": "H2r5Za",
+        "name": "תאי הטלה",
+        "russianName": "Гнездовые ячейки"
+      },
+      {
+        "id": "P9x4Bn",
+        "name": "מדגרה",
+        "russianName": "Инкубатор"
+      },
+      {
+        "id": "D7u3Ke",
+        "name": "בתי הטלה",
+        "russianName": "Гнездовые домики"
+      },
+      {
+        "id": "V1c8Ms",
+        "name": "דיזות",
+        "russianName": "Ниппели"
+      },
+      {
+        "id": "K5j6Rt",
+        "name": "לול",
+        "russianName": "Курятник"
+      },
+      {
+        "id": "Y0n9Wq",
+        "name": "אחר",
+        "russianName": "Другое"
+      }
+  
     ],
   },
-  rabbit: {
-    id: "rabbit",
-    russianName: "Кролик",
+  ferrets: {
+    id: "ferrets",
+    russianName: "Хорьки",
     kinds: [
-      { id: "holland-lop", russianName: "Голландский вислоухий" },
-      { id: "mini-rex", russianName: "Мини рекс" },
-      { id: "lionhead", russianName: "Львиноголовый" },
-      { id: "angora", russianName: "Ангорский" },
-      { id: "flemish-giant", russianName: "Фламандский гигант" },
-      { id: "netherland-dwarf", russianName: "Нидерландский карлик" },
-      { id: "californian", russianName: "Калифорнийский" },
-      { id: "new-zealand", russianName: "Новозеландский" },
-      { id: "rex", russianName: "Рекс" },
-      { id: "mini-lop", russianName: "Мини лоп" },
+      {
+        "id": "FmA7K2",
+        "name": "אחר",
+        "russianName": "Другое"
+      }
+  
     ],
   },
-  hamster: {
-    id: "hamster",
-    russianName: "Хомяк",
+  rodents: {
+    id: "rodents",
+    russianName: "Грызуны",
     kinds: [
-      { id: "syrian", russianName: "Сирийский" },
-      { id: "roborovski", russianName: "Роборовского" },
-      { id: "winter-white", russianName: "Джунгарский" },
-      { id: "chinese", russianName: "Китайский" },
-      { id: "european", russianName: "Европейский" },
-      { id: "campbell", russianName: "Кэмпбелла" },
-      { id: "teddy-bear", russianName: "Тедди-медведь" },
-      { id: "long-haired", russianName: "Длинношерстный" },
-      { id: "short-haired", russianName: "Короткошерстный" },
-      { id: "dwarf", russianName: "Карликовый" },
+      {
+        "id": "S4h9KQ",
+        "name": "חול",
+        "russianName": "Песок"
+      },
+      {
+        "id": "R7M2eA",
+        "name": "תאים למכרסמים",
+        "russianName": "Домики для грызунов"
+      },
+      {
+        "id": "C8Vx5P",
+        "name": "כלוב",
+        "russianName": "Клетка"
+      },
+      {
+        "id": "W3N6dT",
+        "name": "מתקן שתייה",
+        "russianName": "Поилка"
+      },
+      {
+        "id": "Z0LQ7m",
+        "name": "אחר",
+        "russianName": "Другое"
+      }
+  
+    ],
+  },
+  farm_animals: {
+    id: "farm_animals",
+    russianName: "сельскохозяйственные животные",
+    kinds: [
+      { "id": "238", "name": "אחר", "russianName": "Другое" },
+    ],
+  },
+  horses: {
+    id: "horses",
+    russianName: "Лошади",
+    kinds: [
+      {
+        "id": "H8Q2mA",
+        "name": "אוכף",
+        "russianName": "Седло"
+      },
+      {
+        "id": "L4N9Wx",
+        "name": "אורווה",
+        "russianName": "Конюшня"
+      },
+      {
+        "id": "P7K3ZV",
+        "name": "שמיכות",
+        "russianName": "Попоны"
+      },
+      {
+        "id": "R5C8Dq",
+        "name": "קסדת רכיבה",
+        "russianName": "Шлем для верховой езды"
+      },
+      {
+        "id": "M2T6Hn",
+        "name": "קרון לסוסים",
+        "russianName": "Конный прицеп"
+      },
+      {
+        "id": "S9F1eB",
+        "name": "רתמות",
+        "russianName": "Упряжь"
+      },
+      {
+        "id": "X4J7Kp",
+        "name": "שוט",
+        "russianName": "Хлыст"
+      },
+      {
+        "id": "A6VQ3L",
+        "name": "כרכרה",
+        "russianName": "Карета"
+      },
+      {
+        "id": "Z0W8R5",
+        "name": "אחר",
+        "russianName": "Другое"
+      }
+  
+  
+    ],
+  },
+  reptiles: {
+    id: "reptiles",
+    russianName: "Ящерицы и змеи",
+    kinds: [
+      {
+        "id": "L8Q2mP",
+        "name": "מנורות",
+        "russianName": "Лампы"
+      },
+      {
+        "id": "C7N4A9",
+        "name": "כלוב",
+        "russianName": "Клетка"
+      },
+      {
+        "id": "R5KxD1",
+        "name": "מצע לזוחלים",
+        "russianName": "Субстрат для рептилий"
+      },
+      {
+        "id": "T3MZ8F",
+        "name": "רשתות",
+        "russianName": "Сетки"
+      },
+      {
+        "id": "H6VQ2S",
+        "name": "טרריום",
+        "russianName": "Террариум"
+      },
+      {
+        "id": "B9E7Wk",
+        "name": "אינקובטור לדגירה",
+        "russianName": "Инкубатор для инкубации"
+      },
+      {
+        "id": "X4J0nC",
+        "name": "טרמוסטט",
+        "russianName": "Термостат"
+      },
+      {
+        "id": "ZP6R5A",
+        "name": "אחר",
+        "russianName": "Другое"
+      }
+  
     ],
   },
 };
