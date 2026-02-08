@@ -53,6 +53,14 @@ spec:
                 secretKeyRef:
                   name: mailer-send-api-key
                   key: MAILER_SEND_API_KEY
+            # Required for Server Actions to work after pod restarts. Without this,
+            # each process uses a different encryption key and clients get "Failed to find Server Action".
+            # Create secret: kubectl create secret generic server-actions-encryption-key --from-literal=NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=$(node -e "console.log(require('crypto').randomBytes(32).toString('base64'))")
+            - name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: server-actions-encryption-key
+                  key: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
 
 ---
 apiVersion: v1
