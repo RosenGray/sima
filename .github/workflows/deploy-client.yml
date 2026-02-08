@@ -22,4 +22,6 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl kubernetes cluster kubeconfig save sima
+      # Ensure deployment exists (e.g. first deploy or after cluster recreate); idempotent.
+      - run: kubectl apply -f infra/k8s-prod
       - run: kubectl rollout restart deployment client-depl
