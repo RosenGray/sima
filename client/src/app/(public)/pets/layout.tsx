@@ -15,6 +15,7 @@ export default function PetsLayout({
   children: React.ReactNode;
 }>) {
   const stripeSrc = generateBackblazeUrl("public", "pets.png");
+  console.log("stripeSrc", stripeSrc);
 
   return (
     <PetsLayoutSection>

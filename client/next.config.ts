@@ -19,9 +19,6 @@ const nextConfig: NextConfig = {
     styledComponents: true,
   },
   // Increase timeout for API routes
-  serverRuntimeConfig: {
-    maxDuration: 60, // 60 seconds timeout
-  },
   // Image optimization configuration
   images: {
     remotePatterns: [
