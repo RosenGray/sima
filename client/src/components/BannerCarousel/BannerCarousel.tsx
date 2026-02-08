@@ -41,7 +41,6 @@ export function BannerCarousel({
   loop = true,
   className,
   ariaLabel = DEFAULT_ARIA_LABEL,
-  "data-nagish": dataNagish,
 }: BannerCarouselProps) {
   const autoplayConfig = resolveAutoplayConfig(autoplay);
 
