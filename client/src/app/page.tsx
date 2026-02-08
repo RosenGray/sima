@@ -107,9 +107,9 @@ function buildListingCardCarouselItems(): ListingCardCarouselItem[] {
 }
 
 export default async function Home() {
-  const bannerItems = buildBannerItems();
-  const categoryItems = buildCategoryItems();
-  const listingCardCarouselItems = buildListingCardCarouselItems();
+  // const bannerItems = buildBannerItems();
+  // const categoryItems = buildCategoryItems();
+  // const listingCardCarouselItems = buildListingCardCarouselItems();
 
   return (
     <>
