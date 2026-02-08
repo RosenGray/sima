@@ -22,9 +22,10 @@ export default function ErrorPage({ reset, error }: ErrorProps) {
   useEffect(() => {
     // Detect stale deployment errors (old client JS calling new server build).
     // Auto-refresh once so the browser fetches the latest JS bundle.
+    const digest = "digest" in error ? (error as Error & { digest?: string }).digest : undefined;
     const isStaleDeployment =
       error.message?.includes("Failed to find Server Action") ||
-      error.digest?.includes("NEXT_NOT_FOUND");
+      digest?.includes("NEXT_NOT_FOUND");
 
     if (isStaleDeployment && !sessionStorage.getItem(STALE_DEPLOYMENT_RELOAD_KEY)) {
       sessionStorage.setItem(STALE_DEPLOYMENT_RELOAD_KEY, "1");
