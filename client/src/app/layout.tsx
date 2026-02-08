@@ -17,6 +17,7 @@ import { RubikFont } from "@/fonts/fonts";
 import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 // import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
 import Accessibilik from "accessibility-react-widget";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
@@ -40,6 +41,7 @@ export default async function RootLayout({
 
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
+      <GoogleTagManager gtmId="G-X15DR6QH3X" />
       <body>
         <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
@@ -52,21 +54,21 @@ export default async function RootLayout({
               >
                 <HomePageProvider data={{ serviceCategories }}>
                   <RadixTheme
-                  className="globalContentOverflowWrapper"
-                  accentColor="red"
-                  id={RADIX_THEME_APP_ID}
-                >
-                  {user && !user.isEmailVerified && (
-                    <EmailVerificationBanner userEmail={user.email} />
-                  )}
+                    className="globalContentOverflowWrapper"
+                    accentColor="red"
+                    id={RADIX_THEME_APP_ID}
+                  >
+                    {user && !user.isEmailVerified && (
+                      <EmailVerificationBanner userEmail={user.email} />
+                    )}
 
-                  <PortalProvider>
-                    <Accessibilik />
-                    <div className="SimaApp">{children}</div>
-                  </PortalProvider>
-                  <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
-                  <LayoutBackground />
-                </RadixTheme>
+                    <PortalProvider>
+                      <Accessibilik />
+                      <div className="SimaApp">{children}</div>
+                    </PortalProvider>
+                    <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
+                    <LayoutBackground />
+                  </RadixTheme>
                 </HomePageProvider>
               </ThemeProvider>
             </LikesProvider>
