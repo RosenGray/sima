@@ -8,7 +8,11 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "50mb", // Increased for multiple file uploads
       // Required behind nginx ingress: Next.js compares Origin to Host and can return 403
       // when they differ (e.g. after proxy). Allow our production host so Server Actions work.
-      allowedOrigins: ["www.sima-board.com", "sima-board.com"],
+      allowedOrigins: [
+        "www.sima-board.com",
+        "sima-board.com",
+        "*.sima-board.com",
+      ],
     },
   },
   compiler: {
