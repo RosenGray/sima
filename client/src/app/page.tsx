@@ -8,43 +8,56 @@ import type { CategoryLinkItem } from "@/components/CategoryLinks/CategoryLinks.
 import { navItems } from "@/components/Header/Header/navItems";
 import { ListingCardCarousel } from "@/components/ListingCardCarousel/ListingCardCarousel";
 import type { ListingCardCarouselItem } from "@/components/ListingCardCarousel/ListingCardCarousel.types";
+import { generateBackblazeUrl } from "@/utils/common";
+import { HomePageContainer } from "./page.styles";
 
+/** Image filenames used in each flow layout (public folder). Same as in app/(public)/.../layout.tsx */
+const FLOW_BANNER_IMAGES: Record<string, string> = {
+  "Транспорт": "vehicles.png",
+  "Домашние животные": "pets.png",
+  "Недвижимость": "real-estate.png",
+  "Куплю-Продам": "yad2.png",
+  "Работа": "jobs.png",
+  "Другое": "others.png",
+};
 
-
-
-// const PageContainer = styled(Container)`
-//   min-height: 100vh;
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   padding: 2rem;
-//   padding-top: 6rem; /* Add padding to account for fixed header */
-// `;
-
-// const MainContent = styled(Section)`
-//   text-align: center;
-//   max-width: 600px;
-// `;
+/** Russian CTA button label per nav section for the banner (e.g. "Все машины") */
+const FLOW_BUTTON_LABELS: Record<string, string> = {
+  "Транспорт": "Все машины",
+  "Домашние животные": "Все домашние животные",
+  "Недвижимость": "Вся недвижимость",
+  "Куплю-Продам": "Всё куплю-продам",
+  "Работа": "Вся работа",
+  "Другое": "Всё остальное",
+};
 
 function buildBannerItems(): BannerSlideItem[] {
-  const servicesEntry: BannerSlideItem = {
+  const stripe = (fileName: string) =>
+    generateBackblazeUrl("public", fileName);
+
+  const professionalService: BannerSlideItem = {
     href: "/professional-service",
     label: "Услуги специалистов",
-    imageDesktop: "https://picsum.photos/seed/banner0/1200/250",
-    imageMobile: "https://picsum.photos/seed/banner0m/800/250",
+    buttonLabel: "Все услуги специалистов",
+    imageDesktop: stripe("professional-service.png"),
+    imageMobile: stripe("professional-service.png"),
   };
-  const fromNav = navItems.map((item, index) => {
+
+  const fromNav: BannerSlideItem[] = navItems.map((item) => {
     const first = item.subItems[0];
-    const seed = index + 1;
+    const fileName = FLOW_BANNER_IMAGES[item.label] ?? "others.png";
+    const src = stripe(fileName);
+    const buttonLabel = FLOW_BUTTON_LABELS[item.label];
     return {
       href: first!.href,
       label: first!.label,
-      imageDesktop: `https://picsum.photos/seed/banner${seed}/1200/250`,
-      imageMobile: `https://picsum.photos/seed/banner${seed}m/800/250`,
-    } satisfies BannerSlideItem;
+      ...(buttonLabel && { buttonLabel }),
+      imageDesktop: src,
+      imageMobile: src,
+    };
   });
-  return [servicesEntry, ...fromNav];
+
+  return [professionalService, ...fromNav];
 }
 
 function buildCategoryItems(): CategoryLinkItem[] {
@@ -107,56 +120,59 @@ function buildListingCardCarouselItems(): ListingCardCarouselItem[] {
 }
 
 export default async function Home() {
-  // const bannerItems = buildBannerItems();
-  // const categoryItems = buildCategoryItems();
-  // const listingCardCarouselItems = buildListingCardCarouselItems();
+  const bannerItems = buildBannerItems();
+  const categoryItems = buildCategoryItems();
+  const listingCardCarouselItems = buildListingCardCarouselItems();
 
   return (
     <>
       <Header />
-
-      {/* <Container>
-      <BannerCarousel items={bannerItems} autoplay loop />
-      <CategoryLinks items={categoryItems} ariaLabel="Категории" />
-      <Box pt="4">
-        <ListingCardCarousel items={listingCardCarouselItems} infinite ariaLabel="Карточки объявлений" />
-      </Box>
-      <Box pt="7rem">
-        <Box>
-          <Flex direction="column" gap="6" align="center">
-            <Heading size="9" weight="bold">
-              Hello World4
-            </Heading>
-
-            <Text size="6" color="gray">
-              Welcome to our Marketplace
-            </Text>
-
-            <Text
-              size="4"
-              color="gray"
-              style={{ maxWidth: "500px", lineHeight: "1.6" }}
-            >
-              Discover amazing products, connect with sellers, and build your
-              business in our vibrant marketplace community. Your journey starts
-              here.
-            </Text>
-
-            <Flex gap="4" mt="4">
-              <Button size="3" variant="solid">
-                Get Started
-              </Button>
-              <Button size="3" variant="outline">
-                Learn More
-              </Button>
-            </Flex>
-          </Flex>
-          <div style={{ marginTop: 40, width: "100%" }}>
-            <Dummy /> 9
-          </div>
+      <HomePageContainer>
+        <BannerCarousel items={bannerItems} autoplay loop />
+        {/* <CategoryLinks items={categoryItems} ariaLabel="Категории" />
+        <Box pt="4">
+          <ListingCardCarousel
+            items={listingCardCarouselItems}
+            infinite
+            ariaLabel="Карточки объявлений"
+          />
         </Box>
-      </Box>
-      </Container> */}
+        <Box pt="7rem">
+          <Box>
+            <Flex direction="column" gap="6" align="center">
+              <Heading size="9" weight="bold">
+                Hello World4
+              </Heading>
+
+              <Text size="6" color="gray">
+                Welcome to our Marketplace
+              </Text>
+
+              <Text
+                size="4"
+                color="gray"
+                style={{ maxWidth: "500px", lineHeight: "1.6" }}
+              >
+                Discover amazing products, connect with sellers, and build your
+                business in our vibrant marketplace community. Your journey
+                starts here.
+              </Text>
+
+              <Flex gap="4" mt="4">
+                <Button size="3" variant="solid">
+                  Get Started
+                </Button>
+                <Button size="3" variant="outline">
+                  Learn More
+                </Button>
+              </Flex>
+            </Flex>
+            <div style={{ marginTop: 40, width: "100%" }}>
+              <Dummy /> 9
+            </div>
+          </Box>
+        </Box> */}
+      </HomePageContainer>
     </>
   );
 }

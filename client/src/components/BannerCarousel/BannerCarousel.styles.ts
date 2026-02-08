@@ -65,3 +65,32 @@ export const ImageWrapper = styled(Box)`
     }
   }
 `;
+
+export const SlideButtonWrapper = styled(Box)`
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 2;
+`;
+
+export const SlideButtonPill = styled(Box)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  border: 2px solid var(--accent-9);
+  color: var(--accent-11);
+  font-size: var(--font-size-2);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background: var(--accent-2);
+    color: var(--accent-12);
+    border-color: var(--accent-10);
+  }
+`;
