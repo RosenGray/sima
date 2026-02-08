@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import {
-  PetsLayoutSection,
-  PetsLayoutStripe,
-} from "./layout.styles";
+import { PetsLayoutSection } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
 import Header from "@/components/Header/Header/Header";
+import SectionStripe from "@/components/SectionStripe/SectionStripe";
 
 export const metadata: Metadata = {
   title: "Домашние животные",
@@ -16,15 +14,16 @@ export default function PetsLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const filePath = generateBackblazeUrl(
-    "public",
-    "pets-stripe-placeholder.jpeg"
-  );
+  const stripeSrc = generateBackblazeUrl("public", "pets.png");
 
   return (
     <PetsLayoutSection>
       <Header />
-      <PetsLayoutStripe $src={filePath} />
+      <SectionStripe
+        src={stripeSrc}
+        alt="Домашние животные"
+        objectPosition="0 35%"
+      />
       <main>{children}</main>
     </PetsLayoutSection>
   );
