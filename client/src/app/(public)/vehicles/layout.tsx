@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import {
-  VehiclesLayoutSection,
-  VehiclesLayoutStripe,
-} from "./layout.styles";
+import { VehiclesLayoutSection } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
+import SectionStripe from "@/components/SectionStripe/SectionStripe";
 
 export const metadata: Metadata = {
   title: "Транспорт",
@@ -16,12 +14,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const filePath = generateBackblazeUrl("public", "vehicles-stripe-placeholder.jpeg");
+  const stripeSrc = generateBackblazeUrl("public", "vehicles.png");
 
   return (
     <VehiclesLayoutSection>
-      <SimpleHeader />
-      <VehiclesLayoutStripe $src={filePath} />
+      <Header />
+      <SectionStripe
+        src={stripeSrc}
+        alt="Транспорт"
+        objectPosition="0 45%"
+      />
       <main>{children}</main>
     </VehiclesLayoutSection>
   );

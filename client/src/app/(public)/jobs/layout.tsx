@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { JobsLayoutSection, JobsLayoutStripe } from "./layout.styles";
+import { JobsLayoutSection } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
+import SectionStripe from "@/components/SectionStripe/SectionStripe";
 
 export const metadata: Metadata = {
   title: "Работа",
@@ -13,12 +14,16 @@ export default function JobsLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const filePath = generateBackblazeUrl("public", "jobs-stripe-placeholder.jpeg");
+  const stripeSrc = generateBackblazeUrl("public", "jobs.png");
 
   return (
     <JobsLayoutSection>
-      <SimpleHeader />
-      <JobsLayoutStripe $src={filePath} />
+      <Header />
+      <SectionStripe
+        src={stripeSrc}
+        alt="Работа"
+        objectPosition="0 15%"
+      />
       <main>{children}</main>
     </JobsLayoutSection>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { RealEstateLayoutSection } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
 import SectionStripe from "@/components/SectionStripe/SectionStripe";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function RootLayout({
 
   return (
     <RealEstateLayoutSection>
-      <SimpleHeader />
+      <Header />
       <SectionStripe
         src={stripeSrc}
         alt="Недвижимость"

@@ -1,7 +1,5 @@
 import { Button, Flex, Heading, Text, Box, Container } from "@radix-ui/themes";
 import Header from "../components/Header/Header/Header";
-import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
-import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
 import Dummy from "@/components/Dummy/Dummy";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import type { BannerSlideItem } from "@/components/BannerCarousel/BannerCarousel.types";
@@ -109,16 +107,13 @@ function buildListingCardCarouselItems(): ListingCardCarouselItem[] {
 }
 
 export default async function Home() {
-  const serviceCategories = await serviceCategoryRepository.getAll();
-  const bannerItems = buildBannerItems();
-  const categoryItems = buildCategoryItems();
-  const listingCardCarouselItems = buildListingCardCarouselItems();
+  // const bannerItems = buildBannerItems();
+  // const categoryItems = buildCategoryItems();
+  // const listingCardCarouselItems = buildListingCardCarouselItems();
 
   return (
-    <HomePageProvider data={{ serviceCategories }}>
+    <>
       <Header />
-123
-
 
       {/* <Container>
       <BannerCarousel items={bannerItems} autoplay loop />
@@ -162,6 +157,6 @@ export default async function Home() {
         </Box>
       </Box>
       </Container> */}
-    </HomePageProvider>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { ChatLayoutSection } from "./layout.styles";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
 
 export const metadata: Metadata = {
     title: "Чаты",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   }>) {
     return (
       <ChatLayoutSection>
-        <SimpleHeader />
+        <Header />
         <main>{children}</main>
       </ChatLayoutSection>
     );
