@@ -3,6 +3,8 @@ export interface BannerSlideItem {
   imageDesktop: string;
   imageMobile?: string;
   label?: string;
+  /** Russian text for the slide CTA button (e.g. "Все машины"). Omit to hide button. */
+  buttonLabel?: string;
 }
 
 export type AutoplayConfig =
@@ -19,5 +21,7 @@ export interface BannerCarouselProps {
   loop?: boolean;
   className?: string;
   ariaLabel?: string;
+  /** When true, show the CTA button on slides that have buttonLabel. Default true. */
+  showButton?: boolean;
   "data-nagish"?: string;
 }

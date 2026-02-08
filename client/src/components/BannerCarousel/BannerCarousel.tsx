@@ -11,6 +11,8 @@ import {
   BannerCarouselSwiper,
   SlideLink,
   ImageWrapper,
+  SlideButtonWrapper,
+  SlideButtonPill,
 } from "./BannerCarousel.styles";
 
 const DEFAULT_ARIA_LABEL = "Слайды";
@@ -41,6 +43,7 @@ export function BannerCarousel({
   loop = true,
   className,
   ariaLabel = DEFAULT_ARIA_LABEL,
+  showButton = true,
 }: BannerCarouselProps) {
   const autoplayConfig = resolveAutoplayConfig(autoplay);
 
@@ -71,7 +74,7 @@ export function BannerCarousel({
             tag="li"
             aria-label="שקופית"
           >
-            <SlideContent item={item} />
+            <SlideContent item={item} showButton={showButton} />
           </SwiperSlide>
         ))}
       </BannerCarouselSwiper>
@@ -79,10 +82,17 @@ export function BannerCarousel({
   );
 }
 
-function SlideContent({ item }: { item: BannerSlideItem }) {
+function SlideContent({
+  item,
+  showButton,
+}: {
+  item: BannerSlideItem;
+  showButton: boolean;
+}) {
   const desktopSrc = item.imageDesktop;
   const mobileSrc = item.imageMobile ?? item.imageDesktop;
   const ariaLabel = item.label ?? "Slide";
+  const showPill = showButton && item.buttonLabel;
 
   const content = (
     <>
@@ -110,6 +120,11 @@ function SlideContent({ item }: { item: BannerSlideItem }) {
           decoding="async"
         />
       </ImageWrapper>
+      {showPill && (
+        <SlideButtonWrapper>
+          <SlideButtonPill as="span">{item.buttonLabel}</SlideButtonPill>
+        </SlideButtonWrapper>
+      )}
     </>
   );
 

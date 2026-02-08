@@ -21,6 +21,16 @@ const FLOW_BANNER_IMAGES: Record<string, string> = {
   "Другое": "others.png",
 };
 
+/** Russian CTA button label per nav section for the banner (e.g. "Все машины") */
+const FLOW_BUTTON_LABELS: Record<string, string> = {
+  "Транспорт": "Все машины",
+  "Домашние животные": "Все домашние животные",
+  "Недвижимость": "Вся недвижимость",
+  "Куплю-Продам": "Всё куплю-продам",
+  "Работа": "Вся работа",
+  "Другое": "Всё остальное",
+};
+
 function buildBannerItems(): BannerSlideItem[] {
   const stripe = (fileName: string) =>
     generateBackblazeUrl("public", fileName);
@@ -28,6 +38,7 @@ function buildBannerItems(): BannerSlideItem[] {
   const professionalService: BannerSlideItem = {
     href: "/professional-service",
     label: "Услуги специалистов",
+    buttonLabel: "Все услуги специалистов",
     imageDesktop: stripe("professional-service.png"),
     imageMobile: stripe("professional-service.png"),
   };
@@ -36,9 +47,11 @@ function buildBannerItems(): BannerSlideItem[] {
     const first = item.subItems[0];
     const fileName = FLOW_BANNER_IMAGES[item.label] ?? "others.png";
     const src = stripe(fileName);
+    const buttonLabel = FLOW_BUTTON_LABELS[item.label];
     return {
       href: first!.href,
       label: first!.label,
+      ...(buttonLabel && { buttonLabel }),
       imageDesktop: src,
       imageMobile: src,
     };
