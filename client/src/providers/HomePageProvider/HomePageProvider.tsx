@@ -20,7 +20,7 @@ interface ProfessionalServiceProviderProps {
   }
 }
 
-export const ProfessionalServiceProvider: React.FC<ProfessionalServiceProviderProps> = ({
+export const HomePageProvider: React.FC<ProfessionalServiceProviderProps> = ({
   children,
   data,
 }) => {
@@ -44,4 +44,4 @@ export const useHomePage = (): HomePageContextType => {
   return context;
 };
 
-export default ProfessionalServiceProvider;
+export default HomePageProvider;
