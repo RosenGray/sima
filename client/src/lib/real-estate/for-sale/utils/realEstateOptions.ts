@@ -1,4 +1,5 @@
 import {
+  PropertyKind,
   AirConditioning,
   Parking,
   Furniture,
@@ -12,15 +13,43 @@ import {
   FLOOR_OPTIONS,
   BALCONY_OPTIONS,
 } from "../types/realEstateForSale.schema";
-import {
-  formatPropertyKind,
-  getPropertyKindOptions,
-} from "../../for-rent/utils/realEstateOptions";
 
-// Re-export shared PropertyKind options/labels from for-rent (single source of truth)
-export { formatPropertyKind, getPropertyKindOptions };
+const PROPERTY_KIND_LABELS: Record<PropertyKind, string> = {
+  [PropertyKind.Apartment]: "Квартира",
+  [PropertyKind.Loft]: "Лофт",
+  [PropertyKind.GardenApartment]: "Квартира с садом",
+  [PropertyKind.Penthouse]: "Пентхаус",
+  [PropertyKind.Duplex]: "Дуплекс",
+  [PropertyKind.TourismAndVacation]: "Туризм и отдых",
+  [PropertyKind.Basement]: "Подвал/партер",
+  [PropertyKind.Triplex]: "Триплекс",
+  [PropertyKind.HousingUnit]: "Жилая единица",
+  [PropertyKind.StudioLoft]: "Студия/лофт",
+  [PropertyKind.PrivateHouseCottage]: "Частный дом/коттедж",
+  [PropertyKind.TwoFamily]: "Двухквартирный дом",
+  [PropertyKind.FarmAgricultural]: "Ферма/участок (нахала)",
+  [PropertyKind.AuxiliaryFarm]: "Вспомогательное хозяйство",
+  [PropertyKind.Other]: "Другое",
+  [PropertyKind.Plots]: "Участки",
+  [PropertyKind.ProtectedHousing]: "Дом престарелых",
+  [PropertyKind.ResidentialBuilding]: "Жилой дом",
+  [PropertyKind.Storage]: "Складское помещение",
+  [PropertyKind.Parking]: "Парковка",
+  [PropertyKind.PurchaseGroupRight]: "Группа покупки/право на объект",
+};
 
-// Map AirConditioning enum to select options
+export function formatPropertyKind(kind: PropertyKind): string {
+  return PROPERTY_KIND_LABELS[kind] ?? "";
+}
+
+export const getPropertyKindOptions = () =>
+  Object.values(PropertyKind)
+    .filter((value): value is PropertyKind => typeof value === "number")
+    .map((value) => ({
+      value: value.toString(),
+      label: PROPERTY_KIND_LABELS[value],
+    }));
+
 const airConditioningOptions = Object.values(AirConditioning)
   .filter((value): value is AirConditioning => typeof value === "number")
   .map((value) => ({
@@ -41,7 +70,6 @@ const airConditioningOptions = Object.values(AirConditioning)
                   : "Сплит",
   }));
 
-// Map Parking enum to select options
 const parkingOptions = Object.values(Parking)
   .filter((value): value is Parking => typeof value === "number")
   .map((value) => ({
@@ -60,7 +88,6 @@ const parkingOptions = Object.values(Parking)
                 : "Частная открытая",
   }));
 
-// Map Furniture enum to select options
 const furnitureOptions = Object.values(Furniture)
   .filter((value): value is Furniture => typeof value === "number")
   .map((value) => ({
@@ -73,7 +100,6 @@ const furnitureOptions = Object.values(Furniture)
           : "Полностью",
   }));
 
-// Map EntryDate enum to select options
 const entryDateOptions = Object.values(EntryDate)
   .filter((value): value is EntryDate => typeof value === "number")
   .map((value) => ({
@@ -82,7 +108,6 @@ const entryDateOptions = Object.values(EntryDate)
       value === EntryDate.Immediate ? "Немедленно" : "Гибкая",
   }));
 
-// Convert number arrays to select options
 export const getNumberOfRoomsOptions = () =>
   NUMBER_OF_ROOMS_OPTIONS.map((value) => ({
     value: value.toString(),

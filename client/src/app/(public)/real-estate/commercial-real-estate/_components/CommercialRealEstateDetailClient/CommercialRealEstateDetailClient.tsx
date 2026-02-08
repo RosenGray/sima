@@ -15,12 +15,14 @@ import {
 } from "@radix-ui/react-icons";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
-import { SerializedCommercialRealEstate } from "@/lib/real-estate/commercial-real-estate/types/commercialRealEstate.types";
 import {
-  PropertyKind,
-  DealKind,
+  SerializedCommercialRealEstate,
   AdditionalFeatures,
 } from "@/lib/real-estate/commercial-real-estate/types/commercialRealEstate.types";
+import {
+  formatCommercialPropertyKind,
+  formatDealKind,
+} from "@/lib/real-estate/commercial-real-estate/utils/commercialRealEstateOptions";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
@@ -55,15 +57,6 @@ import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteC
 interface CommercialRealEstateDetailClientProps {
   commercialRealEstate: SerializedCommercialRealEstate;
 }
-
-// Helper functions to format enum values
-const formatPropertyKind = (propertyKind: PropertyKind): string => {
-  return propertyKind === PropertyKind.Apartment ? "Квартира" : "Лофт";
-};
-
-const formatDealKind = (dealKind: DealKind): string => {
-  return dealKind === DealKind.Rent ? "Аренда" : "Продажа";
-};
 
 const ADDITIONAL_FEATURES_LABELS: Record<number, string> = {
   [AdditionalFeatures.Shelter]: "Убежище",
@@ -196,7 +189,7 @@ const CommercialRealEstateDetailClient: React.FC<
           #{publicId}
         </Badge>
         <Badge size="2" color="purple" variant="soft">
-          {formatPropertyKind(propertyKind)}
+          {formatCommercialPropertyKind(propertyKind)}
         </Badge>
       </BadgeContainer>
       <ContentGrid

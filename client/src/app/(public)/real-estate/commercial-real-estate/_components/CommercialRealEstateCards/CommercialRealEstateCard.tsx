@@ -16,25 +16,15 @@ import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedCommercialRealEstate } from "@/lib/real-estate/commercial-real-estate/types/commercialRealEstate.types";
 import {
-  PropertyKind,
-  DealKind,
-} from "@/lib/real-estate/commercial-real-estate/types/commercialRealEstate.types";
+  formatCommercialPropertyKind,
+  formatDealKind,
+} from "@/lib/real-estate/commercial-real-estate/utils/commercialRealEstateOptions";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface CommercialRealEstateCardProps {
   commercialRealEstate: SerializedCommercialRealEstate;
 }
-
-// Helper function to format property kind
-const formatPropertyKind = (propertyKind: PropertyKind): string => {
-  return propertyKind === PropertyKind.Apartment ? "Квартира" : "Лофт";
-};
-
-// Helper function to format deal kind
-const formatDealKind = (dealKind: DealKind): string => {
-  return dealKind === DealKind.Rent ? "Аренда" : "Продажа";
-};
 
 // Helper function to format price
 const formatPrice = (price: number): string => {
@@ -77,7 +67,7 @@ const CommercialRealEstateCard: React.FC<CommercialRealEstateCardProps> = ({
             </Badge>
           )}
           <Badge size="2" color="gray" variant="soft">
-            {formatPropertyKind(propertyKind)}
+            {formatCommercialPropertyKind(propertyKind)}
           </Badge>
         </CommercialRealEstateCardHeader>
         <CommercialRealEstateCardImages>
