@@ -61,14 +61,14 @@ const vehicleCategories: VehicleCategory[] = [
     title: "Квадроциклы",
     description: "Квадроциклы и вездеходы для бездорожья",
     icon: <AtvIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/special-vehicles/create",
+    href: "/publish-ad/vehicles/special-vehicles/create?category=X4Y5Z6",
   },
   {
     id: "trucks",
     title: "Грузовики",
     description: "Грузовики и фургоны для перевозки грузов",
     icon: <TruckIcon viewBox={{ width: 120, height: 120 }}/>,
-    href: "/publish-ad/vehicles/special-vehicles/create",
+    href: "/publish-ad/vehicles/special-vehicles/create?category=L2M3N4",
   },
   {
     id: "special-vehicles",
