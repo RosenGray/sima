@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Flex } from "@radix-ui/themes";
 import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
 import {
@@ -9,14 +10,32 @@ import {
   RetryButton,
   StyledHeading,
 } from "./error.styles";
+
 interface ErrorProps {
   error: Error;
   reset: () => void;
 }
 
+const STALE_DEPLOYMENT_RELOAD_KEY = "sima-stale-deployment-reload";
+
 export default function ErrorPage({ reset, error }: ErrorProps) {
-  console.log('error bla', error)
-  console.log('error message', error.message)
+  useEffect(() => {
+    // Detect stale deployment errors (old client JS calling new server build).
+    // Auto-refresh once so the browser fetches the latest JS bundle.
+    const isStaleDeployment =
+      error.message?.includes("Failed to find Server Action") ||
+      error.digest?.includes("NEXT_NOT_FOUND");
+
+    if (isStaleDeployment && !sessionStorage.getItem(STALE_DEPLOYMENT_RELOAD_KEY)) {
+      sessionStorage.setItem(STALE_DEPLOYMENT_RELOAD_KEY, "1");
+      window.location.reload();
+      return;
+    }
+
+    // Clear the flag after a successful render (error was not stale-deployment,
+    // or this is the second attempt and the reload already happened).
+    sessionStorage.removeItem(STALE_DEPLOYMENT_RELOAD_KEY);
+  }, [error]);
 
   return (
     <ErrorPageContainer size="3">
