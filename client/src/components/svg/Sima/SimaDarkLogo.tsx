@@ -12,7 +12,7 @@ const SimaDarkLogo = ({ width, height, viewBox }: SimaDarkLogoProps) => {
       xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
-      viewBox={`0 0 ${viewBox?.width} ${viewBox?.height}`}
+      viewBox={`0 0 ${viewBox?.width ?? 100} ${viewBox?.height ?? 100}`}
       fill="none"
     >
       <defs>

@@ -104,7 +104,7 @@ export default function Header() {
                 }}
                 href="/"
               >
-                <SimaDarkLogo width={200} height={60} />
+                <SimaDarkLogo viewBox={{ width: 200, height: 60 }} width={200} height={60} />
               </Link>
             </Logo>
           </Flex>

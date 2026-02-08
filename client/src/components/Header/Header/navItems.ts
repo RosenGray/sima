@@ -2,11 +2,6 @@ import { NavigationItems } from "../Header.utils";
 
 export const navItems: NavigationItems = [
   {
-    label: "Работа",
-    type: "link",
-    subItems: [{ label: "Все", href: "/jobs" }],
-  },
-  {
     label: "Транспорт",
     type: "dropdown",
     subItems: [
@@ -32,11 +27,6 @@ export const navItems: NavigationItems = [
     ],
   },
   {
-    label: "Другое",
-    type: "link",
-    subItems: [{ label: "Все", href: "/other" }],
-  },
-  {
     label: "Недвижимость",
     type: "dropdown",
     subItems: [
@@ -49,5 +39,15 @@ export const navItems: NavigationItems = [
     label: "Куплю-Продам",
     type: "link",
     subItems: [{ label: "Все", href: "/yad2" }],
+  },
+  {
+    label: "Работа",
+    type: "link",
+    subItems: [{ label: "Все", href: "/jobs" }],
+  },
+  {
+    label: "Другое",
+    type: "link",
+    subItems: [{ label: "Все", href: "/other" }],
   },
 ];
