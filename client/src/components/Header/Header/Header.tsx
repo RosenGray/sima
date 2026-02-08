@@ -11,7 +11,7 @@ import {
   Logo,
   Nav,
   NavItem,
-  DropdownMenu,
+  NavDropdownMenu,
   NavLikItem,
   MobileMenuButton,
   HamburgerIcon,
@@ -164,13 +164,13 @@ export default function Header() {
               <NavItem key={item.label}>
                 {renderLinkOrDropdown(item)}
                 {item.type === "dropdown" && (
-                  <DropdownMenu>
+                  <NavDropdownMenu>
                     {item.subItems.map((subItem) => (
                       <NavLikItem key={subItem?.label} href={subItem?.href}>
                         <Text size="2">{subItem?.label}</Text>
                       </NavLikItem>
                     ))}
-                  </DropdownMenu>
+                  </NavDropdownMenu>
                 )}
               </NavItem>
             ))}

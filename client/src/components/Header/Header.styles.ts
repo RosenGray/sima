@@ -124,12 +124,20 @@ export const DropdownMenu = styled.div`
   }
 `;
 
+export const NavDropdownMenu = styled(DropdownMenu)`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.5rem;
+  min-width: 380px;
+`;
+
 export const NavLikItem = styled(Link)`
   display: block;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-2);
   text-decoration: none;
   transition: background-color 0.2s ease;
+  white-space: nowrap;
 
   &:hover {
     background: var(--gray-3);

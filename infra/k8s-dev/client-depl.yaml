@@ -43,7 +43,13 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: recaptcha-secret-key
-                  key: RECAPTCHA_SECRET_KEY                                        
+                  key: RECAPTCHA_SECRET_KEY
+            # Required for Server Actions to work after pod restarts (see prod client-depl comment).
+            - name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: server-actions-encryption-key
+                  key: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
 ---
 apiVersion: v1
 kind: Service

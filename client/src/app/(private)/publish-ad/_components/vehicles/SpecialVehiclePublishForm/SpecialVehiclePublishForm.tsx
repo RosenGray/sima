@@ -40,6 +40,7 @@ import {
 import { mapSpecialVehicleCategoriesToSelectOptions } from "@/lib/vehicles/special-vehicles/specialVehicleCategories";
 import { getSpecialVehicleKindsToSelectOptions } from "@/lib/vehicles/special-vehicles/specialVehicleKinds";
 import PriceFormField from "@/components/Form/PriceFormField/PriceFormField";
+import { useSearchParams } from "next/navigation";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -52,6 +53,8 @@ const SpecialVehiclePublishForm: FC<SpecialVehiclePublishFormProps> = ({
   entity,
   formMode,
 }) => {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
   const isCreateMode = formMode === FormMode.Create;
   const { user } = useAuth();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
@@ -93,7 +96,7 @@ const SpecialVehiclePublishForm: FC<SpecialVehiclePublishFormProps> = ({
 
   const [form, fields] = useForm({
     defaultValue: {
-      category: entity?.category || "",
+      category: entity?.category || categoryParam || "",
       kind: entity?.kind || "",
       title: entity?.title || "",
       price: entity?.price?.toString() || "",
