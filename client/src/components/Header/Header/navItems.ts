@@ -21,8 +21,15 @@ export const navItems: NavigationItems = [
     label: "Домашние животные",
     type: "dropdown",
     subItems: [
-      { label: "Продажа", href: "/pets/for-sale" },
-      { label: "Отдам бесплатно", href: "/pets/for-free" },
+      { label: "Собаки", href: "/pets/for-sale?animal=dog" },
+      { label: "Кошки", href: "/pets/for-sale?animal=cat" },
+      { label: "Рыбы", href: "/pets/for-sale?animal=fish" },
+      { label: "Птицы", href: "/pets/for-sale?animal=bird" },
+      { label: "Хорьки", href: "/pets/for-sale?animal=ferrets" },
+      { label: "Грызуны", href: "/pets/for-sale?animal=rodents" },
+      { label: "Сельскохозяйственные животные", href: "/pets/for-sale?animal=farm_animals" },
+      { label: "Лошади", href: "/pets/for-sale?animal=horse" },
+      { label: "Животные", href: "/pets/for-sale?animal=animal" },
       { label: "Аксессуары", href: "/pets/accessories" },
     ],
   },
@@ -51,3 +58,16 @@ export const navItems: NavigationItems = [
     subItems: [{ label: "Все", href: "/other" }],
   },
 ];
+
+// כלבים
+// חתולים
+// דגים
+// ציפורים
+// מכרסמים
+// סוסים
+// חיות משק
+// אילוף כלבים
+// מזון וציוד לבע"ח
+// מספרות לכלבים
+// פנסיון לכלבים
+// וטרינרים
