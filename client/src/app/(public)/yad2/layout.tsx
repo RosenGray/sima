@@ -4,7 +4,7 @@ import {
 
 } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
 import SectionStripe from "@/components/SectionStripe/SectionStripe";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default function RootLayout({
 
   return (
     <Yad2LayoutSection>
-      <SimpleHeader />
+      <Header />
       <SectionStripe
         src={stripeSrc}
         alt="Куплю-Продам товары"

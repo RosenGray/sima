@@ -4,7 +4,7 @@ import {
   PetsLayoutStripe,
 } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
 
 export const metadata: Metadata = {
   title: "Домашние животные",
@@ -23,7 +23,7 @@ export default function PetsLayout({
 
   return (
     <PetsLayoutSection>
-      <SimpleHeader />
+      <Header />
       <PetsLayoutStripe $src={filePath} />
       <main>{children}</main>
     </PetsLayoutSection>

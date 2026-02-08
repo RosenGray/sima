@@ -7,7 +7,9 @@ import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { getLikedAdIdsByUser } from "@/lib/likes/repository/LikesRepository";
+import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
+import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
 import { LikesProvider } from "@/providers/LikesProvider/LikesProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
@@ -30,7 +32,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
+  const [user, serviceCategories] = await Promise.all([
+    getCurrentUser(),
+    serviceCategoryRepository.getAll(),
+  ]);
   const initialLikedIds = user ? await getLikedAdIdsByUser(user.id) : {};
 
   return (
@@ -45,7 +50,8 @@ export default async function RootLayout({
                 enableColorScheme
                 storageKey="sima-theme"
               >
-                <RadixTheme
+                <HomePageProvider data={{ serviceCategories }}>
+                  <RadixTheme
                   className="globalContentOverflowWrapper"
                   accentColor="red"
                   id={RADIX_THEME_APP_ID}
@@ -61,6 +67,7 @@ export default async function RootLayout({
                   <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
                   <LayoutBackground />
                 </RadixTheme>
+                </HomePageProvider>
               </ThemeProvider>
             </LikesProvider>
           </AuthProvider>

@@ -4,7 +4,7 @@ import {
   VehiclesLayoutStripe,
 } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
 
 export const metadata: Metadata = {
   title: "Транспорт",
@@ -20,7 +20,7 @@ export default function RootLayout({
 
   return (
     <VehiclesLayoutSection>
-      <SimpleHeader />
+      <Header />
       <VehiclesLayoutStripe $src={filePath} />
       <main>{children}</main>
     </VehiclesLayoutSection>

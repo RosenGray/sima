@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { OtherLayoutSection, OtherLayoutStripe } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
 
 export const metadata: Metadata = {
   title: "Другое",
@@ -17,7 +17,7 @@ export default function OtherLayout({
 
   return (
     <OtherLayoutSection>
-      <SimpleHeader />
+      <Header />
       <OtherLayoutStripe $src={filePath} />
       <main>{children}</main>
     </OtherLayoutSection>

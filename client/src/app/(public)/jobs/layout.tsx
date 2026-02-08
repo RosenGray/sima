@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { JobsLayoutSection, JobsLayoutStripe } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
-import SimpleHeader from "@/components/Header/SimpleHeader/SimpleHeader";
+import Header from "@/components/Header/Header/Header";
 
 export const metadata: Metadata = {
   title: "Работа",
@@ -17,7 +17,7 @@ export default function JobsLayout({
 
   return (
     <JobsLayoutSection>
-      <SimpleHeader />
+      <Header />
       <JobsLayoutStripe $src={filePath} />
       <main>{children}</main>
     </JobsLayoutSection>
