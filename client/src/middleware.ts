@@ -39,7 +39,16 @@ const getJwtSecret = () => {
   return new TextEncoder().encode(secret);
 };
 
+// Next.js Server Action requests send this header; we must not run auth logic on them
+// or they can get 403 / wrong response when Origin/Host or cookies differ.
+const NEXT_ACTION_HEADER = "next-action";
+
 export async function middleware(request: NextRequest) {
+  // Let Server Action POSTs go straight to the app (no redirects, no JWT checks here)
+  if (request.headers.get(NEXT_ACTION_HEADER)) {
+    return NextResponse.next();
+  }
+
   const { pathname } = request.nextUrl;
 
   // Get the JWT token from cookies
