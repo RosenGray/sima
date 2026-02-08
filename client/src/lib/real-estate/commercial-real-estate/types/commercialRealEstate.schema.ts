@@ -2,8 +2,17 @@ import { z } from "zod";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import {
   DealKind,
-  PropertyKind,
+  CommercialPropertyKind,
 } from "./commercialRealEstate.types";
+
+const validDealKindValues = Object.values(DealKind).filter(
+  (v): v is DealKind => typeof v === "number"
+);
+const validCommercialPropertyKindValues = Object.values(
+  CommercialPropertyKind
+).filter(
+  (v): v is CommercialPropertyKind => typeof v === "number"
+);
 
 export const SIZE_IN_MB = 5;
 export const MAX_FILE_SIZE = SIZE_IN_MB * 1024 * 1024;
@@ -25,23 +34,17 @@ export const createCommercialRealEstateSchema = ({
         required_error: "Выберите тип сделки",
         invalid_type_error: "Тип сделки должен быть числом",
       })
-      .refine(
-        (val) => val === DealKind.Rent || val === DealKind.Sale,
-        {
-          message: "Неверное значение типа сделки",
-        }
-      ),
+      .refine((val) => validDealKindValues.includes(val), {
+        message: "Неверное значение типа сделки",
+      }),
     propertyKind: z.coerce
       .number({
         required_error: "Выберите тип недвижимости",
         invalid_type_error: "Тип недвижимости должен быть числом",
       })
-      .refine(
-        (val) => val === PropertyKind.Apartment || val === PropertyKind.Loft,
-        {
-          message: "Неверное значение типа недвижимости",
-        }
-      ),
+      .refine((val) => validCommercialPropertyKindValues.includes(val), {
+        message: "Неверное значение типа недвижимости",
+      }),
     district: z.nativeEnum(Districts, {
       required_error: "Выберите район",
     }),

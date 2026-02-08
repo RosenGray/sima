@@ -3,7 +3,11 @@ import {
   ICommercialRealEstate,
 } from "../models/CommercialRealEstate";
 import connectDB from "@/lib/mongo/mongodb";
-import { SerializedCommercialRealEstate } from "../types/commercialRealEstate.types";
+import {
+  SerializedCommercialRealEstate,
+  CommercialPropertyKind,
+  DealKind,
+} from "../types/commercialRealEstate.types";
 import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
 import sanitize from "mongo-sanitize";
@@ -63,11 +67,24 @@ class CommercialRealEstateRepository {
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof CommercialRealEstate> = {};
 
+      const validCommercialPropertyKindValues = Object.values(
+        CommercialPropertyKind
+      ).filter(
+        (v): v is CommercialPropertyKind => typeof v === "number"
+      );
+      const validDealKindValues = Object.values(DealKind).filter(
+        (v): v is DealKind => typeof v === "number"
+      );
+
       // Add propertyKind filter
       if (sanitizedFilters.propertyKind) {
         const propertyKindNumbers = sanitizedFilters.propertyKind
           .map((pk) => Number(pk))
-          .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 2);
+          .filter(
+            (num) =>
+              !Number.isNaN(num) &&
+              validCommercialPropertyKindValues.includes(num as CommercialPropertyKind)
+          );
 
         if (propertyKindNumbers.length > 0) {
           searchFilter.propertyKind = { $in: propertyKindNumbers };
@@ -78,7 +95,10 @@ class CommercialRealEstateRepository {
       if (sanitizedFilters.dealKind) {
         const dealKindNumbers = sanitizedFilters.dealKind
           .map((dk) => Number(dk))
-          .filter((num) => !Number.isNaN(num) && num >= 1 && num <= 2);
+          .filter(
+            (num) =>
+              !Number.isNaN(num) && validDealKindValues.includes(num as DealKind)
+          );
 
         if (dealKindNumbers.length > 0) {
           searchFilter.dealKind = { $in: dealKindNumbers };

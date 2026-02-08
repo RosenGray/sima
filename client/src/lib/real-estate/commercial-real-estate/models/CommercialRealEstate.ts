@@ -1,7 +1,7 @@
 import { FileUploadItem } from "@/lib/files/uploadFiles";
 import {
   DealKind,
-  PropertyKind,
+  CommercialPropertyKind,
   AdditionalFeatures,
 } from "../types/commercialRealEstate.types";
 import mongoose from "mongoose";
@@ -13,7 +13,7 @@ export interface ICommercialRealEstate {
   publicId: string;
   user: mongoose.Types.ObjectId;
   dealKind: DealKind;
-  propertyKind: PropertyKind;
+  propertyKind: CommercialPropertyKind;
   district: string;
   city: string;
   streetname: string;
@@ -84,13 +84,17 @@ const commercialRealEstateSchema = new mongoose.Schema(
     dealKind: {
       type: Number,
       required: true,
-      enum: [DealKind.Rent, DealKind.Sale],
+      enum: Object.values(DealKind).filter(
+        (v): v is DealKind => typeof v === "number"
+      ),
       index: true,
     },
     propertyKind: {
       type: Number,
       required: true,
-      enum: [PropertyKind.Apartment, PropertyKind.Loft],
+      enum: Object.values(CommercialPropertyKind).filter(
+        (v): v is CommercialPropertyKind => typeof v === "number"
+      ),
       index: true,
     },
     district: {
