@@ -28,18 +28,25 @@ export const navItems: NavigationItems = [
       { label: "Хорьки", href: "/pets/for-sale?animal=ferrets" },
       { label: "Грызуны", href: "/pets/for-sale?animal=rodents" },
       { label: "Сельскохозяйственные животные", href: "/pets/for-sale?animal=farm_animals" },
-      { label: "Лошади", href: "/pets/for-sale?animal=horse" },
-      { label: "Животные", href: "/pets/for-sale?animal=animal" },
-      { label: "Аксессуары", href: "/pets/accessories" },
+      { label: "Лошади", href: "/pets/for-sale?animal=horses" },
+      { label: "Ящерицы и змеи", href: "/pets/for-sale?animal=reptiles" },
+      { label: "Аксессуары для животных", href: "/pets/accessories" },
     ],
   },
   {
     label: "Недвижимость",
     type: "dropdown",
     subItems: [
-      { label: "Продажа", href: "/real-estate/for-sale/" },
-      { label: "Аренда", href: "/real-estate/for-rent/" },
-      { label: "Коммерческая недвижимость", href: "/real-estate/commercial-real-estate/" },
+      { label: "Продажа квартир", href: "/real-estate/for-sale/" },
+      { label: "Аренда квартир", href: "/real-estate/for-rent/" },
+      { label: "Аренда и продажа коммерческой недвижимости", href: "/real-estate/commercial-real-estate/" },
+      { label: "Аренда квартир в совместное владение", href: "/real-estate/shared-apartments/" },
+      { label: "Аренда квартир на короткий срок", href: "/real-estate/short-term-rentals/" },
+      { label: "Аренда офисов", href: "/real-estate/office-rent/" },
+      { label: "Продажа офисов", href: "/real-estate/office-sale/" },
+      { label: "Аренда магазинов", href: "/real-estate/store-rent/" },
+      { label: "Аренда торговых площадей", href: "/real-estate/commercial-vacation/" },
+      { label: "Аренда недвижимости за рубежом", href: "/real-estate/foreign-real-estate/" },
     ],
   },
   {
@@ -59,15 +66,17 @@ export const navItems: NavigationItems = [
   },
 ];
 
-// כלבים
-// חתולים
-// דגים
-// ציפורים
-// מכרסמים
-// סוסים
-// חיות משק
-// אילוף כלבים
-// מזון וציוד לבע"ח
-// מספרות לכלבים
-// פנסיון לכלבים
-// וטרינרים
+// דירות להשכרה
+// דירות למכירה
+// נדל"ן מסחרי
+// דירות שותפים
+// תקופות קצרות
+// משרדים להשכרה
+// משרדים למכירה
+// חנויות להשכרה
+// השכרה תיווך
+// מכירה תיווך
+// מסחרי תיווך
+// נדל"ן חו"ל
+// דירות חדשות
+// מגזין נדל"ן

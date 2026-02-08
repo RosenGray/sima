@@ -1,5 +1,6 @@
 # Stage 1: Build the app
-FROM node:alpine AS builder
+# Pin to Node 22 LTS Alpine to avoid undici bugs in "current" line (e.g. transformAlgorithm error)
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +20,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Stage 2: Serve the app with a lightweight server
-FROM node:alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
