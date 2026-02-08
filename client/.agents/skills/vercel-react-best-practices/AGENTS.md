@@ -3,7 +3,7 @@
 **Version 1.0.0**  
 Vercel Engineering  
 January 2026
-
+ 
 > **Note:**  
 > This document is mainly for agents and LLMs to follow when maintaining,  
 > generating, or refactoring React and Next.js codebases. Humans  
