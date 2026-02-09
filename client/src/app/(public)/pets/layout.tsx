@@ -20,8 +20,6 @@ export default function PetsLayout({
   return (
     <PetsLayoutSection>
       <Header />
-      <h1>Домашние животные</h1>
-      <p>stripeSrc: {stripeSrc}</p>
       <SectionStripe
         src={stripeSrc}
         alt="Домашние животные"
