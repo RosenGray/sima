@@ -7,6 +7,5 @@ export const HomePageContainer = styled(Container)`
     content: "";
     display: block;
     height: var(--header-height);
-    padding-top: 2rem;
   }
 `;

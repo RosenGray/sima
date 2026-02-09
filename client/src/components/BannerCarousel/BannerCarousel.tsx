@@ -102,10 +102,9 @@ function SlideContent({
           alt=""
           role="presentation"
           fill
-          sizes="100vw"
+          sizes="90vw"
           style={{ objectFit: "cover" }}
-          loading="lazy"
-          decoding="async"
+          priority
         />
       </ImageWrapper>
       <ImageWrapper className="mobile-only">
@@ -114,10 +113,9 @@ function SlideContent({
           alt=""
           role="presentation"
           fill
-          sizes="100vw"
+          sizes="90vw"
           style={{ objectFit: "cover" }}
-          loading="lazy"
-          decoding="async"
+          priority
         />
       </ImageWrapper>
       {showPill && (

@@ -91,10 +91,10 @@ const RealEstateForRentPage: FC<RealEstateForRentPageProps> = async (props) => {
   }
 
   const contentKey = JSON.stringify({ ...filters, page: currentPage });
-
+  const filtersKey = JSON.stringify(filters);
   return (
     <RealEstateForRentPageContainer>
-      <Suspense fallback={<LoadingFilters />}>
+      <Suspense key={filtersKey} fallback={<LoadingFilters />}>
         <FiltersProvider>
           <Filters />
         </FiltersProvider>

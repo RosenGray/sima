@@ -74,10 +74,11 @@ const PetForSalePage: FC<PetForSalePageProps> = async (props) => {
   }
 
   const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
+  const filtersKey = JSON.stringify(filters);
 
   return (
     <PetForSalePageContainer>
-      <Suspense fallback={<LoadingFilters />}>
+      <Suspense key={filtersKey} fallback={<LoadingFilters />}>
         <FiltersProvider>
           <Filters />
         </FiltersProvider>

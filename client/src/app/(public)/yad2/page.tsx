@@ -69,10 +69,11 @@ const Yad2Page: FC<Yad2PageProps> = async (props) => {
   }
 
   const contentKey = JSON.stringify({ ...filters, page: currentPage });
+  const filtersKey = JSON.stringify(filters);
 
   return (
     <Yad2PageContainer>
-      <Suspense fallback={<LoadingFilters />}>
+      <Suspense key={filtersKey} fallback={<LoadingFilters />}>
         <FiltersProvider>
           <Filters />
         </FiltersProvider>
