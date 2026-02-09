@@ -13,14 +13,19 @@ export const navItems: NavigationItems = [
       },
       { label: "Мотоциклы", href: "/vehicles/motorcycles/" },
       { label: "Скутеры и мопеды", href: "/vehicles/scooters/" },
-      { label: "Квадроциклы", href: "/vehicles/atv/" },
-      { label: "Грузовики", href: "/vehicles/trucks/" },
-      { label: "Прицепы", href: "/vehicles/trailers/" },
+      {
+        label: "Квадроциклы",
+        href: "/vehicles/special-vehicles?category=X4Y5Z6",
+      },
+      {
+        label: "Грузовики",
+        href: "/vehicles/special-vehicles?category=L2M3N4",
+      },
       {
         label: "Специальные транспортные средства",
         href: "/vehicles/special-vehicles/",
       },
-      { label: "Аксессуары и звук", href: "/vehicles/accessories-and-sound/" },
+      { label: "Аксессуары и звук", href: "/vehicles/accessories/" },
     ],
   },
 
