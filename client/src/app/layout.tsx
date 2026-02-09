@@ -18,6 +18,7 @@ import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 // import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
 import Accessibilik from "accessibility-react-widget";
 import { GoogleTagManager } from "@next/third-parties/google";
+import ServerActionErrorHandler from "@/errors/ServerActionErrorHandler/ServerActionErrorHandler";
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
@@ -43,7 +44,8 @@ export default async function RootLayout({
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
       <GoogleTagManager gtmId="G-X15DR6QH3X" />
       <body>
-        <StyledComponentsRegistry>
+      <ServerActionErrorHandler>
+      <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <LikesProvider initialLikedIds={initialLikedIds}>
               <ThemeProvider
@@ -74,6 +76,8 @@ export default async function RootLayout({
             </LikesProvider>
           </AuthProvider>
         </StyledComponentsRegistry>
+      </ServerActionErrorHandler>
+
       </body>
     </html>
   );
