@@ -80,7 +80,7 @@ export const NavItem = styled.div`
   &:hover > div:last-child {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
   }
   
   & > span {
@@ -125,10 +125,17 @@ export const DropdownMenu = styled.div`
 `;
 
 export const NavDropdownMenu = styled(DropdownMenu)`
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0 1.5rem;
   min-width: 380px;
+
+  &::before {
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
 `;
 
 export const NavLikItem = styled(Link)`
