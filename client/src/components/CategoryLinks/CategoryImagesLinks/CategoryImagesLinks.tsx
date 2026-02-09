@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import type { CategoryLinksProps, CategoryLinkItem } from "./CategoryLinks.types";
+import type { CategoryImagesLinksProps, CategoryLinkItem } from "../CategoryLinks.types";
 import {
   CategoryLinksNav,
   CategoryLinksList,
@@ -10,15 +10,15 @@ import {
   CategoryLink,
   CategoryLinkImageWrapper,
   CategoryLinkLabel,
-} from "./CategoryLinks.styles";
+} from "../CategoryLinks.styles";
 
 const DEFAULT_ARIA_LABEL = "Категории";
 
-export function CategoryLinks({
+export function CategoryImagesLinks({
   items,
   ariaLabel = DEFAULT_ARIA_LABEL,
   className,
-}: CategoryLinksProps) {
+}: CategoryImagesLinksProps) {
   if (items.length === 0) return null;
 
   return (
@@ -29,9 +29,7 @@ export function CategoryLinks({
     >
       <CategoryLinksList role="list">
         {items.map((item: CategoryLinkItem, index: number) => (
-          <CategoryLinksItem
-            key={`${item.href}-${index}`}
-          >
+          <CategoryLinksItem key={`${item.href}-${index}`}>
             <CategoryLink href={item.href}>
               <CategoryLinkImageWrapper>
                 <Image
@@ -45,9 +43,7 @@ export function CategoryLinks({
                   decoding="async"
                 />
               </CategoryLinkImageWrapper>
-              <CategoryLinkLabel>
-                {item.label}
-              </CategoryLinkLabel>
+              <CategoryLinkLabel>{item.label}</CategoryLinkLabel>
             </CategoryLink>
           </CategoryLinksItem>
         ))}
