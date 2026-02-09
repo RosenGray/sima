@@ -6,7 +6,6 @@ import { FC, useId } from "react";
 import {
   SearchContainer,
   SearchLabel,
-  SearchInputRoot,
   SearchInputSlot,
 } from "./TextSearch.styles";
 
@@ -47,7 +46,7 @@ const TextSearch: FC<TextSearchProps> = ({
   return (
     <SearchContainer>
       {label && <SearchLabel htmlFor={id}>{label}</SearchLabel>}
-      <SearchInputRoot
+      <TextField.Root
         id={id}
         name={name}
         type={type}
@@ -55,12 +54,13 @@ const TextSearch: FC<TextSearchProps> = ({
         value={value}
         defaultValue={defaultValue}
         onChange={(e) => onChange(e.target.value)}
+        size="3"
         {...inputProps}
       >
         <SearchInputSlot>
           <MagnifyingGlassIcon width="16" height="16" />
         </SearchInputSlot>
-      </SearchInputRoot>
+      </TextField.Root>
     </SearchContainer>
   );
 };

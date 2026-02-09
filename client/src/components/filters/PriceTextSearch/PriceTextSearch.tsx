@@ -4,7 +4,6 @@ import { FC, useId, useState, useCallback, useEffect } from "react";
 import {
   SearchContainer,
   SearchLabel,
-  SearchInputRoot,
   SearchInputSlot,
 } from "./PriceTextSearch.styles";
 import { formatNumberWithCommas } from "@/utils/common";
@@ -62,7 +61,7 @@ const PriceTextSearch: FC<PriceTextSearchProps> = ({
   return (
     <SearchContainer>
       {label && <SearchLabel htmlFor={id}>{label}</SearchLabel>}
-      <SearchInputRoot
+      <TextField.Root
         {...inputProps}
         id={id}
         name={name}
@@ -72,9 +71,10 @@ const PriceTextSearch: FC<PriceTextSearchProps> = ({
         onChange={handleChange}
         pattern="[\d,]*"
         inputMode="numeric"
+        size="3"
       >
         <SearchInputSlot>₪</SearchInputSlot>
-      </SearchInputRoot>
+      </TextField.Root>
     </SearchContainer>
   );
 };

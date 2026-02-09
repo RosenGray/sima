@@ -1,16 +1,6 @@
 :root {
   --header-height: 110px;
   --simple-header-height: 80px;
-    /* --background-color: linear-gradient(
-      135deg,
-      #e9e5fe,
-      #eef7ff,
-      #ecedfe,
-      #eddbe6
-    );
-    --header-height: 70px;
-    --hero-card-background-color: #fffc; */
-      /* Radix breakpoints as CSS variables */
   --breakpoint-xs: 520px;
   --breakpoint-sm: 768px;
   --breakpoint-md: 1024px;
@@ -18,30 +8,7 @@
   --breakpoint-xl: 1640px;
   }
   
-  .dark {
-    /* --background-color: linear-gradient(
-      135deg,
-      #2b2543,
-      #111c2a,
-      #2a2d3f,
-      #3a2b3d,
-      #111216
-    );
-    --hero-card-background-color: #1b1d1eb3; */
-  }
-  
-  /* For backwards compatibility */
-  html:is(.dark) {
-    /* --background-color: linear-gradient(
-      135deg,
-      #2b2543,
-      #111c2a,
-      #2a2d3f,
-      #3a2b3d,
-      #111216
-    );
-    --hero-card-background-color: #1b1d1eb3; */
-  }
+
 
   
   
@@ -72,11 +39,7 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
-  
-  footer{
-  
-  }
-  
+
   a{
     text-decoration: none;
     cursor: pointer;
@@ -98,4 +61,15 @@
     cursor: not-allowed;
     opacity: 0.5;
     pointer-events: none; /* Prevents click events */
+  }
+
+  /* Accessibilik widget: smaller trigger on mobile (keeps position bottom-left/right) */
+  @media (max-width: 767px) {
+    #accessibilik > a[role="button"] {
+      width: 40px !important;
+      height: 40px !important;
+      right:10;
+      bottom:10px;
+    }
   } 
+
