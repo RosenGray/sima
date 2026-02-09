@@ -1,26 +1,11 @@
-import { Button, Flex, Heading, Text, Box, Container } from "@radix-ui/themes";
+import { Box } from "@radix-ui/themes";
 import Header from "../components/Header/Header/Header";
-import Dummy from "@/components/Dummy/Dummy";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
-import { CategoryLinks } from "@/components/CategoryLinks/CategoryLinks";
-import type { CategoryLinkItem } from "@/components/CategoryLinks/CategoryLinks.types";
-import { navItems } from "@/components/Header/Header/navItems";
-import { ListingCardCarousel } from "@/components/ListingCardCarousel/ListingCardCarousel";
+import { CategorySvgLinks } from "@/components/CategoryLinks";
 import type { ListingCardCarouselItem } from "@/components/ListingCardCarousel/ListingCardCarousel.types";
+import { getCategorySvgLinkItems } from "@/lib/home/categorySvgLinksConfig";
 import { getHomeBannerItems } from "@/lib/home/bannerItems";
 import { HomeLobby } from "./page.styles";
-
-function buildCategoryItems(): CategoryLinkItem[] {
-  return navItems.map((item, index) => {
-    const first = item.subItems[0];
-    const seed = index + 1;
-    return {
-      href: first!.href,
-      label: item.label,
-      imageUrl: `https://picsum.photos/seed/category${seed}/150/150`,
-    };
-  });
-}
 
 const LISTING_CARD_CAROUSEL_ITEMS: ListingCardCarouselItem[] = [
   {
@@ -71,7 +56,10 @@ function buildListingCardCarouselItems(): ListingCardCarouselItem[] {
 
 export default async function Home() {
   const bannerItems = getHomeBannerItems();
-  const categoryItems = buildCategoryItems();
+  const categorySvgItems = getCategorySvgLinkItems({
+    viewBoxWidth: 120,
+    viewBoxHeight: 120,
+  });
   const listingCardCarouselItems = buildListingCardCarouselItems();
 
   return (
@@ -80,52 +68,17 @@ export default async function Home() {
       <HomeLobby>
         <Box p="4">
           <BannerCarousel items={bannerItems} autoplay loop />
-          <CategoryLinks items={categoryItems} ariaLabel="Категории" />
         </Box>
-        {/* <CategoryLinks items={categoryItems} ariaLabel="Категории" />
         <Box pt="4">
-          <ListingCardCarousel
-            items={listingCardCarouselItems}
-            infinite
-            ariaLabel="Карточки объявлений"
-          />
+          <CategorySvgLinks items={categorySvgItems} ariaLabel="Категории" />
         </Box>
-        <Box pt="7rem">
-          <Box>
-            <Flex direction="column" gap="6" align="center">
-              <Heading size="9" weight="bold">
-                Hello World4
-              </Heading>
-
-              <Text size="6" color="gray">
-                Welcome to our Marketplace
-              </Text>
-
-              <Text
-                size="4"
-                color="gray"
-                style={{ maxWidth: "500px", lineHeight: "1.6" }}
-              >
-                Discover amazing products, connect with sellers, and build your
-                business in our vibrant marketplace community. Your journey
-                starts here.
-              </Text>
-
-              <Flex gap="4" mt="4">
-                <Button size="3" variant="solid">
-                  Get Started
-                </Button>
-                <Button size="3" variant="outline">
-                  Learn More
-                </Button>
-              </Flex>
-            </Flex>
-            <div style={{ marginTop: 40, width: "100%" }}>
-              <Dummy /> 9
-            </div>
-          </Box>
-        </Box> */}
       </HomeLobby>
     </>
   );
 }
+{/* <Box pt="4">
+<ListingCardCarousel
+  items={listingCardCarouselItems}
+  infinite
+  ariaLabel="Карточки объявлений"
+/> */}

@@ -11,18 +11,21 @@ export const CategoryLinksNav = styled.nav`
 
 export const CategoryLinksList = styled.ul`
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
+
+  gap: var(--space-5);
   list-style: none;
   margin: 0;
   padding: 0;
   width: 100%;
   justify-content: center;
   align-items: flex-start;
-
-  @media (min-width: 768px) {
-    gap: var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
+
 `;
 
 export const CategoryLinksItem = styled.li`
@@ -60,6 +63,17 @@ export const CategoryLinkImageWrapper = styled(Box)`
   position: relative;
   background: var(--gray-3);
   flex-shrink: 0;
+`;
+
+export const CategoryLinkIconWrapper = styled(Box)`
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  background: var(--gray-3);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const CategoryLinkLabel = styled.span`
