@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { withBetterStack } from "@logtail/next";
+import { execSync } from "child_process";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -17,6 +18,14 @@ const nextConfig: NextConfig = {
   },
   compiler: {
     styledComponents: true,
+  },
+  generateBuildId: async () => {
+    // Use git commit hash for deterministic builds
+    try {
+      return execSync("git rev-parse HEAD").toString().trim();
+    } catch {
+      return process.env.BUILD_ID || Date.now().toString();
+    }
   },
   // Increase timeout for API routes
   // Image optimization configuration
