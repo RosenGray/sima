@@ -5,18 +5,25 @@ export const navItems: NavigationItems = [
     label: "Транспорт",
     type: "dropdown",
     subItems: [
-        { label: "Легковые автомобили", href: "/vehicles/cars/" },
-        { label: "Внедорожники и джипы", href: "/vehicles/off-road/" },
-        { label: "Коммерческий транспорт", href: "/vehicles/commercial-vehicles/" },
-        { label: "Мотоциклы", href: "/vehicles/motorcycles/" },
-        { label: "Скутеры и мопеды", href: "/vehicles/scooters/" },
-        { label: "Квадроциклы", href: "/vehicles/atv/" },
-        { label: "Грузовики", href: "/vehicles/trucks/" },
-        { label: "Прицепы", href: "/vehicles/trailers/" },
-        { label: "Специальные транспортные средства", href: "/vehicles/special-vehicles/" },
-        { label: "Аксессуары и звук", href: "/vehicles/accessories-and-sound/" },
+      { label: "Легковые автомобили", href: "/vehicles/cars/" },
+      { label: "Внедорожники и джипы", href: "/vehicles/off-road/" },
+      {
+        label: "Коммерческий транспорт",
+        href: "/vehicles/commercial-vehicles/",
+      },
+      { label: "Мотоциклы", href: "/vehicles/motorcycles/" },
+      { label: "Скутеры и мопеды", href: "/vehicles/scooters/" },
+      { label: "Квадроциклы", href: "/vehicles/atv/" },
+      { label: "Грузовики", href: "/vehicles/trucks/" },
+      { label: "Прицепы", href: "/vehicles/trailers/" },
+      {
+        label: "Специальные транспортные средства",
+        href: "/vehicles/special-vehicles/",
+      },
+      { label: "Аксессуары и звук", href: "/vehicles/accessories-and-sound/" },
     ],
   },
+
   {
     label: "Домашние животные",
     type: "dropdown",
@@ -27,32 +34,59 @@ export const navItems: NavigationItems = [
       { label: "Птицы", href: "/pets/for-sale?animal=bird" },
       { label: "Хорьки", href: "/pets/for-sale?animal=ferrets" },
       { label: "Грызуны", href: "/pets/for-sale?animal=rodents" },
-      { label: "Сельскохозяйственные животные", href: "/pets/for-sale?animal=farm_animals" },
+      {
+        label: "Сельскохозяйственные животные",
+        href: "/pets/for-sale?animal=farm_animals",
+      },
       { label: "Лошади", href: "/pets/for-sale?animal=horses" },
       { label: "Ящерицы и змеи", href: "/pets/for-sale?animal=reptiles" },
       { label: "Аксессуары для животных", href: "/pets/accessories" },
     ],
   },
+
   {
     label: "Недвижимость",
     type: "dropdown",
     subItems: [
       { label: "Продажа квартир", href: "/real-estate/for-sale/" },
       { label: "Аренда квартир", href: "/real-estate/for-rent/" },
-      { label: "Аренда и продажа коммерческой недвижимости", href: "/real-estate/commercial-real-estate/" },
+      {
+        label: "Аренда и продажа коммерческой недвижимости",
+        href: "/real-estate/commercial-real-estate/",
+      },
       { label: "Жилая единица", href: "/real-estate/for-rent?propertyKind=9" },
-      { label: "Туризм,отдых,короткий срок", href: "/real-estate/for-rent?propertyKind=6" },
-      { label: "Аренда офисов", href: "/real-estate/commercial-real-estate?propertyKind=1&dealKind=1" },
-      { label: "Продажа офисов", href: "/real-estate/commercial-real-estate?propertyKind=1&dealKind=2" },
-      { label: "Аренда магазинов", href: "/real-estate/store-rent/" },
-      { label: "Аренда торговых площадей", href: "/real-estate/commercial-vacation/" },
-      { label: "Аренда недвижимости за рубежом", href: "/real-estate/foreign-real-estate/" },
+      {
+        label: "Туризм,отдых,короткий срок",
+        href: "/real-estate/for-rent?propertyKind=6",
+      },
+      {
+        label: "Аренда офисов",
+        href: "/real-estate/commercial-real-estate?propertyKind=1&dealKind=1",
+      },
+      {
+        label: "Продажа офисов",
+        href: "/real-estate/commercial-real-estate?propertyKind=1&dealKind=2",
+      },
+      { label: "Все остальные ", href: "/real-estate/for-rent?" },
     ],
   },
+
   {
     label: "Куплю-Продам",
-    type: "link",
-    subItems: [{ label: "Все", href: "/yad2" }],
+    type: "dropdown",
+    subItems: [
+      { label: "Все", href: "/yad2" },
+      { label: "מוצרי חשמל", href: "/yad2?category=44" },
+      { label: "ריהוט יד שניה", href: "/yad2?category=45" },
+      { label: "אופניים", href: "/yad2?category=57" },
+      { label: "סלולרי", href: "/yad2?category=48" },
+      { label: "מחשבים", href: "/yad2?category=49" },
+      { label: "מצלמות", href: "/yad2?category=63" },
+      { label: "לתינוק ולילד", href: "/yad2?category=54" },
+      { label: "ציוד משרדי", href: "/yad2?category=68" },
+      { label: "ציוד ספורט", href: "/yad2?category=55" },
+      { label: "כלים לגינה", href: "/yad2?category=353" },
+    ],
   },
   {
     label: "Работа",
@@ -65,4 +99,3 @@ export const navItems: NavigationItems = [
     subItems: [{ label: "Все", href: "/other" }],
   },
 ];
-
