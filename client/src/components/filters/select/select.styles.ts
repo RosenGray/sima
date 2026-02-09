@@ -71,19 +71,19 @@ export const styles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
   placeholder: (base) => ({
     ...base,
     color: "var(--gray-11)",
-    fontSize: '14px',
+    fontSize: '16px',
   }),
   
   singleValue: (base) => ({
     ...base,
     color: "var(--gray-12)",
-    fontSize: '14px',
+    fontSize: '16px',
   }),
   
   input: (base) => ({
     ...base,
     color: "var(--gray-12)",
-    fontSize: '14px',
+    fontSize: '16px',
   }),
   
   multiValue: (base) => ({

@@ -72,17 +72,6 @@ const categories: PublishAdCategory[] = [
     icon: <WorkIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/jobs/create",
   },
-
-
-
-
-  // {
-  //   id: "electronics",
-  //   title: "Электроника",
-  //   description: "Техника, гаджеты и электронные устройства",
-  //   icon: <CameraIcon width="32" height="32" />,
-  //   href: "/publish-ad/electronics",
-  // },
 ];
 
 const PublishAdPage = () => {

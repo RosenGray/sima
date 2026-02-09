@@ -60,6 +60,7 @@ const AuthTextField: FC<AuthTextFieldProps> = ({
         className={className}
         data-isvalid={dataIsValid}
         ref={ref}
+  
       >
         <TextField.Slot>{children}</TextField.Slot>
       </AuthTextFieldRoot>
