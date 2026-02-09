@@ -129,6 +129,7 @@ export default async function Home() {
       <Header />
       <HomePageContainer>
         <BannerCarousel items={bannerItems} autoplay loop />
+        <h1>ss</h1>
         {/* <CategoryLinks items={categoryItems} ariaLabel="Категории" />
         <Box pt="4">
           <ListingCardCarousel
