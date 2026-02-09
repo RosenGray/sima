@@ -96,10 +96,11 @@ const CommercialRealEstatePage: FC<CommercialRealEstatePageProps> = async (
   }
 
   const contentKey = JSON.stringify({ ...filters, page: currentPage });
+  const filtersKey = JSON.stringify(filters);
 
   return (
     <CommercialRealEstatePageContainer>
-      <Suspense fallback={<LoadingFilters />}>
+      <Suspense key={filtersKey} fallback={<LoadingFilters />}>
         <FiltersProvider>
           <Filters />
         </FiltersProvider>

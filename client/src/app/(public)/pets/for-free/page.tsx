@@ -43,10 +43,10 @@ const PetForFreePage: FC<PetForFreePageProps> = async (props) => {
   }
 
   const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });
-
+  const filtersKey = JSON.stringify(filters);
   return (
     <PetForFreePageContainer>
-      <Suspense fallback={<LoadingFilters />}>
+      <Suspense key={filtersKey} fallback={<LoadingFilters />}>
         <FiltersProvider>
           <Filters />
         </FiltersProvider>
