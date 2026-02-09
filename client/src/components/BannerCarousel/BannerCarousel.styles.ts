@@ -9,8 +9,8 @@ import "swiper/css/autoplay";
 
 export const BannerCarouselViewport = styled(Box)`
   width: 100%;
-  max-width: 90%;
-  margin: 0 auto;
+  /* max-width: 90%;
+  margin: 0 auto; */
   height: 250px;
   overflow: hidden;
   position: relative;

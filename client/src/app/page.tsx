@@ -2,63 +2,13 @@ import { Button, Flex, Heading, Text, Box, Container } from "@radix-ui/themes";
 import Header from "../components/Header/Header/Header";
 import Dummy from "@/components/Dummy/Dummy";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
-import type { BannerSlideItem } from "@/components/BannerCarousel/BannerCarousel.types";
 import { CategoryLinks } from "@/components/CategoryLinks/CategoryLinks";
 import type { CategoryLinkItem } from "@/components/CategoryLinks/CategoryLinks.types";
 import { navItems } from "@/components/Header/Header/navItems";
 import { ListingCardCarousel } from "@/components/ListingCardCarousel/ListingCardCarousel";
 import type { ListingCardCarouselItem } from "@/components/ListingCardCarousel/ListingCardCarousel.types";
-import { generateBackblazeUrl } from "@/utils/common";
+import { getHomeBannerItems } from "@/lib/home/bannerItems";
 import { HomePageContainer } from "./page.styles";
-
-/** Image filenames used in each flow layout (public folder). Same as in app/(public)/.../layout.tsx */
-const FLOW_BANNER_IMAGES: Record<string, string> = {
-  "Транспорт": "vehicles.png",
-  "Домашние животные": "pets.png",
-  "Недвижимость": "real-estate.png",
-  "Куплю-Продам": "yad2.png",
-  "Работа": "jobs.png",
-  "Другое": "others.png",
-};
-
-/** Russian CTA button label per nav section for the banner (e.g. "Все машины") */
-const FLOW_BUTTON_LABELS: Record<string, string> = {
-  "Транспорт": "Все машины",
-  "Домашние животные": "Все домашние животные",
-  "Недвижимость": "Вся недвижимость",
-  "Куплю-Продам": "Всё куплю-продам",
-  "Работа": "Вся работа",
-  "Другое": "Всё остальное",
-};
-
-function buildBannerItems(): BannerSlideItem[] {
-  const stripe = (fileName: string) =>
-    generateBackblazeUrl("public", fileName);
-
-  const professionalService: BannerSlideItem = {
-    href: "/professional-service",
-    label: "Услуги специалистов",
-    buttonLabel: "Все услуги специалистов",
-    imageDesktop: stripe("professional-service.png"),
-    imageMobile: stripe("professional-service.png"),
-  };
-
-  const fromNav: BannerSlideItem[] = navItems.map((item) => {
-    const first = item.subItems[0];
-    const fileName = FLOW_BANNER_IMAGES[item.label] ?? "others.png";
-    const src = stripe(fileName);
-    const buttonLabel = FLOW_BUTTON_LABELS[item.label];
-    return {
-      href: first!.href,
-      label: first!.label,
-      ...(buttonLabel && { buttonLabel }),
-      imageDesktop: src,
-      imageMobile: src,
-    };
-  });
-
-  return [professionalService, ...fromNav];
-}
 
 function buildCategoryItems(): CategoryLinkItem[] {
   return navItems.map((item, index) => {
@@ -75,7 +25,7 @@ function buildCategoryItems(): CategoryLinkItem[] {
 const LISTING_CARD_CAROUSEL_ITEMS: ListingCardCarouselItem[] = [
   {
     imageUrl: "https://picsum.photos/seed/listing1/400/200",
-    title: "נכס מדהים פינתי 145 מ\"ר למאפיה, קונדטוריה...",
+    title: 'נכס מדהים פינתי 145 מ"ר למאפיה, קונדטוריה...',
     subtitle: "מקום מושלם לעסק. גישה נוחה, חניה.",
     city: "רמת גן",
     price: "₪ 30,000",
@@ -84,7 +34,7 @@ const LISTING_CARD_CAROUSEL_ITEMS: ListingCardCarouselItem[] = [
   {
     imageUrl: "https://picsum.photos/seed/listing2/400/200",
     title: "דירת גן מרווחת עם גינה פרטית",
-    subtitle: "3 חדרים, 85 מ\"ר. שקט וירוק.",
+    subtitle: '3 חדרים, 85 מ"ר. שקט וירוק.',
     city: "תל אביב",
     price: "₪ 12,500",
     href: "/vehicles/cars",
@@ -108,7 +58,7 @@ const LISTING_CARD_CAROUSEL_ITEMS: ListingCardCarouselItem[] = [
   {
     imageUrl: "https://picsum.photos/seed/listing5/400/200",
     title: "וילה פרטית עם בריכה",
-    subtitle: "5 חדרים, 250 מ\"ר. גינה מטופחת.",
+    subtitle: '5 חדרים, 250 מ"ר. גינה מטופחת.',
     city: "כפר סבא",
     price: "₪ 25,000",
     href: "/real-estate/for-sale",
@@ -120,7 +70,7 @@ function buildListingCardCarouselItems(): ListingCardCarouselItem[] {
 }
 
 export default async function Home() {
-  const bannerItems = buildBannerItems();
+  const bannerItems = getHomeBannerItems();
   const categoryItems = buildCategoryItems();
   const listingCardCarouselItems = buildListingCardCarouselItems();
 
@@ -128,8 +78,10 @@ export default async function Home() {
     <>
       <Header />
       <HomePageContainer>
-        <BannerCarousel items={bannerItems} autoplay loop />
-        <h1>dddddd</h1>
+        <Box p="4">
+          <BannerCarousel items={bannerItems} autoplay loop />
+          <CategoryLinks items={categoryItems} ariaLabel="Категории" />
+        </Box>
         {/* <CategoryLinks items={categoryItems} ariaLabel="Категории" />
         <Box pt="4">
           <ListingCardCarousel
