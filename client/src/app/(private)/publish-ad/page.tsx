@@ -8,6 +8,8 @@ import JobOfferIcon from "@/components/svg/JobOffer/JobOffer";
 import DogIcon from "@/components/svg/pets/Dog/Dog";
 import TransportIcon from "@/components/svg/Transport/Transport";
 import HouseIcon from "@/components/svg/House/House";
+import MarketPlaceIcon from "@/components/svg/MarketPlace/MarketPlaceIcon";
+import WorkIcon from "@/components/svg/Word/Work";
 
 interface PublishAdCategory {
   id: string;
@@ -47,13 +49,27 @@ const categories: PublishAdCategory[] = [
     description:
       "Продажа или аренда квартир, домов и коммерческой недвижимости",
     icon: <HouseIcon viewBox={{ width: 120, height: 120 }} />,
-    href: "/publish-ad/real-estate/for-rent/create",
+    href: "/publish-ad/real-estate",
+  },
+  {
+    id: "yad2",
+    title: "Куплю-Продам",
+    description: "Куплю-Продам - Большой выбор всего — распродажа, доставка. ",
+    icon: <MarketPlaceIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/yad2",
   },
   {
     id: "jobs",
     title: "Работа",
     description: "Предложения работы и вакансии для специалистов",
     icon: <JobOfferIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/jobs/create",
+  },
+  {
+    id: "other",
+    title: "Другие категории",
+    description: "Другие категории для размещения вашего объявления",
+    icon: <WorkIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/jobs/create",
   },
 
