@@ -17,11 +17,7 @@ export type NavigationItems = NavigationItem[];
 export const renderLinkOrDropdown = (item: NavigationItem) => {
   return (
     <Text size="2" weight="medium">
-      {item.type === "link" ? (
-        <Link href={item.subItems[0].href}>{item.label}</Link>
-      ) : (
-        item.label
-      )}
+      <Link href={item.subItems[0].href}>{item.label}</Link>
     </Text>
   );
 };
