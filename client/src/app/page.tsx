@@ -8,7 +8,7 @@ import { navItems } from "@/components/Header/Header/navItems";
 import { ListingCardCarousel } from "@/components/ListingCardCarousel/ListingCardCarousel";
 import type { ListingCardCarouselItem } from "@/components/ListingCardCarousel/ListingCardCarousel.types";
 import { getHomeBannerItems } from "@/lib/home/bannerItems";
-import { HomePageContainer } from "./page.styles";
+import { HomeLobby } from "./page.styles";
 
 function buildCategoryItems(): CategoryLinkItem[] {
   return navItems.map((item, index) => {
@@ -77,7 +77,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <HomePageContainer>
+      <HomeLobby>
         <Box p="4">
           <BannerCarousel items={bannerItems} autoplay loop />
           <CategoryLinks items={categoryItems} ariaLabel="Категории" />
@@ -125,7 +125,7 @@ export default async function Home() {
             </div>
           </Box>
         </Box> */}
-      </HomePageContainer>
+      </HomeLobby>
     </>
   );
 }

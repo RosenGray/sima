@@ -7,6 +7,9 @@ import HandymanIcon from "@/components/svg/Handyman/Handyman";
 import JobOfferIcon from "@/components/svg/JobOffer/JobOffer";
 import DogIcon from "@/components/svg/pets/Dog/Dog";
 import TransportIcon from "@/components/svg/Transport/Transport";
+import HouseIcon from "@/components/svg/House/House";
+import MarketPlaceIcon from "@/components/svg/MarketPlace/MarketPlaceIcon";
+import WorkIcon from "@/components/svg/Word/Work";
 
 interface PublishAdCategory {
   id: string;
@@ -24,37 +27,53 @@ const categories: PublishAdCategory[] = [
     icon: <HandymanIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/professional-service/create",
   },
-    {
-    id: "jobs",
-    title: "Работа",
-    description: "Предложения работы и вакансии для специалистов",
-    icon: <JobOfferIcon viewBox={{ width: 120, height: 120 }} />,
-    href: "/publish-ad/jobs/create",
+  {
+    id: "vehicles",
+    title: "Транспорт",
+    description:
+      "Продажа автомобилей, мотоциклов и других транспортных средств",
+    icon: <TransportIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/vehicles/",
   },
-    {
+  {
     id: "pets",
     title: "Домашние животные",
     description: "Продажа, отдача бесплатно и поиск домашних животных",
     icon: <DogIcon viewBox={{ width: 120, height: 120 }} />,
     href: "/publish-ad/pets",
   },
-    {
-    id: "vehicles",
-    title: "Транспорт",
+
+  {
+    id: "real-estate",
+    title: "Недвижимость",
     description:
-      "Продажа автомобилей, мотоциклов и других транспортных средств",
-    icon: <TransportIcon viewBox={{ width: 120, height: 120 }} />,
-    href: "/publish-ad/vehicles",
+      "Продажа или аренда квартир, домов и коммерческой недвижимости",
+    icon: <HouseIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/real-estate",
+  },
+  {
+    id: "yad2",
+    title: "Куплю-Продам",
+    description: "Куплю-Продам - Большой выбор всего — распродажа, доставка. ",
+    icon: <MarketPlaceIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/yad2",
+  },
+  {
+    id: "jobs",
+    title: "Работа",
+    description: "Предложения работы и вакансии для специалистов",
+    icon: <JobOfferIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/jobs/create",
+  },
+  {
+    id: "other",
+    title: "Другие категории",
+    description: "Другие категории для размещения вашего объявления",
+    icon: <WorkIcon viewBox={{ width: 120, height: 120 }} />,
+    href: "/publish-ad/jobs/create",
   },
 
-  // {
-  //   id: "real-estate",
-  //   title: "Недвижимость",
-  //   description:
-  //     "Продажа или аренда квартир, домов и коммерческой недвижимости",
-  //   icon: <HouseIcon viewBox={{ width: 120, height: 120 }} />,
-  //   href: "/publish-ad/real-estate",
-  // },
+
 
 
   // {
