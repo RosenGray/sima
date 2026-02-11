@@ -4,9 +4,10 @@ import { FC } from "react";
 import { IconButton } from "@radix-ui/themes";
 import { HeartIcon, HeartFilledIcon } from "@radix-ui/react-icons";
 import { useLikes } from "@/providers/LikesProvider/LikesProvider";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 interface LikeButtonProps {
-  entityType: string;
+  entityType: EntityType;
   publicId: string;
   /** Optional className for positioning (e.g. on cards). */
   className?: string;

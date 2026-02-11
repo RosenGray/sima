@@ -11,6 +11,7 @@ import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import { offRoadVehicleRepository } from "@/lib/vehicles/off-road/repository/OffRoadVehicleRepository";
 import { commercialVehicleRepository } from "@/lib/vehicles/commercial-vehicles/repository/CommercialVehicleRepository";
 import type { AdSnapshot } from "../types/chat.types";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
 const ENTITY_TYPE_PETS_FOR_FREE = "pets-for-free";
@@ -37,7 +38,7 @@ export type GetOrCreateChatResult =
   | { success: false; error: string };
 
 export async function getOrCreateChat(
-  adEntityType: string,
+  adEntityType: EntityType,
   adPublicId: string
 ): Promise<GetOrCreateChatResult> {
   const user = await getCurrentUser();

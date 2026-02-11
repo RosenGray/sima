@@ -1,5 +1,7 @@
+import { EntityType } from "@/lib/constants/entityTypes";
+
 export interface ListingCardLikeButton {
-  entityType: string;
+  entityType: EntityType;
   publicId: string;
 }
 
