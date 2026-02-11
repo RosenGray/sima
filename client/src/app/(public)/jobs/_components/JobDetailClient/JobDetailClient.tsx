@@ -43,7 +43,7 @@ import {
 } from "./JobDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_JOBS } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_JOBS } from "@/lib/constants/entityTypes";
 import { deleteJobAdWithRedirect } from "@/lib/jobs/actions/deleteJobAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";

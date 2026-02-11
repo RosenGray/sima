@@ -14,7 +14,7 @@ import {
   LikeButtonWrapper,
 } from "./ScooterCard.styles";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_SCOOTERS } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_SCOOTERS } from "@/lib/constants/entityTypes";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedScooter } from "@/lib/vehicles/scooters/types/scooter.types";

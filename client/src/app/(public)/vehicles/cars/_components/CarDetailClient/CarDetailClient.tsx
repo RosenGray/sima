@@ -50,7 +50,7 @@ import { deleteCarAdWithRedirect } from "@/lib/vehicles/cars/actions/deleteCarAd
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_CARS } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_CARS } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface CarDetailClientProps {

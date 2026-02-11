@@ -44,7 +44,7 @@ import {
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/lib/constants/entityTypes";
 import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";

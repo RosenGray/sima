@@ -44,7 +44,7 @@ import { deleteSpecialVehicleAdWithRedirect } from "@/lib/vehicles/special-vehic
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_SPECIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_SPECIAL_VEHICLES } from "@/lib/constants/entityTypes";
 import {
   getSpecialVehicleCategoryById,
 } from "@/lib/vehicles/special-vehicles/specialVehicleCategories";

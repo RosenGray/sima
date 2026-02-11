@@ -15,7 +15,7 @@ import {
 } from "./CarCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_CARS } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_CARS } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SerializedCar } from "@/lib/vehicles/cars/types/cars.types";
 import { TransmissionType, EngineType } from "@/lib/vehicles/cars/types/cars.types";

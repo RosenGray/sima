@@ -17,7 +17,7 @@ import { Autoplay } from "swiper/modules";
 import { SerilizeProfessionalService } from "@/lib/professionals/professional-service/types/professional-service.scema";
 import { getCityById } from "@/lib/cities";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/lib/constants/entityTypes";
 import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface ProfessionalServiceCardProps {

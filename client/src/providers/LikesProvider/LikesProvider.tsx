@@ -20,19 +20,20 @@ import {
   removeLikedInStorage,
   setLikedInStorage,
 } from "@/lib/likes/storage/likesStorage";
-
-export const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
-export const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
-export const ENTITY_TYPE_JOBS = "jobs";
-export const ENTITY_TYPE_PETS_ACCESSORIES = "pets-accessories";
-export const ENTITY_TYPE_PETS_FOR_FREE = "pets-for-free";
-export const ENTITY_TYPE_CARS = "vehicles-cars";
-export const ENTITY_TYPE_OFF_ROAD = "vehicles-off-road";
-export const ENTITY_TYPE_COMMERCIAL_VEHICLES = "vehicles-commercial";
-export const ENTITY_TYPE_MOTORCYCLES = "vehicles-motorcycles";
-export const ENTITY_TYPE_SCOOTERS = "vehicles-scooters";
-export const ENTITY_TYPE_SPECIAL_VEHICLES = "vehicles-special-vehicles";
-export const ENTITY_TYPE_VEHICLES_ACCESSORIES = "vehicles-accessories";
+import {
+  ENTITY_TYPE_CARS,
+  ENTITY_TYPE_COMMERCIAL_VEHICLES,
+  ENTITY_TYPE_JOBS,
+  ENTITY_TYPE_MOTORCYCLES,
+  ENTITY_TYPE_OFF_ROAD,
+  ENTITY_TYPE_PETS_ACCESSORIES,
+  ENTITY_TYPE_PETS_FOR_FREE,
+  ENTITY_TYPE_PETS_FOR_SALE,
+  ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  ENTITY_TYPE_SCOOTERS,
+  ENTITY_TYPE_SPECIAL_VEHICLES,
+  ENTITY_TYPE_VEHICLES_ACCESSORIES,
+} from "@/lib/constants/entityTypes";
 
 const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_PETS_FOR_SALE,

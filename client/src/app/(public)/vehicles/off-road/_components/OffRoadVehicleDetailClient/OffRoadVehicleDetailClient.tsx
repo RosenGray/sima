@@ -49,7 +49,7 @@ import { deleteOffRoadVehicleAdWithRedirect } from "@/lib/vehicles/off-road/acti
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_OFF_ROAD } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_OFF_ROAD } from "@/lib/constants/entityTypes";
 
 interface OffRoadVehicleDetailClientProps {
   offRoadVehicle: SerializedOffRoadVehicle;

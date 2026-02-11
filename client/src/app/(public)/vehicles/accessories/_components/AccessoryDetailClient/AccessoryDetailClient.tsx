@@ -42,7 +42,7 @@ import {
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteAccessoryAdWithRedirect } from "@/lib/vehicles/accessories/actions/deleteAccessoryAd";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_VEHICLES_ACCESSORIES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_VEHICLES_ACCESSORIES } from "@/lib/constants/entityTypes";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import {

@@ -49,7 +49,7 @@ import { deleteCommercialVehicleAdWithRedirect } from "@/lib/vehicles/commercial
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_COMMERCIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_COMMERCIAL_VEHICLES } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface CommercialVehicleDetailClientProps {

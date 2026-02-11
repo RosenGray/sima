@@ -47,7 +47,7 @@ import { deleteMotorcycleAdWithRedirect } from "@/lib/vehicles/motorcycles/actio
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_MOTORCYCLES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_MOTORCYCLES } from "@/lib/constants/entityTypes";
 
 interface MotorcycleDetailClientProps {
   motorcycle: SerializedMotorcycle;

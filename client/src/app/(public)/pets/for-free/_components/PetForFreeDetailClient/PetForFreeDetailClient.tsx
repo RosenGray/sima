@@ -48,7 +48,7 @@ import { deletePetForFreeAdWithRedirect } from "@/lib/pets/for-free/actions/dele
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_PETS_FOR_FREE } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_PETS_FOR_FREE } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface PetForFreeDetailClientProps {

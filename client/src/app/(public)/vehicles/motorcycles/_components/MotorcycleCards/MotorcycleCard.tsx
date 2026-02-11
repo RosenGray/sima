@@ -14,7 +14,7 @@ import {
 } from "./MotorcycleCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_MOTORCYCLES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_MOTORCYCLES } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
 import { SerializedMotorcycle } from "@/lib/vehicles/motorcycles/types/motorcycle.types";

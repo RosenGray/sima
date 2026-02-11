@@ -19,7 +19,7 @@ import { SerializedJob } from "@/lib/jobs/types/job.types";
 import { getCityById, getDistrictById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_JOBS } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_JOBS } from "@/lib/constants/entityTypes";
 
 interface JobCardProps {
   job: SerializedJob;
