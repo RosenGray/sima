@@ -11,8 +11,11 @@ import {
   OthersCardSwiperSlide,
   OthersCardContent,
   OthersCardFooter,
+  LikeButtonWrapper,
 } from "./OthersCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_OTHER } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SerializedOthers } from "@/lib/other/types/others.types";
 import { getCityById } from "@/lib/cities";
@@ -31,6 +34,14 @@ const OthersCardComponent: React.FC<OthersCardProps> = ({ others }) => {
   return (
     <OthersCardBox id={publicId}>
       <OthersCard variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_OTHER}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <OthersCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

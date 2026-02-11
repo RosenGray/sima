@@ -1,10 +1,7 @@
 import type { ListingCardProps } from "@/components/ListingCard/ListingCard.types";
 
 /** Card data + href for carousel slide (each card is a link). */
-export type ListingCardCarouselItem = Omit<
-  ListingCardProps,
-  "likeButton"
-> & {
+export type ListingCardCarouselItem = ListingCardProps & {
   href: string;
 };
 

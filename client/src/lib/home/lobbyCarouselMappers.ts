@@ -32,6 +32,7 @@ import {
   formatCommercialPropertyKind,
   formatDealKind,
 } from "@/lib/real-estate/commercial-real-estate/utils/commercialRealEstateOptions";
+import { ENTITY_TYPE_CARS, ENTITY_TYPE_COMMERCIAL_REAL_ESTATE, ENTITY_TYPE_COMMERCIAL_VEHICLES, ENTITY_TYPE_JOBS, ENTITY_TYPE_MOTORCYCLES, ENTITY_TYPE_OFF_ROAD, ENTITY_TYPE_OTHER, ENTITY_TYPE_PETS_ACCESSORIES, ENTITY_TYPE_PETS_FOR_FREE, ENTITY_TYPE_PETS_FOR_SALE, ENTITY_TYPE_PROFESSIONAL_SERVICE, ENTITY_TYPE_REAL_ESTATE_FOR_RENT, ENTITY_TYPE_REAL_ESTATE_FOR_SALE, ENTITY_TYPE_SCOOTERS, ENTITY_TYPE_SPECIAL_VEHICLES, ENTITY_TYPE_VEHICLES_ACCESSORIES, ENTITY_TYPE_YAD2 } from "../constants/entityTypes";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -64,6 +65,10 @@ export function mapCar(car: SerializedCar): LobbyCarouselItemWithDate {
     district: car.district || "",
     href: `/vehicles/cars/${car.publicId}`,
     createdAt: car.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_CARS,
+      publicId: car.publicId,
+    },
   };
 }
 
@@ -78,6 +83,10 @@ export function mapMotorcycle(m: SerializedMotorcycle): LobbyCarouselItemWithDat
     district: m.district || "",
     href: `/vehicles/motorcycles/${m.publicId}`,
     createdAt: m.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_MOTORCYCLES,
+      publicId: m.publicId,
+    },
   };
 }
 
@@ -92,6 +101,10 @@ export function mapScooter(s: SerializedScooter): LobbyCarouselItemWithDate {
     district: s.district || "",
     href: `/vehicles/scooters/${s.publicId}`,
     createdAt: s.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_SCOOTERS,
+      publicId: s.publicId,
+    },
   };
 }
 
@@ -106,6 +119,10 @@ export function mapCommercialVehicle(cv: SerializedCommercialVehicle): LobbyCaro
     district: cv.district || "",
     href: `/vehicles/commercial-vehicles/${cv.publicId}`,
     createdAt: cv.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_COMMERCIAL_VEHICLES,
+      publicId: cv.publicId,
+    },
   };
 }
 
@@ -120,6 +137,10 @@ export function mapOffRoadVehicle(orv: SerializedOffRoadVehicle): LobbyCarouselI
     district: orv.district || "",
     href: `/vehicles/off-road/${orv.publicId}`,
     createdAt: orv.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_OFF_ROAD,
+      publicId: orv.publicId,
+    },
   };
 }
 
@@ -134,6 +155,10 @@ export function mapSpecialVehicle(sv: SerializedSpecialVehicle): LobbyCarouselIt
     district: sv.district || "",
     href: `/vehicles/special-vehicles/${sv.publicId}`,
     createdAt: sv.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_SPECIAL_VEHICLES,
+      publicId: sv.publicId,
+    },
   };
 }
 
@@ -148,6 +173,10 @@ export function mapVehicleAccessory(a: SerializedAccessory): LobbyCarouselItemWi
     district: a.district || "",
     href: `/vehicles/accessories/${a.publicId}`,
     createdAt: a.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_VEHICLES_ACCESSORIES,
+      publicId: a.publicId,
+    },
   };
 }
 
@@ -166,6 +195,10 @@ export function mapPetForSale(p: SerializedPetForSale): LobbyCarouselItemWithDat
     district: p.district || "",
     href: `/pets/for-sale/${p.publicId}`,
     createdAt: p.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_PETS_FOR_SALE,
+      publicId: p.publicId,
+    },
   };
 }
 
@@ -180,6 +213,10 @@ export function mapPetForFree(p: SerializedPetForFree): LobbyCarouselItemWithDat
     district: p.district || "",
     href: `/pets/for-free/${p.publicId}`,
     createdAt: p.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_PETS_FOR_FREE,
+      publicId: p.publicId,
+    },
   };
 }
 
@@ -194,6 +231,10 @@ export function mapPetAccessory(pa: SerializedPetAccessory): LobbyCarouselItemWi
     district: pa.district || "",
     href: `/pets/accessories/${pa.publicId}`,
     createdAt: pa.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_PETS_ACCESSORIES,
+      publicId: pa.publicId,
+    },
   };
 }
 
@@ -213,6 +254,10 @@ export function mapRealEstateForSale(re: SerializedRealEstateForSale): LobbyCaro
     district: re.district || "",
     href: `/real-estate/for-sale/${re.publicId}`,
     createdAt: re.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_REAL_ESTATE_FOR_SALE,
+      publicId: re.publicId,
+    },
   };
 }
 
@@ -228,6 +273,10 @@ export function mapRealEstateForRent(re: SerializedRealEstateForRent): LobbyCaro
     district: re.district || "",
     href: `/real-estate/for-rent/${re.publicId}`,
     createdAt: re.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_REAL_ESTATE_FOR_RENT,
+      publicId: re.publicId,
+    },
   };
 }
 
@@ -244,6 +293,10 @@ export function mapCommercialRealEstate(cre: SerializedCommercialRealEstate): Lo
     district: cre.district || "",
     href: `/real-estate/commercial-real-estate/${cre.publicId}`,
     createdAt: cre.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_COMMERCIAL_REAL_ESTATE,
+      publicId: cre.publicId,
+    },
   };
 }
 
@@ -262,6 +315,10 @@ export function mapProfessionalService(ps: SerilizeProfessionalService): LobbyCa
     district: ps.district || "",
     href: `/professional-service/${ps.publicId}`,
     createdAt: ps.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_PROFESSIONAL_SERVICE,
+      publicId: ps.publicId,
+    },
   };
 }
 
@@ -280,6 +337,10 @@ export function mapYad2Item(y: SerializedYad2Item): LobbyCarouselItemWithDate {
     district: y.district || "",
     href: `/yad2/${y.publicId}`,
     createdAt: y.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_YAD2,
+      publicId: y.publicId,
+    },
   };
 }
 
@@ -298,6 +359,10 @@ export function mapJob(j: SerializedJob): LobbyCarouselItemWithDate {
     district: j.district || "",
     href: `/jobs/${j.publicId}`,
     createdAt: j.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_JOBS,
+      publicId: j.publicId,
+    },
   };
 }
 
@@ -316,5 +381,9 @@ export function mapOther(o: SerializedOthers): LobbyCarouselItemWithDate {
     district: o.district || "",
     href: `/other/${o.publicId}`,
     createdAt: o.createdAt,
+    likeButton: {
+      entityType: ENTITY_TYPE_OTHER,
+      publicId: o.publicId,
+    },
   };
 }

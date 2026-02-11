@@ -33,7 +33,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
     <ListingCardBox>
       <ListingCardStyled variant="surface">
         <ListingCardImageBlock>
-          {likeButton && (
             <LikeButtonWrapper>
               <LikeButton
                 entityType={likeButton.entityType}
@@ -42,7 +41,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 stopPropagation
               />
             </LikeButtonWrapper>
-          )}
+
           <ListingCardImageContainer>
             <Image
               src={imageUrl}

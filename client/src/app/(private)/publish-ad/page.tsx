@@ -70,7 +70,7 @@ const categories: PublishAdCategory[] = [
     title: "Другие категории",
     description: "Другие категории для размещения вашего объявления",
     icon: <WorkIcon viewBox={{ width: 120, height: 120 }} />,
-    href: "/publish-ad/jobs/create",
+    href: "/publish-ad/other/create",
   },
 ];
 
