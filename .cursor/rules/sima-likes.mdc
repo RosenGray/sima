@@ -18,7 +18,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 ## LikeButton Usage
 
-- **Props:** `entityType: string`, `publicId: string`, optional `className`, `size` (default 18), `stopPropagation` (default true).
+- **Props:** `entityType: EntityType`, `publicId: string`, optional `className`, `size` (default 18), `stopPropagation` (default true). Import `EntityType` and `ENTITY_TYPE_*` from `@/lib/constants/entityTypes`.
 - **Context:** Must be used inside `LikesProvider` (uses `useLikes()`).
 - **Styling:** LikeButton renders with `cursor: pointer` for clear clickability on both cards and detail pages.
 
@@ -55,15 +55,13 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 ## Entity type constant
 
-- Define a string constant per section (e.g. `ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale"`) in `LikesProvider` (or a shared likes constants file) and export it.
-- Use the same value for `entityType` in server actions, localStorage keys (via storage helpers), and `LikeButton` props.
-- When adding likes to a new section, add a new constant and use it everywhere for that section.
+- Entity type constants and the `EntityType` type live in `client/src/lib/constants/entityTypes.ts`. Use those constants for `entityType` in server actions, localStorage (via storage helpers), and `LikeButton` props. When adding likes to a new section, add a new constant in that file and use it everywhere for that section.
 
 ## LikesProvider and layout
 
 - **Location:** `client/src/providers/LikesProvider/LikesProvider.tsx`.
 - **Props:** `initialLikedIds: Record<string, string[]>` (entity type → array of public IDs).
-- **Context value:** `isLiked(entityType, publicId): boolean`, `toggle(entityType, publicId): Promise<void>`.
+- **Context value:** `isLiked(entityType: EntityType, publicId): boolean`, `toggle(entityType: EntityType, publicId): Promise<void>`.
 - Root layout (client app): When user is authenticated, call `getLikedAdIdsByUser(user.id)` and pass the result as `initialLikedIds`. When user is missing, pass `{}`. Wrap the app (inside AuthProvider) with `<LikesProvider initialLikedIds={initialLikedIds}>`.
 
 ## Guest vs authenticated behavior

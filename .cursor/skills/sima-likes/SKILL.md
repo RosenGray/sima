@@ -20,16 +20,7 @@ The existing likes infrastructure (LikeButton, LikesProvider, AdLike model, serv
 
 ## Step 1: Define entity type constant
 
-1. Open `client/src/providers/LikesProvider/LikesProvider.tsx`.
-2. Add and export a new constant for your section, e.g.:
-   - `export const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";`
-   - For a new section: `export const ENTITY_TYPE_CARS = "vehicles-cars";` (or similar).
-3. Use this exact string for:
-   - `LikeButton` `entityType` prop on cards and detail.
-   - Storage keys (handled by `likesStorage` via `entityType`).
-   - Server actions and `AdLike` documents (no code change needed; they accept any `entityType` string).
-
-If your section is the first one using likes, the constant already exists (e.g. `ENTITY_TYPE_PETS_FOR_SALE`). For a new section, add a new constant and reuse the same provider/actions/model.
+Entity type constants and the `EntityType` type live in `client/src/lib/constants/entityTypes.ts`. For a new section, add the constant there (e.g. `ENTITY_TYPE_CARS = "vehicles-cars"`), then use it in `LikeButton`, storage helpers, and server actions. Server actions and the `AdLike` model use `EntityType`; no separate code change is needed when adding a new constant. If your section already has a constant (e.g. `ENTITY_TYPE_PETS_FOR_SALE`), import it from `@/lib/constants/entityTypes` and use it everywhere for that section.
 
 ## Step 2: Add LikeButton to listing cards
 
@@ -37,7 +28,7 @@ If your section is the first one using likes, the constant already exists (e.g. 
 2. Import `LikeButton` and the entity type constant:
    ```ts
    import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-   import { ENTITY_TYPE_XXX } from "@/providers/LikesProvider/LikesProvider";
+   import { ENTITY_TYPE_XXX } from "@/lib/constants/entityTypes";
    ```
 3. In the card JSX, render `LikeButton` with **`stopPropagation={true}`** (or omit; default is true) so clicking the heart does not trigger the parent `Link`.
 4. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 18).
@@ -53,7 +44,7 @@ Reference: `client/src/app/(public)/pets/for-sale/_components/PetForSaleCards/Pe
 ## Step 3: Add LikeButton to detail page
 
 1. Open the detail client component for the section (e.g. `PetForSaleDetailClient.tsx`, or `CarDetailClient.tsx`).
-2. Import `LikeButton` and the entity type constant (same as step 2).
+2. Import `LikeButton` and the entity type constant from `@/lib/constants/entityTypes` (same as step 2).
 3. In the header section (e.g. next to the page title), render `LikeButton` with **`stopPropagation={false}`** so normal button behavior applies (no Link).
 4. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 20).
 5. LikeButton applies `cursor: pointer` by default for clear clickability.
@@ -64,8 +55,8 @@ Reference: `client/src/app/(public)/pets/for-sale/_components/PetForSaleDetailCl
 
 If the section should support guest likes that merge on login:
 
-1. In `LikesProvider`, the guest hydration effect reads from storage using `getLikedFromStorage(entityType)` when `user` is null; ensure the same `entityType` constant is used when calling `setLikedInStorage` / `removeLikedInStorage` in the toggle path for guests.
-2. The login-merge effect currently runs for `ENTITY_TYPE_PETS_FOR_SALE` and merges `getLikedFromStorage(ENTITY_TYPE_PETS_FOR_SALE)`. To support multiple entity types, extend the merge logic to iterate over all known entity types (e.g. call `mergeGuestLikes` for each type that has guest likes in storage), then clear storage for each and update `likedIdsByEntity` from the merge results. Reference: current implementation merges one type; extend similarly for additional constants.
+1. In `LikesProvider`, the guest hydration effect reads from storage using `getLikedFromStorage(entityType)` when `user` is null; ensure the same entity type constant from `@/lib/constants/entityTypes` is used when calling `setLikedInStorage` / `removeLikedInStorage` in the toggle path for guests.
+2. The login-merge effect runs for entity types listed in `ENTITY_TYPES_WITH_GUEST_MERGE` (using constants from `@/lib/constants/entityTypes`) and merges `getLikedFromStorage(entityType)` for each. To support multiple entity types, extend that list and the merge logic to iterate over all known entity types (e.g. call `mergeGuestLikes` for each type that has guest likes in storage), then clear storage for each and update `likedIdsByEntity` from the merge results.
 
 If you only add one new section and the product does not require guest merge for that section yet, you can defer this step; authenticated likes will still work.
 
@@ -80,7 +71,7 @@ If you only add one new section and the product does not require guest merge for
 
 ## Checklist
 
-- [ ] Entity type constant defined and exported from LikesProvider (or shared constants).
+- [ ] Entity type constant from `@/lib/constants/entityTypes` used for this section (add there if new).
 - [ ] LikeButton on listing card with `stopPropagation` true and wrapper for position (e.g. top-right). LikeButton uses `cursor: pointer` by default.
 - [ ] LikeButton on detail page with `stopPropagation` false. LikeButton uses `cursor: pointer` by default.
 - [ ] Same `entityType` and `publicId` used in both places.
@@ -90,7 +81,7 @@ If you only add one new section and the product does not require guest merge for
 ## Pitfalls
 
 - **Card navigates on heart click:** Use `stopPropagation={true}` on the card’s LikeButton and ensure the card is wrapped by Link in the parent, not the other way around.
-- **Wrong entity type:** Use the same constant for cards, detail, and any storage/merge logic; typo or different string will break "liked" state and merge.
+- **Wrong entity type:** Use the same constant from `@/lib/constants/entityTypes` for cards, detail, and any storage/merge logic; typo or different string will break "liked" state and merge.
 - **Provider missing:** LikeButton uses `useLikes()`; the tree must be wrapped with LikesProvider (usually in root layout).
 
 ## References

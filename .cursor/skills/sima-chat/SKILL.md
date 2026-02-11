@@ -90,7 +90,7 @@ interface IConversation {
 }
 
 interface IAdSnapshot {
-  entityType: string; // e.g., "pets-for-sale", "cars", "jobs"
+  entityType: EntityType; // Use ENTITY_TYPE_* from @/lib/constants/entityTypes
   entityPublicId: string; // Public ID of the ad
   title: string; // Display title
   thumbnailUrl: string; // Ad thumbnail image
@@ -127,14 +127,7 @@ interface IMessage {
 
 ### Step 1: Add Entity Type Constant
 
-Define a constant for your entity type in `getOrCreateChat` action or a shared constants file:
-
-```typescript
-// In lib/chat/actions/getOrCreateChat.ts or shared constants
-const ENTITY_TYPE_CARS = "cars";
-const ENTITY_TYPE_JOBS = "jobs";
-const ENTITY_TYPE_REAL_ESTATE = "real-estate";
-```
+Use the shared constants and type from `@/lib/constants/entityTypes`. If your entity type is not there yet, add it there (e.g. `ENTITY_TYPE_JOBS = "jobs"`) and ensure the `EntityType` union type is updated. In `getOrCreateChat` and on detail pages, import `ENTITY_TYPE_XXX` from `@/lib/constants/entityTypes` and call `getOrCreateChat(ENTITY_TYPE_XXX, entity.publicId)` (never pass a raw string literal).
 
 ### Step 2: Add Contact Seller Button to Detail Page
 
@@ -146,13 +139,15 @@ const [chatLoading, setChatLoading] = useState(false);
 const [chatError, setChatError] = useState<string | null>(null);
 ```
 
-2. **Add Handler**:
+2. **Add Handler** (import `ENTITY_TYPE_XXX` from `@/lib/constants/entityTypes` for your section):
 ```typescript
+import { ENTITY_TYPE_XXX } from "@/lib/constants/entityTypes";
+
 const handleContactSeller = async () => {
   if (chatLoading || !isAuthenticated || isOwner) return;
   setChatLoading(true);
   setChatError(null);
-  const result = await getOrCreateChat("entity-type", entity.publicId);
+  const result = await getOrCreateChat(ENTITY_TYPE_XXX, entity.publicId);
   
   if (result.success && result.chatId) {
     router.push(`/chat/${result.chatId}`);
@@ -190,15 +185,20 @@ const handleContactSeller = async () => {
 
 ### Step 3: Update getOrCreateChat Server Action
 
-Add support for your entity type in `lib/chat/actions/getOrCreateChat.ts`:
+Add support for your entity type in `lib/chat/actions/getOrCreateChat.ts`. Import `ENTITY_TYPE_*` and `EntityType` from `@/lib/constants/entityTypes`; use the whitelist of constants from that file for validation:
 
 ```typescript
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
+import {
+  ENTITY_TYPE_PETS_FOR_SALE,
+  ENTITY_TYPE_CARS,
+  type EntityType,
+} from "@/lib/constants/entityTypes";
 
-const ENTITY_TYPE_CARS = "cars";
+const SUPPORTED_ENTITY_TYPES = [ENTITY_TYPE_PETS_FOR_SALE, ENTITY_TYPE_CARS] as const;
 
 export async function getOrCreateChat(
-  adEntityType: string,
+  adEntityType: EntityType,
   adPublicId: string
 ): Promise<GetOrCreateChatResult> {
   const user = await getCurrentUser();
@@ -206,8 +206,8 @@ export async function getOrCreateChat(
     return { success: false, error: "Войдите в аккаунт" };
   }
 
-  // Add validation for your entity type
-  if (![ENTITY_TYPE_PETS_FOR_SALE, ENTITY_TYPE_CARS].includes(adEntityType)) {
+  // Validate entity type using whitelist from @/lib/constants/entityTypes
+  if (!SUPPORTED_ENTITY_TYPES.includes(adEntityType)) {
     return { success: false, error: "Этот тип объявления не поддерживается" };
   }
 
@@ -592,14 +592,14 @@ export const InputStripe = styled(Flex)`
 Creates or retrieves a conversation between two users for a specific ad. Uses a deterministic **conversationKey** (sorted participant IDs + entityType + entityPublicId) for the unique index; do not use a unique index on the `participants` array (MongoDB multikey index would cause E11000 when multiple users message the same ad).
 
 ```typescript
-function buildConversationKey(p0: string, p1: string, entityType: string, entityPublicId: string): string {
+function buildConversationKey(p0: string, p1: string, entityType: EntityType, entityPublicId: string): string {
   return `${p0}_${p1}_${entityType}_${entityPublicId}`;
 }
 
 async getOrCreateConversation(
   userId: string,
   adOwnerId: string,
-  adEntityType: string,
+  adEntityType: EntityType,
   adPublicId: string,
   adSnapshot: IAdSnapshot
 ): Promise<{ publicId: string }> {
@@ -725,7 +725,7 @@ async createMessage(
 
 1. **Always sanitize user input**: Use `mongo-sanitize` on all user inputs before database queries
 2. **Verify ownership**: Check that user is a participant before allowing access to conversation
-3. **Validate entity types**: Use a whitelist of allowed entity types
+3. **Validate entity types**: Use the whitelist of `ENTITY_TYPE_*` constants from `@/lib/constants/entityTypes`
 4. **Prevent self-chat**: Always check if userId === adOwnerId
 
 ### Performance
@@ -772,7 +772,7 @@ async createMessage(
    - Response: `{ success: false, error: "Нельзя начать чат с самим собой" }`
 
 4. **Unsupported entity type**:
-   - Check: `entityType` not in whitelist
+   - Check: `entityType` not in the whitelist from `@/lib/constants/entityTypes`
    - Response: `{ success: false, error: "Этот тип объявления не поддерживается" }`
 
 5. **Conversation not found**:
