@@ -12,6 +12,7 @@ import type {
   SerializedMessage,
 } from "../types/chat.types";
 import type { IAdSnapshot } from "../models/Conversation";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 interface LeanConversation {
   _id: mongoose.Types.ObjectId;
@@ -33,7 +34,7 @@ function sortParticipantIds(a: string, b: string): [string, string] {
 function buildConversationKey(
   p0: string,
   p1: string,
-  entityType: string,
+  entityType: EntityType,
   entityPublicId: string
 ): string {
   return `${p0}_${p1}_${entityType}_${entityPublicId}`;
@@ -43,7 +44,7 @@ export class ChatRepository {
   async getOrCreateConversation(
     userId: string,
     adOwnerId: string,
-    adEntityType: string,
+    adEntityType: EntityType,
     adPublicId: string,
     adSnapshot: IAdSnapshot
   ): Promise<{ publicId: string }> {

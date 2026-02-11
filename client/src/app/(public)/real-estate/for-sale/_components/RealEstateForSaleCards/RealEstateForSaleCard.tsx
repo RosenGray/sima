@@ -11,10 +11,13 @@ import {
   RealEstateForSaleCardSwiper,
   RealEstateForSaleCardSwiperSlide,
   RealEstateForSaleCardContent,
+  LikeButtonWrapper,
 } from "./RealEstateForSaleCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedRealEstateForSale } from "@/lib/real-estate/for-sale/types/realEstateForSale.types";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_REAL_ESTATE_FOR_SALE } from "@/lib/constants/entityTypes";
 import { formatPropertyKind } from "@/lib/real-estate/for-sale/utils/realEstateOptions";
 import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
@@ -54,6 +57,14 @@ const RealEstateForSaleCard: React.FC<RealEstateForSaleCardProps> = ({
   return (
     <RealEstateForSaleCardBox id={publicId}>
       <RealEstateForSaleCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_REAL_ESTATE_FOR_SALE}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <RealEstateForSaleCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

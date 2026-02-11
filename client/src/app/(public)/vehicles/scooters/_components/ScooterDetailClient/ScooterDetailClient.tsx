@@ -46,7 +46,7 @@ import { deleteScooterAdWithRedirect } from "@/lib/vehicles/scooters/actions/del
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_SCOOTERS } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_SCOOTERS } from "@/lib/constants/entityTypes";
 
 interface ScooterDetailClientProps {
   scooter: SerializedScooter;

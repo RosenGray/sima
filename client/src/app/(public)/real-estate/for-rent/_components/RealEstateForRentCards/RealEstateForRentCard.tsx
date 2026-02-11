@@ -11,8 +11,11 @@ import {
   RealEstateForRentCardSwiper,
   RealEstateForRentCardSwiperSlide,
   RealEstateForRentCardContent,
+  LikeButtonWrapper,
 } from "./RealEstateForRentCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_REAL_ESTATE_FOR_RENT } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SerializedRealEstateForRent } from "@/lib/real-estate/for-rent/types/realEstateForRent.types";
 import { formatPropertyKind } from "@/lib/real-estate/for-rent/utils/realEstateOptions";
@@ -54,6 +57,14 @@ const RealEstateForRentCard: React.FC<RealEstateForRentCardProps> = ({
   return (
     <RealEstateForRentCardBox id={publicId}>
       <RealEstateForRentCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_REAL_ESTATE_FOR_RENT}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <RealEstateForRentCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

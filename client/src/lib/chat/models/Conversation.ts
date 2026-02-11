@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
 import "@/lib/auth/models/User";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 export interface IAdSnapshot {
-  entityType: string;
+  entityType: EntityType;
   entityPublicId: string;
   title: string;
   thumbnailUrl: string;

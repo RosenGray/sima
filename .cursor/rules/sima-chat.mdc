@@ -27,9 +27,10 @@ Use chat functionality when:
 
 ```typescript
 // Location: lib/chat/models/Conversation.ts
+// Import EntityType from @/lib/constants/entityTypes
 
 export interface IAdSnapshot {
-  entityType: string;        // e.g., "pets-for-sale", "cars"
+  entityType: EntityType;    // Use ENTITY_TYPE_* from @/lib/constants/entityTypes
   entityPublicId: string;    // Public ID of the ad
   title: string;             // Display title
   thumbnailUrl: string;      // Ad thumbnail image
@@ -155,14 +156,14 @@ Place chat repository in: `lib/chat/repository/ChatRepository.ts`
 - Create new conversation with **conversationKey** if not found
 
 ```typescript
-function buildConversationKey(p0: string, p1: string, entityType: string, entityPublicId: string): string {
+function buildConversationKey(p0: string, p1: string, entityType: EntityType, entityPublicId: string): string {
   return `${p0}_${p1}_${entityType}_${entityPublicId}`;
 }
 
 async getOrCreateConversation(
   userId: string,
   adOwnerId: string,
-  adEntityType: string,
+  adEntityType: EntityType,
   adPublicId: string,
   adSnapshot: IAdSnapshot
 ): Promise<{ publicId: string }> {
@@ -872,7 +873,7 @@ const protectedRoutes = [
 1. **Always sanitize**: Use `mongo-sanitize` on all user inputs
 2. **Verify participation**: Check user is participant before allowing access
 3. **Prevent self-chat**: Always validate `userId !== adOwnerId`
-4. **Whitelist entity types**: Use explicit whitelist, don't trust user input
+4. **Whitelist entity types**: Allowed values are the `ENTITY_TYPE_*` constants from `@/lib/constants/entityTypes`. Use that type and those constants in `getOrCreateChat` and on detail pages (e.g. `getOrCreateChat(ENTITY_TYPE_CARS, entity.publicId)`); don't trust raw user input.
 5. **Check authentication**: Use `getCurrentUser()` in all actions
 
 ### Performance
@@ -912,7 +913,7 @@ const protectedRoutes = [
 8. **Not handling empty messages**: Always trim and validate
 9. **Forgetting mobile layout**: Test responsive behavior
 10. **Not updating conversation timestamp**: Update `updatedAt` on new message
-11. **Mixing entity type formats**: Use consistent format (e.g., "pets-for-sale" not "pets_for_sale")
+11. **Mixing entity type formats**: Use `ENTITY_TYPE_*` constants from `@/lib/constants/entityTypes` everywhere so format stays consistent (e.g. "pets-for-sale" not "pets_for_sale")
 
 ## File Naming Conventions
 

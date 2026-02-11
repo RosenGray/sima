@@ -14,7 +14,7 @@ import {
   LikeButtonWrapper,
 } from "./AccessoryCard.styles";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_VEHICLES_ACCESSORIES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_VEHICLES_ACCESSORIES } from "@/lib/constants/entityTypes";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedAccessory } from "@/lib/vehicles/accessories/types/accessory.types";
@@ -71,6 +71,14 @@ const AccessoryCard: React.FC<AccessoryCardProps> = ({
   return (
     <AccessoryCardBox id={publicId}>
       <AccessoryCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_VEHICLES_ACCESSORIES}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <AccessoryCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">
@@ -79,14 +87,6 @@ const AccessoryCard: React.FC<AccessoryCardProps> = ({
           )}
         </AccessoryCardHeader>
         <AccessoryCardImages>
-          <LikeButtonWrapper>
-            <LikeButton
-              entityType={ENTITY_TYPE_VEHICLES_ACCESSORIES}
-              publicId={publicId}
-              size={18}
-              stopPropagation
-            />
-          </LikeButtonWrapper>
           {images.length === 1 ? (
             <AccessoryCardImageContainer>
               <Image

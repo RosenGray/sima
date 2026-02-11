@@ -15,7 +15,7 @@ import {
 } from "./OffRoadVehicleCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_OFF_ROAD } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_OFF_ROAD } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SerializedOffRoadVehicle } from "@/lib/vehicles/off-road/types/offRoadVehicle.types";
 import { TransmissionType } from "@/lib/vehicles/cars/types/cars.types";

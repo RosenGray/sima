@@ -21,7 +21,7 @@ import { getCityById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getAnimalById, getAnimalKindById } from "@/lib/pets/for-sale/animals";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_PETS_FOR_SALE } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_PETS_FOR_SALE } from "@/lib/constants/entityTypes";
 
 interface PetForSaleCardProps {
   pet: SerializedPetForSale;

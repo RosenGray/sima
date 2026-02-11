@@ -14,7 +14,7 @@ import {
   LikeButtonWrapper,
 } from "./SpecialVehicleCard.styles";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_SPECIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_SPECIAL_VEHICLES } from "@/lib/constants/entityTypes";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedSpecialVehicle } from "@/lib/vehicles/special-vehicles/types/specialVehicle.types";

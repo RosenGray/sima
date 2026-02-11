@@ -1,5 +1,7 @@
+import { EntityType } from "../constants/entityTypes";
+
 export interface LikedAdSummary {
-  entityType: string;
+  entityType: EntityType;
   publicId: string;
   href: string;
   thumbnailUrl: string | null;
@@ -21,13 +23,16 @@ const ENTITY_TYPE_TO_PATH: Record<string, string> = {
   "vehicles-scooters": "/vehicles/scooters",
   "vehicles-special-vehicles": "/vehicles/special-vehicles",
   "vehicles-accessories": "/vehicles/accessories",
+  "real-estate-commercial-real-estate": "/real-estate/commercial-real-estate",
+  "real-estate-for-rent": "/real-estate/for-rent",
+  "real-estate-for-sale": "/real-estate/for-sale",
 };
 
-export function getDetailPathForEntityType(entityType: string): string {
+export function getDetailPathForEntityType(entityType: EntityType): string {
   return ENTITY_TYPE_TO_PATH[entityType] ?? "/";
 }
 
-export function buildHref(entityType: string, publicId: string): string {
+export function buildHref(entityType: EntityType, publicId: string): string {
   const base = getDetailPathForEntityType(entityType);
   return `${base}/${publicId}`;
 }

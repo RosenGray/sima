@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import connectDB from "@/lib/mongo/mongodb";
 import { AdLike } from "../models/AdLike";
 import mongoose from "mongoose";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 export type LikeActionResult =
   | { success: true; liked: boolean }
@@ -13,7 +14,7 @@ export type LikeActionResult =
  * Add a like for the current user. Idempotent (no-op if already liked).
  */
 export async function addLike(
-  entityType: string,
+  entityType: EntityType,
   entityPublicId: string
 ): Promise<LikeActionResult> {
   try {
@@ -41,7 +42,7 @@ export async function addLike(
  * Remove a like for the current user. No-op if not liked.
  */
 export async function removeLike(
-  entityType: string,
+  entityType: EntityType,
   entityPublicId: string
 ): Promise<LikeActionResult> {
   try {
@@ -69,7 +70,7 @@ export async function removeLike(
  * Called after login. Returns the new list of liked public IDs for the given entity type.
  */
 export async function mergeGuestLikes(
-  entityType: string,
+  entityType: EntityType,
   publicIds: string[]
 ): Promise<{ success: true; likedIds: string[] } | { success: false; error: string }> {
   try {

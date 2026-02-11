@@ -43,7 +43,7 @@ const getJwtSecret = () => {
 // or they can get 403 / wrong response when Origin/Host or cookies differ.
 const NEXT_ACTION_HEADER = "next-action";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Let Server Action POSTs go straight to the app (no redirects, no JWT checks here)
   if (request.headers.get(NEXT_ACTION_HEADER)) {
     return NextResponse.next();

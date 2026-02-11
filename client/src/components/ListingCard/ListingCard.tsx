@@ -14,14 +14,18 @@ import {
   ListingCardContent,
   ListingCardTitle,
   ListingCardSubtitle,
+  ListingCardDescription,
   ListingCardFooter,
+  ListingCardHeader,
 } from "./ListingCard.styles";
 
 const ListingCard: React.FC<ListingCardProps> = ({
   imageUrl,
   title,
   subtitle,
+  description,
   city,
+  district,
   price,
   likeButton,
 }) => {
@@ -50,27 +54,39 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </ListingCardImageContainer>
         </ListingCardImageBlock>
         <ListingCardContent>
-          {price && (
-            <Text size="5" weight="bold" style={{ textAlign: "end" }}>
-              {price}
-            </Text>
-          )}
-          <ListingCardTitle>
-            <Text size="3" weight="medium" as="p">
-              {title}
-            </Text>
-          </ListingCardTitle>
-          {subtitle && (
-            <ListingCardSubtitle>
-              <Text size="2" color="gray" as="p">
-                {subtitle}
+          <ListingCardHeader>
+            <ListingCardTitle>
+              <Text truncate  size="2" weight="medium" as="p">
+                {title}
               </Text>
-            </ListingCardSubtitle>
+            </ListingCardTitle>
+            {subtitle && (
+              <ListingCardSubtitle>
+                <Text truncate size="1" color="gray" as="p">
+                  {subtitle}
+                </Text>
+              </ListingCardSubtitle>
+            )}
+          </ListingCardHeader>
+          {description && (
+            <ListingCardDescription>
+              <Text size="2" color="gray" as="p">
+                {description}
+              </Text>
+            </ListingCardDescription>
           )}
         </ListingCardContent>
         <ListingCardFooter>
           <Text size="2" color="gray">
             {city}
+          </Text>
+          {price && (
+            <Text size="1" weight="bold" style={{ textAlign: "end" }}>
+              {price}
+            </Text>
+          )}
+          <Text size="2" color="gray">
+            {district}
           </Text>
         </ListingCardFooter>
       </ListingCardStyled>

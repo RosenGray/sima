@@ -54,7 +54,7 @@ import {
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_PETS_FOR_SALE } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_PETS_FOR_SALE } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface PetForSaleDetailClientProps {

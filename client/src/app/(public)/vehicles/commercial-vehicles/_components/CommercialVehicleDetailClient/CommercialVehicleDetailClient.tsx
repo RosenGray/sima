@@ -49,7 +49,7 @@ import { deleteCommercialVehicleAdWithRedirect } from "@/lib/vehicles/commercial
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_COMMERCIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_COMMERCIAL_VEHICLES } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
 
 interface CommercialVehicleDetailClientProps {
@@ -101,7 +101,7 @@ const CommercialVehicleDetailClient: React.FC<CommercialVehicleDetailClientProps
     if (chatLoading || !isAuthenticated || isOwner) return;
     setChatLoading(true);
     setChatError(null);
-    const result = await getOrCreateChat("commercial-vehicles", commercialVehicle.publicId);
+    const result = await getOrCreateChat(ENTITY_TYPE_COMMERCIAL_VEHICLES, commercialVehicle.publicId);
 
     if (result.success && result.chatId) {
       router.push(`/chat/${result.chatId}`);

@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -42,7 +42,7 @@ import {
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteAccessoryAdWithRedirect } from "@/lib/vehicles/accessories/actions/deleteAccessoryAd";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_VEHICLES_ACCESSORIES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_VEHICLES_ACCESSORIES } from "@/lib/constants/entityTypes";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import {
@@ -144,15 +144,17 @@ const AccessoryDetailClient: React.FC<AccessoryDetailClientProps> = ({
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {title}
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {title}
+          </PageTitle>
           <LikeButton
             entityType={ENTITY_TYPE_VEHICLES_ACCESSORIES}
             publicId={publicId}
             size={20}
             stopPropagation={false}
           />
-        </PageTitle>
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">

@@ -15,7 +15,7 @@ import {
 } from "./PetAccessoryCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_PETS_ACCESSORIES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_PETS_ACCESSORIES } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SerializedPetAccessory } from "@/lib/pets/accessories/types/petAccessory.types";
 import { getCityById } from "@/lib/cities";

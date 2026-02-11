@@ -11,15 +11,17 @@ import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import { offRoadVehicleRepository } from "@/lib/vehicles/off-road/repository/OffRoadVehicleRepository";
 import { commercialVehicleRepository } from "@/lib/vehicles/commercial-vehicles/repository/CommercialVehicleRepository";
 import type { AdSnapshot } from "../types/chat.types";
-
-const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
-const ENTITY_TYPE_PETS_FOR_FREE = "pets-for-free";
-const ENTITY_TYPE_PETS_ACCESSORIES = "pets-accessories";
-const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
-const ENTITY_TYPE_JOBS = "jobs";
-const ENTITY_TYPE_CARS = "cars";
-const ENTITY_TYPE_OFF_ROAD = "off-road";
-const ENTITY_TYPE_COMMERCIAL_VEHICLES = "commercial-vehicles";
+import {
+  ENTITY_TYPE_CARS,
+  ENTITY_TYPE_COMMERCIAL_VEHICLES,
+  ENTITY_TYPE_JOBS,
+  ENTITY_TYPE_OFF_ROAD,
+  ENTITY_TYPE_PETS_ACCESSORIES,
+  ENTITY_TYPE_PETS_FOR_FREE,
+  ENTITY_TYPE_PETS_FOR_SALE,
+  ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  type EntityType,
+} from "@/lib/constants/entityTypes";
 
 const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -37,7 +39,7 @@ export type GetOrCreateChatResult =
   | { success: false; error: string };
 
 export async function getOrCreateChat(
-  adEntityType: string,
+  adEntityType: EntityType,
   adPublicId: string
 ): Promise<GetOrCreateChatResult> {
   const user = await getCurrentUser();

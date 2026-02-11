@@ -20,19 +20,24 @@ import {
   removeLikedInStorage,
   setLikedInStorage,
 } from "@/lib/likes/storage/likesStorage";
-
-export const ENTITY_TYPE_PETS_FOR_SALE = "pets-for-sale";
-export const ENTITY_TYPE_PROFESSIONAL_SERVICE = "professional-service";
-export const ENTITY_TYPE_JOBS = "jobs";
-export const ENTITY_TYPE_PETS_ACCESSORIES = "pets-accessories";
-export const ENTITY_TYPE_PETS_FOR_FREE = "pets-for-free";
-export const ENTITY_TYPE_CARS = "vehicles-cars";
-export const ENTITY_TYPE_OFF_ROAD = "vehicles-off-road";
-export const ENTITY_TYPE_COMMERCIAL_VEHICLES = "vehicles-commercial";
-export const ENTITY_TYPE_MOTORCYCLES = "vehicles-motorcycles";
-export const ENTITY_TYPE_SCOOTERS = "vehicles-scooters";
-export const ENTITY_TYPE_SPECIAL_VEHICLES = "vehicles-special-vehicles";
-export const ENTITY_TYPE_VEHICLES_ACCESSORIES = "vehicles-accessories";
+import {
+  ENTITY_TYPE_CARS,
+  ENTITY_TYPE_COMMERCIAL_REAL_ESTATE,
+  ENTITY_TYPE_COMMERCIAL_VEHICLES,
+  ENTITY_TYPE_JOBS,
+  ENTITY_TYPE_MOTORCYCLES,
+  ENTITY_TYPE_OFF_ROAD,
+  ENTITY_TYPE_PETS_ACCESSORIES,
+  ENTITY_TYPE_PETS_FOR_FREE,
+  ENTITY_TYPE_PETS_FOR_SALE,
+  ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  ENTITY_TYPE_REAL_ESTATE_FOR_RENT,
+  ENTITY_TYPE_REAL_ESTATE_FOR_SALE,
+  ENTITY_TYPE_SCOOTERS,
+  ENTITY_TYPE_SPECIAL_VEHICLES,
+  ENTITY_TYPE_VEHICLES_ACCESSORIES,
+  EntityType,
+} from "@/lib/constants/entityTypes";
 
 const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -47,13 +52,16 @@ const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_SCOOTERS,
   ENTITY_TYPE_SPECIAL_VEHICLES,
   ENTITY_TYPE_VEHICLES_ACCESSORIES,
+  ENTITY_TYPE_COMMERCIAL_REAL_ESTATE,
+  ENTITY_TYPE_REAL_ESTATE_FOR_RENT,
+  ENTITY_TYPE_REAL_ESTATE_FOR_SALE,
 ] as const;
 
 type LikedIdsByEntity = Record<string, Set<string>>;
 
 type LikesContextType = {
-  isLiked: (entityType: string, publicId: string) => boolean;
-  toggle: (entityType: string, publicId: string) => Promise<void>;
+  isLiked: (entityType: EntityType, publicId: string) => boolean;
+  toggle: (entityType: EntityType, publicId: string) => Promise<void>;
   totalLikedCount: number;
 };
 
@@ -133,7 +141,7 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
   }, [user]);
 
   const isLiked = useCallback(
-    (entityType: string, publicId: string): boolean => {
+    (entityType: EntityType, publicId: string): boolean => {
       return likedIdsByEntity[entityType]?.has(publicId) ?? false;
     },
     [likedIdsByEntity]
@@ -148,7 +156,7 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
   }, [likedIdsByEntity]);
 
   const toggle = useCallback(
-    async (entityType: string, publicId: string) => {
+    async (entityType: EntityType, publicId: string) => {
       const currentlyLiked = likedIdsByEntity[entityType]?.has(publicId) ?? false;
       const nextLiked = !currentlyLiked;
 

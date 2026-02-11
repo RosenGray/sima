@@ -15,7 +15,7 @@ import {
 } from "./CommercialVehicleCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
-import { ENTITY_TYPE_COMMERCIAL_VEHICLES } from "@/providers/LikesProvider/LikesProvider";
+import { ENTITY_TYPE_COMMERCIAL_VEHICLES } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SerializedCommercialVehicle } from "@/lib/vehicles/commercial-vehicles/types/commercialVehicle.types";
 import { TransmissionType } from "@/lib/vehicles/cars/types/cars.types";
