@@ -10,6 +10,7 @@ export const ENTITY_TYPE_MOTORCYCLES = "vehicles-motorcycles";
 export const ENTITY_TYPE_SCOOTERS = "vehicles-scooters";
 export const ENTITY_TYPE_SPECIAL_VEHICLES = "vehicles-special-vehicles";
 export const ENTITY_TYPE_VEHICLES_ACCESSORIES = "vehicles-accessories";
+export const ENTITY_TYPE_COMMERCIAL_REAL_ESTATE = "real-estate-commercial-real-estate";
 
 export type EntityType =
   | typeof ENTITY_TYPE_PETS_FOR_SALE
@@ -23,4 +24,5 @@ export type EntityType =
   | typeof ENTITY_TYPE_MOTORCYCLES
   | typeof ENTITY_TYPE_SCOOTERS
   | typeof ENTITY_TYPE_SPECIAL_VEHICLES
-  | typeof ENTITY_TYPE_VEHICLES_ACCESSORIES;
+  | typeof ENTITY_TYPE_VEHICLES_ACCESSORIES
+  | typeof ENTITY_TYPE_COMMERCIAL_REAL_ESTATE;

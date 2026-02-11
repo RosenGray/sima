@@ -11,8 +11,11 @@ import {
   CommercialRealEstateCardSwiper,
   CommercialRealEstateCardSwiperSlide,
   CommercialRealEstateCardContent,
+  LikeButtonWrapper,
 } from "./CommercialRealEstateCard.styles";
 import { Badge, Text, Heading } from "@radix-ui/themes";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_COMMERCIAL_REAL_ESTATE } from "@/lib/constants/entityTypes";
 import { Autoplay } from "swiper/modules";
 import { SerializedCommercialRealEstate } from "@/lib/real-estate/commercial-real-estate/types/commercialRealEstate.types";
 import {
@@ -57,6 +60,14 @@ const CommercialRealEstateCard: React.FC<CommercialRealEstateCardProps> = ({
   return (
     <CommercialRealEstateCardBox id={publicId}>
       <CommercialRealEstateCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_COMMERCIAL_REAL_ESTATE}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <CommercialRealEstateCardHeader>
           <Badge size="2" color="green" variant="soft">
             {formatDealKind(dealKind)}
