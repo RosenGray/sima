@@ -65,7 +65,7 @@ export default EntityPage;
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -85,6 +85,8 @@ import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { deleteEntityAdWithRedirect } from "@/lib/{category}/{entity}/actions/deleteEntityAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+// Import entity type constant from @/lib/constants/entityTypes (e.g. ENTITY_TYPE_CARS, ENTITY_TYPE_VEHICLES_ACCESSORIES)
 ```
 
 #### Component Props Interface
@@ -146,9 +148,17 @@ return (
   <PageContainer size="4">
     {/* Header Section with Title and Owner Actions */}
     <HeaderSection>
-      <PageTitle size="8" weight="bold">
-        {/* Entity title - always visible */}
-      </PageTitle>
+      <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+        <PageTitle size="8" weight="bold">
+          {/* Entity title - always visible */}
+        </PageTitle>
+        <LikeButton
+          entityType={ENTITY_TYPE_ENTITY}
+          publicId={publicId}
+          size={20}
+          stopPropagation={false}
+        />
+      </Flex>
       {isOwner && (
         <ButtonGroup>
           {/* Edit and Delete buttons */}
@@ -378,9 +388,17 @@ const handleImageClick = (index: number) => {
 
 ```typescript
 <HeaderSection>
-  <PageTitle size="8" weight="bold">
-    {entityTitle}
-  </PageTitle>
+  <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+    <PageTitle size="8" weight="bold">
+      {entityTitle}
+    </PageTitle>
+    <LikeButton
+      entityType={ENTITY_TYPE_ENTITY}
+      publicId={publicId}
+      size={20}
+      stopPropagation={false}
+    />
+  </Flex>
   {isOwner && (
     <ButtonGroup>
       <Button disabled={isPending} asChild size="3" variant="soft">
@@ -410,6 +428,7 @@ const handleImageClick = (index: number) => {
 ```
 
 **Key Points:**
+- Title and LikeButton are siblings inside a Flex with `align="center"` and `gap="3"` for proper alignment and spacing; do not nest LikeButton inside PageTitle.
 - Title is always visible (not just for owners)
 - Edit and Delete buttons only show for owners
 - Disable buttons during pending state

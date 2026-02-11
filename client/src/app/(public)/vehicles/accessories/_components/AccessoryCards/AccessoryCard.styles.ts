@@ -17,6 +17,7 @@ export const AccessoryCardStyled = styled(Card)`
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
   transition: all 0.2s ease;
 
   ${AccessoryCardBox}:hover & {
@@ -74,7 +75,7 @@ export const AccessoryCardFooter = styled(Flex)`
   margin-top: auto;
 `;
 
-export const LikeButtonWrapper = styled(Box)`
+export const LikeButtonWrapper = styled.div`
   position: absolute;
   top: var(--space-2);
   right: var(--space-2);

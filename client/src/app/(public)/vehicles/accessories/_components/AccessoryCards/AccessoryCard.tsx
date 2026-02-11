@@ -71,6 +71,14 @@ const AccessoryCard: React.FC<AccessoryCardProps> = ({
   return (
     <AccessoryCardBox id={publicId}>
       <AccessoryCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_VEHICLES_ACCESSORIES}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <AccessoryCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">
@@ -79,14 +87,6 @@ const AccessoryCard: React.FC<AccessoryCardProps> = ({
           )}
         </AccessoryCardHeader>
         <AccessoryCardImages>
-          <LikeButtonWrapper>
-            <LikeButton
-              entityType={ENTITY_TYPE_VEHICLES_ACCESSORIES}
-              publicId={publicId}
-              size={18}
-              stopPropagation
-            />
-          </LikeButtonWrapper>
           {images.length === 1 ? (
             <AccessoryCardImageContainer>
               <Image

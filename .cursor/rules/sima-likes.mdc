@@ -26,7 +26,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 - Wrap the card with `Link` in the parent Cards component; do **not** put `Link` inside the card.
 - Render `LikeButton` inside the card with **`stopPropagation={true}`** (default) so clicking the heart does not navigate.
-- Position the button with a styled wrapper (e.g. absolute top-right, z-index above image). Use a wrapper like `LikeButtonWrapper` in the card styles file.
+- Position the button with a styled wrapper (e.g. absolute top-right, z-index above image). Use a wrapper like `LikeButtonWrapper` in the card styles file. **Place the wrapper as a direct child of the styled Card** (e.g. first child, same level as the card header), so the button appears in the header area above the image—**not** inside the image section or overlaid on the image. The card styled component should have `position: relative` so the absolute wrapper positions correctly.
 
 ```tsx
 <LikeButtonWrapper>
@@ -41,7 +41,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 ### On detail page (not inside Link)
 
-- Render `LikeButton` in the header next to the title (e.g. in a Flex with the page title).
+- Render `LikeButton` in the header next to the title. Place the **title and LikeButton as siblings** inside a `Flex` with `align="center"` and `gap="3"` (or similar) so the button is vertically aligned and has clear spacing from the title. **Do not** nest `LikeButton` inside the `PageTitle`/`Heading`—that causes misalignment and no gap.
 - Use **`stopPropagation={false}`** so normal button behavior applies (no Link involved).
 
 ```tsx

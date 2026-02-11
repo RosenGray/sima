@@ -33,23 +33,24 @@ Entity type constants and the `EntityType` type live in `client/src/lib/constant
 3. In the card JSX, render `LikeButton` with **`stopPropagation={true}`** (or omit; default is true) so clicking the heart does not trigger the parent `Link`.
 4. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 18).
 5. In the card styles file, add a wrapper for positioning (e.g. `LikeButtonWrapper`):
-   - Position absolute, top-right (e.g. `top: var(--space-2); right: var(--space-2);`), `z-index: 1` so the button sits above the image.
+   - Position absolute, top-right (e.g. `top: var(--space-2); right: var(--space-2);`), `z-index: 1`. Give the main Card styled component `position: relative` so the wrapper positions correctly.
    - LikeButton applies `cursor: pointer` by default for clear clickability on both cards and detail pages.
-6. Wrap `LikeButton` with this styled wrapper inside the card (e.g. inside the main Card, so it overlays the image area).
+6. Place the wrapper as a **direct child of the styled Card** (e.g. first child, same level as the card header), so the button appears in the header area above the image—**not** inside the image section or overlaid on the image. See `CarCard.tsx` / `CarCard.styles.ts` for the pattern.
 
 **Important:** The parent Cards component should wrap each card with `Link`; the card itself must not contain a `Link` around the whole content. The like button lives inside the card and stops propagation so only the button click is handled.
 
-Reference: `client/src/app/(public)/pets/for-sale/_components/PetForSaleCards/PetForSaleCard.tsx` and `PetForSaleCard.styles.ts` (LikeButtonWrapper, LikeButton with stopPropagation).
+Reference: `client/src/app/(public)/vehicles/cars/_components/CarCards/CarCard.tsx` and `CarCard.styles.ts` (LikeButtonWrapper as first child of card, Card with position: relative).
 
 ## Step 3: Add LikeButton to detail page
 
 1. Open the detail client component for the section (e.g. `PetForSaleDetailClient.tsx`, or `CarDetailClient.tsx`).
-2. Import `LikeButton` and the entity type constant from `@/lib/constants/entityTypes` (same as step 2).
-3. In the header section (e.g. next to the page title), render `LikeButton` with **`stopPropagation={false}`** so normal button behavior applies (no Link).
-4. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 20).
-5. LikeButton applies `cursor: pointer` by default for clear clickability.
+2. Import `LikeButton`, `Flex`, and the entity type constant from `@/lib/constants/entityTypes` (same as step 2).
+3. In the header section, place the **title and LikeButton as siblings** inside a `Flex` with `align="center"` and `gap="3"` (and e.g. `style={{ flex: 1, minWidth: 0 }}`) so the button is vertically aligned and has clear spacing from the title. **Do not** nest LikeButton inside the PageTitle/Heading.
+4. Render `LikeButton` with **`stopPropagation={false}`** so normal button behavior applies (no Link).
+5. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 20).
+6. LikeButton applies `cursor: pointer` by default for clear clickability.
 
-Reference: `client/src/app/(public)/pets/for-sale/_components/PetForSaleDetailClient/PetForSaleDetailClient.tsx` (LikeButton in HeaderSection next to PageTitle).
+Reference: `client/src/app/(public)/vehicles/cars/_components/CarDetailClient/CarDetailClient.tsx` (Flex with PageTitle + LikeButton in HeaderSection).
 
 ## Step 4: Guest merge for the new entity type (optional)
 
@@ -89,6 +90,7 @@ If you only add one new section and the product does not require guest merge for
 - Rule: `.cursor/rules/sima-likes.mdc`
 - LikeButton: `client/src/components/buttons/LikeButton/LikeButton.tsx`
 - LikesProvider: `client/src/providers/LikesProvider/LikesProvider.tsx`
+- Cars card (header-area LikeButton): `client/src/app/(public)/vehicles/cars/_components/CarCards/CarCard.tsx` and `CarCard.styles.ts`
+- Cars detail (Flex + title + LikeButton): `client/src/app/(public)/vehicles/cars/_components/CarDetailClient/CarDetailClient.tsx`
 - Pets for sale card: `client/src/app/(public)/pets/for-sale/_components/PetForSaleCards/PetForSaleCard.tsx` and `PetForSaleCard.styles.ts`
-- Pets for sale detail: `client/src/app/(public)/pets/for-sale/_components/PetForSaleDetailClient/PetForSaleDetailClient.tsx`
 - Layout: `client/src/app/layout.tsx`
