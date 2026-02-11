@@ -387,6 +387,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                     dataIsValid={engineCapacity.valid}
                     errors={engineCapacity.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
 
                   <BasicFormField
@@ -399,6 +400,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                     dataIsValid={mileage.valid}
                     errors={mileage.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
 
                   <SelectSingle
@@ -420,6 +422,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                     dataIsValid={color.valid}
                     errors={color.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -628,6 +631,7 @@ const CarPublishForm: FC<CarPublishFormProps> = ({ car, formMode }) => {
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

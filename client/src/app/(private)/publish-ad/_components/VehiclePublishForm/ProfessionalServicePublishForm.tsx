@@ -391,6 +391,7 @@ const ProfessionalServicePublishForm: FC<
                     dataIsValid={email.valid}
                     errors={email.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

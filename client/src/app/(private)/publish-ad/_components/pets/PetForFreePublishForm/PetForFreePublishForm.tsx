@@ -520,6 +520,7 @@ const PetForFreePublishForm: FC<PetForFreePublishFormProps> = ({
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

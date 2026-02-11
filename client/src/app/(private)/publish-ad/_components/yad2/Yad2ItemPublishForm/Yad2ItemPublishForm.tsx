@@ -286,6 +286,7 @@ const Yad2ItemPublishForm: FC<Yad2ItemPublishFormProps> = ({
                     errors={productTitle.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -487,6 +488,7 @@ const Yad2ItemPublishForm: FC<Yad2ItemPublishFormProps> = ({
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

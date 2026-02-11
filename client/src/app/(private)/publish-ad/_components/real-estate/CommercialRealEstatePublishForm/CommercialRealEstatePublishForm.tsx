@@ -307,6 +307,7 @@ const CommercialRealEstatePublishForm: FC<
                     errors={streetname.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <BasicFormField
@@ -320,6 +321,7 @@ const CommercialRealEstatePublishForm: FC<
                     errors={squaremeter.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -481,6 +483,7 @@ const CommercialRealEstatePublishForm: FC<
                     errors={contactName.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <BasicFormField
@@ -495,6 +498,7 @@ const CommercialRealEstatePublishForm: FC<
                     disabled={isPending}
                     isMandatory
                     showEmailDisclaimer
+                    disabledAutocomplete
                   />
 
                   <PhoneFormField

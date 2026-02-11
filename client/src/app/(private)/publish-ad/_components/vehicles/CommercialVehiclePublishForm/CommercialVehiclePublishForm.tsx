@@ -356,6 +356,7 @@ const CommercialVehiclePublishForm: FC<CommercialVehiclePublishFormProps> = ({
                     dataIsValid={mileage.valid}
                     errors={mileage.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
 
                   <SelectSingle
@@ -377,6 +378,7 @@ const CommercialVehiclePublishForm: FC<CommercialVehiclePublishFormProps> = ({
                     dataIsValid={color.valid}
                     errors={color.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -574,6 +576,7 @@ const CommercialVehiclePublishForm: FC<CommercialVehiclePublishFormProps> = ({
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

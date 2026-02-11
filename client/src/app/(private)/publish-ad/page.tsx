@@ -56,7 +56,7 @@ const categories: PublishAdCategory[] = [
     title: "Куплю-Продам",
     description: "Куплю-Продам - Большой выбор всего — распродажа, доставка. ",
     icon: <MarketPlaceIcon viewBox={{ width: 120, height: 120 }} />,
-    href: "/publish-ad/yad2",
+    href: "/publish-ad/yad2/create",
   },
   {
     id: "jobs",

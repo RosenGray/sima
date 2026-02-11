@@ -385,6 +385,7 @@ const RealEstateForSalePublishForm: FC<RealEstateForSalePublishFormProps> = ({
                     errors={squaremeter.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <SelectSingle
@@ -584,6 +585,7 @@ const RealEstateForSalePublishForm: FC<RealEstateForSalePublishFormProps> = ({
                     dataIsValid={propertyTax.valid}
                     errors={propertyTax.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -734,6 +736,7 @@ const RealEstateForSalePublishForm: FC<RealEstateForSalePublishFormProps> = ({
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

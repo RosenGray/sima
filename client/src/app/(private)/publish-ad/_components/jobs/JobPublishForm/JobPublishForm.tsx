@@ -241,6 +241,7 @@ const JobPublishForm: FC<JobPublishFormProps> = ({ entity, formMode }) => {
                     errors={title.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <SelectSingle
@@ -363,6 +364,7 @@ const JobPublishForm: FC<JobPublishFormProps> = ({ entity, formMode }) => {
                     errors={contactName.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <PersonIcon height="16" width="16" />
                   </BasicFormField>
@@ -378,6 +380,7 @@ const JobPublishForm: FC<JobPublishFormProps> = ({ entity, formMode }) => {
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>
