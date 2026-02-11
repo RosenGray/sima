@@ -57,6 +57,8 @@ import {
 } from "@/lib/real-estate/for-rent/actions/deleteRealEstateForRentAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_REAL_ESTATE_FOR_RENT } from "@/lib/constants/entityTypes";
 
 interface RealEstateForRentDetailClientProps {
   realEstate: SerializedRealEstateForRent;
@@ -234,9 +236,17 @@ const RealEstateForRentDetailClient: React.FC<RealEstateForRentDetailClientProps
     <PageContainer size="4">
       {/* Header Section */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {title}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {title}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_REAL_ESTATE_FOR_RENT}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">

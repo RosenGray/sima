@@ -23,6 +23,9 @@ const ENTITY_TYPE_TO_PATH: Record<string, string> = {
   "vehicles-scooters": "/vehicles/scooters",
   "vehicles-special-vehicles": "/vehicles/special-vehicles",
   "vehicles-accessories": "/vehicles/accessories",
+  "real-estate-commercial-real-estate": "/real-estate/commercial-real-estate",
+  "real-estate-for-rent": "/real-estate/for-rent",
+  "real-estate-for-sale": "/real-estate/for-sale",
 };
 
 export function getDetailPathForEntityType(entityType: EntityType): string {
