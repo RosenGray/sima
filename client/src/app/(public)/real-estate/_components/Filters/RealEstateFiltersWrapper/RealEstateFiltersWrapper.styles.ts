@@ -78,3 +78,41 @@ export const FiltersCountBadge = styled(Flex)`
   font-weight: 600;
   padding: 0 6px;
 `;
+
+export const RealEstateFiltersNavBar = styled.nav`
+  padding-top: 10px;
+  height: 60px;
+`;
+
+export const RealEstateFiltersNavBarList = styled.ul`
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  gap: 5px;
+  justify-content: center;
+`;
+
+export const RealEstateFiltersNavBarItem = styled.li<{ $isActive: boolean }>`
+  flex-basis: calc(100% / 3.05);
+  display: flex;
+  border: 1px solid var(--gray-6);
+
+  & > a {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2);
+    border-radius: var(--radius-2);
+    background: ${({ $isActive }) =>
+      $isActive ? "var(--accent-3)" : "transparent"};
+    border: 2px solid
+      ${({ $isActive }) =>
+        $isActive ? "var(--accent-9)" : "transparent"};
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--accent-3);
+    }
+  }
+`;
