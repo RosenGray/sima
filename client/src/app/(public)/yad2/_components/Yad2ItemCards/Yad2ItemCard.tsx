@@ -11,7 +11,10 @@ import {
   Yad2ItemCardSwiper,
   Yad2ItemCardSwiperSlide,
   Yad2ItemCardContent,
+  LikeButtonWrapper,
 } from "./Yad2ItemCard.styles";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_YAD2 } from "@/lib/constants/entityTypes";
 import { Badge, Text, Heading } from "@radix-ui/themes";
 import { Autoplay } from "swiper/modules";
 import { SerializedYad2Item } from "@/lib/yad2/types/yad2.types";
@@ -66,6 +69,14 @@ const Yad2ItemCard: React.FC<Yad2ItemCardProps> = ({ yad2Item }) => {
   return (
     <Yad2ItemCardBox id={publicId}>
       <Yad2ItemCardStyled variant="surface">
+        <LikeButtonWrapper>
+          <LikeButton
+            entityType={ENTITY_TYPE_YAD2}
+            publicId={publicId}
+            size={18}
+            stopPropagation
+          />
+        </LikeButtonWrapper>
         <Yad2ItemCardHeader>
           {locationName && (
             <Badge size="2" color="blue" variant="soft">

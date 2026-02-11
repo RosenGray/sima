@@ -36,6 +36,7 @@ import {
   ENTITY_TYPE_SCOOTERS,
   ENTITY_TYPE_SPECIAL_VEHICLES,
   ENTITY_TYPE_VEHICLES_ACCESSORIES,
+  ENTITY_TYPE_YAD2,
   EntityType,
 } from "@/lib/constants/entityTypes";
 
@@ -55,6 +56,7 @@ const ENTITY_TYPES_WITH_GUEST_MERGE = [
   ENTITY_TYPE_COMMERCIAL_REAL_ESTATE,
   ENTITY_TYPE_REAL_ESTATE_FOR_RENT,
   ENTITY_TYPE_REAL_ESTATE_FOR_SALE,
+  ENTITY_TYPE_YAD2,
 ] as const;
 
 type LikedIdsByEntity = Record<string, Set<string>>;
