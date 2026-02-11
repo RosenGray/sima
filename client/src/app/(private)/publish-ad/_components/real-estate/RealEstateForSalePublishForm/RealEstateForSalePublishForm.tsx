@@ -343,6 +343,7 @@ const RealEstateForSalePublishForm: FC<RealEstateForSalePublishFormProps> = ({
                     errors={streetname.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
