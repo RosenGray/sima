@@ -1,6 +1,8 @@
+import { EntityType } from "@/lib/constants/entityTypes";
+
 const STORAGE_KEY_PREFIX = "sima-liked-";
 
-function getStorageKey(entityType: string): string {
+function getStorageKey(entityType: EntityType): string {
   return `${STORAGE_KEY_PREFIX}${entityType}`;
 }
 
@@ -8,7 +10,7 @@ function getStorageKey(entityType: string): string {
  * Get liked public IDs for an entity type from localStorage.
  * Safe for SSR (returns [] when window is undefined).
  */
-export function getLikedFromStorage(entityType: string): string[] {
+export function getLikedFromStorage(entityType: EntityType): string[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(getStorageKey(entityType));
@@ -23,7 +25,7 @@ export function getLikedFromStorage(entityType: string): string[] {
 /**
  * Set the full list of liked public IDs for an entity type in localStorage.
  */
-export function setLikedInStorage(entityType: string, publicIds: string[]): void {
+export function setLikedInStorage(entityType: EntityType, publicIds: string[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(getStorageKey(entityType), JSON.stringify(publicIds));
@@ -35,7 +37,7 @@ export function setLikedInStorage(entityType: string, publicIds: string[]): void
 /**
  * Add one public ID to likes in localStorage.
  */
-export function addLikedInStorage(entityType: string, publicId: string): void {
+export function addLikedInStorage(entityType: EntityType, publicId: string): void {
   const ids = getLikedFromStorage(entityType);
   if (ids.includes(publicId)) return;
   setLikedInStorage(entityType, [...ids, publicId]);
@@ -44,7 +46,7 @@ export function addLikedInStorage(entityType: string, publicId: string): void {
 /**
  * Remove one public ID from likes in localStorage.
  */
-export function removeLikedInStorage(entityType: string, publicId: string): void {
+export function removeLikedInStorage(entityType: EntityType, publicId: string): void {
   const ids = getLikedFromStorage(entityType).filter((id) => id !== publicId);
   setLikedInStorage(entityType, ids);
 }

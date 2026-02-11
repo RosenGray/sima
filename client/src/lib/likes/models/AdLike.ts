@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
 import "@/lib/auth/models/User";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 export interface IAdLike {
   id: string;
   user: mongoose.Types.ObjectId;
-  entityType: string;
+  entityType: EntityType;
   entityPublicId: string;
   createdAt?: Date;
 }

@@ -33,6 +33,7 @@ import {
   ENTITY_TYPE_SCOOTERS,
   ENTITY_TYPE_SPECIAL_VEHICLES,
   ENTITY_TYPE_VEHICLES_ACCESSORIES,
+  EntityType,
 } from "@/lib/constants/entityTypes";
 
 const ENTITY_TYPES_WITH_GUEST_MERGE = [
@@ -53,8 +54,8 @@ const ENTITY_TYPES_WITH_GUEST_MERGE = [
 type LikedIdsByEntity = Record<string, Set<string>>;
 
 type LikesContextType = {
-  isLiked: (entityType: string, publicId: string) => boolean;
-  toggle: (entityType: string, publicId: string) => Promise<void>;
+  isLiked: (entityType: EntityType, publicId: string) => boolean;
+  toggle: (entityType: EntityType, publicId: string) => Promise<void>;
   totalLikedCount: number;
 };
 
@@ -134,7 +135,7 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
   }, [user]);
 
   const isLiked = useCallback(
-    (entityType: string, publicId: string): boolean => {
+    (entityType: EntityType, publicId: string): boolean => {
       return likedIdsByEntity[entityType]?.has(publicId) ?? false;
     },
     [likedIdsByEntity]
@@ -149,7 +150,7 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
   }, [likedIdsByEntity]);
 
   const toggle = useCallback(
-    async (entityType: string, publicId: string) => {
+    async (entityType: EntityType, publicId: string) => {
       const currentlyLiked = likedIdsByEntity[entityType]?.has(publicId) ?? false;
       const nextLiked = !currentlyLiked;
 

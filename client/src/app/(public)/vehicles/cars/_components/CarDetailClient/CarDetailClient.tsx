@@ -120,7 +120,7 @@ const CarDetailClient: React.FC<CarDetailClientProps> = ({ car }) => {
     if (chatLoading || !isAuthenticated || isOwner) return;
     setChatLoading(true);
     setChatError(null);
-    const result = await getOrCreateChat("cars", car.publicId);
+    const result = await getOrCreateChat(ENTITY_TYPE_CARS, car.publicId);
 
     if (result.success && result.chatId) {
       router.push(`/chat/${result.chatId}`);

@@ -1,7 +1,8 @@
 import { SerializedUser } from "@/lib/auth/types/auth.scema";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 export interface AdSnapshot {
-  entityType: string;
+  entityType: EntityType;
   entityPublicId: string;
   title: string;
   thumbnailUrl: string;

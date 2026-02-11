@@ -18,6 +18,7 @@ import { motorcycleRepository } from "@/lib/vehicles/motorcycles/repository/Moto
 import { scooterRepository } from "@/lib/vehicles/scooters/repository/ScooterRepository";
 import { specialVehicleRepository } from "@/lib/vehicles/special-vehicles/repository/SpecialVehicleRepository";
 import { accessoryRepository } from "@/lib/vehicles/accessories/repository/AccessoryRepository";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 
 function thumbnailUrl(images: { url: string }[] | undefined): string | null {
@@ -26,7 +27,7 @@ function thumbnailUrl(images: { url: string }[] | undefined): string | null {
 }
 
 function toSummary(
-  entityType: string,
+  entityType: EntityType,
   publicId: string,
   entity: {
     images?: { url: string }[];

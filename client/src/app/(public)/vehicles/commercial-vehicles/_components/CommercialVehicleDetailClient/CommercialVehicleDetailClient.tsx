@@ -101,7 +101,7 @@ const CommercialVehicleDetailClient: React.FC<CommercialVehicleDetailClientProps
     if (chatLoading || !isAuthenticated || isOwner) return;
     setChatLoading(true);
     setChatError(null);
-    const result = await getOrCreateChat("commercial-vehicles", commercialVehicle.publicId);
+    const result = await getOrCreateChat(ENTITY_TYPE_COMMERCIAL_VEHICLES, commercialVehicle.publicId);
 
     if (result.success && result.chatId) {
       router.push(`/chat/${result.chatId}`);
