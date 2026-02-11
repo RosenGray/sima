@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Box, Card, Flex } from "@radix-ui/themes";
 
 export const ListingCardBox = styled(Box)`
-  width: 300px;
+  width: 250px;
   height: 300px;
   border-radius: var(--radius-3);
   overflow: hidden;
@@ -47,20 +47,25 @@ export const ListingCardImageContainer = styled(Box)`
 export const ListingCardContent = styled(Flex)`
   flex: 1;
   flex-direction: column;
-  padding: var(--space-3);
+  padding-top: var(--space-3);
   gap: var(--space-2);
   min-height: 0;
 `;
 
 export const ListingCardTitle = styled(Box)`
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  flex: 0 0 50%;
+  min-width: 0;
+
 `;
 
 export const ListingCardSubtitle = styled(Box)`
+  display: flex;
+  flex: 0 0 50%;
+  min-width: 0;
+`;
+
+export const ListingCardDescription = styled(Box)`
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -73,7 +78,17 @@ export const ListingCardFooter = styled.footer`
   padding: var(--space-2) var(--space-3);
   flex-shrink: 0;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   border-top: 1px solid var(--gray-6);
+`;
+
+export const ListingCardHeader = styled.header`
+  width: 100%;
+  display: flex;
+
+  align-items: center;
+  height: 20px;
+  gap: var(--space-2);
+
 `;

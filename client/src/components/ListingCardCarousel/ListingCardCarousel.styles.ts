@@ -9,7 +9,7 @@ export const ListingCardCarouselViewport = styled(Box)`
   width: 100%;
   overflow: hidden;
   position: relative;
-  padding: var(--space-4) var(--space-9);
+  padding: 0 var(--space-3);
   min-height: 340px;
 `;
 
@@ -47,16 +47,17 @@ export const NavButton = styled.button`
   justify-content: center;
   transition: all 0.2s ease;
 
+
   &:hover:not(:disabled) {
     background: var(--accent-9);
     color: var(--gray-1);
     transform: translateY(-50%) scale(1.1);
-  }
+    }
 
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
 `;
 
 export const SlideLink = styled.a`
