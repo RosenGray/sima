@@ -28,6 +28,18 @@ export const LikeButtonWrapper = styled.div`
   top: var(--space-2);
   right: var(--space-2);
   z-index: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-full);
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
 `;
 
 export const ListingCardImageBlock = styled(Box)`
