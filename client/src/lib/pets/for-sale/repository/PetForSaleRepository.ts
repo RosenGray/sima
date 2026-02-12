@@ -1,3 +1,7 @@
+import {
+  expandAnimalIdsForFilter,
+  normalizeAnimalId,
+} from "@/lib/pets/animals/animalIds";
 import { PetForSale, IPetForSale } from "../models/PetForSale";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedPetForSale } from "../types/petForSale.types";
@@ -126,9 +130,11 @@ class PetForSaleRepository {
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof PetForSale> = {};
 
-      // Add animal filter
+      // Add animal filter (expand to include legacy IDs for backward compatibility)
       if (sanitizedFilters.animal) {
-        searchFilter.animal = { $in: sanitizedFilters.animal };
+        searchFilter.animal = {
+          $in: expandAnimalIdsForFilter(sanitizedFilters.animal),
+        };
       }
 
       // Add kind filter
@@ -217,7 +223,10 @@ class PetForSaleRepository {
         .limit(pageSize);
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedPets = JSON.parse(JSON.stringify(pets));
+      const serializedPets = JSON.parse(JSON.stringify(pets)) as SerializedPetForSale[];
+      serializedPets.forEach((p) => {
+        p.animal = normalizeAnimalId(p.animal);
+      });
 
       return {
         data: serializedPets,
@@ -253,7 +262,8 @@ class PetForSaleRepository {
       }
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedPet = JSON.parse(JSON.stringify(pet));
+      const serializedPet = JSON.parse(JSON.stringify(pet)) as SerializedPetForSale;
+      serializedPet.animal = normalizeAnimalId(serializedPet.animal);
 
       return serializedPet;
     } catch (error) {
@@ -283,7 +293,8 @@ class PetForSaleRepository {
       }
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedPet = JSON.parse(JSON.stringify(pet));
+      const serializedPet = JSON.parse(JSON.stringify(pet)) as SerializedPetForSale;
+      serializedPet.animal = normalizeAnimalId(serializedPet.animal);
 
       return serializedPet;
     } catch (error) {
@@ -308,7 +319,8 @@ class PetForSaleRepository {
       await pet.populate("user");
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedPet = JSON.parse(JSON.stringify(pet));
+      const serializedPet = JSON.parse(JSON.stringify(pet)) as SerializedPetForSale;
+      serializedPet.animal = normalizeAnimalId(serializedPet.animal);
 
       return serializedPet;
     } catch (error) {
@@ -343,7 +355,8 @@ class PetForSaleRepository {
       await pet.save();
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedPet = JSON.parse(JSON.stringify(pet));
+      const serializedPet = JSON.parse(JSON.stringify(pet)) as SerializedPetForSale;
+      serializedPet.animal = normalizeAnimalId(serializedPet.animal);
 
       return serializedPet;
     } catch (error) {

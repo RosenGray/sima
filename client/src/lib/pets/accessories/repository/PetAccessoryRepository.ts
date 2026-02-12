@@ -1,3 +1,7 @@
+import {
+  expandAnimalIdsForFilter,
+  normalizeAnimalId,
+} from "@/lib/pets/animals/animalIds";
 import { PetAccessory, IPetAccessory } from "../models/PetAccessory";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedPetAccessory } from "../types/petAccessory.types";
@@ -121,9 +125,11 @@ class PetAccessoryRepository {
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof PetAccessory> = {};
 
-      // Add animal filter
+      // Add animal filter (expand to include legacy IDs for backward compatibility)
       if (sanitizedFilters.animal) {
-        searchFilter.animal = { $in: sanitizedFilters.animal };
+        searchFilter.animal = {
+          $in: expandAnimalIdsForFilter(sanitizedFilters.animal),
+        };
       }
 
       // Add kind filter
@@ -200,7 +206,12 @@ class PetAccessoryRepository {
         .limit(pageSize);
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedAccessories = JSON.parse(JSON.stringify(accessories));
+      const serializedAccessories = JSON.parse(
+        JSON.stringify(accessories)
+      ) as SerializedPetAccessory[];
+      serializedAccessories.forEach((a) => {
+        a.animal = normalizeAnimalId(a.animal);
+      });
 
       return {
         data: serializedAccessories,
@@ -236,7 +247,10 @@ class PetAccessoryRepository {
       }
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedAccessory = JSON.parse(JSON.stringify(accessory));
+      const serializedAccessory = JSON.parse(
+        JSON.stringify(accessory)
+      ) as SerializedPetAccessory;
+      serializedAccessory.animal = normalizeAnimalId(serializedAccessory.animal);
 
       return serializedAccessory;
     } catch (error) {
@@ -266,7 +280,10 @@ class PetAccessoryRepository {
       }
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedAccessory = JSON.parse(JSON.stringify(accessory));
+      const serializedAccessory = JSON.parse(
+        JSON.stringify(accessory)
+      ) as SerializedPetAccessory;
+      serializedAccessory.animal = normalizeAnimalId(serializedAccessory.animal);
 
       return serializedAccessory;
     } catch (error) {
@@ -291,7 +308,10 @@ class PetAccessoryRepository {
       await accessory.populate("user");
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedAccessory = JSON.parse(JSON.stringify(accessory));
+      const serializedAccessory = JSON.parse(
+        JSON.stringify(accessory)
+      ) as SerializedPetAccessory;
+      serializedAccessory.animal = normalizeAnimalId(serializedAccessory.animal);
 
       return serializedAccessory;
     } catch (error) {
@@ -326,7 +346,10 @@ class PetAccessoryRepository {
       await accessory.save();
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
-      const serializedAccessory = JSON.parse(JSON.stringify(accessory));
+      const serializedAccessory = JSON.parse(
+        JSON.stringify(accessory)
+      ) as SerializedPetAccessory;
+      serializedAccessory.animal = normalizeAnimalId(serializedAccessory.animal);
 
       return serializedAccessory;
     } catch (error) {

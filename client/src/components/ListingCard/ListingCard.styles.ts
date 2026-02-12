@@ -66,14 +66,14 @@ export const ListingCardContent = styled(Flex)`
 
 export const ListingCardTitle = styled(Box)`
   display: flex;
-  flex: 0 0 50%;
+  max-width: 50%;
   min-width: 0;
 
 `;
 
 export const ListingCardSubtitle = styled(Box)`
   display: flex;
-  flex: 0 0 50%;
+  max-width: 50%;
   min-width: 0;
 `;
 
@@ -98,7 +98,7 @@ export const ListingCardFooter = styled.footer`
 export const ListingCardHeader = styled.header`
   width: 100%;
   display: flex;
-
+  justify-content: space-between;
   align-items: center;
   height: 20px;
   gap: var(--space-2);

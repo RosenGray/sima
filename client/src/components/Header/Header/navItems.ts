@@ -1,3 +1,4 @@
+import { PETS_NAV_ANIMAL_ITEMS } from "@/lib/pets/animals/animalIds";
 import { NavigationItems } from "../Header.utils";
 
 export const navItems: NavigationItems = [
@@ -33,18 +34,10 @@ export const navItems: NavigationItems = [
     label: "Домашние животные",
     type: "dropdown",
     subItems: [
-      { label: "Собаки", href: "/pets/for-sale?animal=dog" },
-      { label: "Кошки", href: "/pets/for-sale?animal=cat" },
-      { label: "Рыбы", href: "/pets/for-sale?animal=fish" },
-      { label: "Птицы", href: "/pets/for-sale?animal=bird" },
-      { label: "Хорьки", href: "/pets/for-sale?animal=ferrets" },
-      { label: "Грызуны", href: "/pets/for-sale?animal=rodents" },
-      {
-        label: "Сельскохозяйственные животные",
-        href: "/pets/for-sale?animal=farm_animals",
-      },
-      { label: "Лошади", href: "/pets/for-sale?animal=horses" },
-      { label: "Ящерицы и змеи", href: "/pets/for-sale?animal=reptiles" },
+      ...PETS_NAV_ANIMAL_ITEMS.map(({ animalId, label }) => ({
+        label,
+        href: `/pets/for-sale?animal=${animalId}`,
+      })),
       { label: "Аксессуары для животных", href: "/pets/accessories" },
     ],
   },

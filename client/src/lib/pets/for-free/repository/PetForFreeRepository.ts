@@ -1,3 +1,7 @@
+import {
+  expandAnimalIdsForFilter,
+  normalizeAnimalId,
+} from "@/lib/pets/animals/animalIds";
 import { PetForFree, IPetForFree } from "../models/PetForFree";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedPetForFree } from "../types/petForFree.types";
@@ -104,7 +108,9 @@ class PetForFreeRepository {
       const searchFilter: FilterQuery<typeof PetForFree> = {};
 
       if (sanitizedFilters.animal) {
-        searchFilter.animal = { $in: sanitizedFilters.animal };
+        searchFilter.animal = {
+          $in: expandAnimalIdsForFilter(sanitizedFilters.animal),
+        };
       }
 
       if (sanitizedFilters.kind) {
@@ -150,7 +156,10 @@ class PetForFreeRepository {
         .skip(skip)
         .limit(pageSize);
 
-      const serializedPets = JSON.parse(JSON.stringify(pets));
+      const serializedPets = JSON.parse(JSON.stringify(pets)) as SerializedPetForFree[];
+      serializedPets.forEach((p) => {
+        p.animal = normalizeAnimalId(p.animal);
+      });
 
       return {
         data: serializedPets,
@@ -178,7 +187,9 @@ class PetForFreeRepository {
         return null;
       }
 
-      return JSON.parse(JSON.stringify(pet));
+      const serialized = JSON.parse(JSON.stringify(pet)) as SerializedPetForFree;
+      serialized.animal = normalizeAnimalId(serialized.animal);
+      return serialized;
     } catch (error) {
       console.error("Error fetching pet for free:", error);
       throw new Error("Failed to fetch pet for free");
@@ -199,7 +210,9 @@ class PetForFreeRepository {
         return null;
       }
 
-      return JSON.parse(JSON.stringify(pet));
+      const serialized = JSON.parse(JSON.stringify(pet)) as SerializedPetForFree;
+      serialized.animal = normalizeAnimalId(serialized.animal);
+      return serialized;
     } catch (error) {
       console.error("Error fetching pet for free:", error);
       throw new Error("Failed to fetch pet for free");
@@ -216,7 +229,9 @@ class PetForFreeRepository {
       await pet.save();
       await pet.populate("user");
 
-      return JSON.parse(JSON.stringify(pet));
+      const serialized = JSON.parse(JSON.stringify(pet)) as SerializedPetForFree;
+      serialized.animal = normalizeAnimalId(serialized.animal);
+      return serialized;
     } catch (error) {
       console.error("Error creating pet for free:", error);
       throw new Error("Failed to create pet for free");
@@ -242,7 +257,9 @@ class PetForFreeRepository {
 
       await pet.save();
 
-      return JSON.parse(JSON.stringify(pet));
+      const serialized = JSON.parse(JSON.stringify(pet)) as SerializedPetForFree;
+      serialized.animal = normalizeAnimalId(serialized.animal);
+      return serialized;
     } catch (error) {
       console.error("Error updating pet for free:", error);
       throw new Error("Failed to update pet for free");

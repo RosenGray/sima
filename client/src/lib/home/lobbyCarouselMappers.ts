@@ -32,7 +32,42 @@ import {
   formatCommercialPropertyKind,
   formatDealKind,
 } from "@/lib/real-estate/commercial-real-estate/utils/commercialRealEstateOptions";
-import { ENTITY_TYPE_CARS, ENTITY_TYPE_COMMERCIAL_REAL_ESTATE, ENTITY_TYPE_COMMERCIAL_VEHICLES, ENTITY_TYPE_JOBS, ENTITY_TYPE_MOTORCYCLES, ENTITY_TYPE_OFF_ROAD, ENTITY_TYPE_OTHER, ENTITY_TYPE_PETS_ACCESSORIES, ENTITY_TYPE_PETS_FOR_FREE, ENTITY_TYPE_PETS_FOR_SALE, ENTITY_TYPE_PROFESSIONAL_SERVICE, ENTITY_TYPE_REAL_ESTATE_FOR_RENT, ENTITY_TYPE_REAL_ESTATE_FOR_SALE, ENTITY_TYPE_SCOOTERS, ENTITY_TYPE_SPECIAL_VEHICLES, ENTITY_TYPE_VEHICLES_ACCESSORIES, ENTITY_TYPE_YAD2 } from "../constants/entityTypes";
+import {
+  ENTITY_TYPE_CARS,
+  ENTITY_TYPE_COMMERCIAL_REAL_ESTATE,
+  ENTITY_TYPE_COMMERCIAL_VEHICLES,
+  ENTITY_TYPE_JOBS,
+  ENTITY_TYPE_MOTORCYCLES,
+  ENTITY_TYPE_OFF_ROAD,
+  ENTITY_TYPE_OTHER,
+  ENTITY_TYPE_PETS_ACCESSORIES,
+  ENTITY_TYPE_PETS_FOR_FREE,
+  ENTITY_TYPE_PETS_FOR_SALE,
+  ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  ENTITY_TYPE_REAL_ESTATE_FOR_RENT,
+  ENTITY_TYPE_REAL_ESTATE_FOR_SALE,
+  ENTITY_TYPE_SCOOTERS,
+  ENTITY_TYPE_SPECIAL_VEHICLES,
+  ENTITY_TYPE_VEHICLES_ACCESSORIES,
+  ENTITY_TYPE_YAD2,
+} from "../constants/entityTypes";
+import { getAccessoryCategoryById } from "../vehicles/accessories/accessoryCategories";
+import { getSpecialVehicleCategoryById } from "../vehicles/special-vehicles/specialVehicleCategories";
+import { getScooterManufacturerById } from "../vehicles/scooters/scooterManufacturers";
+import {
+  ScooterManufacturerId,
+  ScooterModelId,
+} from "../vehicles/scooters/scooterManufacturers/types/scooterManufacturer.schema";
+import { getScooterModelById } from "../vehicles/scooters/scooterModels";
+import { getMotorcycleManufacturerById } from "../vehicles/motorcycles/motorcycleManufacturers";
+import { getMotorcycleModelById } from "../vehicles/motorcycles/motorcycleModels";
+import { getCommercialVehicleManufacturerById } from "../vehicles/commercial-vehicles/vehicleCommercialManufacturers";
+import { getCommercialVehicleModelById } from "../vehicles/commercial-vehicles/vehicleCommercialModels";
+import { getOffRoadVehicleManufacturerById } from "../vehicles/off-road/offRoadVehicleManufacturers";
+import { getOffRoadVehicleModelById } from "../vehicles/off-road/offRoadVehicleModels";
+import { getVehicleManufacturerById } from "../vehicles/cars/vehicleManufacturers";
+import { getVehicleModelById } from "../vehicles/cars/vehicleModels";
+import { getAnimalById, getAnimalKindById } from "../pets/accessories/animals";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -57,8 +92,8 @@ function formatPrice(price?: number | null): string {
 export function mapCar(car: SerializedCar): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(car.images),
-    title: `${car.manufacturer} ${car.model}`,
-    subtitle: `${car.yearOfManufacture}, ${car.city}`,
+    title: getVehicleManufacturerById(car.manufacturer)?.russianName || "",
+    subtitle: getVehicleModelById(car.model, car.manufacturer)?.russianName || "",
     description: car.description || "",
     city: car.city || "",
     price: formatPrice(car.price),
@@ -72,11 +107,14 @@ export function mapCar(car: SerializedCar): LobbyCarouselItemWithDate {
   };
 }
 
-export function mapMotorcycle(m: SerializedMotorcycle): LobbyCarouselItemWithDate {
+export function mapMotorcycle(
+  m: SerializedMotorcycle,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(m.images),
-    title: `${m.manufacturer} ${m.model}`,
-    subtitle: `${m.yearOfManufacture}, ${m.city}`,
+    title: getMotorcycleManufacturerById(m.manufacturer)?.russianName || "",
+    subtitle:
+      getMotorcycleModelById(m.model, m.manufacturer)?.russianName || "",
     description: m.description || "",
     city: m.city || "",
     price: formatPrice(m.price),
@@ -93,8 +131,14 @@ export function mapMotorcycle(m: SerializedMotorcycle): LobbyCarouselItemWithDat
 export function mapScooter(s: SerializedScooter): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(s.images),
-    title: `${s.manufacturer} ${s.model}`,
-    subtitle: `${s.yearOfManufacture}, ${s.city}`,
+    title:
+      getScooterManufacturerById(s.manufacturer as ScooterManufacturerId)
+        ?.russianName || "",
+    subtitle:
+      getScooterModelById(
+        s.model as ScooterModelId,
+        s.manufacturer as ScooterManufacturerId,
+      )?.russianName || "",
     description: s.description || "",
     city: s.city || "",
     price: formatPrice(s.price),
@@ -108,11 +152,14 @@ export function mapScooter(s: SerializedScooter): LobbyCarouselItemWithDate {
   };
 }
 
-export function mapCommercialVehicle(cv: SerializedCommercialVehicle): LobbyCarouselItemWithDate {
+export function mapCommercialVehicle(
+  cv: SerializedCommercialVehicle,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(cv.images),
-    title: `${cv.manufacturer} ${cv.model}`,
-    subtitle: `${cv.yearOfManufacture}, ${cv.city}`,
+    title:
+      getCommercialVehicleManufacturerById(cv.manufacturer)?.russianName || "",
+    subtitle: getCommercialVehicleModelById(cv.model, cv.manufacturer)?.russianName || "",
     description: cv.description || "",
     city: cv.city || "",
     price: formatPrice(cv.price),
@@ -126,11 +173,13 @@ export function mapCommercialVehicle(cv: SerializedCommercialVehicle): LobbyCaro
   };
 }
 
-export function mapOffRoadVehicle(orv: SerializedOffRoadVehicle): LobbyCarouselItemWithDate {
+export function mapOffRoadVehicle(
+  orv: SerializedOffRoadVehicle,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(orv.images),
-    title: `${orv.manufacturer} ${orv.model}`,
-    subtitle: `${orv.yearOfManufacture}, ${orv.city}`,
+    title: getOffRoadVehicleManufacturerById(orv.manufacturer)?.russianName || "",
+    subtitle: getOffRoadVehicleModelById(orv.model, orv.manufacturer)?.russianName || "",
     description: orv.description || "",
     city: orv.city || "",
     price: formatPrice(orv.price),
@@ -144,11 +193,13 @@ export function mapOffRoadVehicle(orv: SerializedOffRoadVehicle): LobbyCarouselI
   };
 }
 
-export function mapSpecialVehicle(sv: SerializedSpecialVehicle): LobbyCarouselItemWithDate {
+export function mapSpecialVehicle(
+  sv: SerializedSpecialVehicle,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(sv.images),
     title: sv.title || "",
-    subtitle: sv.category || "",
+    subtitle: getSpecialVehicleCategoryById(sv.category)?.russianName || "",
     description: sv.description || "",
     city: sv.city || "",
     price: formatPrice(sv.price),
@@ -162,11 +213,13 @@ export function mapSpecialVehicle(sv: SerializedSpecialVehicle): LobbyCarouselIt
   };
 }
 
-export function mapVehicleAccessory(a: SerializedAccessory): LobbyCarouselItemWithDate {
+export function mapVehicleAccessory(
+  a: SerializedAccessory,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(a.images),
     title: a.title || "",
-    subtitle: a.category || "",
+    subtitle: getAccessoryCategoryById(a.category)?.russianName || "",
     description: a.description || "",
     city: a.city || "",
     price: formatPrice(a.price),
@@ -184,7 +237,9 @@ export function mapVehicleAccessory(a: SerializedAccessory): LobbyCarouselItemWi
 // Pet mappers
 // ---------------------------------------------------------------------------
 
-export function mapPetForSale(p: SerializedPetForSale): LobbyCarouselItemWithDate {
+export function mapPetForSale(
+  p: SerializedPetForSale,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(p.images),
     title: `${p.animal} — ${p.kind}`,
@@ -202,11 +257,14 @@ export function mapPetForSale(p: SerializedPetForSale): LobbyCarouselItemWithDat
   };
 }
 
-export function mapPetForFree(p: SerializedPetForFree): LobbyCarouselItemWithDate {
+export function mapPetForFree(
+  p: SerializedPetForFree,
+): LobbyCarouselItemWithDate {
+  console.log(p);
   return {
     imageUrl: firstImage(p.images),
-    title: `${p.animal} — ${p.kind}`,
-    subtitle: p.city || "",
+    title: getAnimalById(p.animal)?.russianName || "",
+    subtitle: getAnimalKindById(p.kind, p.animal)?.russianName || "",
     description: p.description || "",
     city: p.city || "",
     price: "",
@@ -220,11 +278,13 @@ export function mapPetForFree(p: SerializedPetForFree): LobbyCarouselItemWithDat
   };
 }
 
-export function mapPetAccessory(pa: SerializedPetAccessory): LobbyCarouselItemWithDate {
+export function mapPetAccessory(
+  pa: SerializedPetAccessory,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(pa.images),
     title: pa.title || "",
-    subtitle: `${pa.animal} — ${pa.kind}`,
+    subtitle: getAnimalById(pa.animal)?.russianName || "",
     description: pa.description || "",
     city: pa.city || "",
     price: formatPrice(pa.price),
@@ -242,7 +302,9 @@ export function mapPetAccessory(pa: SerializedPetAccessory): LobbyCarouselItemWi
 // Real estate mappers
 // ---------------------------------------------------------------------------
 
-export function mapRealEstateForSale(re: SerializedRealEstateForSale): LobbyCarouselItemWithDate {
+export function mapRealEstateForSale(
+  re: SerializedRealEstateForSale,
+): LobbyCarouselItemWithDate {
   const kindLabel = formatPropertyKindForSale(re.propertyKind);
   return {
     imageUrl: firstImage(re.images),
@@ -261,7 +323,9 @@ export function mapRealEstateForSale(re: SerializedRealEstateForSale): LobbyCaro
   };
 }
 
-export function mapRealEstateForRent(re: SerializedRealEstateForRent): LobbyCarouselItemWithDate {
+export function mapRealEstateForRent(
+  re: SerializedRealEstateForRent,
+): LobbyCarouselItemWithDate {
   const kindLabel = formatPropertyKindForRent(re.propertyKind);
   return {
     imageUrl: firstImage(re.images),
@@ -280,7 +344,9 @@ export function mapRealEstateForRent(re: SerializedRealEstateForRent): LobbyCaro
   };
 }
 
-export function mapCommercialRealEstate(cre: SerializedCommercialRealEstate): LobbyCarouselItemWithDate {
+export function mapCommercialRealEstate(
+  cre: SerializedCommercialRealEstate,
+): LobbyCarouselItemWithDate {
   const dealLabel = formatDealKind(cre.dealKind);
   const propLabel = formatCommercialPropertyKind(cre.propertyKind);
   return {
@@ -304,7 +370,9 @@ export function mapCommercialRealEstate(cre: SerializedCommercialRealEstate): Lo
 // Professional services mapper
 // ---------------------------------------------------------------------------
 
-export function mapProfessionalService(ps: SerilizeProfessionalService): LobbyCarouselItemWithDate {
+export function mapProfessionalService(
+  ps: SerilizeProfessionalService,
+): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(ps.images),
     title: ps.category?.russianDisplayName || "",

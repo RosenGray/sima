@@ -94,6 +94,7 @@ export function ListingCardCarousel({
                   city={city?.nameRussian || ""}  
                   price={item.price}
                   district={district?.name || ""}
+                  description={item.description}
                   likeButton={{
                     entityType: item.likeButton?.entityType,
                     publicId: item.likeButton?.publicId,

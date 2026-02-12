@@ -6,8 +6,8 @@ import type { Animal, AnimalId } from "@/lib/pets/animals/types/animal.schema";
  * for-sale and for-free use their own data.
  */
 export const animals: Record<AnimalId, Animal> = {
-  dog: {
-    id: "dogs",
+  anim_dogs: {
+    id: "anim_dogs",
     russianName: "Собаки",
     kinds: [
       { id: "4", name: "מלונה", russianName: "Будка" },
@@ -26,8 +26,8 @@ export const animals: Record<AnimalId, Animal> = {
       { id: "73", name: "אחר", russianName: "Другое" },
     ],
   },
-  cat: {
-    id: "cats",
+  anim_cats: {
+    id: "anim_cats",
     russianName: "Кошки",
     kinds: [
       {
@@ -67,8 +67,8 @@ export const animals: Record<AnimalId, Animal> = {
       },
     ],
   },
-  fish: {
-    id: "fish",
+  anim_fish: {
+    id: "anim_fish",
     russianName: "Рыбы",
     kinds: [
       {
@@ -128,8 +128,8 @@ export const animals: Record<AnimalId, Animal> = {
       },
     ],
   },
-  bird: {
-    id: "birds",
+  anim_birds: {
+    id: "anim_birds",
     russianName: "Птицы",
     kinds: [
       {
@@ -185,8 +185,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  ferrets: {
-    id: "ferrets",
+  anim_ferrets: {
+    id: "anim_ferrets",
     russianName: "Хорьки",
     kinds: [
       {
@@ -197,8 +197,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  rodents: {
-    id: "rodents",
+  anim_rodents: {
+    id: "anim_rodents",
     russianName: "Грызуны",
     kinds: [
       {
@@ -229,15 +229,15 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  farm_animals: {
-    id: "farm_animals",
+  anim_farm_animals: {
+    id: "anim_farm_animals",
     russianName: "сельскохозяйственные животные",
     kinds: [
       { "id": "238", "name": "אחר", "russianName": "Другое" },
     ],
   },
-  horses: {
-    id: "horses",
+  anim_horses: {
+    id: "anim_horses",
     russianName: "Лошади",
     kinds: [
       {
@@ -289,8 +289,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  reptiles: {
-    id: "reptiles",
+  anim_reptiles: {
+    id: "anim_reptiles",
     russianName: "Ящерицы и змеи",
     kinds: [
       {
