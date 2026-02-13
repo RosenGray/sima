@@ -63,7 +63,23 @@ const ContactUsForm = () => {
             <Heading align="center" size="7" mb="2">
               Свяжитесь с нами
             </Heading>
-            <Text align="center" size="3" color="gray" mb="2">
+            <Text align="center" size="3" color="gray" mb="1">
+              Вы можете написать нам напрямую на
+              <Text color="red" asChild style={{display: "block"}}>
+                <a
+                  href="mailto:support@sima-board.com"
+                  style={{
+                    fontWeight: 600,
+                    textDecoration: "underline",
+                    color: "var(--accent-9)",
+                  }}
+                >
+                  support@sima-board.com
+                </a>
+              </Text>
+              или воспользоваться формой ниже
+            </Text>
+            <Text align="center" size="2" color="gray" mb="2">
               Оставьте сообщение, и мы свяжемся с вами в ближайшее время
             </Text>
             <Flex direction="column" gap="3">
