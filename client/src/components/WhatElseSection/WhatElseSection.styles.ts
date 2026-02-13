@@ -11,6 +11,7 @@ export const SectionWrapper = styled(Box)`
   background: var(--accent-2);
   border-top: 1px solid var(--gray-5);
   border-bottom: 1px solid var(--gray-5);
+  margin-bottom: var(--space-6);
 `;
 
 export const InnerFlex = styled(Flex)`

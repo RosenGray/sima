@@ -5,7 +5,6 @@ import { getCategorySvgLinkItems } from "@/lib/home/categorySvgLinksConfig";
 import { getHomeBannerItems } from "@/lib/home/bannerItems";
 import { fetchAllLobbySections } from "@/lib/home/lobbyCarouselData";
 import LobbyCarouselSection from "@/components/LobbyCarouselSection/LobbyCarouselSection";
-import WhatElseSection from "@/components/WhatElseSection/WhatElseSection";
 import { HomeLobby } from "./page.styles";
 import Footer from "@/components/Footer/Footer";
 
@@ -26,7 +25,7 @@ export default async function Home() {
         {lobbySections.map((section) => (
           <LobbyCarouselSection key={section.seeAllHref} section={section} />
         ))}
-        <WhatElseSection />
+        {/* <WhatElseSection /> */}
       </HomeLobby>
       <Footer />
     </>

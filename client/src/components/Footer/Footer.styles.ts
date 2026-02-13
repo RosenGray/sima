@@ -4,8 +4,8 @@ import { Box, Card, Flex } from "@radix-ui/themes";
 import { breakpoints } from "@/globals";
 
 export const FooterContainer = styled.footer`
-  min-height: 400px;
-  height: 400px;
+  /* min-height: 400px;
+  height: 400px; */
   background: var(--accent-2);
   border-top: 1px solid var(--gray-6);
   display: flex;
@@ -14,7 +14,7 @@ export const FooterContainer = styled.footer`
 
 export const FooterInner = styled(Flex)`
   width: 100%;
-  max-width: 1200px;
+  max-width: 90%;
   margin: 0 auto;
   padding: var(--space-6) var(--space-4);
   gap: var(--space-6);
