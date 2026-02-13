@@ -19,8 +19,6 @@ const ProfessionalEditPage: FC<ProfessionalEditPageProps> = async ({
     professionalPageRepository.getByPublicId(publicId),
     getCurrentUser(),
   ]);
-  console.log('page', page);
-  console.log('user', user);
 
   if (!page || !user || page.user.id !== user.id) {
     notFound();

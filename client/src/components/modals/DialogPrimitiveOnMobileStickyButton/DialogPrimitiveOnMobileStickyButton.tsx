@@ -191,6 +191,9 @@ const DialogPrimitiveOnMobileStickyButton: FC<
                 </IconButton>
               )}
             </DialogHeader>
+            <Dialog.Description asChild>
+              <VisuallyHidden.Root>Содержимое диалога</VisuallyHidden.Root>
+            </Dialog.Description>
             <DialogContentContainer>{children}</DialogContentContainer>
           </DialogPrimitiveOnMobileStickyButtonContent>
         </Dialog.Portal>

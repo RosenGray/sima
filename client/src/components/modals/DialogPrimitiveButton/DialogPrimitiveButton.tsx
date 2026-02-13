@@ -158,6 +158,9 @@ const DialogPrimitiveButton: FC<DialogPrimitiveButtonProps> = ({
               </IconButton>
             </Dialog.Close>
           </DialogHeader>
+          <Dialog.Description asChild>
+            <VisuallyHidden.Root>Содержимое диалога</VisuallyHidden.Root>
+          </Dialog.Description>
           <DialogContentContainer>{children}</DialogContentContainer>
         </DialogPrimitiveButtonContent>
       </Dialog.Portal>

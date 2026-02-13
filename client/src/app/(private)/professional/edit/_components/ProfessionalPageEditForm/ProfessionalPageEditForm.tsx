@@ -57,6 +57,7 @@ interface ProfessionalPageEditFormProps {
 const ProfessionalPageEditForm: FC<ProfessionalPageEditFormProps> = ({
   page,
 }) => {
+
   const [formKey, setFormKey] = useState(0);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(
@@ -194,19 +195,6 @@ const ProfessionalPageEditForm: FC<ProfessionalPageEditFormProps> = ({
     }
   }, [formState]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-    fd.delete("profileImage");
-    fd.delete("galleryImages");
-    if (selectedProfileFile) {
-      fd.append("profileImage", selectedProfileFile);
-    }
-    selectedGalleryFiles.forEach((f) => fd.append("galleryImages", f));
-    formAction(undefined, fd);
-  };
-
   const handleModalClose = () => {
     setErrorModalOpen(false);
     setFormKey((k) => k + 1);
@@ -223,9 +211,9 @@ const ProfessionalPageEditForm: FC<ProfessionalPageEditFormProps> = ({
   return (
     <>
       <form
-        key={formKey}
+        key={formKey.toString()}
+        action={formAction}
         {...getFormProps(form)}
-        onSubmit={handleSubmit}
       >
         <FormShell px={{ initial: "4", sm: "6", md: "8" }} py={{ initial: "5", md: "7" }}>
           <Flex
