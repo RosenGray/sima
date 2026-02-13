@@ -76,15 +76,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
           )}
         </ListingCardContent>
         <ListingCardFooter>
-          <Text size="2" color="gray">
+          <Text truncate size="2" color="gray">
             {city}
           </Text>
           {price && (
-            <Text size="1" weight="bold" style={{ textAlign: "end" }}>
+            <Text  size="1" weight="bold" style={{ textAlign: "end",whiteSpace: "nowrap" }}>
               {price}
             </Text>
           )}
-          <Text size="2" color="gray">
+          <Text truncate size="2" color="gray">
             {district}
           </Text>
         </ListingCardFooter>

@@ -93,6 +93,9 @@ export const ListingCardFooter = styled.footer`
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid var(--gray-6);
+
+  gap: var(--space-2);
+
 `;
 
 export const ListingCardHeader = styled.header`
@@ -102,5 +105,6 @@ export const ListingCardHeader = styled.header`
   align-items: center;
   height: 20px;
   gap: var(--space-2);
+
 
 `;

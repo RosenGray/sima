@@ -76,6 +76,7 @@ import {
   getAnimalKindById as getAnimalKindByIdForSale,
 } from "../pets/for-sale/animals";
 import { getAnimalById as getAnimalByIdAccessory } from "../pets/accessories/animals";
+import { getYad2CategoryById } from "../yad2/yad2Categories";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -406,7 +407,7 @@ export function mapYad2Item(y: SerializedYad2Item): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(y.images),
     title: y.productTitle || "",
-    subtitle: y.category || "",
+    subtitle: getYad2CategoryById(y.category)?.russianName || "",
     description: y.description || "",
     city: y.city || "",
     price: formatPrice(y.price),
@@ -428,7 +429,7 @@ export function mapJob(j: SerializedJob): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(j.images),
     title: j.title || "",
-    subtitle: j.city || "",
+    subtitle: "",
     description: j.description || "",
     city: j.city || "",
     price: "",
@@ -450,7 +451,7 @@ export function mapOther(o: SerializedOthers): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(o.images),
     title: o.title || "",
-    subtitle: o.city || "",
+    subtitle: "",
     description: o.description || "",
     city: o.city || "",
     price: "",
