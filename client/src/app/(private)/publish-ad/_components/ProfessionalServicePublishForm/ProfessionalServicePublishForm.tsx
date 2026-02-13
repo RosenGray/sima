@@ -10,7 +10,15 @@ import {
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Box, Flex, Grid, Heading, Separator, Text } from "@radix-ui/themes";
+import {
+  Badge,
+  Box,
+  Flex,
+  Grid,
+  Heading,
+  Separator,
+  Text,
+} from "@radix-ui/themes";
 import { useActionState } from "react";
 
 import {
@@ -24,7 +32,11 @@ import {
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
-import { EnvelopeClosedIcon, MobileIcon } from "@radix-ui/react-icons";
+import {
+  EnvelopeClosedIcon,
+  MobileIcon,
+  StarFilledIcon,
+} from "@radix-ui/react-icons";
 import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";
@@ -39,10 +51,12 @@ import Loader from "@/components/Loader";
 import {
   DropzoneSurface,
   FormShell,
+  FreePageOfferCard,
   HeroCard,
   SectionCard,
 } from "./ProfessionalServicePublishForm.styles";
 import { usePublishProfessionalServiceAd } from "../../_providers/PublishProfessionalServiceAdProvider";
+import { generateSlug } from "@/utils/generateSlug";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -59,6 +73,15 @@ const ProfessionalServicePublishForm: FC<
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishProfessionalServiceAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
+  const showPersonalPageOffer = !user?.hasPrivateProfessionalPage;
+  const [personalPageSlug] = useState(() =>
+    showPersonalPageOffer
+      ? generateSlug(user?.firstName ?? "", user?.lastName ?? "")
+      : ""
+  );
+  const personalPagePreviewUrl = showPersonalPageOffer
+    ? `${process.env.NEXT_PUBLIC_CLIENT_URL}/professional/${personalPageSlug}`
+    : "";
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
     () => {
@@ -69,7 +92,7 @@ const ProfessionalServicePublishForm: FC<
           toBeDeleted: false,
         })) || []
       );
-    }
+    },
   );
   const imagesToDelete = useMemo(() => {
     return existingImages.filter((image) => image.toBeDeleted);
@@ -86,7 +109,7 @@ const ProfessionalServicePublishForm: FC<
 
   const [formState, formAction, isPending] = useActionState(
     isCreateMode ? publishProfessionalServiceAd : updateUserWithImagesToDelete,
-    undefined
+    undefined,
   );
 
   const [form, fields] = useForm({
@@ -100,6 +123,9 @@ const ProfessionalServicePublishForm: FC<
       phoneNumber: service?.phoneNumber,
       description: service?.description,
       acceptTerms: service?.acceptTerms ? "on" : null,
+      ...(showPersonalPageOffer
+        ? { acceptPersonalPage: null, slug: personalPageSlug }
+        : {}),
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -163,25 +189,26 @@ const ProfessionalServicePublishForm: FC<
     email,
     phoneNumber,
     acceptTerms,
+    acceptPersonalPage,
     images,
   } = fields;
 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
-    [mappedCategories]
+    [mappedCategories],
   );
   const subCategoryOptions = useMemo(
     () =>
       mapServiceSubCategoriesToSelectOptions(mappedCategories, category.value),
-    [mappedCategories, category.value]
+    [mappedCategories, category.value],
   );
 
   const citiesOptions = useMemo(
     () =>
       getCitiesToSelectOptions(
-        (district.value as Districts) || Districts.Center
+        (district.value as Districts) || Districts.Center,
       ),
-    [district.value]
+    [district.value],
   );
   useEffect(() => {
     if (formState) {
@@ -372,6 +399,66 @@ const ProfessionalServicePublishForm: FC<
                 )}
               </Flex>
             </SectionCard>
+
+            {showPersonalPageOffer && (
+              <FreePageOfferCard variant="surface" size="4">
+                <Flex direction="column" gap="4" p="4">
+                  <Flex
+                    align="center"
+                    justify="between"
+                    gap="2"
+                    wrap="wrap"
+                    style={{ flex: 1, minWidth: 0 }}
+                  >
+                    <Flex
+                      align="center"
+                      gap="2"
+                      wrap="wrap"
+                      style={{ minWidth: 0 }}
+                    >
+                      <StarFilledIcon width={24} height={24} />
+                      <Heading as="h2" size="4">
+                        Персональная страница для вашей услуги —{" "}
+                        <Badge size="2" color="green" variant="solid">
+                          Бесплатно
+                        </Badge>
+                      </Heading>
+                    </Flex>
+                  </Flex>
+                  <Text size="2" color="gray">
+                    Персональная страница поможет клиентам найти вас и узнать
+                    больше об услугах.
+                  </Text>
+                  <Text size="2" color="gray">
+                    Страница будет создана автоматически после публикации
+                    объявления.
+                  </Text>
+                  <Text size="2" color="gray">
+                    Вашу страницу можно будет изменить позже в личном кабинете.
+                  </Text>
+                  <Text size="2" weight="medium">
+                    Ваша страница:{" "}
+                    <Text
+                      as="span"
+                      weight="bold"
+                      style={{
+                        wordBreak: "break-all",
+                        color: "var(--accent-11)",
+                      }}
+                    >
+                      {personalPagePreviewUrl}
+                    </Text>
+                  </Text>
+                  <input type="hidden" name="slug" value={personalPageSlug} />
+                  <Checkbox
+                    field={acceptPersonalPage}
+                    label="Хочу получить персональную страницу"
+                    errors={acceptPersonalPage.errors}
+                    disabled={isPending}
+                  />
+                </Flex>
+              </FreePageOfferCard>
+            )}
 
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>

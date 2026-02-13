@@ -1,11 +1,16 @@
 "use client";
-import { Container, Flex } from "@radix-ui/themes";
+import { Container } from "@radix-ui/themes";
 import { styled } from "styled-components";
 
 export const ContactUsLayoutSection = styled.section`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  &:before {
+    content: "";
+    display: block;
+    height: var(--header-height);
+  }
 `;
 
 export const ContactUsLayoutMain = styled.main`

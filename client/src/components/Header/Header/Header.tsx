@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flex, Text } from "@radix-ui/themes";
-import { PersonIcon, PlusCircledIcon } from "@radix-ui/react-icons";
+import { IdCardIcon, PersonIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import {
   HeaderContainer,
   HeaderTopRow,
@@ -135,14 +135,23 @@ export default function Header() {
                   {firstName?.charAt(0)}
                   {lastName?.charAt(0)}
                 </Text>
-              </DropdownMenuTrigger>} items={[{
-                type: "action",
-                label: "Выйти",
-                icon: <PersonIcon width="18" height="18" />,
-                onClick: async () => {
-                  await logoutUser();
+              </DropdownMenuTrigger>} items={[
+                {
+                  type: "link",
+                  label: "Личный кабинет",
+                  href: "/private-zone",
+                  icon: <IdCardIcon width="18" height="18" />,
                 },
-              }]} triggerMode="hover" />
+                { type: "separator" },
+                {
+                  type: "action",
+                  label: "Выйти",
+                  icon: <PersonIcon width="18" height="18" />,
+                  onClick: async () => {
+                    await logoutUser();
+                  },
+                },
+              ]} triggerMode="hover" />
             ) : (
               <LoginButton asChild variant="surface" size="2">
                 <Link href="/auth/login">

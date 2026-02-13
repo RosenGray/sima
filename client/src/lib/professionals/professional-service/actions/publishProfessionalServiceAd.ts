@@ -3,11 +3,14 @@ import { parseWithZod } from "@conform-to/zod";
 import { createProfessionalServiceSchema } from "../types/professional-service.scema";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { ProfessionalService } from "../models/ProfessionalService";
+import { User } from "@/lib/auth/models/User";
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
+import { ProfessionalPage } from "@/lib/professionals/professional-page/models/ProfessionalPage";
+import { generateSlug } from "@/utils/generateSlug";
 
 export async function publishProfessionalServiceAd(
   initialState: unknown,
@@ -52,6 +55,32 @@ export async function publishProfessionalServiceAd(
       images: uploadResult.files,
     });
     await professionalService.save();
+
+    if (result.value.acceptPersonalPage === "on") {
+      await User.findByIdAndUpdate(user.id, {
+        hasPrivateProfessionalPage: true,
+      });
+
+      // Use slug from form, or generate a fallback
+      const slug =
+        result.value.slug || generateSlug(user.firstName, user.lastName);
+
+      const professionalPage = new ProfessionalPage({
+        user: user.id,
+        publicId: nanoid(10),
+        slug,
+        displayName: `${user.firstName} ${user.lastName}`,
+        description: result.value.description,
+        category: result.value.category,
+        subCategory: result.value.subCategory,
+        district: result.value.district,
+        city: result.value.city,
+        contactPhone: result.value.phoneNumber,
+        contactEmail: result.value.email,
+        isPublished: true,
+      });
+      await professionalPage.save();
+    }
     // Return success response with uploaded file data
   } catch (error) {
     if (error instanceof Error) {
