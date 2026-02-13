@@ -23,6 +23,7 @@ const publicRoutes = [
   "/auth/reset-password",
   "/auth/verify-reset-token",
   "/about",
+  "/service",
   "/api/auth",
   "/api/files",
 ];

@@ -7,6 +7,7 @@ import { fetchAllLobbySections } from "@/lib/home/lobbyCarouselData";
 import LobbyCarouselSection from "@/components/LobbyCarouselSection/LobbyCarouselSection";
 import WhatElseSection from "@/components/WhatElseSection/WhatElseSection";
 import { HomeLobby } from "./page.styles";
+import Footer from "@/components/Footer/Footer";
 
 export default async function Home() {
   const bannerItems = getHomeBannerItems();
@@ -27,6 +28,7 @@ export default async function Home() {
         ))}
         <WhatElseSection />
       </HomeLobby>
+      <Footer />
     </>
   );
 }

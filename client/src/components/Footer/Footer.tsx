@@ -25,7 +25,7 @@ const Footer: FC = () => {
                 Пн–Пт с 08:30 до 16:00
               </Text>
               <Button variant="outline" color="amber" size="3" asChild>
-                <Link href="#">Связаться с нами</Link>
+                <Link href="/service/contact-us">Связаться с нами</Link>
               </Button>
             </Flex>
           </ContactCard>
