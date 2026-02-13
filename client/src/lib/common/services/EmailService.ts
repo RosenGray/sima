@@ -817,5 +817,59 @@ export class EmailService {
       throw error;
     }
   }
+
+  /**
+   * Send contact form submission to support (plain text, no template)
+   */
+  static async sendContactUsEmail(
+    params: { name: string; email: string; subject?: string; message: string },
+    retries: number = 2
+  ): Promise<boolean> {
+    try {
+      const { name, email, subject, message } = params;
+      const sender = EmailService.getSender();
+      const recipient = EmailService.getRecipient(SUPPORT_EMAIL);
+      const replyTo = EmailService.getRecipient(email, name);
+
+      const subjectLine = subject?.trim()
+        ? `Контакты: ${subject}`
+        : "Новое сообщение - Sima";
+
+      const text = [
+        `Имя: ${name}`,
+        `Email: ${email}`,
+        subject?.trim() ? `Тема: ${subject}` : null,
+        "",
+        "Сообщение:",
+        message,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const emailParams = new EmailParams()
+        .setFrom(sender)
+        .setTo([recipient])
+        .setReplyTo(replyTo)
+        .setSubject(subjectLine)
+        .setText(text);
+
+      const result = await EmailService.sendEmailWithRetry(
+        emailParams,
+        retries
+      );
+
+      if (result.success) {
+        console.log("Contact us email sent:", result.messageId);
+        return true;
+      } else {
+        throw new Error(
+          result.error || "Failed to send contact us email"
+        );
+      }
+    } catch (error) {
+      console.error("Error sending contact us email:", error);
+      throw error;
+    }
+  }
 }
 

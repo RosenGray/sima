@@ -2,16 +2,24 @@
 import { parseWithZod } from "@conform-to/zod";
 import { redirect } from "next/navigation";
 import { ContactUsSchema } from "../types/contactUs.schema";
+import { EmailService } from "@/lib/common/services/EmailService";
 
 export async function submitContactUs(
   initialState: unknown,
-  formData: FormData,
+  formData: FormData
 ) {
   const result = parseWithZod(formData, { schema: ContactUsSchema });
 
   if (result.status !== "success") return result.reply();
 
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  const { name, email, subject, message } = result.value;
 
-  redirect("/");
+  try {
+    await EmailService.sendContactUsEmail({ name, email, subject, message });
+    redirect("/");
+  } catch {
+    return result.reply({
+      formErrors: ["Не удалось отправить сообщение. Попробуйте позже."],
+    });
+  }
 }
