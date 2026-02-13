@@ -8,6 +8,9 @@ export const SectionWrapper = styled(Box)`
   padding: var(--space-6) var(--space-4);
   max-width: 1200px;
   margin: 0 auto;
+  background: var(--accent-2);
+  border-top: 1px solid var(--gray-5);
+  border-bottom: 1px solid var(--gray-5);
 `;
 
 export const InnerFlex = styled(Flex)`
@@ -54,9 +57,14 @@ export const LinksList = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-2);
+
+  @media (min-width: ${breakpoints.xs}px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2) var(--space-5);
+  }
 `;
 
 export const LinkItem = styled.li`
