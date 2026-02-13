@@ -3,6 +3,28 @@ import styled from "styled-components";
 import { Box, Card, Container, Flex, Grid, Heading, Section } from "@radix-ui/themes";
 import { breakpoints } from "@/globals";
 
+/* ── Owner-only banner ── */
+export const OwnerBanner = styled(Flex)`
+  padding: var(--space-3) var(--space-5);
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  background: var(--accent-a3);
+  border-bottom: 1px solid var(--accent-6);
+
+  a {
+    color: var(--accent-11);
+    font-weight: 600;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--accent-12);
+    }
+  }
+`;
+
 /* ── Top Bar ── */
 export const TopBar = styled(Flex)`
   padding: var(--space-3) var(--space-5);

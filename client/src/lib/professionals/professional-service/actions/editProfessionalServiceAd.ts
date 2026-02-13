@@ -138,7 +138,8 @@ export async function editProfessionalServiceAd(
         city: result.value.city,
         contactPhone: result.value.phoneNumber,
         contactEmail: result.value.email,
-        isPublished: false,
+        galleryImages: updatedImages,
+        isPublished: true,
       });
       await professionalPage.save();
     }

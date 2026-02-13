@@ -88,7 +88,13 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
     return allImages.slice(1).map((image) => {
       return (
         <GridItem key={image.id} className={GridItem}>
-          <Image fill src={image.previewUrl} alt="Image" />
+          <Image
+            fill
+            src={image.previewUrl}
+            alt="Image"
+            sizes="(max-width: 640px) 50vw, 200px"
+            style={{ objectFit: "cover" }}
+          />
           <DeleteButton type="button" color="red" onClick={() => handleRemoveImage(image)}>
             <TrashIcon />
           </DeleteButton>
@@ -113,7 +119,13 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
     >
       <Grid height="100%" columns="2" gap="2">
         <GridItem>
-          <Image fill src={allImages[0].previewUrl} alt="Image" />
+          <Image
+          fill
+          src={allImages[0].previewUrl}
+          alt="Image"
+          sizes="(max-width: 640px) 50vw, 200px"
+          style={{ objectFit: "cover" }}
+        />
           <DeleteButton type="button" color="red" onClick={() => handleRemoveImage(allImages[0])}>
             <TrashIcon />
           </DeleteButton>
