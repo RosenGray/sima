@@ -1,5 +1,6 @@
 import { SerializedProfessionalPage } from "@/lib/professionals/professional-page/types/professional-page.types";
 import ProfessionalPageView from "../_components/ProfessionalPageView/ProfessionalPageView";
+import { UserRole } from "@/lib/auth/types/auth.scema";
 
 const DUMMY_PAGE: SerializedProfessionalPage = {
   id: "example-id",
@@ -11,7 +12,7 @@ const DUMMY_PAGE: SerializedProfessionalPage = {
     firstName: "Алексей",
     lastName: "Петров",
     isEmailVerified: true,
-    role: "user",
+    role: UserRole.User,
     hasPrivateProfessionalPage: true,
     createdAt: "2024-06-01T10:00:00.000Z",
     updatedAt: "2024-06-01T10:00:00.000Z",
@@ -30,6 +31,7 @@ const DUMMY_PAGE: SerializedProfessionalPage = {
 
 Обслуживаю центральный район: Тель-Авив, Рамат-Ган, Гиватаим, Бней-Брак, Холон, Бат-Ям.`,
   profileImage: {
+    id: "profile-1",
     originalName: "profile.jpg",
     uniqueName: "profile-example.jpg",
     url: "https://picsum.photos/seed/pro-avatar/400/400",
@@ -38,6 +40,7 @@ const DUMMY_PAGE: SerializedProfessionalPage = {
   },
   galleryImages: [
     {
+      id: "gallery-1",
       originalName: "work-1.jpg",
       uniqueName: "gallery-1.jpg",
       url: "https://picsum.photos/seed/pro-work1/800/600",
@@ -45,6 +48,7 @@ const DUMMY_PAGE: SerializedProfessionalPage = {
       folderName: "example",
     },
     {
+      id: "gallery-2",
       originalName: "work-2.jpg",
       uniqueName: "gallery-2.jpg",
       url: "https://picsum.photos/seed/pro-work2/800/600",
@@ -52,6 +56,7 @@ const DUMMY_PAGE: SerializedProfessionalPage = {
       folderName: "example",
     },
     {
+      id: "gallery-3",
       originalName: "work-3.jpg",
       uniqueName: "gallery-3.jpg",
       url: "https://picsum.photos/seed/pro-work3/800/600",
