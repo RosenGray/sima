@@ -10,7 +10,16 @@ import {
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Box, Flex, Grid, Heading, Separator, Text } from "@radix-ui/themes";
+import {
+  Badge,
+  Box,
+  Checkbox as RadixCheckbox,
+  Flex,
+  Grid,
+  Heading,
+  Separator,
+  Text,
+} from "@radix-ui/themes";
 import { useActionState } from "react";
 
 import {
@@ -24,7 +33,11 @@ import {
 import TextAreaField from "@/components/Form/TextAreaField/TextAreaField";
 import DropFilesInput from "@/components/Form/DropFilesInput/DropFilesInput";
 import ImagesPreviewer from "@/components/ImagesPreviewer/ImagesPreviewer";
-import { EnvelopeClosedIcon, MobileIcon } from "@radix-ui/react-icons";
+import {
+  EnvelopeClosedIcon,
+  MobileIcon,
+  StarFilledIcon,
+} from "@radix-ui/react-icons";
 import BasicFormField from "@/components/Form/BasicFormField/BasicFormField";
 import PhoneFormField from "@/components/Form/PhoneFormField/PhoneFormField";
 import Checkbox from "@/components/Form/Checkbox/Checkbox";
@@ -39,6 +52,7 @@ import Loader from "@/components/Loader";
 import {
   DropzoneSurface,
   FormShell,
+  FreePageOfferCard,
   HeroCard,
   SectionCard,
 } from "./ProfessionalServicePublishForm.styles";
@@ -59,6 +73,7 @@ const ProfessionalServicePublishForm: FC<
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishProfessionalServiceAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
+  const [acceptPersonalPage, setAcceptPersonalPage] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
     () => {
@@ -372,6 +387,63 @@ const ProfessionalServicePublishForm: FC<
                 )}
               </Flex>
             </SectionCard>
+
+            <FreePageOfferCard variant="surface" size="4">
+              <Flex direction="column" gap="4" p="4">
+                <Flex
+                  align="center"
+                  justify="between"
+                  gap="2"
+                  wrap="wrap"
+                  style={{ flex: 1, minWidth: 0 }}
+                >
+                  <Flex align="center" gap="2" wrap="wrap" style={{ minWidth: 0 }}>
+                    <StarFilledIcon width={24} height={24} />
+                    <Heading as="h2" size="4">
+                      Персональная страница для вашей услуги — бесплатно
+                    </Heading>
+                  </Flex>
+                  <Badge size="2" color="green" variant="solid">
+                    Бесплатно
+                  </Badge>
+                </Flex>
+                <Text size="2" color="gray">
+                  Персональная страница поможет клиентам найти вас и узнать больше
+                  об услугах.
+                </Text>
+                <Text size="2" color="gray">
+                  Страница будет создана автоматически после публикации
+                  объявления.
+                </Text>
+                <Text size="2">
+                  <a
+                    href="https://www.dummy.co.il"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "var(--accent-11)",
+                      fontWeight: 600,
+                      textDecoration: "underline",
+                    }}
+                  >
+                    Подробнее
+                  </a>
+                </Text>
+                <Flex align="center" gap="2" mt="2">
+                  <RadixCheckbox
+                    id="accept-personal-page"
+                    checked={acceptPersonalPage}
+                    onCheckedChange={(checked) =>
+                      setAcceptPersonalPage(checked === true)
+                    }
+                    disabled={isPending}
+                  />
+                  <Text as="label" htmlFor="accept-personal-page" size="2">
+                    Хочу получить персональную страницу
+                  </Text>
+                </Flex>
+              </Flex>
+            </FreePageOfferCard>
 
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
