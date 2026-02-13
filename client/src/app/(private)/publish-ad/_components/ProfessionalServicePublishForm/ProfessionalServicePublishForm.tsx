@@ -13,7 +13,6 @@ import { parseWithZod } from "@conform-to/zod";
 import {
   Badge,
   Box,
-  Checkbox as RadixCheckbox,
   Flex,
   Grid,
   Heading,
@@ -73,7 +72,6 @@ const ProfessionalServicePublishForm: FC<
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishProfessionalServiceAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
-  const [acceptPersonalPage, setAcceptPersonalPage] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
     () => {
@@ -115,6 +113,7 @@ const ProfessionalServicePublishForm: FC<
       phoneNumber: service?.phoneNumber,
       description: service?.description,
       acceptTerms: service?.acceptTerms ? "on" : null,
+      acceptPersonalPage: user?.hasPrivateProfessionalPage ? "on" : null,
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -178,6 +177,7 @@ const ProfessionalServicePublishForm: FC<
     email,
     phoneNumber,
     acceptTerms,
+    acceptPersonalPage,
     images,
   } = fields;
 
@@ -402,6 +402,7 @@ const ProfessionalServicePublishForm: FC<
                     <Heading as="h2" size="4">
                       Персональная страница для вашей услуги — бесплатно
                     </Heading>
+                    <StarFilledIcon width={24} height={24} />
                   </Flex>
                   <Badge size="2" color="green" variant="solid">
                     Бесплатно
@@ -429,24 +430,12 @@ const ProfessionalServicePublishForm: FC<
                     Подробнее
                   </a>
                 </Text>
-                <input
-                  type="hidden"
-                  name="acceptPersonalPage"
-                  value={acceptPersonalPage ? "on" : ""}
+                <Checkbox
+                  field={acceptPersonalPage}
+                  label="Хочу получить персональную страницу бесплатно"
+                  errors={acceptPersonalPage.errors}
+                  disabled={isPending}
                 />
-                <Flex align="center" gap="2" mt="2">
-                  <RadixCheckbox
-                    id="accept-personal-page"
-                    checked={acceptPersonalPage}
-                    onCheckedChange={(checked) =>
-                      setAcceptPersonalPage(checked === true)
-                    }
-                    disabled={isPending}
-                  />
-                  <Text as="label" htmlFor="accept-personal-page" size="2">
-                    Хочу получить персональную страницу
-                  </Text>
-                </Flex>
               </Flex>
             </FreePageOfferCard>
 
