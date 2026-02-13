@@ -17,6 +17,7 @@ export const jwtSignUser = (user: IUser) => {
       isEmailVerified: user.isEmailVerified ?? false,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      role:user.role,
       hasPrivateProfessionalPage: user.hasPrivateProfessionalPage,
     },
     process.env.JWT_KEY!
