@@ -16,10 +16,11 @@ export async function submitContactUs(
 
   try {
     await EmailService.sendContactUsEmail({ name, email, subject, message });
-    redirect("/");
   } catch {
     return result.reply({
       formErrors: ["Не удалось отправить сообщение. Попробуйте позже."],
     });
   }
+
+  redirect("/");
 }
