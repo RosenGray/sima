@@ -14,6 +14,9 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
 import { professionalServiceRepository } from "../repository/ProfessionalServiceRepository";
+import { nanoid } from "nanoid";
+import { ProfessionalPage } from "@/lib/professionals/professional-page/models/ProfessionalPage";
+import { generateSlug } from "@/utils/generateSlug";
 
 export async function editProfessionalServiceAd(
   context: {
@@ -112,10 +115,32 @@ export async function editProfessionalServiceAd(
     );
     await professionalService.save();
 
-    if (result.value.acceptPersonalPage === "on") {
+    if (
+      result.value.acceptPersonalPage === "on" &&
+      !user.hasPrivateProfessionalPage
+    ) {
       await User.findByIdAndUpdate(user.id, {
         hasPrivateProfessionalPage: true,
       });
+
+      const slug =
+        result.value.slug || generateSlug(user.firstName, user.lastName);
+
+      const professionalPage = new ProfessionalPage({
+        user: user.id,
+        publicId: nanoid(10),
+        slug,
+        displayName: `${user.firstName} ${user.lastName}`,
+        description: result.value.description,
+        category: result.value.category,
+        subCategory: result.value.subCategory,
+        district: result.value.district,
+        city: result.value.city,
+        contactPhone: result.value.phoneNumber,
+        contactEmail: result.value.email,
+        isPublished: true,
+      });
+      await professionalPage.save();
     }
     // Return success response with uploaded file data
   } catch (error) {

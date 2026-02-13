@@ -73,11 +73,15 @@ const ProfessionalServicePublishForm: FC<
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishProfessionalServiceAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
+  const showPersonalPageOffer = !user?.hasPrivateProfessionalPage;
   const [personalPageSlug] = useState(() =>
-    generateSlug(user?.firstName ?? "", user?.lastName ?? "")
+    showPersonalPageOffer
+      ? generateSlug(user?.firstName ?? "", user?.lastName ?? "")
+      : ""
   );
-  console.log('personalPageSlug', personalPageSlug);
-  const personalPagePreviewUrl = `${process.env.NEXT_PUBLIC_CLIENT_URL}/professional/${personalPageSlug}`;
+  const personalPagePreviewUrl = showPersonalPageOffer
+    ? `${process.env.NEXT_PUBLIC_CLIENT_URL}/professional/${personalPageSlug}`
+    : "";
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
     () => {
@@ -119,8 +123,9 @@ const ProfessionalServicePublishForm: FC<
       phoneNumber: service?.phoneNumber,
       description: service?.description,
       acceptTerms: service?.acceptTerms ? "on" : null,
-      acceptPersonalPage: user?.hasPrivateProfessionalPage ? "on" : null,
-      slug: personalPageSlug,
+      ...(showPersonalPageOffer
+        ? { acceptPersonalPage: null, slug: personalPageSlug }
+        : {}),
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -395,7 +400,7 @@ const ProfessionalServicePublishForm: FC<
               </Flex>
             </SectionCard>
 
-            {!user?.hasPrivateProfessionalPage && (
+            {showPersonalPageOffer && (
               <FreePageOfferCard variant="surface" size="4">
                 <Flex direction="column" gap="4" p="4">
                   <Flex
