@@ -5,7 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import type { BannerCarouselProps, BannerSlideItem } from "./BannerCarousel.types";
+import type {
+  BannerCarouselProps,
+  BannerSlideItem,
+} from "./BannerCarousel.types";
 import {
   BannerCarouselViewport,
   BannerCarouselSwiper,
@@ -23,7 +26,7 @@ function isInternalHref(href: string): boolean {
 }
 
 function resolveAutoplayConfig(
-  autoplay: BannerCarouselProps["autoplay"]
+  autoplay: BannerCarouselProps["autoplay"],
 ): { delay: number; disableOnInteraction: boolean } | false {
   if (autoplay === undefined || autoplay === false) return false;
   if (autoplay === true) {
@@ -49,6 +52,7 @@ export function BannerCarousel({
 
   return (
     <BannerCarouselViewport
+      as="section"
       className={`${className ?? ""} hideScrollbar`.trim()}
       aria-hidden={items.length === 0}
     >

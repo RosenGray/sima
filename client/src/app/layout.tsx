@@ -20,6 +20,7 @@ import Accessibilik from "accessibility-react-widget";
 // import { GoogleTagManager } from "@next/third-parties/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import ServerActionErrorHandler from "@/errors/ServerActionErrorHandler/ServerActionErrorHandler";
+;
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
@@ -68,7 +69,10 @@ export default async function RootLayout({
 
                     <PortalProvider>
                       <Accessibilik />
-                      <div className="SimaApp">{children}</div>
+                      <div className="SimaApp">
+                        {children}
+                  
+                      </div>
                     </PortalProvider>
                     <RadixTheme id={RADIX_THEME_PORTAL_ID} accentColor="red" />
                     <LayoutBackground />

@@ -19,7 +19,7 @@ const LobbyCarouselSection: FC<LobbyCarouselSectionProps> = ({ section }) => {
   if (section.items.length === 0) return null;
 
   return (
-    <SectionWrapper>
+    <SectionWrapper as="section">
       <SectionHeader>
         <SectionTitle size={{ initial: "4", md: "5" }}>
           {section.title}
