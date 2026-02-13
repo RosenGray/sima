@@ -16,6 +16,7 @@ import {
 import { SerializedProfessionalPage } from "@/lib/professionals/professional-page/types/professional-page.types";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
 import {
+  OwnerBanner,
   TopBar,
   HeroSection,
   HeroContent,
@@ -37,10 +38,14 @@ import {
 
 interface ProfessionalPageViewProps {
   page: SerializedProfessionalPage;
+  isOwner?: boolean;
+  editHref?: string;
 }
 
 const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
   page,
+  isOwner = false,
+  editHref = "",
 }) => {
   const {
     displayName,
@@ -89,6 +94,17 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
       <TopBar>
         <Link href="/">SIMA</Link>
       </TopBar>
+
+      {/* ── Owner-only: edit hint (visible only to the page owner) ── */}
+      {isOwner && editHref && (
+        <OwnerBanner>
+          <Text size="2" color="gray">
+            Это сообщение видно только вам. Если хотите отредактировать страницу,
+            вы можете сделать это{" "}
+            <Link href={editHref}>здесь</Link>.
+          </Text>
+        </OwnerBanner>
+      )}
 
       {/* ── Hero ── */}
       <HeroSection>
