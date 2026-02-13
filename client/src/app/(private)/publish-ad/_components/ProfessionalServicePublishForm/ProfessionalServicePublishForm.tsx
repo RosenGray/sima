@@ -429,6 +429,11 @@ const ProfessionalServicePublishForm: FC<
                     Подробнее
                   </a>
                 </Text>
+                <input
+                  type="hidden"
+                  name="acceptPersonalPage"
+                  value={acceptPersonalPage ? "on" : ""}
+                />
                 <Flex align="center" gap="2" mt="2">
                   <RadixCheckbox
                     id="accept-personal-page"

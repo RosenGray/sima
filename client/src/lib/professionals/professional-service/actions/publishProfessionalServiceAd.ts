@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { createProfessionalServiceSchema } from "../types/professional-service.scema";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { ProfessionalService } from "../models/ProfessionalService";
+import { User } from "@/lib/auth/models/User";
 import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
@@ -52,6 +53,12 @@ export async function publishProfessionalServiceAd(
       images: uploadResult.files,
     });
     await professionalService.save();
+
+    if (result.value.acceptPersonalPage === "on") {
+      await User.findByIdAndUpdate(user.id, {
+        hasPrivateProfessionalPage: true,
+      });
+    }
     // Return success response with uploaded file data
   } catch (error) {
     if (error instanceof Error) {
