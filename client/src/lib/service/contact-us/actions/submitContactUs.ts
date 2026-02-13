@@ -22,5 +22,5 @@ export async function submitContactUs(
     });
   }
 
-  redirect("/");
+  redirect("/service/contact-us/success");
 }
