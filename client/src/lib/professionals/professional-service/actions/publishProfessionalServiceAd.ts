@@ -77,7 +77,7 @@ export async function publishProfessionalServiceAd(
         city: result.value.city,
         contactPhone: result.value.phoneNumber,
         contactEmail: result.value.email,
-        isPublished: true,
+        isPublished: false,
       });
       await professionalPage.save();
     }
