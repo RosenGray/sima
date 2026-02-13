@@ -67,7 +67,9 @@ export function createAnimalsApi(animals: Record<AnimalId, Animal>) {
   const getAnimalKindById = (
     id: AnimalKind["id"],
     animalId: AnimalId,
-  ): AnimalKind | undefined => kindLookupCache.get(animalId)?.get(id);
+  ): AnimalKind | undefined => {
+    return kindLookupCache.get(animalId)?.get(id);
+  };
 
   const getAnimalById = (id: AnimalId): Animal | undefined =>
     animalLookupCache.get(id);

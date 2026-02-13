@@ -67,7 +67,15 @@ import { getOffRoadVehicleManufacturerById } from "../vehicles/off-road/offRoadV
 import { getOffRoadVehicleModelById } from "../vehicles/off-road/offRoadVehicleModels";
 import { getVehicleManufacturerById } from "../vehicles/cars/vehicleManufacturers";
 import { getVehicleModelById } from "../vehicles/cars/vehicleModels";
-import { getAnimalById, getAnimalKindById } from "../pets/accessories/animals";
+import {
+  getAnimalById as getAnimalByIdForFree,
+  getAnimalKindById as getAnimalKindByIdForFree,
+} from "../pets/for-free/animals";
+import {
+  getAnimalById as getAnimalByIdForSale,
+  getAnimalKindById as getAnimalKindByIdForSale,
+} from "../pets/for-sale/animals";
+import { getAnimalById as getAnimalByIdAccessory } from "../pets/accessories/animals";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -242,8 +250,9 @@ export function mapPetForSale(
 ): LobbyCarouselItemWithDate {
   return {
     imageUrl: firstImage(p.images),
-    title: `${p.animal} — ${p.kind}`,
-    subtitle: p.city || "",
+    title: getAnimalByIdForSale(p.animal)?.russianName || "",
+    subtitle:
+      getAnimalKindByIdForSale(p.kind, p.animal)?.russianName || "",
     description: p.description || "",
     city: p.city || "",
     price: formatPrice(p.price),
@@ -260,11 +269,10 @@ export function mapPetForSale(
 export function mapPetForFree(
   p: SerializedPetForFree,
 ): LobbyCarouselItemWithDate {
-  console.log(p);
   return {
     imageUrl: firstImage(p.images),
-    title: getAnimalById(p.animal)?.russianName || "",
-    subtitle: getAnimalKindById(p.kind, p.animal)?.russianName || "",
+    title: getAnimalByIdForFree(p.animal)?.russianName || "",
+    subtitle: getAnimalKindByIdForFree(p.kind, p.animal)?.russianName || "",
     description: p.description || "",
     city: p.city || "",
     price: "",
@@ -284,7 +292,7 @@ export function mapPetAccessory(
   return {
     imageUrl: firstImage(pa.images),
     title: pa.title || "",
-    subtitle: getAnimalById(pa.animal)?.russianName || "",
+    subtitle: getAnimalByIdAccessory(pa.animal)?.russianName || "",
     description: pa.description || "",
     city: pa.city || "",
     price: formatPrice(pa.price),
