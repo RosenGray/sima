@@ -30,7 +30,7 @@ export const ListingCardCarouselSwiper = styled(Swiper)`
 export const NavButton = styled.button`
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-100%);
   z-index: 20;
   width: 40px;
   height: 40px;
@@ -51,7 +51,7 @@ export const NavButton = styled.button`
   &:hover:not(:disabled) {
     background: var(--accent-9);
     color: var(--gray-1);
-    transform: translateY(-50%) scale(1.1);
+    transform: translateY(-100%) scale(1.1);
     }
 
     &:disabled {

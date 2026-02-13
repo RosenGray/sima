@@ -342,6 +342,7 @@ const MotorcyclePublishForm: FC<MotorcyclePublishFormProps> = ({
                     dataIsValid={mileage.valid}
                     errors={mileage.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -543,6 +544,7 @@ const MotorcyclePublishForm: FC<MotorcyclePublishFormProps> = ({
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

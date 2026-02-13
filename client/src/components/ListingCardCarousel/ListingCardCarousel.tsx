@@ -81,14 +81,11 @@ export function ListingCardCarousel({
         {items.map((item: ListingCardCarouselItem, index: number) => {
           const city = getCityById(item.city, item.district as Districts);
           const district = getDistrictById(item.district as Districts);
-          console.log(item)
           return (
             <SwiperSlide
               key={`${item.href}-${index}`}
               style={{ width: 250, maxWidth: "250px" }}
             >
-           
-          
               <SlideLink as={Link as React.ElementType} href={item.href}>
                 <ListingCard
                   imageUrl={item.imageUrl}
@@ -97,6 +94,11 @@ export function ListingCardCarousel({
                   city={city?.nameRussian || ""}  
                   price={item.price}
                   district={district?.name || ""}
+                  description={item.description}
+                  likeButton={{
+                    entityType: item.likeButton?.entityType,
+                    publicId: item.likeButton?.publicId,
+                  }}
                 />
               </SlideLink>
             </SwiperSlide>

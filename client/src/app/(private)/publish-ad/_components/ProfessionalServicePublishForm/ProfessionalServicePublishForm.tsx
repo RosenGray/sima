@@ -400,6 +400,7 @@ const ProfessionalServicePublishForm: FC<
                     errors={email.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

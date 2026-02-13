@@ -28,6 +28,18 @@ export const LikeButtonWrapper = styled.div`
   top: var(--space-2);
   right: var(--space-2);
   z-index: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-full);
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
 `;
 
 export const ListingCardImageBlock = styled(Box)`
@@ -54,14 +66,14 @@ export const ListingCardContent = styled(Flex)`
 
 export const ListingCardTitle = styled(Box)`
   display: flex;
-  flex: 0 0 50%;
+  max-width: 50%;
   min-width: 0;
 
 `;
 
 export const ListingCardSubtitle = styled(Box)`
   display: flex;
-  flex: 0 0 50%;
+  max-width: 50%;
   min-width: 0;
 `;
 
@@ -81,14 +93,18 @@ export const ListingCardFooter = styled.footer`
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid var(--gray-6);
+
+  gap: var(--space-2);
+
 `;
 
 export const ListingCardHeader = styled.header`
   width: 100%;
   display: flex;
-
+  justify-content: space-between;
   align-items: center;
   height: 20px;
   gap: var(--space-2);
+
 
 `;

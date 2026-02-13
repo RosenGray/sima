@@ -17,6 +17,7 @@ interface PriceFormFieldProps extends TextField.RootProps {
   showEmailDisclaimer?: boolean;
   _key?: string;
   isMandatory?: boolean;
+  disabledAutocomplete?: boolean;
 }
 
 const PriceFormField: FC<PriceFormFieldProps> = ({
@@ -33,6 +34,7 @@ const PriceFormField: FC<PriceFormFieldProps> = ({
   showEmailDisclaimer,
   _key,
   isMandatory,
+  disabledAutocomplete,
 }) => {
   const initialValue = defaultValue
     ? formatNumberWithCommas(defaultValue.toString())
@@ -64,6 +66,7 @@ const PriceFormField: FC<PriceFormFieldProps> = ({
       pattern="[\d,]*"
       inputMode="numeric"
       onChange={handleChange}
+      disabledAutocomplete={disabledAutocomplete}
     >
       ₪
     </BasicFormField>

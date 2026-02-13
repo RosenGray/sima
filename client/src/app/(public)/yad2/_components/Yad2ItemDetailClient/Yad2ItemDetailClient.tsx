@@ -1,7 +1,7 @@
 "use client";
 import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-import { Badge, Text, Button, Link, Spinner } from "@radix-ui/themes";
+import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
@@ -45,6 +45,8 @@ import {
 } from "@/lib/yad2/actions/deleteYad2ItemAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
+import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import { ENTITY_TYPE_YAD2 } from "@/lib/constants/entityTypes";
 import {
   getYad2CategoryById,
 } from "@/lib/yad2/yad2Categories";
@@ -143,9 +145,17 @@ const Yad2ItemDetailClient: React.FC<Yad2ItemDetailClientProps> = ({
     <PageContainer size="4">
       {/* Header Section with Title and Owner Actions */}
       <HeaderSection>
-        <PageTitle size="8" weight="bold">
-          {productTitle}
-        </PageTitle>
+        <Flex align="center" gap="3" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <PageTitle size="8" weight="bold">
+            {productTitle}
+          </PageTitle>
+          <LikeButton
+            entityType={ENTITY_TYPE_YAD2}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        </Flex>
         {isOwner && (
           <ButtonGroup>
             <Button disabled={isPending} asChild size="3" variant="soft">

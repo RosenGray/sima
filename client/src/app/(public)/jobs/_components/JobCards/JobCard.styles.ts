@@ -38,7 +38,6 @@ export const JobCardHeader = styled.header`
   padding: var(--space-2);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-2);
 `;
 

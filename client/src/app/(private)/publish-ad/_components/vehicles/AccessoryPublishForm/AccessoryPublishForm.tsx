@@ -289,6 +289,7 @@ const AccessoryPublishForm: FC<AccessoryPublishFormProps> = ({
                     errors={title.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -490,6 +491,7 @@ const AccessoryPublishForm: FC<AccessoryPublishFormProps> = ({
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

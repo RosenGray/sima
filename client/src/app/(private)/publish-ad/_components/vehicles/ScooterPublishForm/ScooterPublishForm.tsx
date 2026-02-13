@@ -319,6 +319,7 @@ const ScooterPublishForm: FC<ScooterPublishFormProps> = ({ scooter, formMode }) 
                     errors={engineCapacity.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <BasicFormField
@@ -331,6 +332,7 @@ const ScooterPublishForm: FC<ScooterPublishFormProps> = ({ scooter, formMode }) 
                     dataIsValid={mileage.valid}
                     errors={mileage.errors}
                     disabled={isPending}
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -528,6 +530,7 @@ const ScooterPublishForm: FC<ScooterPublishFormProps> = ({ scooter, formMode }) 
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

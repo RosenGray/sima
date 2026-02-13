@@ -292,6 +292,7 @@ const SpecialVehiclePublishForm: FC<SpecialVehiclePublishFormProps> = ({
                     errors={title.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>
@@ -493,6 +494,7 @@ const SpecialVehiclePublishForm: FC<SpecialVehiclePublishFormProps> = ({
                     errors={contactEmail.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

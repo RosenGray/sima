@@ -293,6 +293,7 @@ const PetAccessoryPublishForm: FC<PetAccessoryPublishFormProps> = ({
                     errors={title.errors}
                     disabled={isPending}
                     isMandatory
+                    disabledAutocomplete
                   />
 
                   <PriceFormField
@@ -478,6 +479,7 @@ const PetAccessoryPublishForm: FC<PetAccessoryPublishFormProps> = ({
                     disabled={isPending}
                     isMandatory
                     showEmailDisclaimer
+                    disabledAutocomplete
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>

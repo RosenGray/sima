@@ -6,8 +6,8 @@ import type { Animal, AnimalId } from "@/lib/pets/animals/types/animal.schema";
  * for-sale and accessories use their own data.
  */
 export const animals: Record<AnimalId, Animal> = {
-  dog: {
-    id: "dogs",
+  anim_dogs: {
+    id: "anim_dogs",
     russianName: "Собаки",
     kinds: [
       {"id":"DgA1x9","name":"מעורב","russianName":"Метис"},
@@ -126,8 +126,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  cat: {
-    id: "cats",
+  anim_cats: {
+    id: "anim_cats",
     russianName: "Кошки",
     kinds: [
       {"id":"CtA1X9","name":"אביסיני","russianName":"Абиссинская кошка"},
@@ -154,8 +154,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  fish: {
-    id: "fish",
+  anim_fish: {
+    id: "anim_fish",
     russianName: "Рыбы",
     kinds: [
       { "id": "87", "name": "אנבסיים", "russianName": "Анабасовые" },
@@ -170,8 +170,8 @@ export const animals: Record<AnimalId, Animal> = {
       { "id": "99", "name": "אחר", "russianName": "Другое" }
     ],
   },
-  bird: {
-    id: "birds",
+  anim_birds: {
+    id: "anim_birds",
     russianName: "Птицы",
     kinds: [
       {
@@ -203,8 +203,8 @@ export const animals: Record<AnimalId, Animal> = {
       { id: "BrT7Q6", name: "תוכון", russianName: "Волнистый попугай" },
     ],
   },
-  ferrets: {
-    id: "ferrets",
+  anim_ferrets: {
+    id: "anim_ferrets",
     russianName: "Хорьки",
     kinds: [
       {
@@ -215,8 +215,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  rodents: {
-    id: "rodents",
+  anim_rodents: {
+    id: "anim_rodents",
     russianName: "Грызуны",
     kinds: [
       { "id": "a9Q2Lm", "name": "אוגר", "russianName": "Хомяк" },
@@ -238,8 +238,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  farm_animals: {
-    id: "farm_animals",
+  anim_farm_animals: {
+    id: "anim_farm_animals",
     russianName: "сельскохозяйственные животные",
     kinds: [
       { "id": "238", "name": "אורפינגטון", "russianName": "Орпингтон" },
@@ -262,8 +262,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  horses: {
-    id: "horses",
+  anim_horses: {
+    id: "anim_horses",
     russianName: "Лошади",
     kinds: [
       { "id": "81", "name": "אנדלוסי", "russianName": "Андалузская" },
@@ -285,8 +285,8 @@ export const animals: Record<AnimalId, Animal> = {
   
     ],
   },
-  reptiles: {
-    id: "reptiles",
+  anim_reptiles: {
+    id: "anim_reptiles",
     russianName: "Ящерицы и змеи",
     kinds: [
       { "id": "102", "name": "איגואנה", "russianName": "Игуана" },
