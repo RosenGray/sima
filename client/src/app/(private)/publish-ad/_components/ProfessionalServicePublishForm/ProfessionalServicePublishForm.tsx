@@ -56,6 +56,7 @@ import {
   SectionCard,
 } from "./ProfessionalServicePublishForm.styles";
 import { usePublishProfessionalServiceAd } from "../../_providers/PublishProfessionalServiceAdProvider";
+import { generateSlug } from "@/utils/generateSlug";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -72,6 +73,11 @@ const ProfessionalServicePublishForm: FC<
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const { mappedCategories } = usePublishProfessionalServiceAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
+  const [personalPageSlug] = useState(() =>
+    generateSlug(user?.firstName ?? "", user?.lastName ?? "")
+  );
+  console.log('personalPageSlug', personalPageSlug);
+  const personalPagePreviewUrl = `${process.env.NEXT_PUBLIC_CLIENT_URL}/professional/${personalPageSlug}`;
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
     () => {
@@ -114,6 +120,7 @@ const ProfessionalServicePublishForm: FC<
       description: service?.description,
       acceptTerms: service?.acceptTerms ? "on" : null,
       acceptPersonalPage: user?.hasPrivateProfessionalPage ? "on" : null,
+      slug: personalPageSlug,
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -424,20 +431,20 @@ const ProfessionalServicePublishForm: FC<
                   <Text size="2" color="gray">
                     Вашу страницу можно будет изменить позже в личном кабинете.
                   </Text>
-                  <Text size="2">
-                    <a
-                      href="https://www.dummy.co.il"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  <Text size="2" weight="medium">
+                    Ваша страница:{" "}
+                    <Text
+                      as="span"
+                      weight="bold"
                       style={{
+                        wordBreak: "break-all",
                         color: "var(--accent-11)",
-                        fontWeight: 600,
-                        textDecoration: "underline",
                       }}
                     >
-                      Подробнее
-                    </a>
+                      {personalPagePreviewUrl}
+                    </Text>
                   </Text>
+                  <input type="hidden" name="slug" value={personalPageSlug} />
                   <Checkbox
                     field={acceptPersonalPage}
                     label="Хочу получить персональную страницу"

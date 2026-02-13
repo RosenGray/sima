@@ -61,6 +61,7 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
         return z.NEVER;
       }),
     acceptPersonalPage: z.string().optional(),
+    slug: z.string().optional(),
     images: z
       .array(z.instanceof(File))
       .min(
