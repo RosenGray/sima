@@ -35,6 +35,10 @@ import {
   SocialLinkButton,
   PageFooter,
 } from "./ProfessionalPageView.styles";
+import { Logo } from "@/components/Header/Header.styles";
+import SimaDarkLogo from "@/components/svg/Sima/SimaDarkLogo";
+import { getCityById, getDistrictById } from "@/lib/cities";
+import { Districts } from "@/lib/cities/types/cities.schema";
 
 interface ProfessionalPageViewProps {
   page: SerializedProfessionalPage;
@@ -69,6 +73,9 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
     setModalOpen(true);
   };
 
+  const _district = getDistrictById(district as Districts)?.name;
+  const _city = getCityById(city as string, district as Districts)?.nameRussian;
+
   // Build initials for avatar fallback
   const initials = displayName
     .split(" ")
@@ -92,16 +99,30 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
     <>
       {/* ── Top Bar ── */}
       <TopBar>
-        <Link href="/">SIMA</Link>
+        <Logo>
+          <Link
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            href="/"
+          >
+            <SimaDarkLogo
+              viewBox={{ width: 200, height: 60 }}
+              width={200}
+              height={60}
+            />
+          </Link>
+        </Logo>
       </TopBar>
 
       {/* ── Owner-only: edit hint (visible only to the page owner) ── */}
       {isOwner && editHref && (
         <OwnerBanner>
           <Text size="2" color="gray">
-            Это сообщение видно только вам. Если хотите отредактировать страницу,
-            вы можете сделать это{" "}
-            <Link href={editHref}>здесь</Link>.
+            Это сообщение видно только вам. Если хотите отредактировать
+            страницу, вы можете сделать это <Link href={editHref}>здесь</Link>.
           </Text>
         </OwnerBanner>
       )}
@@ -146,11 +167,11 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
             )}
           </Flex>
 
-          {(district || city) && (
+          {_district && _city && (
             <Flex align="center" gap="2">
               <DrawingPinIcon width={16} height={16} />
               <Text size="3" color="gray">
-                {[district, city].filter(Boolean).join(", ")}
+                {[_district, _city].filter(Boolean).join(", ")}
               </Text>
             </Flex>
           )}
@@ -190,14 +211,14 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
                   {subCategory.russianDisplayName}
                 </Badge>
               )}
-              {district && (
+              {_district && (
                 <Badge size="2" color="blue" variant="soft">
-                  {district}
+                  {_district}
                 </Badge>
               )}
-              {city && (
+              {_city && (
                 <Badge size="2" color="cyan" variant="soft">
-                  {city}
+                  {_city}
                 </Badge>
               )}
             </DetailsBadgeContainer>
@@ -211,9 +232,7 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
               <GlobeIcon width={20} height={20} />
               Галерея
             </SectionTitle>
-            <GalleryGrid
-              columns={{ initial: "1", xs: "2", md: "3" }}
-            >
+            <GalleryGrid columns={{ initial: "1", xs: "2", md: "3" }}>
               {galleryImages!.map((image, index) => (
                 <GalleryImageWrapper
                   key={image.uniqueName}

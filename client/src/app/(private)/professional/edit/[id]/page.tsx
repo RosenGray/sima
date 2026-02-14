@@ -31,7 +31,7 @@ const ProfessionalEditPage: FC<ProfessionalEditPageProps> = async ({
     <PublishProfessionalServiceAdProvider data={{ mappedCategories }}>
       <Box mx="auto" py="4">
         <Heading mb="4" align="center">
-          Редактирование страницы
+        Редактирование страницы
         </Heading>
         <ProfessionalPageEditForm page={page} />
       </Box>
