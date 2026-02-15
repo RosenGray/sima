@@ -12,6 +12,7 @@ const protectedRoutes = [
   "/publish-ad",
   "/chat",
   "/private-zone",
+  "/professional/edit/:id",
 ];
 
 // Define routes that should be accessible without authentication

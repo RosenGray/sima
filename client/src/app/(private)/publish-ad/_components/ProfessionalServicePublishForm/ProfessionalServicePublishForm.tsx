@@ -112,6 +112,7 @@ const ProfessionalServicePublishForm: FC<
     undefined,
   );
 
+
   const [form, fields] = useForm({
     defaultValue: {
       category: service?.category?.id,
@@ -485,7 +486,7 @@ const ProfessionalServicePublishForm: FC<
                     defaultValue={fields.email.initialValue}
                     dataIsValid={email.valid}
                     errors={email.errors}
-                    disabled={isPending}
+                    readOnly
                     isMandatory
                     disabledAutocomplete
                   >

@@ -6,6 +6,9 @@ const DUMMY_PAGE: SerializedProfessionalPage = {
   id: "example-id",
   publicId: "example-pub",
   slug: "example",
+  slugPrefix: "example",
+  fullSlug: "example-example",
+  acceptTerms: true,
   user: {
     id: "user-example",
     email: "alexey@example.com",
@@ -97,8 +100,8 @@ const DUMMY_PAGE: SerializedProfessionalPage = {
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
   },
-  district: "Центр",
-  city: "Тель-Авив",
+  district: "d3",
+  city: "c44",
   contactPhone: "+972-50-123-4567",
   contactEmail: "alexey.petrov@example.com",
   socialLinks: {

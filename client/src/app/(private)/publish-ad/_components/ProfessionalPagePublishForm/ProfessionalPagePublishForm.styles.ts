@@ -1,5 +1,5 @@
 "use client";
-import { Box, Card, Flex } from "@radix-ui/themes";
+import { Box, Card } from "@radix-ui/themes";
 import { styled } from "styled-components";
 
 export const FormShell = styled(Box)`
@@ -25,4 +25,13 @@ export const DropzoneSurface = styled(Box)`
   border-radius: var(--radius-4);
   background-color: var(--gray-a2);
   border: 1px dashed var(--accent-a6);
+`;
+
+export const ProfileImageWrap = styled(Box)`
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-3);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
 `;
