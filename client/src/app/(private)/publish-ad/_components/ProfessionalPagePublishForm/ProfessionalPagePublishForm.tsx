@@ -1,10 +1,11 @@
 "use client";
 
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import {
   createProfessionalPageSchema,
   MAX_FILE_SIZE,
   MAX_GALLERY_FILES,
+  MAX_PROFILE_IMAGE_FILES,
 } from "@/lib/professionals/professional-page/types/professional-page.schema";
 import { SerializedProfessionalPage } from "@/lib/professionals/professional-page/types/professional-page.types";
 import { Districts } from "@/lib/cities/types/cities.schema";
@@ -52,7 +53,11 @@ import {
 } from "./ProfessionalPagePublishForm.styles";
 import { usePublishProfessionalServiceAd } from "../../_providers/PublishProfessionalServiceAdProvider";
 import { generateSlug } from "@/utils/generateSlug";
-import { EnvelopeClosedIcon, MobileIcon, TrashIcon } from "@radix-ui/react-icons";
+import {
+  EnvelopeClosedIcon,
+  MobileIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
 import Image from "next/image";
 
 const areasOptions = mapAreasToSelectOptions();
@@ -73,7 +78,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
   const { mappedCategories } = usePublishProfessionalServiceAd();
 
   const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(
-    null
+    null,
   );
   const [profileRemoved, setProfileRemoved] = useState(false);
   const existingProfileImage: ExistingImageItem | null = entity?.profileImage
@@ -85,7 +90,9 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
       }
     : null;
 
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedProfileFiles, setSelectedProfileFiles] = useState<File[]>([]);
+  const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<File[]>([]);
+
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
     () =>
       entity?.galleryImages?.map((img) => ({
@@ -93,15 +100,16 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
         id: img.uniqueName,
         isExisting: true,
         toBeDeleted: false,
-      })) ?? []
+      })) ?? [],
   );
 
   const galleryImagesToDelete = useMemo(
     () => existingImages.filter((i) => i.toBeDeleted),
-    [existingImages]
+    [existingImages],
   );
   const allGalleryImagesDeleted =
-    existingImages.length > 0 && galleryImagesToDelete.length === existingImages.length;
+    existingImages.length > 0 &&
+    galleryImagesToDelete.length === existingImages.length;
 
   const profileImageToDelete =
     !isCreateMode && existingProfileImage && profileRemoved
@@ -117,25 +125,26 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
 
   const [formState, formAction, isPending] = useActionState(
     isCreateMode ? publishProfessionalPage : editActionWithContext,
-    undefined
+    undefined,
   );
 
+  const firstName = user?.firstName ?? "";
+  const lastName = user?.lastName ?? "";
+
   const [form, fields] = useForm({
-    key: formKey.toString(),
     defaultValue: {
-      displayName: entity?.displayName ?? "",
-      description: entity?.description ?? "",
+      displayName: entity?.displayName ?? `${firstName} ${lastName}`,
       slug:
         entity?.slug ??
-        (user
-          ? generateSlug(user.firstName ?? "", user.lastName ?? "")
-          : ""),
+        `${firstName.toLocaleLowerCase()}-${lastName.toLocaleLowerCase()}`,
+      slugPrefix: entity?.slugPrefix ?? generateSlug(""),
+      description: entity?.description ?? "",
       category: entity?.category?.id ?? "",
       subCategory: entity?.subCategory?.id ?? "",
       district: entity?.district ?? Districts.Center,
       city: entity?.city ?? "",
       contactPhone: entity?.contactPhone ?? "",
-      contactEmail: entity?.contactEmail ?? user?.email ?? "",
+      contactEmail: "lukman@gmail.com", //entity?.contactEmail ?? user?.email ?? "",
       whatsapp: entity?.socialLinks?.whatsapp ?? "",
       instagram: entity?.socialLinks?.instagram ?? "",
       facebook: entity?.socialLinks?.facebook ?? "",
@@ -145,42 +154,47 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
-      const updatedFormData = new FormData();
-      for (const [key, value] of formData.entries()) {
-        if (key !== "profileImage" && key !== "galleryImages") {
-          updatedFormData.append(key, value as string);
-        }
-      }
-      if (selectedProfileFile && selectedProfileFile.size > 0) {
-        updatedFormData.append("profileImage", selectedProfileFile);
-      }
-      selectedFiles.forEach((f) => updatedFormData.append("galleryImages", f));
-      const currentGallery = formData.getAll("galleryImages");
-      currentGallery.forEach((file) => {
-        if (
-          file instanceof File &&
-          file.size > 0 &&
-          file.name !== "undefined" &&
-          !selectedFiles.some((f) => f.name === file.name)
-        ) {
-          updatedFormData.append("galleryImages", file);
-        }
-      });
-      return parseWithZod(updatedFormData, {
+      return parseWithZod(formData, {
         schema: createProfessionalPageSchema({
           minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
         }),
       });
+      // const updatedFormData = new FormData();
+      // for (const [key, value] of formData.entries()) {
+      //   if (key !== "profileImage" && key !== "galleryImages") {
+      //     updatedFormData.append(key, value as string);
+      //   }
+      // }
+      // if (selectedProfileFile && selectedProfileFile.size > 0) {
+      //   updatedFormData.append("profileImage", selectedProfileFile);
+      // }
+      // selectedFiles.forEach((f) => updatedFormData.append("galleryImages", f));
+      // const currentGallery = formData.getAll("galleryImages");
+      // currentGallery.forEach((file) => {
+      //   if (
+      //     file instanceof File &&
+      //     file.size > 0 &&
+      //     file.name !== "undefined" &&
+      //     !selectedFiles.some((f) => f.name === file.name)
+      //   ) {
+      //     updatedFormData.append("galleryImages", file);
+      //   }
+      // });
+      // return parseWithZod(updatedFormData, {
+      //   schema: createProfessionalPageSchema({
+      //     minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
+      //   }),
+      // });
     },
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
 
   const resetForm = () => {
-    setSelectedFiles([]);
-    setSelectedProfileFile(null);
-    setProfileRemoved(false);
-    setFormKey((k) => k + 1);
+    // setSelectedFiles([]);
+    // setSelectedProfileFile(null);
+    // setProfileRemoved(false);
+    // setFormKey((k) => k + 1);
   };
 
   const handleModalClose = () => {
@@ -192,6 +206,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     displayName,
     description,
     slug,
+    slugPrefix,
     category,
     subCategory,
     district,
@@ -208,31 +223,60 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     galleryImages,
   } = fields;
 
+  // const generatedSlugPreix = useRef(generateSlug(""));
+
+  // console.log("displayName", displayName.value);
+  // console.log("displayName errors", displayName.errors);
+  // console.log("slug", slug.value);
+  // console.log("slug errors", slug.errors);
+  // console.log("description", description.value);
+  // console.log("description errors", description.errors);
+  // console.log("contactEmail", contactEmail.value);
+  // console.log("contactEmail errors", contactEmail.errors);
+  // console.log("form errors", form.errors);
+  // console.log("fields", fields);
+  // console.log('category', category);
+  // console.log('subCategory', subCategory);
+  // console.log('district', district);
+  // console.log('city', city);
+  // console.log('contactPhone', contactPhone);
+  // console.log('contactEmail', contactEmail);
+  // console.log('whatsapp', whatsapp);
+  // console.log('instagram', instagram);
+  // console.log('facebook', facebook);
+  // console.log('website', website);
+  // console.log('isPublished', isPublished);
+  // console.log('acceptTerms', acceptTerms);
+  console.log("profileImage", profileImage.value);
+  console.log("profileImage errors", profileImage.errors);
+  console.log("selectedProfileFiles", selectedProfileFiles);
+  // console.log('galleryImages', galleryImages);
+
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
-    [mappedCategories]
+    [mappedCategories],
   );
   const subCategoryOptions = useMemo(
     () =>
       mapServiceSubCategoriesToSelectOptions(mappedCategories, category.value),
-    [mappedCategories, category.value]
+    [mappedCategories, category.value],
   );
   const citiesOptions = useMemo(
     () =>
       getCitiesToSelectOptions(
-        (district.value as Districts) || Districts.Center
+        (district.value as Districts) || Districts.Center,
       ),
-    [district.value]
+    [district.value],
   );
 
-  useEffect(() => {
-    if (formState && typeof formState === "object" && "error" in formState) {
-      setErrorModalOpen(true);
-    }
-    if (formState && typeof formState === "object" && "formErrors" in formState && (formState.formErrors?.length ?? 0) > 0) {
-      setErrorModalOpen(true);
-    }
-  }, [formState]);
+  // useEffect(() => {
+  //   if (formState && typeof formState === "object" && "error" in formState) {
+  //     setErrorModalOpen(true);
+  //   }
+  //   if (formState && typeof formState === "object" && "formErrors" in formState && (formState.formErrors?.length ?? 0) > 0) {
+  //     setErrorModalOpen(true);
+  //   }
+  // }, [formState]);
 
   if (isPending) {
     return (
@@ -242,18 +286,11 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     );
   }
 
-  const slugPreview =
-    typeof slug.value === "string" && slug.value
-      ? `${process.env.NEXT_PUBLIC_CLIENT_URL ?? ""}/professional/${String(slug.value).toLowerCase().replace(/\s+/g, "-")}`
-      : "";
+  const slugPreview = slug.value ?? "".toLowerCase().replace(/\s+/g, "-");
 
   return (
     <>
-      <form
-        key={formKey}
-        action={formAction}
-        {...getFormProps(form)}
-      >
+      <form key={formKey} action={formAction} {...getFormProps(form)}>
         <FormShell
           px={{ initial: "4", sm: "6", md: "8" }}
           py={{ initial: "5", md: "7" }}
@@ -301,28 +338,46 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     type="text"
                     field={displayName}
                     label="Имя (отображаемое)"
-                    placeholder="Иван Иванов"
+                    placeholder="алех-катц"
+                    defaultValue={displayName.initialValue}
                     size="3"
                     errors={displayName.errors}
                     disabled={isPending}
                     isMandatory
+                    dataIsValid={displayName.valid}
                   />
                   <BasicFormField
                     type="text"
                     field={slug}
-                    label="Адрес страницы (slug)"
-                    placeholder="ivanov-ivan"
+                    label="Адрес (имя) страницы"
+                    placeholder="alex-katz"
+                    defaultValue={slug.initialValue}
                     size="3"
                     errors={slug.errors}
                     disabled={isPending}
                     isMandatory
+                    dataIsValid={slug.valid}
+                  />
+                  <input
+                    type="hidden"
+                    name="slugPrefix"
+                    value={slugPrefix.initialValue}
                   />
                 </Grid>
                 {slugPreview && (
-                  <Text size="2" color="gray">
-                    Предпросмотр:{" "}
-                    <Text as="span" weight="medium" style={{ wordBreak: "break-all" }}>
-                      {slugPreview}
+                  <Text size="3" color="gray">
+                    Это будет адрес вашей новой страницы:
+                    <br />
+                    <Text
+                      as="p"
+                      weight="medium"
+                      style={{ wordBreak: "break-all" }}
+                    >
+                      {process.env.NEXT_PUBLIC_CLIENT_URL}/professional/
+                      <Text as="span" weight="bold" color="red">
+                        {slugPreview}
+                      </Text>
+                      {slugPrefix.initialValue}
                     </Text>
                   </Text>
                 )}
@@ -339,7 +394,68 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 />
               </Flex>
             </SectionCard>
-
+            <SectionCard variant="surface" size="4">
+              <Flex direction="column" gap={{ initial: "1", md: "3" }}>
+                <Heading as="h2" size="4">
+                  Фото профиля
+                </Heading>
+                <Text color="gray" size="2" mt="2">
+                  Одно фото для аватара (Не обязательно).
+                </Text>
+                {/* make grid with two columns , each 50% */}
+                <Grid
+                  columns={{ initial: "1", xs: "2" }}
+                  gap={{ initial: "4", md: "5" }}
+             
+                >
+                  <DropzoneSurface p={{ initial: "3", md: "4" }}>
+                    <DropFilesInput
+                      accept={{
+                        "image/png": [],
+                        "image/jpeg": [],
+                        "image/jpg": [],
+                        "image/webp": [],
+                      }}
+                      maxSize={MAX_FILE_SIZE}
+                      maxFiles={MAX_PROFILE_IMAGE_FILES}
+                      field={profileImage}
+                      errors={profileImage.errors}
+                      onFilesDrop={setSelectedProfileFiles}
+                      files={selectedProfileFiles}
+                      disabled={false}
+                      // existingFilesLength={
+                      //   existingImages.filter((image) => !image.toBeDeleted)
+                      //     .length
+                      // }
+                    />
+                  </DropzoneSurface>
+                  {/* {(existingImages.length > 0 || selectedFiles.length > 0) && (
+                  <Box>
+                    <ImagesPreviewer
+                      existingImages={existingImages}
+                      images={selectedFiles}
+                      setImages={setSelectedFiles}
+                      setExistingImages={setExistingImages}
+                      maxImages={MAX_FILES}
+                    />
+                  </Box>
+                )} */}
+                  {(existingImages.length > 0 ||
+                    selectedProfileFiles.length > 0) && (
+                    <Box>
+                      <ImagesPreviewer
+                        existingImages={existingImages}
+                        images={selectedProfileFiles}
+                        setImages={setSelectedProfileFiles}
+                        setExistingImages={setExistingImages}
+                        maxImages={MAX_PROFILE_IMAGE_FILES}
+                      />
+                    </Box>
+                  )}
+                </Grid>
+              </Flex>
+            </SectionCard>
+            {/* 
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
                 <Heading as="h2" size="4">
@@ -631,6 +747,12 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 </Flex>
               </Flex>
             </SectionCard>
+             */}
+            <SubmitButton
+              pending={isPending}
+              // disabled={acceptTerms.value !== "on"}
+              text={isCreateMode ? "Создать страницу" : "Сохранить изменения"}
+            />
           </Flex>
         </FormShell>
       </form>

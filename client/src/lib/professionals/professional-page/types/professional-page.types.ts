@@ -7,6 +7,7 @@ export interface SerializedProfessionalPage {
   id: string;
   publicId: string;
   slug: string;
+  slugPrefix: string;
   user: SerializedUser;
   displayName: string;
   description: string;

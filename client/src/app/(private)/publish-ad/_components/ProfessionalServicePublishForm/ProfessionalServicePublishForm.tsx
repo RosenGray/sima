@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
@@ -210,11 +210,11 @@ const ProfessionalServicePublishForm: FC<
       ),
     [district.value],
   );
-  useEffect(() => {
-    if (formState) {
-      setErrorModalOpen(true);
-    }
-  }, [formState]);
+  // useEffect(() => {
+  //   if (formState) {
+  //     setErrorModalOpen(true);
+  //   }
+  // }, [formState]);
 
   if (isPending) {
     return (

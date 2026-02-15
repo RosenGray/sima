@@ -3,8 +3,8 @@ import { z } from "zod";
 
 export const SIZE_IN_MB = 5;
 export const MAX_FILE_SIZE = SIZE_IN_MB * 1024 * 1024;
-export const MAX_GALLERY_FILES = 10;
-
+export const MAX_GALLERY_FILES = 5;
+export const MAX_PROFILE_IMAGE_FILES = 1;
 export const ACCEPTED_FILE_TYPES = [
   "image/png",
   "image/jpeg",
@@ -40,22 +40,29 @@ export const createProfessionalPageSchema = (options?: {
       .string({ required_error: "Введите описание" })
       .min(1, "Введите описание"),
     slug: z
-      .string()
-      .optional()
+      .string({
+        required_error: "Введите адрес страницы",
+      })
       .refine(
-        (v) =>
-          v === undefined ||
-          v === "" ||
-          /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v),
-        "Только латиница, цифры и дефис (например: ivanov-ivan)"
-      )
-      .transform((v) => (v === "" ? undefined : v)),
+        (v) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v),
+        "Только английские,строчные буквы, цифры и дефис (например: alex-katz)",
+      ),
+    slugPrefix: z.string({}),
     profileImage: z
-      .instanceof(File)
+      .array(z.instanceof(File))
       .optional()
-      .superRefine((file, ctx) => {
-        if (file && file.size > 0 && file.name !== "undefined") {
-          fileRefine(file, ctx);
+      .superRefine((files, ctx) => {
+        if (files) {
+          const valid = files.filter(
+            (f) => f.size > 0 && f.name !== "undefined",
+          );
+          if (valid.length > MAX_GALLERY_FILES) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Максимум изображений в галерее: ${MAX_GALLERY_FILES}`,
+            });
+          }
+          valid.forEach((file) => fileRefine(file, ctx));
         }
       }),
     galleryImages: z
@@ -64,12 +71,10 @@ export const createProfessionalPageSchema = (options?: {
         minGalleryImages,
         minGalleryImages === 1
           ? "Загрузите хотя бы одно изображение в галерею"
-          : undefined
+          : undefined,
       )
       .superRefine((files, ctx) => {
-        const valid = files.filter(
-          (f) => f.size > 0 && f.name !== "undefined"
-        );
+        const valid = files.filter((f) => f.size > 0 && f.name !== "undefined");
         if (valid.length > MAX_GALLERY_FILES) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -88,10 +93,8 @@ export const createProfessionalPageSchema = (options?: {
       .optional()
       .refine(
         (v) =>
-          v === undefined ||
-          v === "" ||
-          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-        "Введите корректный email"
+          v === undefined || v === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+        "Введите корректный email",
       )
       .transform((v) => (v === "" ? undefined : v)),
     whatsapp: z.string().optional(),

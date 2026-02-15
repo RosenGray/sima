@@ -17,6 +17,7 @@ export interface IProfessionalPage {
   id: string;
   publicId: string;
   slug: string;
+  slugPrefix: string;
   user: mongoose.Types.ObjectId;
   displayName: string;
   description: string;
@@ -93,6 +94,11 @@ const professionalPageSchema = new mongoose.Schema<IProfessionalPage>(
       required: true,
       unique: true,
       index: true,
+    },
+    slugPrefix: {
+      type: String,
+      required: true,
+      unique: true,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
