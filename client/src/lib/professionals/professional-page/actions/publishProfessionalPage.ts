@@ -17,7 +17,7 @@ const FOLDER = "professional-page";
 
 export async function publishProfessionalPage(
   _initialState: unknown,
-  formData: FormData
+  formData: FormData,
 ) {
   const result = parseWithZod(formData, {
     schema: createProfessionalPageSchema({ minGalleryImages: 0 }),
@@ -25,6 +25,10 @@ export async function publishProfessionalPage(
 
   if (result.status !== "success") return result.reply();
 
+  return {
+    ...result.reply(),
+    ...result.value,
+  };
   const user = await getCurrentUser();
   if (!user) {
     return result.reply({
@@ -35,7 +39,9 @@ export async function publishProfessionalPage(
   const existing = await professionalPageRepository.getByUserId(user.id);
   if (existing) {
     return result.reply({
-      formErrors: ["У вас уже есть персональная страница. Перейдите в редактирование."],
+      formErrors: [
+        "У вас уже есть персональная страница. Перейдите в редактирование.",
+      ],
     });
   }
 
@@ -43,7 +49,10 @@ export async function publishProfessionalPage(
   if (!slug) {
     slug = `${slugify(result.value.displayName, { lower: true, strict: true })}-${nanoid(5)}`;
   } else {
-    slug = slug.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    slug = slug
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
     const existingBySlug = await ProfessionalPage.findOne({ slug });
     if (existingBySlug) {
       return result.reply({
@@ -57,11 +66,21 @@ export async function publishProfessionalPage(
 
     const profileFile = result.value.profileImage;
     const galleryFiles = (result.value.galleryImages ?? []).filter(
-      (f: File) => f.size > 0 && f.name !== "undefined"
+      (f: File) => f.size > 0 && f.name !== "undefined",
     );
 
-    let profileImage: { id: string; originalName: string; uniqueName: string; url: string; fieldname?: string; versionId?: string; folderName: string } | undefined;
-    let galleryImages: typeof profileImage[] = [];
+    let profileImage:
+      | {
+          id: string;
+          originalName: string;
+          uniqueName: string;
+          url: string;
+          fieldname?: string;
+          versionId?: string;
+          folderName: string;
+        }
+      | undefined;
+    let galleryImages: (typeof profileImage)[] = [];
 
     if (profileFile && profileFile.size > 0) {
       const uploadFormData = new FormData();
@@ -120,5 +139,5 @@ export async function publishProfessionalPage(
   }
 
   revalidatePath("/professional", "layout");
-  redirect(`/publish-ad/professional-page/edit/${publicId}`);
+  // redirect(`/publish-ad/professional-page/edit/${publicId}`);
 }

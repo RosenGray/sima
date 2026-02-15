@@ -485,7 +485,7 @@ const ProfessionalServicePublishForm: FC<
                     defaultValue={fields.email.initialValue}
                     dataIsValid={email.valid}
                     errors={email.errors}
-                    disabled={isPending}
+                    disabled
                     isMandatory
                     disabledAutocomplete
                   >

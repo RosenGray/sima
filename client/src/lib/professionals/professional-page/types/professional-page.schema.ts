@@ -83,20 +83,28 @@ export const createProfessionalPageSchema = (options?: {
         }
         valid.forEach((file) => fileRefine(file, ctx));
       }),
-    category: z.string().optional(),
-    subCategory: z.string().optional(),
-    district: z.nativeEnum(Districts).optional(),
-    city: z.string().optional(),
-    contactPhone: z.string().optional(),
+    category: z.string({
+      required_error: "Выберите категорию",
+    }),
+    subCategory: z.string({
+      required_error: "Выберите подкатегорию",
+    }),
+    district: z.nativeEnum(Districts, {
+      required_error: "Выберите район",
+    }),
+    city: z.string({
+      required_error: "Выберите город",
+    }),
+    contactPhone: z
+      .string({
+        required_error: "Телефон обязателен. Используйте только цифры",
+      })
+      .regex(/^[0-9]+$/, "Телефон может содержать только цифры"),
     contactEmail: z
-      .string()
-      .optional()
-      .refine(
-        (v) =>
-          v === undefined || v === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-        "Введите корректный email",
-      )
-      .transform((v) => (v === "" ? undefined : v)),
+      .string({
+        required_error: "электронное почта обязательная",
+      })
+      .email("Введите корректный адрес электронной почты"),
     whatsapp: z.string().optional(),
     instagram: z.string().optional(),
     facebook: z.string().optional(),

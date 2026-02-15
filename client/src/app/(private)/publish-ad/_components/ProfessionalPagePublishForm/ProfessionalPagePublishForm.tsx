@@ -138,13 +138,13 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
         entity?.slug ??
         `${firstName.toLocaleLowerCase()}-${lastName.toLocaleLowerCase()}`,
       slugPrefix: entity?.slugPrefix ?? generateSlug(""),
-      description: entity?.description ?? "",
-      category: entity?.category?.id ?? "",
-      subCategory: entity?.subCategory?.id ?? "",
+      description: entity?.description,
+      category: entity?.category?.id,
+      subCategory: entity?.subCategory?.id,
       district: entity?.district ?? Districts.Center,
-      city: entity?.city ?? "",
-      contactPhone: entity?.contactPhone ?? "",
-      contactEmail: "lukman@gmail.com", //entity?.contactEmail ?? user?.email ?? "",
+      city: entity?.city,
+      contactPhone: entity?.contactPhone,
+      contactEmail: user?.email,
       whatsapp: entity?.socialLinks?.whatsapp ?? "",
       instagram: entity?.socialLinks?.instagram ?? "",
       facebook: entity?.socialLinks?.facebook ?? "",
@@ -189,6 +189,8 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
   });
+
+  console.log("formState", formState);
 
   const resetForm = () => {
     // setSelectedFiles([]);
@@ -247,10 +249,16 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
   // console.log('website', website);
   // console.log('isPublished', isPublished);
   // console.log('acceptTerms', acceptTerms);
-  console.log("profileImage", profileImage.value);
-  console.log("profileImage errors", profileImage.errors);
-  console.log("selectedProfileFiles", selectedProfileFiles);
-  // console.log('galleryImages', galleryImages);
+  // console.log("profileImage", profileImage.value);
+  // console.log("profileImage errors", profileImage.errors);
+  // console.log("selectedProfileFiles", selectedProfileFiles);
+  // console.log("selectedGalleryFiles", selectedGalleryFiles);
+  // // console.log('galleryImages', galleryImages);
+  // console.log("galleryImages", galleryImages.value);
+  // console.log("galleryImages errors", galleryImages.errors);
+  // console.log("existingImages", existingImages);
+  // console.log("galleryImagesToDelete", galleryImagesToDelete);
+  // console.log("allGalleryImagesDeleted", allGalleryImagesDeleted);
 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
@@ -326,6 +334,56 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
             </HeroCard>
 
             <SectionCard variant="surface" size="4">
+              <Flex direction="column" gap={{ initial: "1", md: "3" }}>
+                <Heading as="h2" size="4">
+                  Фото профиля
+                </Heading>
+                <Text color="gray" size="2" mt="2">
+                  Одно фото для аватара (Не обязательно).
+                </Text>
+                {/* make grid with two columns , each 50% */}
+                <Grid
+                  columns={{ initial: "1", xs: "2" }}
+                  gap={{ initial: "4", md: "5" }}
+                >
+                  <DropzoneSurface p={{ initial: "3", md: "4" }}>
+                    <DropFilesInput
+                      accept={{
+                        "image/png": [],
+                        "image/jpeg": [],
+                        "image/jpg": [],
+                        "image/webp": [],
+                      }}
+                      maxSize={MAX_FILE_SIZE}
+                      maxFiles={MAX_PROFILE_IMAGE_FILES}
+                      field={profileImage}
+                      errors={profileImage.errors}
+                      onFilesDrop={setSelectedProfileFiles}
+                      files={selectedProfileFiles}
+                      disabled={false}
+                      // existingFilesLength={
+                      //   existingImages.filter((image) => !image.toBeDeleted)
+                      //     .length
+                      // }
+                    />
+                  </DropzoneSurface>
+                  {(existingImages.length > 0 ||
+                    selectedProfileFiles.length > 0) && (
+                    <Box>
+                      <ImagesPreviewer
+                        existingImages={existingImages}
+                        images={selectedProfileFiles}
+                        setImages={setSelectedProfileFiles}
+                        setExistingImages={setExistingImages}
+                        maxImages={MAX_PROFILE_IMAGE_FILES}
+                      />
+                    </Box>
+                  )}
+                </Grid>
+              </Flex>
+            </SectionCard>
+
+            <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
                 <Heading as="h2" size="4">
                   Основные данные
@@ -394,153 +452,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 />
               </Flex>
             </SectionCard>
-            <SectionCard variant="surface" size="4">
-              <Flex direction="column" gap={{ initial: "1", md: "3" }}>
-                <Heading as="h2" size="4">
-                  Фото профиля
-                </Heading>
-                <Text color="gray" size="2" mt="2">
-                  Одно фото для аватара (Не обязательно).
-                </Text>
-                {/* make grid with two columns , each 50% */}
-                <Grid
-                  columns={{ initial: "1", xs: "2" }}
-                  gap={{ initial: "4", md: "5" }}
-             
-                >
-                  <DropzoneSurface p={{ initial: "3", md: "4" }}>
-                    <DropFilesInput
-                      accept={{
-                        "image/png": [],
-                        "image/jpeg": [],
-                        "image/jpg": [],
-                        "image/webp": [],
-                      }}
-                      maxSize={MAX_FILE_SIZE}
-                      maxFiles={MAX_PROFILE_IMAGE_FILES}
-                      field={profileImage}
-                      errors={profileImage.errors}
-                      onFilesDrop={setSelectedProfileFiles}
-                      files={selectedProfileFiles}
-                      disabled={false}
-                      // existingFilesLength={
-                      //   existingImages.filter((image) => !image.toBeDeleted)
-                      //     .length
-                      // }
-                    />
-                  </DropzoneSurface>
-                  {/* {(existingImages.length > 0 || selectedFiles.length > 0) && (
-                  <Box>
-                    <ImagesPreviewer
-                      existingImages={existingImages}
-                      images={selectedFiles}
-                      setImages={setSelectedFiles}
-                      setExistingImages={setExistingImages}
-                      maxImages={MAX_FILES}
-                    />
-                  </Box>
-                )} */}
-                  {(existingImages.length > 0 ||
-                    selectedProfileFiles.length > 0) && (
-                    <Box>
-                      <ImagesPreviewer
-                        existingImages={existingImages}
-                        images={selectedProfileFiles}
-                        setImages={setSelectedProfileFiles}
-                        setExistingImages={setExistingImages}
-                        maxImages={MAX_PROFILE_IMAGE_FILES}
-                      />
-                    </Box>
-                  )}
-                </Grid>
-              </Flex>
-            </SectionCard>
-            {/* 
-            <SectionCard variant="surface" size="4">
-              <Flex direction="column" gap={{ initial: "4", md: "5" }}>
-                <Heading as="h2" size="4">
-                  Фото профиля
-                </Heading>
-                <Text color="gray" size="2" mt="2">
-                  Одно фото для аватара (по желанию).
-                </Text>
-                {existingProfileImage && !profileRemoved && !selectedProfileFile && (
-                  <Flex align="center" gap="3">
-                    <ProfileImageWrap>
-                      <Image
-                        src={existingProfileImage.url}
-                        alt={existingProfileImage.originalName}
-                        fill
-                        style={{ objectFit: "cover" }}
-                        sizes="120px"
-                      />
-                    </ProfileImageWrap>
-                    <IconButton
-                      type="button"
-                      color="red"
-                      variant="soft"
-                      onClick={() => setProfileRemoved(true)}
-                      aria-label="Удалить фото"
-                    >
-                      <TrashIcon width={18} height={18} />
-                    </IconButton>
-                  </Flex>
-                )}
-                {selectedProfileFile && (
-                  <Flex align="center" gap="3">
-                    <ProfileImageWrap
-                      style={{
-                        position: "relative",
-                        width: 120,
-                        height: 120,
-                      }}
-                    >
-                      <img
-                        src={URL.createObjectURL(selectedProfileFile)}
-                        alt=""
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "var(--radius-3)",
-                        }}
-                      />
-                    </ProfileImageWrap>
-                    <IconButton
-                      type="button"
-                      color="gray"
-                      variant="soft"
-                      onClick={() => setSelectedProfileFile(null)}
-                      aria-label="Убрать фото"
-                    >
-                      <TrashIcon width={18} height={18} />
-                    </IconButton>
-                  </Flex>
-                )}
-                {!selectedProfileFile &&
-                  (!existingProfileImage || profileRemoved) && (
-                    <DropzoneSurface p={{ initial: "3", md: "4" }}>
-                      <DropFilesInput
-                        accept={{
-                          "image/png": [],
-                          "image/jpeg": [],
-                          "image/jpg": [],
-                          "image/webp": [],
-                        }}
-                        maxSize={MAX_FILE_SIZE}
-                        maxFiles={1}
-                        field={profileImage}
-                        errors={profileImage.errors}
-                        onFilesDrop={(files) =>
-                          setSelectedProfileFile(files[0] ?? null)
-                        }
-                        files={selectedProfileFile ? [selectedProfileFile] : []}
-                        disabled={isPending}
-                      />
-                    </DropzoneSurface>
-                  )}
-              </Flex>
-            </SectionCard>
 
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
@@ -562,20 +473,21 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     maxFiles={MAX_GALLERY_FILES}
                     field={galleryImages}
                     errors={galleryImages.errors}
-                    onFilesDrop={setSelectedFiles}
-                    files={selectedFiles}
+                    onFilesDrop={setSelectedGalleryFiles}
+                    files={selectedGalleryFiles}
                     disabled={isPending}
                     existingFilesLength={
                       existingImages.filter((i) => !i.toBeDeleted).length
                     }
                   />
                 </DropzoneSurface>
-                {(existingImages.length > 0 || selectedFiles.length > 0) && (
+                {(existingImages.length > 0 ||
+                  selectedGalleryFiles.length > 0) && (
                   <Box>
                     <ImagesPreviewer
                       existingImages={existingImages}
-                      images={selectedFiles}
-                      setImages={setSelectedFiles}
+                      images={selectedGalleryFiles}
+                      setImages={setSelectedGalleryFiles}
                       setExistingImages={setExistingImages}
                       maxImages={MAX_GALLERY_FILES}
                     />
@@ -583,7 +495,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 )}
               </Flex>
             </SectionCard>
-
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
                 <Heading as="h2" size="4">
@@ -600,6 +511,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     options={categoriesOptions}
                     errors={category.errors}
                     isDisabled={isPending}
+                    isMandatory
                   />
                   <SelectSingle
                     label="Подкатегория"
@@ -608,6 +520,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     options={subCategoryOptions}
                     errors={subCategory.errors}
                     isDisabled={isPending}
+                    isMandatory
                   />
                   <SelectSingle
                     label="Район"
@@ -616,6 +529,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     options={areasOptions}
                     errors={district.errors}
                     isDisabled={isPending}
+                    isMandatory
                   />
                   <SelectSingle
                     label="Город"
@@ -624,11 +538,11 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     options={citiesOptions}
                     errors={city.errors}
                     isDisabled={isPending}
+                    isMandatory
                   />
                 </Grid>
               </Flex>
             </SectionCard>
-
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
                 <Heading as="h2" size="4">
@@ -644,9 +558,12 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     label="Email"
                     placeholder="email@example.com"
                     size="3"
+                    defaultValue={contactEmail.initialValue}
                     errors={contactEmail.errors}
-                    disabled={isPending}
+                    disabled
                     disabledAutocomplete
+                    dataIsValid={contactEmail.valid}
+                    isMandatory
                   >
                     <EnvelopeClosedIcon height="16" width="16" />
                   </BasicFormField>
@@ -657,6 +574,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     defaultValue={contactPhone.initialValue}
                     disabled={isPending}
+                    isMandatory
                   >
                     <MobileIcon height="16" width="16" />
                   </PhoneFormField>
@@ -681,6 +599,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     errors={whatsapp.errors}
                     disabled={isPending}
+                    dataIsValid={whatsapp.valid}
                   />
                   <BasicFormField
                     type="text"
@@ -690,6 +609,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     errors={instagram.errors}
                     disabled={isPending}
+                    dataIsValid={instagram.valid}
                   />
                   <BasicFormField
                     type="text"
@@ -699,6 +619,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     errors={facebook.errors}
                     disabled={isPending}
+                    dataIsValid={facebook.valid}
                   />
                   <BasicFormField
                     type="text"
@@ -708,20 +629,26 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     errors={website.errors}
                     disabled={isPending}
+                    dataIsValid={website.valid}
                   />
                 </Grid>
               </Flex>
             </SectionCard>
-
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap="4">
-                <Checkbox
+                <input
+                  type="hidden"
+                  name="isPublished"
+                  value="on"
+                />
+
+                {/* <Checkbox
                   field={isPublished}
                   label="Опубликовать страницу (видна другим)"
                   errors={isPublished.errors}
                   disabled={isPending}
-                />
-                <Separator size="4" />
+                /> */}
+                {/* <Separator size="4" /> */}
                 <Flex
                   direction={{ initial: "column", md: "row" }}
                   align={{ initial: "stretch", md: "center" }}
@@ -739,18 +666,16 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     pending={isPending}
                     disabled={acceptTerms.value !== "on"}
                     text={
-                      isCreateMode
-                        ? "Создать страницу"
-                        : "Сохранить изменения"
+                      isCreateMode ? "Создать страницу" : "Сохранить изменения"
                     }
                   />
                 </Flex>
               </Flex>
             </SectionCard>
-             */}
+
             <SubmitButton
               pending={isPending}
-              // disabled={acceptTerms.value !== "on"}
+              disabled={acceptTerms.value !== "on"}
               text={isCreateMode ? "Создать страницу" : "Сохранить изменения"}
             />
           </Flex>

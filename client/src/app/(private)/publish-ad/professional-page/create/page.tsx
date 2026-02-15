@@ -1,4 +1,3 @@
-import { Heading } from "@radix-ui/themes";
 import { PublishAdProfessionalPageContainer } from "../page.styles";
 import ProfessionalPagePublishForm from "../../_components/ProfessionalPagePublishForm/ProfessionalPagePublishForm";
 import { FC } from "react";
@@ -13,9 +12,6 @@ const CreateProfessionalPage: FC = async () => {
   return (
     <PublishProfessionalServiceAdProvider data={{ mappedCategories }}>
       <PublishAdProfessionalPageContainer>
-        <Heading mb="4" align="center">
-          Создание персональной страницы
-        </Heading>
         <ProfessionalPagePublishForm formMode={FormMode.Create} />
       </PublishAdProfessionalPageContainer>
     </PublishProfessionalServiceAdProvider>
