@@ -18,6 +18,7 @@ export interface IProfessionalPage {
   publicId: string;
   slug: string;
   slugPrefix: string;
+  fullSlug: string;
   user: mongoose.Types.ObjectId;
   displayName: string;
   description: string;
@@ -30,6 +31,7 @@ export interface IProfessionalPage {
   contactPhone: string;
   contactEmail: string;
   socialLinks?: ISocialLinks;
+  acceptTerms: boolean;
   isPublished: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -100,12 +102,22 @@ const professionalPageSchema = new mongoose.Schema<IProfessionalPage>(
       required: true,
       unique: true,
     },
+    fullSlug: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
       unique: true,
       index: true,
+    },
+    acceptTerms: {
+      type: Boolean,
+      required: true,
     },
     displayName: {
       type: String,

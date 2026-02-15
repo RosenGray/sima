@@ -8,6 +8,7 @@ export interface SerializedProfessionalPage {
   publicId: string;
   slug: string;
   slugPrefix: string;
+  fullSlug: string;
   user: SerializedUser;
   displayName: string;
   description: string;
@@ -16,6 +17,7 @@ export interface SerializedProfessionalPage {
   category: SerializeServiceCategory;
   subCategory: SerializeServiceSubCategory;
   district: string;
+  acceptTerms: boolean;
   city: string;
   contactPhone: string;
   contactEmail: string;

@@ -47,7 +47,12 @@ export const createProfessionalPageSchema = (options?: {
         (v) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v),
         "Только английские,строчные буквы, цифры и дефис (например: alex-katz)",
       ),
-    slugPrefix: z.string({}),
+    slugPrefix: z.string({
+      required_error: "Введите префикс slug",
+    }),
+    fullSlug: z.string({
+      required_error: "Введите полный slug",
+    }),
     profileImage: z
       .array(z.instanceof(File))
       .optional()

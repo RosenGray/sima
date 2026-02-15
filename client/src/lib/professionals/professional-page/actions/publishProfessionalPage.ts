@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
 import { professionalPageRepository } from "../repository/ProfessionalPageRepository";
 import { ProfessionalPage } from "../models/ProfessionalPage";
-import { slugify } from "slugify";
+
 
 const FOLDER = "professional-page";
 
@@ -20,15 +20,17 @@ export async function publishProfessionalPage(
   formData: FormData,
 ) {
   const result = parseWithZod(formData, {
-    schema: createProfessionalPageSchema({ minGalleryImages: 0 }),
+    schema: createProfessionalPageSchema({ minGalleryImages: 1 }),
   });
 
   if (result.status !== "success") return result.reply();
+  // return {
+  //   replay:{
+  //     ...result.reply(),
+  //   },
+  //   value: result.value,
+  // }
 
-  return {
-    ...result.reply(),
-    ...result.value,
-  };
   const user = await getCurrentUser();
   if (!user) {
     return result.reply({
@@ -40,104 +42,56 @@ export async function publishProfessionalPage(
   if (existing) {
     return result.reply({
       formErrors: [
-        "У вас уже есть персональная страница. Перейдите в редактирование.",
+        "У вас уже есть персональная страница. Перейдите в Личный кабинет на редактирования.",
       ],
     });
   }
 
-  let slug = result.value.slug?.trim();
-  if (!slug) {
-    slug = `${slugify(result.value.displayName, { lower: true, strict: true })}-${nanoid(5)}`;
-  } else {
-    slug = slug
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
-    const existingBySlug = await ProfessionalPage.findOne({ slug });
-    if (existingBySlug) {
-      return result.reply({
-        formErrors: ["Такой адрес страницы уже занят. Выберите другой."],
-      });
-    }
-  }
+  const { profileImage, galleryImages ,slug,slugPrefix} = result.value;
 
   try {
+    const uploadFormData = new FormData();
+
+    if (profileImage) {
+      profileImage.forEach((file: File) => {
+        uploadFormData.append("files", file);
+      });
+    }
+
+    galleryImages.forEach((file: File) => {
+      uploadFormData.append("files", file);
+    });
+
+    const uploadResult = await uploadFiles(FOLDER, user.id, uploadFormData);
+
     await connectDB();
 
-    const profileFile = result.value.profileImage;
-    const galleryFiles = (result.value.galleryImages ?? []).filter(
-      (f: File) => f.size > 0 && f.name !== "undefined",
-    );
-
-    let profileImage:
-      | {
-          id: string;
-          originalName: string;
-          uniqueName: string;
-          url: string;
-          fieldname?: string;
-          versionId?: string;
-          folderName: string;
-        }
-      | undefined;
-    let galleryImages: (typeof profileImage)[] = [];
-
-    if (profileFile && profileFile.size > 0) {
-      const uploadFormData = new FormData();
-      uploadFormData.append("files", profileFile);
-      const uploadResult = await uploadFiles(FOLDER, user.id, uploadFormData);
-      if (uploadResult.files.length > 0) {
-        profileImage = uploadResult.files[0];
-      }
-    }
-
-    if (galleryFiles.length > 0) {
-      const uploadFormData = new FormData();
-      galleryFiles.forEach((f) => uploadFormData.append("files", f));
-      const uploadResult = await uploadFiles(FOLDER, user.id, uploadFormData);
-      galleryImages = uploadResult.files;
-    }
-
-    const publicId = nanoid(10);
-    await professionalPageRepository.create({
-      publicId,
-      slug,
+    const professionalPage = new ProfessionalPage({
+      ...result.value,
       user: user.id,
-      displayName: result.value.displayName,
-      description: result.value.description,
-      profileImage,
-      galleryImages,
-      category: result.value.category,
-      subCategory: result.value.subCategory,
-      district: result.value.district,
-      city: result.value.city,
-      contactPhone: result.value.contactPhone,
-      contactEmail: result.value.contactEmail,
-      socialLinks:
-        result.value.whatsapp ||
-        result.value.instagram ||
-        result.value.facebook ||
-        result.value.website
-          ? {
-              whatsapp: result.value.whatsapp,
-              instagram: result.value.instagram,
-              facebook: result.value.facebook,
-              website: result.value.website,
-            }
-          : undefined,
-      isPublished: result.value.isPublished ?? true,
+      publicId: nanoid(10),
+      acceptTerms: result.value.acceptTerms === "on",
+      profileImage: uploadResult.files[0],
+      galleryImages: uploadResult.files,
     });
+
+    await professionalPage.save();
 
     await User.findByIdAndUpdate(user.id, {
       hasPrivateProfessionalPage: true,
     });
   } catch (error) {
-    console.error("publishProfessionalPage error:", error);
+    if (error instanceof Error) {
+      return result.reply({
+        formErrors: ["Неизвестная ошибка"],
+      });
+    }
     return result.reply({
-      formErrors: ["Не удалось создать страницу. Попробуйте позже."],
+      formErrors: ["Неизвестная ошибка"],
     });
   }
+ 
 
   revalidatePath("/professional", "layout");
-  // redirect(`/publish-ad/professional-page/edit/${publicId}`);
+  redirect(`/professional/${slug}-${slugPrefix}`);
 }

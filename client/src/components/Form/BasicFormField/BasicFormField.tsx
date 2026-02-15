@@ -82,9 +82,8 @@ const BasicFormField: FC<BasicFormFieldrops> = ({
         className={className}
         data-isvalid={dataIsValid}
         ref={ref}
-        autoComplete={
-          disabledAutocomplete && browser === Browser.Chrome ? "true" : "off"
-        }
+        autoComplete={(disabledAutocomplete && browser === Browser.Chrome) ? "true" : "off"}
+
         {...rest}
       >
         <TextField.Slot>{children}</TextField.Slot>

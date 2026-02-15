@@ -59,6 +59,7 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import Image from "next/image";
+import { nanoid } from "nanoid";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -130,14 +131,17 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
 
   const firstName = user?.firstName ?? "";
   const lastName = user?.lastName ?? "";
+  const fullNameSlug = `${firstName.toLocaleLowerCase()}-${lastName.toLocaleLowerCase()}`;
+  const _slugPrefix = nanoid(5);
 
   const [form, fields] = useForm({
     defaultValue: {
       displayName: entity?.displayName ?? `${firstName} ${lastName}`,
       slug:
         entity?.slug ??
-        `${firstName.toLocaleLowerCase()}-${lastName.toLocaleLowerCase()}`,
-      slugPrefix: entity?.slugPrefix ?? generateSlug(""),
+        fullNameSlug,
+      slugPrefix: entity?.slugPrefix ?? _slugPrefix,
+      fullSlug: entity?.fullSlug ?? `${fullNameSlug}-${_slugPrefix}`,
       description: entity?.description,
       category: entity?.category?.id,
       subCategory: entity?.subCategory?.id,
@@ -219,10 +223,10 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     instagram,
     facebook,
     website,
-    isPublished,
     acceptTerms,
     profileImage,
     galleryImages,
+    
   } = fields;
 
   // const generatedSlugPreix = useRef(generateSlug(""));
@@ -277,14 +281,16 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     [district.value],
   );
 
-  // useEffect(() => {
-  //   if (formState && typeof formState === "object" && "error" in formState) {
-  //     setErrorModalOpen(true);
-  //   }
-  //   if (formState && typeof formState === "object" && "formErrors" in formState && (formState.formErrors?.length ?? 0) > 0) {
-  //     setErrorModalOpen(true);
-  //   }
-  // }, [formState]);
+  useEffect(() => {
+    if (
+      formState &&
+      typeof formState === "object" &&
+      "status" in formState &&
+      formState.status === "error"
+    ) {
+      setErrorModalOpen(true);
+    }
+  }, [formState]);
 
   if (isPending) {
     return (
@@ -421,6 +427,11 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     name="slugPrefix"
                     value={slugPrefix.initialValue}
                   />
+                  <input
+                    type="hidden"
+                    name="fullSlug"
+                    value={`${slug.value}-${slugPrefix.value}`}
+                  />
                 </Grid>
                 {slugPreview && (
                   <Text size="3" color="gray">
@@ -435,7 +446,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                       <Text as="span" weight="bold" color="red">
                         {slugPreview}
                       </Text>
-                      {slugPrefix.initialValue}
+                      -{slugPrefix.initialValue}
                     </Text>
                   </Text>
                 )}
@@ -510,6 +521,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     placeholder="Выберите категорию"
                     options={categoriesOptions}
                     errors={category.errors}
+                    defaultValue={categoriesOptions[3]}
                     isDisabled={isPending}
                     isMandatory
                   />
@@ -519,6 +531,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     placeholder="Выберите подкатегорию"
                     options={subCategoryOptions}
                     errors={subCategory.errors}
+                    defaultValue={subCategoryOptions[0]}
                     isDisabled={isPending}
                     isMandatory
                   />
@@ -538,6 +551,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     options={citiesOptions}
                     errors={city.errors}
                     isDisabled={isPending}
+                    defaultValue={citiesOptions[0]}
                     isMandatory
                   />
                 </Grid>
@@ -560,7 +574,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     defaultValue={contactEmail.initialValue}
                     errors={contactEmail.errors}
-                    disabled
+                    readOnly
                     disabledAutocomplete
                     dataIsValid={contactEmail.valid}
                     isMandatory
@@ -636,11 +650,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
             </SectionCard>
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap="4">
-                <input
-                  type="hidden"
-                  name="isPublished"
-                  value="on"
-                />
+                <input type="hidden" name="isPublished" value="on" />
 
                 {/* <Checkbox
                   field={isPublished}
@@ -672,19 +682,13 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 </Flex>
               </Flex>
             </SectionCard>
-
-            <SubmitButton
-              pending={isPending}
-              disabled={acceptTerms.value !== "on"}
-              text={isCreateMode ? "Создать страницу" : "Сохранить изменения"}
-            />
           </Flex>
         </FormShell>
       </form>
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={form.errors}
+        errorMessage={formState?.error?.[""] ?? form.errors}
       />
     </>
   );

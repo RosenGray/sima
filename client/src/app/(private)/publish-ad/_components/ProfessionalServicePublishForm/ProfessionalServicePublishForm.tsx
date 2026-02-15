@@ -1,5 +1,5 @@
 "use client";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import SelectSingle from "@/components/Form/SelectSingle/SelectSingle";
 import {
   MAX_FILE_SIZE,
@@ -112,6 +112,7 @@ const ProfessionalServicePublishForm: FC<
     undefined,
   );
 
+
   const [form, fields] = useForm({
     defaultValue: {
       category: service?.category?.id,
@@ -210,11 +211,11 @@ const ProfessionalServicePublishForm: FC<
       ),
     [district.value],
   );
-  // useEffect(() => {
-  //   if (formState) {
-  //     setErrorModalOpen(true);
-  //   }
-  // }, [formState]);
+  useEffect(() => {
+    if (formState) {
+      setErrorModalOpen(true);
+    }
+  }, [formState]);
 
   if (isPending) {
     return (
@@ -485,7 +486,7 @@ const ProfessionalServicePublishForm: FC<
                     defaultValue={fields.email.initialValue}
                     dataIsValid={email.valid}
                     errors={email.errors}
-                    disabled
+                    readOnly
                     isMandatory
                     disabledAutocomplete
                   >
