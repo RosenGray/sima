@@ -12,7 +12,6 @@ import { uploadFiles } from "@/lib/files/uploadFiles";
 import { professionalPageRepository } from "../repository/ProfessionalPageRepository";
 import { ProfessionalPage } from "../models/ProfessionalPage";
 
-
 const FOLDER = "professional-page";
 
 export async function publishProfessionalPage(
@@ -24,12 +23,6 @@ export async function publishProfessionalPage(
   });
 
   if (result.status !== "success") return result.reply();
-  // return {
-  //   replay:{
-  //     ...result.reply(),
-  //   },
-  //   value: result.value,
-  // }
 
   const user = await getCurrentUser();
   if (!user) {
@@ -47,7 +40,7 @@ export async function publishProfessionalPage(
     });
   }
 
-  const { profileImage, galleryImages ,slug,slugPrefix} = result.value;
+  const { profileImage, galleryImages, slug, slugPrefix } = result.value;
 
   try {
     const uploadFormData = new FormData();
@@ -72,7 +65,7 @@ export async function publishProfessionalPage(
       publicId: nanoid(10),
       acceptTerms: result.value.acceptTerms === "on",
       profileImage: uploadResult.files[0],
-      galleryImages: uploadResult.files,
+      galleryImages: uploadResult.files.slice(1), 
     });
 
     await professionalPage.save();
@@ -90,7 +83,6 @@ export async function publishProfessionalPage(
       formErrors: ["Неизвестная ошибка"],
     });
   }
- 
 
   revalidatePath("/professional", "layout");
   redirect(`/professional/${slug}-${slugPrefix}`);
