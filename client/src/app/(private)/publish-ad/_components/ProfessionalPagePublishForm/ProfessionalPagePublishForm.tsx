@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import {
   createProfessionalPageSchema,
   MAX_FILE_SIZE,
@@ -11,15 +11,7 @@ import { SerializedProfessionalPage } from "@/lib/professionals/professional-pag
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import {
-  Box,
-  Flex,
-  Grid,
-  Heading,
-  Separator,
-  Text,
-  IconButton,
-} from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import { useActionState } from "react";
 import {
   mapServiceCategoriesToSelectOptions,
@@ -48,17 +40,10 @@ import {
   DropzoneSurface,
   FormShell,
   HeroCard,
-  ProfileImageWrap,
   SectionCard,
 } from "./ProfessionalPagePublishForm.styles";
 import { usePublishProfessionalServiceAd } from "../../_providers/PublishProfessionalServiceAdProvider";
-import { generateSlug } from "@/utils/generateSlug";
-import {
-  EnvelopeClosedIcon,
-  MobileIcon,
-  TrashIcon,
-} from "@radix-ui/react-icons";
-import Image from "next/image";
+import { EnvelopeClosedIcon, MobileIcon } from "@radix-ui/react-icons";
 import { nanoid } from "nanoid";
 
 const areasOptions = mapAreasToSelectOptions();
@@ -156,12 +141,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
-      // return parseWithZod(formData, {
-      //   schema: createProfessionalPageSchema({
-      //     minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
-      //   }),
-      // });
-
       // Create a new FormData with accumulated files
       const updatedFormData = new FormData();
       // Copy all existing form data
@@ -214,13 +193,11 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     shouldValidate: "onInput",
   });
 
-  console.log("formState", formState);
-
   const resetForm = () => {
-    // setSelectedFiles([]);
-    // setSelectedProfileFile(null);
-    // setProfileRemoved(false);
-    // setFormKey((k) => k + 1);
+    setSelectedProfileFiles([]);
+    setSelectedGalleryFiles([]);
+
+    setFormKey((k) => k + 1);
   };
 
   const handleModalClose = () => {
@@ -247,41 +224,10 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     profileImage,
     galleryImages,
   } = fields;
-
-  // const generatedSlugPreix = useRef(generateSlug(""));
-
-  // console.log("displayName", displayName.value);
-  // console.log("displayName errors", displayName.errors);
-  // console.log("slug", slug.value);
-  // console.log("slug errors", slug.errors);
-  // console.log("description", description.value);
-  // console.log("description errors", description.errors);
-  // console.log("contactEmail", contactEmail.value);
-  // console.log("contactEmail errors", contactEmail.errors);
-  // console.log("form errors", form.errors);
-  // console.log("fields", fields);
-  // console.log('category', category);
-  // console.log('subCategory', subCategory);
-  // console.log('district', district);
-  // console.log('city', city);
-  // console.log('contactPhone', contactPhone);
-  // console.log('contactEmail', contactEmail);
-  // console.log('whatsapp', whatsapp);
-  // console.log('instagram', instagram);
-  // console.log('facebook', facebook);
-  // console.log('website', website);
-  // console.log('isPublished', isPublished);
-  // console.log('acceptTerms', acceptTerms);
-  // console.log("profileImage", profileImage.value);
-  // console.log("profileImage errors", profileImage.errors);
-  // console.log("selectedProfileFiles", selectedProfileFiles);
-  // console.log("selectedGalleryFiles", selectedGalleryFiles);
-  // // console.log('galleryImages', galleryImages);
-  // console.log("galleryImages", galleryImages.value);
-  // console.log("galleryImages errors", galleryImages.errors);
-  // console.log("existingImages", existingImages);
-  // console.log("galleryImagesToDelete", galleryImagesToDelete);
-  // console.log("allGalleryImagesDeleted", allGalleryImagesDeleted);
+  console.log('instagram', instagram.value);
+  console.log('facebook', facebook.value);
+  console.log('website', website.value);
+  console.log('whatsapp', whatsapp.value);
 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
@@ -438,6 +384,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     errors={slug.errors}
                     disabled={isPending}
+                    readOnly={!isCreateMode}
                     isMandatory
                     dataIsValid={slug.valid}
                   />
@@ -628,41 +575,49 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     type="text"
                     field={whatsapp}
                     label="WhatsApp"
-                    placeholder="Номер или ссылка"
+                    placeholder="Номер телефона"
                     size="3"
                     errors={whatsapp.errors}
+                    defaultValue={whatsapp.initialValue}
                     disabled={isPending}
                     dataIsValid={whatsapp.valid}
+                    disabledAutocomplete
                   />
                   <BasicFormField
                     type="text"
                     field={instagram}
                     label="Instagram"
-                    placeholder="@username"
+                    placeholder="https://www.instagram.com/your_username"
                     size="3"
                     errors={instagram.errors}
+                    defaultValue={instagram.initialValue}
                     disabled={isPending}
                     dataIsValid={instagram.valid}
+                    disabledAutocomplete
                   />
                   <BasicFormField
                     type="text"
                     field={facebook}
                     label="Facebook"
-                    placeholder="Ссылка на профиль"
+                    placeholder="https://www.facebook.com/your_username"
                     size="3"
                     errors={facebook.errors}
+                    defaultValue={facebook.initialValue}
                     disabled={isPending}
                     dataIsValid={facebook.valid}
+                    disabledAutocomplete
                   />
                   <BasicFormField
                     type="text"
                     field={website}
                     label="Сайт"
-                    placeholder="https://..."
+                    placeholder="https://www.example.com"
                     size="3"
                     errors={website.errors}
                     disabled={isPending}
                     dataIsValid={website.valid}
+                    defaultValue={website.initialValue}
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>

@@ -110,10 +110,28 @@ export const createProfessionalPageSchema = (options?: {
         required_error: "электронное почта обязательная",
       })
       .email("Введите корректный адрес электронной почты"),
-    whatsapp: z.string().optional(),
-    instagram: z.string().optional(),
-    facebook: z.string().optional(),
-    website: z.string().optional(),
+    whatsapp: z
+      .string()
+      .optional()
+      .refine(
+        (v) => v === undefined || v === "" || /^[0-9]+$/.test(v),
+        "Введите только цифры или оставьте поле пустым.",
+      ),
+    instagram: z.string({
+      required_error: "Пожалуйста, введите ссылку на Instagram или ничего не вводите. Например: https://www.instagram.com/your_username/",
+    }).url({
+      message: "Пожалуйста, введите корректную ссылку на Instagram.",
+    }).optional(),
+    facebook: z.string({
+      required_error: "Пожалуйста, введите ссылку на Facebook или ничего не вводите. Например: https://www.facebook.com/your_username/",
+    }).url({
+      message: "Пожалуйста, введите корректную ссылку на Facebook.",
+    }).optional(),
+    website: z.string({
+      required_error: "Пожалуйста, введите ссылку на сайт или ничего не вводите.",
+    }).url({
+      message: "Пожалуйста, введите корректную ссылку на сайт.",
+    }).optional(),
     isPublished: z
       .string()
       .optional()

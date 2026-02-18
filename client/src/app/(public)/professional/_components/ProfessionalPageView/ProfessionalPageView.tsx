@@ -279,8 +279,9 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
                 {hasSocialLinks && (
                   <SocialLinksRow>
                     {socialLinks!.whatsapp && (
+                      //
                       <SocialLinkButton
-                        href={socialLinks!.whatsapp}
+                        href={`https://wa.me/${socialLinks!.whatsapp}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

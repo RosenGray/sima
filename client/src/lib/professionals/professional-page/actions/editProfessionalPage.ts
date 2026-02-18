@@ -122,6 +122,12 @@ export async function editProfessionalPage(
         acceptTerms: result.value.acceptTerms === "on",
         profileImage: resolvedProfileImage ?? null,
         galleryImages: updatedGalleryImages,
+        socialLinks: {
+          whatsapp: result.value.whatsapp,
+          instagram: result.value.instagram,
+          facebook: result.value.facebook,
+          website: result.value.website,
+        },
       },
     );
   } catch (error) {

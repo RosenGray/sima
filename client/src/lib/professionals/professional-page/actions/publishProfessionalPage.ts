@@ -66,6 +66,12 @@ export async function publishProfessionalPage(
       acceptTerms: result.value.acceptTerms === "on",
       profileImage: uploadResult.files[0],
       galleryImages: uploadResult.files.slice(1), 
+      socialLinks: {
+        whatsapp: result.value.whatsapp,
+        instagram: result.value.instagram,
+        facebook: result.value.facebook,
+        website: result.value.website,
+      },
     });
 
     await professionalPage.save();
