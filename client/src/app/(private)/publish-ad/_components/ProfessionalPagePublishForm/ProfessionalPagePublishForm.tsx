@@ -145,9 +145,9 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     onValidate: ({ formData }) => {
       // Create a new FormData with accumulated files
       const updatedFormData = new FormData();
-      // Copy all existing form data
+      // Copy all existing form data except file keys (we add those from state, same as ProfessionalServicePublishForm excludes "images")
       for (const [key, value] of formData.entries()) {
-        if (key !== "images") {
+        if (key !== "images" && key !== "profileImage" && key !== "galleryImages") {
           updatedFormData.append(key, value);
         }
       }
@@ -185,7 +185,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
         }
       });
 
-      return parseWithZod(formData, {
+      return parseWithZod(updatedFormData, {
         schema: createProfessionalPageSchema({
           minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
         }),
