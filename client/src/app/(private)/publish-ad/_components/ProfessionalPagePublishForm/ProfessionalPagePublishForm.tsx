@@ -38,6 +38,8 @@ import { FormMode } from "@/components/Form/types/form.types";
 import Loader from "@/components/Loader";
 import {
   DropzoneSurface,
+  EditModeUrlCard,
+  EditModeUrlText,
   FormShell,
   HeroCard,
   SectionCard,
@@ -224,11 +226,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     profileImage,
     galleryImages,
   } = fields;
-  console.log('instagram', instagram.value);
-  console.log('facebook', facebook.value);
-  console.log('website', website.value);
-  console.log('whatsapp', whatsapp.value);
-
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
     [mappedCategories],
@@ -302,6 +299,25 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                   </Text>
                 </Box>
               </Flex>
+              {!isCreateMode && entity?.fullSlug && (
+                <EditModeUrlCard mt="4">
+                  <Flex direction="column" gap="1">
+                    <Text size="2" color="gray">
+                      Ваша страница:
+                    </Text>
+                    <Text size="3" as="p" style={{ margin: 0 }}>
+                      <EditModeUrlText
+                        href={`${process.env.NEXT_PUBLIC_CLIENT_URL ?? ""}/professional/${entity.fullSlug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {process.env.NEXT_PUBLIC_CLIENT_URL ?? ""}/professional/
+                        {entity.fullSlug}
+                      </EditModeUrlText>
+                    </Text>
+                  </Flex>
+                </EditModeUrlCard>
+              )}
             </HeroCard>
 
             <SectionCard variant="surface" size="4">
