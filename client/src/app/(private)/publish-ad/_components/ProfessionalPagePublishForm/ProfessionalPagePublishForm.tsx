@@ -77,50 +77,50 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
   const { mappedCategories } = usePublishProfessionalServiceAd();
-
-  const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(
-    null,
-  );
-  const [profileRemoved, setProfileRemoved] = useState(false);
-  const existingProfileImage: ExistingImageItem | null = entity?.profileImage
-    ? {
-        ...entity.profileImage,
-        id: entity.profileImage.uniqueName,
-        isExisting: true,
-        toBeDeleted: false,
-      }
-    : null;
-
   const [selectedProfileFiles, setSelectedProfileFiles] = useState<File[]>([]);
   const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<File[]>([]);
-
-  const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
-    () =>
-      entity?.galleryImages?.map((img) => ({
-        ...img,
-        id: img.uniqueName,
+  const [existingProfileImage, setExistingProfileImage] = useState<
+    ExistingImageItem[]
+  >(() => {
+    return entity?.profileImage
+      ? [
+          {
+            ...entity.profileImage,
+            id: entity.profileImage.uniqueName,
+            isExisting: true,
+            toBeDeleted: false,
+          },
+        ]
+      : [];
+  });
+  const [existingGalleryImages, setExistingGalleryImages] = useState<
+    ExistingImageItem[]
+  >(() => {
+    return (
+      entity?.galleryImages?.map((image) => ({
+        ...image,
         isExisting: true,
         toBeDeleted: false,
-      })) ?? [],
-  );
+      })) || []
+    );
+  });
 
-  const galleryImagesToDelete = useMemo(
-    () => existingImages.filter((i) => i.toBeDeleted),
-    [existingImages],
-  );
+  const imagesToDelete = useMemo(() => {
+    return {
+      profileImages: existingProfileImage?.filter((i) => i.toBeDeleted) ?? [],
+      galleryImages: existingGalleryImages?.filter((i) => i.toBeDeleted) ?? [],
+    };
+  }, [existingProfileImage, existingGalleryImages]);
+
   const allGalleryImagesDeleted =
-    existingImages.length > 0 &&
-    galleryImagesToDelete.length === existingImages.length;
-
-  const profileImageToDelete =
-    !isCreateMode && existingProfileImage && profileRemoved
-      ? existingProfileImage
-      : null;
+    imagesToDelete.galleryImages.length === existingGalleryImages.length;
 
   const editActionWithContext = editProfessionalPage.bind(null, {
-    pagePublicId: entity?.publicId ?? "",
-    profileImageToDelete,
-    galleryImagesToDelete,
+    pagePublicId: entity?.publicId as string,
+    imagesToDelete: [
+      ...imagesToDelete.profileImages,
+      ...imagesToDelete.galleryImages,
+    ],
     allGalleryImagesDeleted,
   });
 
@@ -137,9 +137,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
   const [form, fields] = useForm({
     defaultValue: {
       displayName: entity?.displayName ?? `${firstName} ${lastName}`,
-      slug:
-        entity?.slug ??
-        fullNameSlug,
+      slug: entity?.slug ?? fullNameSlug,
       slugPrefix: entity?.slugPrefix ?? _slugPrefix,
       fullSlug: entity?.fullSlug ?? `${fullNameSlug}-${_slugPrefix}`,
       description: entity?.description,
@@ -158,37 +156,59 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
-      return parseWithZod(formData, {
-        schema: createProfessionalPageSchema({
-          minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
-        }),
-      });
-      // const updatedFormData = new FormData();
-      // for (const [key, value] of formData.entries()) {
-      //   if (key !== "profileImage" && key !== "galleryImages") {
-      //     updatedFormData.append(key, value as string);
-      //   }
-      // }
-      // if (selectedProfileFile && selectedProfileFile.size > 0) {
-      //   updatedFormData.append("profileImage", selectedProfileFile);
-      // }
-      // selectedFiles.forEach((f) => updatedFormData.append("galleryImages", f));
-      // const currentGallery = formData.getAll("galleryImages");
-      // currentGallery.forEach((file) => {
-      //   if (
-      //     file instanceof File &&
-      //     file.size > 0 &&
-      //     file.name !== "undefined" &&
-      //     !selectedFiles.some((f) => f.name === file.name)
-      //   ) {
-      //     updatedFormData.append("galleryImages", file);
-      //   }
-      // });
-      // return parseWithZod(updatedFormData, {
+      // return parseWithZod(formData, {
       //   schema: createProfessionalPageSchema({
       //     minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
       //   }),
       // });
+
+      // Create a new FormData with accumulated files
+      const updatedFormData = new FormData();
+      // Copy all existing form data
+      for (const [key, value] of formData.entries()) {
+        if (key !== "images") {
+          updatedFormData.append(key, value);
+        }
+      }
+
+      // Add all accumulated files (this includes files from the current drop)
+      selectedProfileFiles.forEach((file) => {
+        updatedFormData.append("profileImage", file);
+      });
+
+      selectedGalleryFiles.forEach((file) => {
+        updatedFormData.append("galleryImages", file);
+      });
+
+      // Also add any files from the current formData (for the first drop)
+      const currentProfileImages = formData.getAll("profileImage");
+      currentProfileImages.forEach((file) => {
+        if (
+          file instanceof File &&
+          file.size > 0 &&
+          file.name !== "undefined" &&
+          !selectedProfileFiles.some((f) => f.name === file.name)
+        ) {
+          updatedFormData.append("profileImage", file);
+        }
+      });
+      const currentGalleryImages = formData.getAll("galleryImages");
+      currentGalleryImages.forEach((file) => {
+        if (
+          file instanceof File &&
+          file.size > 0 &&
+          file.name !== "undefined" &&
+          !selectedGalleryFiles.some((f) => f.name === file.name)
+        ) {
+          updatedFormData.append("galleryImages", file);
+        }
+      });
+
+      return parseWithZod(updatedFormData, {
+        schema: createProfessionalPageSchema({
+          minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
+        }),
+      });
     },
     shouldRevalidate: "onInput",
     shouldValidate: "onInput",
@@ -226,7 +246,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     acceptTerms,
     profileImage,
     galleryImages,
-    
   } = fields;
 
   // const generatedSlugPreix = useRef(generateSlug(""));
@@ -347,7 +366,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 <Text color="gray" size="2" mt="2">
                   Одно фото для аватара (Не обязательно).
                 </Text>
-                {/* make grid with two columns , each 50% */}
                 <Grid
                   columns={{ initial: "1", xs: "2" }}
                   gap={{ initial: "4", md: "5" }}
@@ -367,20 +385,21 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                       onFilesDrop={setSelectedProfileFiles}
                       files={selectedProfileFiles}
                       disabled={false}
-                      // existingFilesLength={
-                      //   existingImages.filter((image) => !image.toBeDeleted)
-                      //     .length
-                      // }
+                      existingFilesLength={
+                        existingProfileImage?.filter(
+                          (image) => !image.toBeDeleted,
+                        ).length
+                      }
                     />
                   </DropzoneSurface>
-                  {(existingImages.length > 0 ||
+                  {((existingProfileImage && existingProfileImage.length > 0) ||
                     selectedProfileFiles.length > 0) && (
                     <Box>
                       <ImagesPreviewer
-                        existingImages={existingImages}
+                        existingImages={existingProfileImage}
                         images={selectedProfileFiles}
                         setImages={setSelectedProfileFiles}
-                        setExistingImages={setExistingImages}
+                        setExistingImages={setExistingProfileImage}
                         maxImages={MAX_PROFILE_IMAGE_FILES}
                       />
                     </Box>
@@ -470,7 +489,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                   Галерея
                 </Heading>
                 <Text color="gray" size="2" mt="2">
-                  До {MAX_GALLERY_FILES} фото (по желанию).
+                  До {MAX_GALLERY_FILES} фото.
                 </Text>
                 <DropzoneSurface p={{ initial: "3", md: "4" }}>
                   <DropFilesInput
@@ -488,18 +507,18 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     files={selectedGalleryFiles}
                     disabled={isPending}
                     existingFilesLength={
-                      existingImages.filter((i) => !i.toBeDeleted).length
+                      existingGalleryImages.filter((i) => !i.toBeDeleted).length
                     }
                   />
                 </DropzoneSurface>
-                {(existingImages.length > 0 ||
+                {(existingGalleryImages.length > 0 ||
                   selectedGalleryFiles.length > 0) && (
                   <Box>
                     <ImagesPreviewer
-                      existingImages={existingImages}
+                      existingImages={existingGalleryImages}
                       images={selectedGalleryFiles}
                       setImages={setSelectedGalleryFiles}
-                      setExistingImages={setExistingImages}
+                      setExistingImages={setExistingGalleryImages}
                       maxImages={MAX_GALLERY_FILES}
                     />
                   </Box>
