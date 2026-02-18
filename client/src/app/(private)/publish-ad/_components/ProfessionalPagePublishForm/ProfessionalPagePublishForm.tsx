@@ -399,7 +399,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     value={`${slug.value}-${slugPrefix.value}`}
                   />
                 </Grid>
-                {slugPreview && (
+                {(slugPreview && isCreateMode) && (
                   <Text size="3" color="gray">
                     Это будет адрес вашей новой страницы:
                     <br />
@@ -565,8 +565,11 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
                 <Heading as="h2" size="4">
-                  Соцсети и сайт
+                  Соцсети и сайт (не обязательно)
                 </Heading>
+                <Text color="gray" size="1" mt="2">
+                  Если вы не хотите добавлять соцсети или сайт, оставьте поля пустыми.
+                </Text>
                 <Grid
                   columns={{ initial: "1", md: "2" }}
                   gap={{ initial: "4", md: "5" }}
@@ -575,7 +578,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     type="text"
                     field={whatsapp}
                     label="WhatsApp"
-                    placeholder="Номер телефона"
+                    placeholder="Номер телефона + код страны (например: 972526081346)"
                     size="3"
                     errors={whatsapp.errors}
                     defaultValue={whatsapp.initialValue}
