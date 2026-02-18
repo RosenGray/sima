@@ -20,7 +20,7 @@ const ProfessionalPage: FC<ProfessionalPageProps> = async ({ params }) => {
   }
 
   const isOwner = !!currentUser && currentUser.id === page.user.id;
-  const editHref = `${process.env.NEXT_PUBLIC_CLIENT_URL ?? ""}/professional/edit/${page.publicId}`;
+  const editHref = `${process.env.NEXT_PUBLIC_CLIENT_URL ?? ""}/publish-ad/professional-page/edit/${page.publicId}`;
 
   return (
     <ProfessionalPageView

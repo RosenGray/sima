@@ -52,21 +52,13 @@ export async function editProfessionalPage(
   }
   const { profileImage, galleryImages, slug, slugPrefix } = result.value;
 
+  const isValidFile = (file: File) =>
+    file instanceof File && file.size > 0 && file.name !== "undefined";
+  const profileFiles = (profileImage ?? []).filter(isValidFile);
+  const galleryFiles = (galleryImages ?? []).filter(isValidFile);
+  const profileFileCount = Math.min(profileFiles.length, 1);
+
   try {
-    const uploadFormData = new FormData();
-
-    if (profileImage) {
-      profileImage.forEach((file: File) => {
-        uploadFormData.append("files", file);
-      });
-    }
-
-    galleryImages.forEach((file: File) => {
-      uploadFormData.append("files", file);
-    });
-
-    const uploadResult = await uploadFiles(FOLDER, user.id, uploadFormData);
-
     await connectDB();
     const professionalPage = await professionalPageRepository.getByPublicId(
       context.pagePublicId,
@@ -76,21 +68,60 @@ export async function editProfessionalPage(
         formErrors: ["Страница не найдена"],
       });
     }
+
     const imageIdsToDelete = context.imagesToDelete.map((img) => img.id);
-    const updatedImages = [
-      ...professionalPage.galleryImages.filter(
-        (img) => !imageIdsToDelete.includes(img.id),
-      ),
-      ...uploadResult.files,
+    const existingGalleryMinusDeleted = professionalPage.galleryImages.filter(
+      (img) => !imageIdsToDelete.includes(img.id),
+    );
+
+    let newProfileImage: (typeof professionalPage)["profileImage"] = undefined;
+    let newGalleryUploads: FileUploadResponse["files"] = [];
+
+    if (profileFileCount + galleryFiles.length > 0) {
+      const uploadFormData = new FormData();
+      profileFiles.slice(0, 1).forEach((file: File) => {
+        uploadFormData.append("files", file);
+      });
+      galleryFiles.forEach((file: File) => {
+        uploadFormData.append("files", file);
+      });
+      const uploadResult = await uploadFiles(FOLDER, user.id, uploadFormData);
+      newProfileImage =
+        profileFileCount > 0 ? uploadResult.files[0] : undefined;
+      newGalleryUploads = uploadResult.files.slice(profileFileCount);
+    }
+
+    const hadProfileImage = !!professionalPage.profileImage;
+    const profileImageWasDeletedByUser =
+      hadProfileImage &&
+      context.imagesToDelete.some(
+        (img) =>
+          img.uniqueName === professionalPage.profileImage!.uniqueName ||
+          img.id === professionalPage.profileImage!.id,
+      );
+    const profileDeletedNoReplacement =
+      hadProfileImage && profileFileCount === 0 && profileImageWasDeletedByUser;
+    const resolvedProfileImage =
+      profileFileCount > 0
+        ? newProfileImage
+        : profileDeletedNoReplacement
+          ? null
+          : professionalPage.profileImage;
+
+    const updatedGalleryImages = [
+      ...existingGalleryMinusDeleted,
+      ...newGalleryUploads,
     ];
 
+    const { profileImage: _pi, galleryImages: _gi, ...restValue } = result.value;
     await ProfessionalPage.findOneAndUpdate(
       { publicId: context.pagePublicId },
       {
-        ...result.value,
+        ...restValue,
         user: user.id,
         acceptTerms: result.value.acceptTerms === "on",
-        galleryImages: updatedImages,
+        profileImage: resolvedProfileImage ?? null,
+        galleryImages: updatedGalleryImages,
       },
     );
   } catch (error) {
