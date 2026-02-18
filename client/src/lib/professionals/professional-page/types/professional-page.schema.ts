@@ -79,6 +79,7 @@ export const createProfessionalPageSchema = (options?: {
           : undefined,
       )
       .superRefine((files, ctx) => {
+        console.log("files", files);
         const valid = files.filter((f) => f.size > 0 && f.name !== "undefined");
         if (valid.length > MAX_GALLERY_FILES) {
           ctx.addIssue({

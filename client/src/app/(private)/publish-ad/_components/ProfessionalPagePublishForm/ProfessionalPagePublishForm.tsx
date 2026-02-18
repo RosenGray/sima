@@ -185,7 +185,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
         }
       });
 
-      return parseWithZod(updatedFormData, {
+      return parseWithZod(formData, {
         schema: createProfessionalPageSchema({
           minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
         }),
@@ -356,15 +356,14 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                   </DropzoneSurface>
                   {((existingProfileImage && existingProfileImage.length > 0) ||
                     selectedProfileFiles.length > 0) && (
-                    <Box>
-                      <ImagesPreviewer
-                        existingImages={existingProfileImage}
-                        images={selectedProfileFiles}
-                        setImages={setSelectedProfileFiles}
-                        setExistingImages={setExistingProfileImage}
-                        maxImages={MAX_PROFILE_IMAGE_FILES}
-                      />
-                    </Box>
+                    <ImagesPreviewer
+                      existingImages={existingProfileImage}
+                      images={selectedProfileFiles}
+                      setImages={setSelectedProfileFiles}
+                      setExistingImages={setExistingProfileImage}
+                      maxImages={MAX_PROFILE_IMAGE_FILES}
+                      isExplicitlyHeight={false}
+                    />
                   )}
                 </Grid>
               </Flex>
@@ -415,7 +414,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     value={`${slug.value}-${slugPrefix.value}`}
                   />
                 </Grid>
-                {(slugPreview && isCreateMode) && (
+                {slugPreview && isCreateMode && (
                   <Text size="3" color="gray">
                     Это будет адрес вашей новой страницы:
                     <br />
@@ -476,15 +475,13 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 </DropzoneSurface>
                 {(existingGalleryImages.length > 0 ||
                   selectedGalleryFiles.length > 0) && (
-                  <Box>
-                    <ImagesPreviewer
-                      existingImages={existingGalleryImages}
-                      images={selectedGalleryFiles}
-                      setImages={setSelectedGalleryFiles}
-                      setExistingImages={setExistingGalleryImages}
-                      maxImages={MAX_GALLERY_FILES}
-                    />
-                  </Box>
+                  <ImagesPreviewer
+                    existingImages={existingGalleryImages}
+                    images={selectedGalleryFiles}
+                    setImages={setSelectedGalleryFiles}
+                    setExistingImages={setExistingGalleryImages}
+                    maxImages={MAX_GALLERY_FILES}
+                  />
                 )}
               </Flex>
             </SectionCard>
@@ -584,7 +581,8 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                   Соцсети и сайт (не обязательно)
                 </Heading>
                 <Text color="gray" size="1" mt="2">
-                  Если вы не хотите добавлять соцсети или сайт, оставьте поля пустыми.
+                  Если вы не хотите добавлять соцсети или сайт, оставьте поля
+                  пустыми.
                 </Text>
                 <Grid
                   columns={{ initial: "1", md: "2" }}
