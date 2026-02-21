@@ -62,12 +62,25 @@ const connectDB = async () => {
         .connect(MONGO_URI, opts)
         .then(async (mongoose) => {
           console.log("✓ Connected to MongoDB");
+
+          // Ensure collection exists before creating index
+          const collections = await mongoose.connection?.db
+            ?.listCollections({ name: RATE_LIMITS_COLLECTION })
+            .toArray();
+          if (collections && collections.length === 0) {
+            await mongoose.connection?.db?.createCollection(
+              RATE_LIMITS_COLLECTION,
+            );
+            console.log("Created rate_limits collection.");
+          }
+
           const coll = mongoose.connection.collection(RATE_LIMITS_COLLECTION);
           const indexes = await coll.indexes();
           const hasTtl = indexes.some(
-            (idx) => 
+            (idx) =>
               idx.key && idx.key.windowStart === 1 && idx.expireAfterSeconds,
           );
+
           if (hasTtl) {
             console.log("rate_limits TTL index on windowStart already exists.");
           } else {
@@ -75,11 +88,7 @@ const connectDB = async () => {
               { windowStart: 1 },
               { expireAfterSeconds: EXPIRE_AFTER_SECONDS },
             );
-            console.log(
-              "Created rate_limits TTL index on windowStart (expireAfterSeconds:",
-              EXPIRE_AFTER_SECONDS,
-              ").",
-            );
+            console.log("Created rate_limits TTL index on windowStart.");
           }
 
           return mongoose;
