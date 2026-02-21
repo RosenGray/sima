@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { DatabaseConnectionError, ServerErrorType } from "@sima-board/common";
 
+const RATE_LIMITS_COLLECTION = "rate_limits";
+const EXPIRE_AFTER_SECONDS = 86400; // 24 hours
+
 // Cache the connection promise to prevent multiple simultaneous connections
 let cached = global.mongoose;
 
@@ -15,17 +18,25 @@ const connectDB = async () => {
   }
 
   // Validate environment variables
-  const { JWT_KEY, NODE_ENV, DB_USERNAME, DB_PASSWORD, MONGO_URI: ENV_MONGO_URI } = process.env;
+  const {
+    JWT_KEY,
+    NODE_ENV,
+    DB_USERNAME,
+    DB_PASSWORD,
+    MONGO_URI: ENV_MONGO_URI,
+  } = process.env;
 
   if (!JWT_KEY) {
     throw new Error("JWT_KEY must be defined");
   }
 
   const isProd = NODE_ENV === "production";
-  
-  const MONGO_URI = ENV_MONGO_URI || (isProd
-    ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/sima`
-    : "mongodb://localhost:30016/sima");
+
+  const MONGO_URI =
+    ENV_MONGO_URI ||
+    (isProd
+      ? `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@simacluster.iwsya.mongodb.net/sima`
+      : "mongodb://localhost:30016/sima");
 
   if (!MONGO_URI) {
     throw new Error("MONGO_URI must be defined");
@@ -45,18 +56,40 @@ const connectDB = async () => {
     };
 
     console.log("Connecting to MongoDB...");
-    
+
     try {
-      cached.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => {
-        console.log("✓ Connected to MongoDB");
-        return mongoose;
-      });
+      cached.promise = mongoose
+        .connect(MONGO_URI, opts)
+        .then(async (mongoose) => {
+          console.log("✓ Connected to MongoDB");
+          const coll = mongoose.connection.collection(RATE_LIMITS_COLLECTION);
+          const indexes = await coll.indexes();
+          const hasTtl = indexes.some(
+            (idx) =>
+              idx.key && idx.key.windowStart === 1 && idx.expireAfterSeconds,
+          );
+          if (hasTtl) {
+            console.log("rate_limits TTL index on windowStart already exists.");
+          } else {
+            await coll.createIndex(
+              { windowStart: 1 },
+              { expireAfterSeconds: EXPIRE_AFTER_SECONDS },
+            );
+            console.log(
+              "Created rate_limits TTL index on windowStart (expireAfterSeconds:",
+              EXPIRE_AFTER_SECONDS,
+              ").",
+            );
+          }
+
+          return mongoose;
+        });
     } catch (error) {
       cached.promise = null; // Reset on failure
       console.error("MongoDB connection error:", error);
       throw new DatabaseConnectionError(
         "Error connecting to db",
-        ServerErrorType.DatabaseConnection
+        ServerErrorType.DatabaseConnection,
       );
     }
   }
@@ -70,7 +103,7 @@ const connectDB = async () => {
     console.error("Failed to establish MongoDB connection:", error);
     throw new DatabaseConnectionError(
       "Error connecting to db",
-      ServerErrorType.DatabaseConnection
+      ServerErrorType.DatabaseConnection,
     );
   }
 };
@@ -93,7 +126,7 @@ mongoose.connection.on("error", (error) => {
 });
 
 // Graceful shutdown
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   process.on("SIGINT", async () => {
     await mongoose.connection.close();
     process.exit(0);
