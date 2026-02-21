@@ -65,7 +65,7 @@ const connectDB = async () => {
           const coll = mongoose.connection.collection(RATE_LIMITS_COLLECTION);
           const indexes = await coll.indexes();
           const hasTtl = indexes.some(
-            (idx) =>
+            (idx) => 
               idx.key && idx.key.windowStart === 1 && idx.expireAfterSeconds,
           );
           if (hasTtl) {
