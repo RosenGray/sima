@@ -16,7 +16,6 @@ import { getFileManager } from "@/lib/common/actions/getFileManager";
 import { professionalServiceRepository } from "../repository/ProfessionalServiceRepository";
 import { nanoid } from "nanoid";
 import { ProfessionalPage } from "@/lib/professionals/professional-page/models/ProfessionalPage";
-import { generateSlug } from "@/utils/generateSlug";
 
 export async function editProfessionalServiceAd(
   context: {
@@ -25,7 +24,7 @@ export async function editProfessionalServiceAd(
     allImagesShouldBeDeleted: boolean;
   },
   initialState: unknown,
-  formData: FormData
+  formData: FormData,
 ) {
   const result = parseWithZod(formData, {
     schema: createProfessionalServiceSchema({
@@ -48,7 +47,7 @@ export async function editProfessionalServiceAd(
       context.imagesToDelete.map((image) => ({
         fileName: image.uniqueName,
         versionId: image.versionId,
-      }))
+      })),
     );
   }
 
@@ -56,7 +55,7 @@ export async function editProfessionalServiceAd(
 
   try {
     const validImages = images.filter(
-      (file: File) => file.size > 0 && file.name !== "undefined"
+      (file: File) => file.size > 0 && file.name !== "undefined",
     );
 
     let uploadResult: FileUploadResponse = {
@@ -83,14 +82,14 @@ export async function editProfessionalServiceAd(
       uploadResult = await uploadFiles(
         "professionals-service",
         user.id,
-        uploadFormData
+        uploadFormData,
       );
     }
 
     await connectDB();
 
     const service = await professionalServiceRepository.getByPublicId(
-      context.servicePublicId
+      context.servicePublicId,
     );
     if (!service) {
       return result.reply({
@@ -111,34 +110,31 @@ export async function editProfessionalServiceAd(
         user: user.id,
         acceptTerms: result.value.acceptTerms === "on",
         images: updatedImages,
-      }
+      },
     );
     await professionalService.save();
 
-    if (
-      result.value.acceptPersonalPage === "on" &&
-      !user.hasPrivateProfessionalPage
-    ) {
+    if (result.value.acceptPersonalPage === "on") {
       await User.findByIdAndUpdate(user.id, {
         hasPrivateProfessionalPage: true,
       });
 
-      const slug =
-        result.value.slug || generateSlug(user.firstName, user.lastName);
-
       const professionalPage = new ProfessionalPage({
         user: user.id,
         publicId: nanoid(10),
-        slug,
+        slug: result.value.slug,
+        slugPrefix: result.value.slugPrefix,
+        fullSlug: result.value.fullSlug,
         displayName: `${user.firstName} ${user.lastName}`,
         description: result.value.description,
+        galleryImages: updatedImages,
         category: result.value.category,
         subCategory: result.value.subCategory,
         district: result.value.district,
         city: result.value.city,
         contactPhone: result.value.phoneNumber,
         contactEmail: result.value.email,
-        galleryImages: updatedImages,
+        acceptTerms: result.value.acceptTerms === "on",
         isPublished: true,
       });
       await professionalPage.save();

@@ -1,3 +1,4 @@
+
 import { FC, Suspense } from "react";
 import { Yad2PageContainer } from "./page.styles";
 import Yad2ItemContent from "./_components/Yad2ItemContent/Yad2ItemContent";

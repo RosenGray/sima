@@ -5,6 +5,6 @@ export const mapMaxImagesToNumberColumnsAndRows = (maxImages: MaxImages) => {
     case 1:
       return { columns: "1", rows: "1" };
     default:
-      return { columns: "2",  };
+      return { columns: "2", rows: "2" };
   }
 };

@@ -110,14 +110,20 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
 
   return (
     <ImagePreviewerContainerBox
-      {...(isExplicitlyHeight && {
-        height: {
-          initial: "200px",
-          sm: "350px",
-        },
-      })}
+      {
+        ...(isExplicitlyHeight
+          ? {
+              height: {
+                initial: "200px",
+                sm: "350px",
+              },
+            }
+          : {
+              height: "100%",
+            })
+      }
     >
-      <Grid height="100%" columns="2" gap="2">
+      <Grid height="100%" columns={maxImages === 1 ? "1" : "2"} rows="1" gap="2">
         <GridItem>
           <Image
           fill

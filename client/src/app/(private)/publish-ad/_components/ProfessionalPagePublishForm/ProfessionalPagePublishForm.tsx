@@ -147,7 +147,11 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
       const updatedFormData = new FormData();
       // Copy all existing form data except file keys (we add those from state, same as ProfessionalServicePublishForm excludes "images")
       for (const [key, value] of formData.entries()) {
-        if (key !== "images" && key !== "profileImage" && key !== "galleryImages") {
+        if (
+          key !== "images" &&
+          key !== "profileImage" &&
+          key !== "galleryImages"
+        ) {
           updatedFormData.append(key, value);
         }
       }
@@ -254,6 +258,8 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     }
   }, [formState]);
 
+  const slugPreview = slug.value ?? "".toLowerCase().replace(/\s+/g, "-");
+  
   if (isPending) {
     return (
       <Flex justify="center" align="center" style={{ minHeight: "600px" }}>
@@ -261,8 +267,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
       </Flex>
     );
   }
-
-  const slugPreview = slug.value ?? "".toLowerCase().replace(/\s+/g, "-");
 
   return (
     <>
@@ -354,6 +358,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                       }
                     />
                   </DropzoneSurface>
+                  <Box style={{ border: "1px solid #e0e0e0",height: "100%" }}>
                   {((existingProfileImage && existingProfileImage.length > 0) ||
                     selectedProfileFiles.length > 0) && (
                     <ImagesPreviewer
@@ -365,6 +370,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                       isExplicitlyHeight={false}
                     />
                   )}
+                  </Box>
                 </Grid>
               </Flex>
             </SectionCard>

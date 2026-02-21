@@ -56,7 +56,8 @@ import {
   SectionCard,
 } from "./ProfessionalServicePublishForm.styles";
 import { usePublishProfessionalServiceAd } from "../../_providers/PublishProfessionalServiceAdProvider";
-import { generateSlug } from "@/utils/generateSlug";
+import { nanoid } from "nanoid";
+import Link from "next/link";
 
 const areasOptions = mapAreasToSelectOptions();
 
@@ -74,14 +75,7 @@ const ProfessionalServicePublishForm: FC<
   const { mappedCategories } = usePublishProfessionalServiceAd();
   const [formKey, setFormKey] = useState(0); // Key to force form re-render for reset
   const showPersonalPageOffer = !user?.hasPrivateProfessionalPage;
-  const [personalPageSlug] = useState(() =>
-    showPersonalPageOffer
-      ? generateSlug(user?.firstName ?? "", user?.lastName ?? "")
-      : ""
-  );
-  const personalPagePreviewUrl = showPersonalPageOffer
-    ? `${process.env.NEXT_PUBLIC_CLIENT_URL}/professional/${personalPageSlug}`
-    : "";
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<ExistingImageItem[]>(
     () => {
@@ -112,11 +106,20 @@ const ProfessionalServicePublishForm: FC<
     undefined,
   );
 
+  const [acceptPersonalPage, setAcceptPersonalPage] = useState(false);
+
+  const firstName = user?.firstName ?? "";
+  const lastName = user?.lastName ?? "";
+  const fullNameSlug = `${firstName.toLocaleLowerCase()}-${lastName.toLocaleLowerCase()}`;
+  const _slugPrefix = nanoid(5);
 
   const [form, fields] = useForm({
     defaultValue: {
       category: service?.category?.id,
       subCategory: service?.subCategory?.id,
+      slug: service?.slug ?? fullNameSlug,
+      slugPrefix: service?.slugPrefix ?? _slugPrefix,
+      fullSlug: service?.fullSlug ?? `${fullNameSlug}-${_slugPrefix}`,
       district: service?.district || Districts.Center,
       city: service?.city,
       images: [],
@@ -124,9 +127,6 @@ const ProfessionalServicePublishForm: FC<
       phoneNumber: service?.phoneNumber,
       description: service?.description,
       acceptTerms: service?.acceptTerms ? "on" : null,
-      ...(showPersonalPageOffer
-        ? { acceptPersonalPage: null, slug: personalPageSlug }
-        : {}),
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
@@ -184,15 +184,18 @@ const ProfessionalServicePublishForm: FC<
   const {
     category,
     subCategory,
+    slug,
+    slugPrefix,
     district,
     city,
     description,
     email,
     phoneNumber,
     acceptTerms,
-    acceptPersonalPage,
     images,
   } = fields;
+  console.log("slugPrefix", slugPrefix.value);
+  console.log("slug", slug.value);
 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
@@ -216,6 +219,8 @@ const ProfessionalServicePublishForm: FC<
       setErrorModalOpen(true);
     }
   }, [formState]);
+
+  const slugPreview = slug.value ?? "".toLowerCase().replace(/\s+/g, "-");
 
   if (isPending) {
     return (
@@ -419,7 +424,7 @@ const ProfessionalServicePublishForm: FC<
                     >
                       <StarFilledIcon width={24} height={24} />
                       <Heading as="h2" size="4">
-                        Персональная страница для вашей услуги —{" "}
+                        Персональная страница для вашей услуги — {""}
                         <Badge size="2" color="green" variant="solid">
                           Бесплатно
                         </Badge>
@@ -435,28 +440,86 @@ const ProfessionalServicePublishForm: FC<
                     объявления.
                   </Text>
                   <Text size="2" color="gray">
-                    Вашу страницу можно будет изменить позже в личном кабинете.
-                  </Text>
-                  <Text size="2" weight="medium">
-                    Ваша страница:{" "}
-                    <Text
-                      as="span"
-                      weight="bold"
+                    Хотите посмотреть, как будет выглядеть ваша личная страница?
+                    Нажмите{" "}
+                    <Link
+                      href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/professional/example`}
+                      target="_blank"
                       style={{
-                        wordBreak: "break-all",
-                        color: "var(--accent-11)",
+                        color: "red",
+                        textDecoration: "underline",
+                        fontWeight: "bold",
                       }}
                     >
-                      {personalPagePreviewUrl}
-                    </Text>
+                      здесь
+                    </Link>
+                    .
                   </Text>
-                  <input type="hidden" name="slug" value={personalPageSlug} />
-                  <Checkbox
-                    field={acceptPersonalPage}
-                    label="Хочу получить персональную страницу"
-                    errors={acceptPersonalPage.errors}
+                  <Text size="2" color="gray">
+                    Вашу страницу можно будет изменить позже в личном кабинете.
+                  </Text>
+                  <BasicFormField
+                    type="text"
+                    field={slug}
+                    label="Адрес (имя) страницы,Вы можете изменять сейчас, если хотите. 👇"
+                    placeholder="alex-katz"
+                    defaultValue={slug.initialValue}
+                    size="3"
+                    errors={slug.errors}
                     disabled={isPending}
+                    dataIsValid={slug.valid}
                   />
+                  <input
+                    type="hidden"
+                    name="slugPrefix"
+                    value={slugPrefix.initialValue}
+                  />
+                  <input
+                    type="hidden"
+                    name="fullSlug"
+                    value={`${slug.value}-${slugPrefix.value}`}
+                  />
+                  <input
+                    type="hidden"
+                    name="acceptPersonalPage"
+                    value={acceptPersonalPage ? "on" : "off"}
+                  />
+                  {slugPreview  && (
+                    <Text size="2" color="gray">
+                      Это будет адрес вашей новой страницы:
+                      <br />
+                      <Text
+                        as="p"
+                        mt="2"
+                        weight="medium"
+                        style={{ wordBreak: "break-all", display: "block" }}
+                      >
+                        {process.env.NEXT_PUBLIC_CLIENT_URL}/professional/
+                        <Text as="span" weight="bold" color="red">
+                          {slugPreview}
+                        </Text>
+                        -{slugPrefix.initialValue}
+                      </Text>
+                    </Text>
+                  )}
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    <input
+                      style={{ width: "16px", height: "16px" }}
+                      type="checkbox"
+                      checked={acceptPersonalPage}
+                      onChange={() =>
+                        setAcceptPersonalPage(!acceptPersonalPage)
+                      }
+                      disabled={isPending}
+                    />
+                    Хочу получить персональную страницу
+                  </label>
                 </Flex>
               </FreePageOfferCard>
             )}
