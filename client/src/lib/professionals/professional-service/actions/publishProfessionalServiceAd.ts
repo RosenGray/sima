@@ -10,6 +10,7 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
 import { ProfessionalPage } from "@/lib/professionals/professional-page/models/ProfessionalPage";
+import { checkRateLimit } from "@/lib/rateLimit/rateLimit";
 
 export async function publishProfessionalServiceAd(
   initialState: unknown,
@@ -24,6 +25,18 @@ export async function publishProfessionalServiceAd(
   if (!user) {
     return result.reply({
       formErrors: ["Что-то пошло не так, попробуйте позже"],
+    });
+  }
+
+  const { allowed } = await checkRateLimit({
+    key: user.id,
+    action: "publish-professional-service",
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (!allowed) {
+    return result.reply({
+      formErrors: ["Превышен лимит публикаций. Попробуйте позже через час"],
     });
   }
 
