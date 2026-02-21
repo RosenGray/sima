@@ -606,7 +606,7 @@ const ProfessionalServicePublishForm: FC<
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={form.errors}
+        errorMessage={formState?.error?.[""] ?? form.errors}
       />
     </>
   );
