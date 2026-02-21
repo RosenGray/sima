@@ -10,11 +10,10 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
 import { ProfessionalPage } from "@/lib/professionals/professional-page/models/ProfessionalPage";
-import { generateSlug } from "@/utils/generateSlug";
 
 export async function publishProfessionalServiceAd(
   initialState: unknown,
-  formData: FormData
+  formData: FormData,
 ) {
   const result = parseWithZod(formData, {
     schema: createProfessionalServiceSchema({ minNumberOfImages: 1 }),
@@ -42,7 +41,7 @@ export async function publishProfessionalServiceAd(
     const uploadResult = await uploadFiles(
       "professionals-service",
       user.id,
-      uploadFormData
+      uploadFormData,
     );
 
     await connectDB();
@@ -61,23 +60,22 @@ export async function publishProfessionalServiceAd(
         hasPrivateProfessionalPage: true,
       });
 
-      // Use slug from form, or generate a fallback
-      const slug =
-        result.value.slug || generateSlug(user.firstName, user.lastName);
-
       const professionalPage = new ProfessionalPage({
         user: user.id,
         publicId: nanoid(10),
-        slug,
+        slug: result.value.slug,
+        slugPrefix: result.value.slugPrefix,
+        fullSlug: result.value.fullSlug,
         displayName: `${user.firstName} ${user.lastName}`,
         description: result.value.description,
+        galleryImages: uploadResult.files,
         category: result.value.category,
         subCategory: result.value.subCategory,
         district: result.value.district,
         city: result.value.city,
         contactPhone: result.value.phoneNumber,
         contactEmail: result.value.email,
-        galleryImages: uploadResult.files,
+        acceptTerms: result.value.acceptTerms === "on",
         isPublished: true,
       });
       await professionalPage.save();

@@ -20,6 +20,9 @@ export const ACCEPTED_FILE_TYPES = [
 
 export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
   return z.object({
+    slug: z.string().min(1, "Введите адрес страницы").optional(),
+    slugPrefix: z.string().min(1, "Введите префикс slug").optional(),
+    fullSlug: z.string().min(1, "Введите полный slug").optional(),
     category: z.string({
       required_error: "Выберите категорию",
     }),
@@ -61,7 +64,6 @@ export const createProfessionalServiceSchema = ({ minNumberOfImages = 1 }) => {
         return z.NEVER;
       }),
     acceptPersonalPage: z.string().optional(),
-    slug: z.string().optional(),
     images: z
       .array(z.instanceof(File))
       .min(

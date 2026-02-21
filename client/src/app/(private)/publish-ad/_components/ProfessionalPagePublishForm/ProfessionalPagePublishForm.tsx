@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import {
   createProfessionalPageSchema,
   MAX_FILE_SIZE,
@@ -11,15 +11,7 @@ import { SerializedProfessionalPage } from "@/lib/professionals/professional-pag
 import { Districts } from "@/lib/cities/types/cities.schema";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import {
-  Box,
-  Flex,
-  Grid,
-  Heading,
-  Separator,
-  Text,
-  IconButton,
-} from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import { useActionState } from "react";
 import {
   mapServiceCategoriesToSelectOptions,
@@ -46,19 +38,14 @@ import { FormMode } from "@/components/Form/types/form.types";
 import Loader from "@/components/Loader";
 import {
   DropzoneSurface,
+  EditModeUrlCard,
+  EditModeUrlText,
   FormShell,
   HeroCard,
-  ProfileImageWrap,
   SectionCard,
 } from "./ProfessionalPagePublishForm.styles";
 import { usePublishProfessionalServiceAd } from "../../_providers/PublishProfessionalServiceAdProvider";
-import { generateSlug } from "@/utils/generateSlug";
-import {
-  EnvelopeClosedIcon,
-  MobileIcon,
-  TrashIcon,
-} from "@radix-ui/react-icons";
-import Image from "next/image";
+import { EnvelopeClosedIcon, MobileIcon } from "@radix-ui/react-icons";
 import { nanoid } from "nanoid";
 
 const areasOptions = mapAreasToSelectOptions();
@@ -156,17 +143,15 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     },
     lastResult: formState,
     onValidate: ({ formData }) => {
-      // return parseWithZod(formData, {
-      //   schema: createProfessionalPageSchema({
-      //     minGalleryImages: allGalleryImagesDeleted ? 1 : 0,
-      //   }),
-      // });
-
       // Create a new FormData with accumulated files
       const updatedFormData = new FormData();
-      // Copy all existing form data
+      // Copy all existing form data except file keys (we add those from state, same as ProfessionalServicePublishForm excludes "images")
       for (const [key, value] of formData.entries()) {
-        if (key !== "images") {
+        if (
+          key !== "images" &&
+          key !== "profileImage" &&
+          key !== "galleryImages"
+        ) {
           updatedFormData.append(key, value);
         }
       }
@@ -214,13 +199,11 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     shouldValidate: "onInput",
   });
 
-  console.log("formState", formState);
-
   const resetForm = () => {
-    // setSelectedFiles([]);
-    // setSelectedProfileFile(null);
-    // setProfileRemoved(false);
-    // setFormKey((k) => k + 1);
+    setSelectedProfileFiles([]);
+    setSelectedGalleryFiles([]);
+
+    setFormKey((k) => k + 1);
   };
 
   const handleModalClose = () => {
@@ -247,42 +230,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     profileImage,
     galleryImages,
   } = fields;
-
-  // const generatedSlugPreix = useRef(generateSlug(""));
-
-  // console.log("displayName", displayName.value);
-  // console.log("displayName errors", displayName.errors);
-  // console.log("slug", slug.value);
-  // console.log("slug errors", slug.errors);
-  // console.log("description", description.value);
-  // console.log("description errors", description.errors);
-  // console.log("contactEmail", contactEmail.value);
-  // console.log("contactEmail errors", contactEmail.errors);
-  // console.log("form errors", form.errors);
-  // console.log("fields", fields);
-  // console.log('category', category);
-  // console.log('subCategory', subCategory);
-  // console.log('district', district);
-  // console.log('city', city);
-  // console.log('contactPhone', contactPhone);
-  // console.log('contactEmail', contactEmail);
-  // console.log('whatsapp', whatsapp);
-  // console.log('instagram', instagram);
-  // console.log('facebook', facebook);
-  // console.log('website', website);
-  // console.log('isPublished', isPublished);
-  // console.log('acceptTerms', acceptTerms);
-  // console.log("profileImage", profileImage.value);
-  // console.log("profileImage errors", profileImage.errors);
-  // console.log("selectedProfileFiles", selectedProfileFiles);
-  // console.log("selectedGalleryFiles", selectedGalleryFiles);
-  // // console.log('galleryImages', galleryImages);
-  // console.log("galleryImages", galleryImages.value);
-  // console.log("galleryImages errors", galleryImages.errors);
-  // console.log("existingImages", existingImages);
-  // console.log("galleryImagesToDelete", galleryImagesToDelete);
-  // console.log("allGalleryImagesDeleted", allGalleryImagesDeleted);
-
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
     [mappedCategories],
@@ -311,6 +258,8 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
     }
   }, [formState]);
 
+  const slugPreview = slug.value ?? "".toLowerCase().replace(/\s+/g, "-");
+  
   if (isPending) {
     return (
       <Flex justify="center" align="center" style={{ minHeight: "600px" }}>
@@ -318,8 +267,6 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
       </Flex>
     );
   }
-
-  const slugPreview = slug.value ?? "".toLowerCase().replace(/\s+/g, "-");
 
   return (
     <>
@@ -356,6 +303,25 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                   </Text>
                 </Box>
               </Flex>
+              {!isCreateMode && entity?.fullSlug && (
+                <EditModeUrlCard mt="4">
+                  <Flex direction="column" gap="1">
+                    <Text size="2" color="gray">
+                      Ваша страница:
+                    </Text>
+                    <Text size="3" as="p" style={{ margin: 0 }}>
+                      <EditModeUrlText
+                        href={`${process.env.NEXT_PUBLIC_CLIENT_URL ?? ""}/professional/${entity.fullSlug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {process.env.NEXT_PUBLIC_CLIENT_URL ?? ""}/professional/
+                        {entity.fullSlug}
+                      </EditModeUrlText>
+                    </Text>
+                  </Flex>
+                </EditModeUrlCard>
+              )}
             </HeroCard>
 
             <SectionCard variant="surface" size="4">
@@ -392,18 +358,19 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                       }
                     />
                   </DropzoneSurface>
+                  <Box style={{ border: "1px solid #e0e0e0",height: "100%" }}>
                   {((existingProfileImage && existingProfileImage.length > 0) ||
                     selectedProfileFiles.length > 0) && (
-                    <Box>
-                      <ImagesPreviewer
-                        existingImages={existingProfileImage}
-                        images={selectedProfileFiles}
-                        setImages={setSelectedProfileFiles}
-                        setExistingImages={setExistingProfileImage}
-                        maxImages={MAX_PROFILE_IMAGE_FILES}
-                      />
-                    </Box>
+                    <ImagesPreviewer
+                      existingImages={existingProfileImage}
+                      images={selectedProfileFiles}
+                      setImages={setSelectedProfileFiles}
+                      setExistingImages={setExistingProfileImage}
+                      maxImages={MAX_PROFILE_IMAGE_FILES}
+                      isExplicitlyHeight={false}
+                    />
                   )}
+                  </Box>
                 </Grid>
               </Flex>
             </SectionCard>
@@ -438,6 +405,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     size="3"
                     errors={slug.errors}
                     disabled={isPending}
+                    readOnly={!isCreateMode}
                     isMandatory
                     dataIsValid={slug.valid}
                   />
@@ -452,7 +420,7 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     value={`${slug.value}-${slugPrefix.value}`}
                   />
                 </Grid>
-                {slugPreview && (
+                {slugPreview && isCreateMode && (
                   <Text size="3" color="gray">
                     Это будет адрес вашей новой страницы:
                     <br />
@@ -513,15 +481,13 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                 </DropzoneSurface>
                 {(existingGalleryImages.length > 0 ||
                   selectedGalleryFiles.length > 0) && (
-                  <Box>
-                    <ImagesPreviewer
-                      existingImages={existingGalleryImages}
-                      images={selectedGalleryFiles}
-                      setImages={setSelectedGalleryFiles}
-                      setExistingImages={setExistingGalleryImages}
-                      maxImages={MAX_GALLERY_FILES}
-                    />
-                  </Box>
+                  <ImagesPreviewer
+                    existingImages={existingGalleryImages}
+                    images={selectedGalleryFiles}
+                    setImages={setSelectedGalleryFiles}
+                    setExistingImages={setExistingGalleryImages}
+                    maxImages={MAX_GALLERY_FILES}
+                  />
                 )}
               </Flex>
             </SectionCard>
@@ -618,8 +584,12 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
             <SectionCard variant="surface" size="4">
               <Flex direction="column" gap={{ initial: "4", md: "5" }}>
                 <Heading as="h2" size="4">
-                  Соцсети и сайт
+                  Соцсети и сайт (не обязательно)
                 </Heading>
+                <Text color="gray" size="1" mt="2">
+                  Если вы не хотите добавлять соцсети или сайт, оставьте поля
+                  пустыми.
+                </Text>
                 <Grid
                   columns={{ initial: "1", md: "2" }}
                   gap={{ initial: "4", md: "5" }}
@@ -628,41 +598,49 @@ const ProfessionalPagePublishForm: FC<ProfessionalPagePublishFormProps> = ({
                     type="text"
                     field={whatsapp}
                     label="WhatsApp"
-                    placeholder="Номер или ссылка"
+                    placeholder="Номер телефона + код страны (например: 972526081346)"
                     size="3"
                     errors={whatsapp.errors}
+                    defaultValue={whatsapp.initialValue}
                     disabled={isPending}
                     dataIsValid={whatsapp.valid}
+                    disabledAutocomplete
                   />
                   <BasicFormField
                     type="text"
                     field={instagram}
                     label="Instagram"
-                    placeholder="@username"
+                    placeholder="https://www.instagram.com/your_username"
                     size="3"
                     errors={instagram.errors}
+                    defaultValue={instagram.initialValue}
                     disabled={isPending}
                     dataIsValid={instagram.valid}
+                    disabledAutocomplete
                   />
                   <BasicFormField
                     type="text"
                     field={facebook}
                     label="Facebook"
-                    placeholder="Ссылка на профиль"
+                    placeholder="https://www.facebook.com/your_username"
                     size="3"
                     errors={facebook.errors}
+                    defaultValue={facebook.initialValue}
                     disabled={isPending}
                     dataIsValid={facebook.valid}
+                    disabledAutocomplete
                   />
                   <BasicFormField
                     type="text"
                     field={website}
                     label="Сайт"
-                    placeholder="https://..."
+                    placeholder="https://www.example.com"
                     size="3"
                     errors={website.errors}
                     disabled={isPending}
                     dataIsValid={website.valid}
+                    defaultValue={website.initialValue}
+                    disabledAutocomplete
                   />
                 </Grid>
               </Flex>

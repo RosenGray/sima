@@ -19,6 +19,9 @@ export interface IProfessionalService {
   phoneNumber: string;
   acceptTerms: boolean;
   images: FileUploadResponse["files"];
+  slug?: string;
+  slugPrefix?: string;
+  fullSlug?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -110,6 +113,18 @@ const professionalServiceSchema = new mongoose.Schema(
     images: {
       type: [imageSchema],
       required: true,
+    },
+    slug: {
+      type: String,
+      required: false,
+    },
+    slugPrefix: {
+      type: String,
+      required: false,
+    },
+    fullSlug: {
+      type: String,
+      required: false,
     },
   },
   {

@@ -18,6 +18,7 @@ interface ImagesPreviewerProps {
   setImages: Dispatch<SetStateAction<File[]>>;
   setExistingImages: Dispatch<SetStateAction<ExistingImageItem[]>>;
   maxImages: MaxImages;
+  isExplicitlyHeight?: boolean;
 }
 
 type ImageItem = {
@@ -33,6 +34,7 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
   setImages,
   setExistingImages,
   maxImages,
+  isExplicitlyHeight = true,
 }) => {
   const { columns, rows } = mapMaxImagesToNumberColumnsAndRows(maxImages);
   const files = useMemo(() => {
@@ -108,16 +110,20 @@ const ImagesPreviewer: FC<ImagesPreviewerProps> = ({
 
   return (
     <ImagePreviewerContainerBox
-      height={{
-        initial: "200px",
-        // xs: "500px",
-        sm: "350px",
-        // md: "350px",
-        // lg: "350px",
-        // xl: "350px",
-      }}
+      {
+        ...(isExplicitlyHeight
+          ? {
+              height: {
+                initial: "200px",
+                sm: "350px",
+              },
+            }
+          : {
+              height: "100%",
+            })
+      }
     >
-      <Grid height="100%" columns="2" gap="2">
+      <Grid height="100%" columns={maxImages === 1 ? "1" : "2"} rows="1" gap="2">
         <GridItem>
           <Image
           fill
