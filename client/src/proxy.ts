@@ -48,7 +48,7 @@ const NEXT_ACTION_HEADER = "next-action";
 export async function proxy(request: NextRequest) {
   // Let Server Action POSTs go straight to the app (no redirects, no JWT checks here)
   if (request.headers.get(NEXT_ACTION_HEADER)) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: request.headers } });
   }
 
   const { pathname } = request.nextUrl;
@@ -73,7 +73,7 @@ export async function proxy(request: NextRequest) {
 
   // If it's a public route and not protected, allow access
   if (isPublicRoute && !isProtectedRoute) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: request.headers } });
   }
 
   // If it's an auth route and user is authenticated, redirect to dashboard
@@ -84,7 +84,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL("/404", request.url));
     } catch {
       // Token is invalid, continue to auth page
-      return NextResponse.next();
+      return NextResponse.next({ request: { headers: request.headers } });
     }
   }
 
@@ -101,7 +101,7 @@ export async function proxy(request: NextRequest) {
     try {
       // Verify the token
       await jwtVerify(token, getJwtSecret());
-      return NextResponse.next();
+      return NextResponse.next({ request: { headers: request.headers } });
     } catch {
       // Token is invalid, redirect to login with redirectTo parameter
       const fullPath = request.nextUrl.pathname + request.nextUrl.search;
@@ -119,7 +119,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // For any other route, allow access
-  return NextResponse.next();
+  return NextResponse.next({ request: { headers: request.headers } });
 }
 
 export const config = {
