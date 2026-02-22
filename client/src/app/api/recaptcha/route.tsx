@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
       {
         method: "POST",
         headers: {
-          //application/x-www-form-urlencoded
           "Content-Type": "application/x-www-form-urlencoded",
+          "Accept-Encoding": "identity",
         },
       }
     ).then((res) => res.json());

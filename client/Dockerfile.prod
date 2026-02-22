@@ -1,6 +1,7 @@
 # Stage 1: Build the app
-# Pin to Node 22 LTS Alpine to avoid undici bugs in "current" line (e.g. transformAlgorithm error)
-FROM node:22.18.0-alpine AS builder
+# Use Debian slim (not Alpine) to avoid Node stream/decompression bugs (e.g. controller[kState].transformAlgorithm)
+# Alpine/musl can break native stream bindings used by fetch() decompression.
+FROM node:22.18.0-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -20,7 +21,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Stage 2: Serve the app with a lightweight server
-FROM node:22.18.0-alpine
+FROM node:22.18.0-bookworm-slim
 
 WORKDIR /app
 

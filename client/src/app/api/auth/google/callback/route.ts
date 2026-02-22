@@ -48,11 +48,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Exchange code for access token
+    // Exchange code for access token (Accept-Encoding: identity avoids Node decompression path that can throw transformAlgorithm on Alpine)
     const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        "Accept-Encoding": "identity",
       },
       body: new URLSearchParams({
         code,
@@ -73,10 +74,11 @@ export async function GET(request: NextRequest) {
 
     const tokenData: GoogleTokenResponse = await tokenResponse.json();
 
-    // Get user info from Google
+    // Get user info from Google (Accept-Encoding: identity avoids Node decompression path)
     const userInfoResponse = await fetch(GOOGLE_USERINFO_URL, {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
+        "Accept-Encoding": "identity",
       },
     });
 
