@@ -4,9 +4,6 @@ import { execSync } from "child_process";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // Disable Next.js gzip compression to avoid Node transformAlgorithm bug in production (e.g. Alpine/bookworm).
-  // Ingress/nginx can still compress if needed.
-  compress: false,
   experimental: {
     serverActions: {
       bodySizeLimit: "50mb", // Increased for multiple file uploads

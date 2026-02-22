@@ -45,7 +45,7 @@ export default async function RootLayout({
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
       {/* <GoogleTagManager gtmId="G-X15DR6QH3X" /> */}
-      <GoogleAnalytics gaId="G-X15DR6QH3X" />
+      {/* <GoogleAnalytics gaId="G-X15DR6QH3X" /> */}
       <body>
       <ServerActionErrorHandler>
       <StyledComponentsRegistry>
