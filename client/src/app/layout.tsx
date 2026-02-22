@@ -16,7 +16,7 @@ import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailV
 import { RubikFont } from "@/fonts/fonts";
 import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 // import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
-import Accessibilik from "accessibility-react-widget";
+// import Accessibilik from "accessibility-react-widget";
 // import { GoogleTagManager } from "@next/third-parties/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import ServerActionErrorHandler from "@/errors/ServerActionErrorHandler/ServerActionErrorHandler";
@@ -68,7 +68,7 @@ export default async function RootLayout({
                     )}
 
                     <PortalProvider>
-                      <Accessibilik />
+                      {/* <Accessibilik /> */}
                       <div className="SimaApp">
                         {children}
                   
