@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongo/mongodb";
 
 const RATE_LIMITS_COLLECTION = "rate_limits";
 const TTL_SECONDS = 86400; // 24 hours — docs older than this are removed by TTL index on windowStart
+let indexEnsured = false;
 
 export interface RateLimitOptions {
   key: string;
@@ -24,6 +25,16 @@ export async function checkRateLimit({
 }: RateLimitOptions): Promise<RateLimitResult> {
   await connectDB();
   const collection = mongoose.connection.collection(RATE_LIMITS_COLLECTION);
+  // if (!indexEnsured) {
+  //   await collection.createIndex(
+  //     { windowStart: 1 },
+  //     { expireAfterSeconds: windowSeconds, background: true },
+  //   );
+  //   indexEnsured = true;
+  //   console.log("✓ rate_limits TTL index ensured");
+  // }else{
+  //   console.log("✓ rate_limits TTL index already ensured");
+  // }
 
   const minWindowStart = new Date(Date.now() - windowSeconds * 1000);
 
@@ -40,7 +51,7 @@ export async function checkRateLimit({
     {
       upsert: true,
       returnDocument: "after",
-    }
+    },
   );
 
   const count = result?.count ?? 1;
@@ -61,6 +72,6 @@ export async function ensureRateLimitIndex(): Promise<void> {
   const collection = mongoose.connection.collection(RATE_LIMITS_COLLECTION);
   await collection.createIndex(
     { windowStart: 1 },
-    { expireAfterSeconds: TTL_SECONDS }
+    { expireAfterSeconds: TTL_SECONDS },
   );
 }
