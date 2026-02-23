@@ -6,12 +6,23 @@ import "@/lib/service-categories/models/ServiceCategory";
 import "@/lib/service-categories/models/ServiceSubCategory";
 import { FileUploadResponse } from "@/lib/files/uploadFiles";
 
+export const PROFESSIONAL_SERVICE_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type ProfessionalServiceStatus = (typeof PROFESSIONAL_SERVICE_STATUSES)[number];
+
 export interface IProfessionalService {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
   category: mongoose.Types.ObjectId;
   subCategory: mongoose.Types.ObjectId;
+  status: ProfessionalServiceStatus;
   district: string;
   city: string;
   description: string;
@@ -85,6 +96,13 @@ const professionalServiceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "ServiceSubCategory",
       required: true,
+    },
+    status: {
+      type: String,
+      enum: PROFESSIONAL_SERVICE_STATUSES,
+      default: "active",
+      required: true,
+      index: true,
     },
     district: {
       type: String,
