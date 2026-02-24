@@ -78,8 +78,10 @@ export async function editCarAd(
       uploadResult = await uploadFiles("vehicles/cars", user.id, uploadFormData);
     }
 
-    // Get existing car using repository
-    const car = await carRepository.getByPublicId(context.carPublicId);
+    // Get existing car using repository (any status for edit)
+    const car = await carRepository.getByPublicId(context.carPublicId, {
+      status: null,
+    });
     if (!car) {
       return result.reply({
         formErrors: ["Объявление не найдено"],
