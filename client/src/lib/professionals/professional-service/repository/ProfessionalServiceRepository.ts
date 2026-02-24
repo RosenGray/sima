@@ -116,7 +116,9 @@ class ProfessionalServiceRepository {
       };
 
       // Build search filter using MongoDB text index and structured filters
-      const searchFilter: FilterQuery<typeof ProfessionalService> = {};
+      const searchFilter: FilterQuery<typeof ProfessionalService> = {
+        status: "active",
+      };
 
       // Add text search using MongoDB text index (fast and efficient)
       // if (sanitizedFilters.textSearch?.trim()) {
@@ -216,6 +218,7 @@ class ProfessionalServiceRepository {
 
       const professionalService = await ProfessionalService.findOne({
         publicId,
+        status: "active",
       })
         .populate("category")
         .populate("subCategory")
