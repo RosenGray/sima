@@ -3,10 +3,21 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const SPECIAL_VEHICLE_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type SpecialVehicleStatus = (typeof SPECIAL_VEHICLE_STATUSES)[number];
+
 export interface ISpecialVehicle {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: SpecialVehicleStatus;
   category: string;
   kind: string;
   title: string;
@@ -71,6 +82,13 @@ const specialVehicleSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: SPECIAL_VEHICLE_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

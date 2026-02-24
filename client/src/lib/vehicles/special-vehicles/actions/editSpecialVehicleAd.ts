@@ -85,10 +85,11 @@ export async function editSpecialVehicleAd(
       );
     }
 
-    // Get existing special vehicle using repository
+    // Get existing special vehicle using repository (any status for edit)
     const specialVehicle =
       await specialVehicleRepository.getByPublicId(
-        context.specialVehiclePublicId
+        context.specialVehiclePublicId,
+        { status: null }
       );
     if (!specialVehicle) {
       return result.reply({
