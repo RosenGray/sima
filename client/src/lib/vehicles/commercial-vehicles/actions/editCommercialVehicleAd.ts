@@ -78,8 +78,12 @@ export async function editCommercialVehicleAd(
       uploadResult = await uploadFiles("vehicles/commercial-vehicles", user.id, uploadFormData);
     }
 
-    // Get existing commercial vehicle using repository
-    const commercialVehicle = await commercialVehicleRepository.getByPublicId(context.commercialVehiclePublicId);
+    // Get existing commercial vehicle using repository (any status for edit)
+    const commercialVehicle =
+      await commercialVehicleRepository.getByPublicId(
+        context.commercialVehiclePublicId,
+        { status: null }
+      );
     if (!commercialVehicle) {
       return result.reply({
         formErrors: ["Объявление не найдено"],
