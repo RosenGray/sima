@@ -1,4 +1,8 @@
-import { OffRoadVehicle, IOffRoadVehicle } from "../models/OffRoadVehicle";
+import {
+  OffRoadVehicle,
+  IOffRoadVehicle,
+  OffRoadVehicleStatus,
+} from "../models/OffRoadVehicle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedOffRoadVehicle } from "../types/offRoadVehicle.types";
 import type { FilterQuery } from "mongoose";
@@ -16,6 +20,8 @@ export interface OffRoadVehicleSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   color?: string;
+  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
+  status?: OffRoadVehicleStatus | null;
 }
 
 interface PaginatedResponse {
@@ -56,10 +62,19 @@ class OffRoadVehicleRepository {
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
         color: sanitize(searchFilters.color),
+        status: searchFilters.status,
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof OffRoadVehicle> = {};
+
+      // Add status filter: null = any status, undefined = default "active"
+      if (sanitizedFilters.status === null) {
+        // No status filter
+      } else {
+        searchFilter.status =
+          sanitizedFilters.status ?? ("active" as OffRoadVehicleStatus);
+      }
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -188,15 +203,25 @@ class OffRoadVehicleRepository {
   /**
    * Get an off-road vehicle by publicId
    * @param publicId - The public ID of the off-road vehicle
+   * @param options - Optional: status filter (undefined = active only, null = any status)
    * @returns Promise<SerializedOffRoadVehicle | null> - The off-road vehicle or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedOffRoadVehicle | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: OffRoadVehicleStatus | null }
+  ): Promise<SerializedOffRoadVehicle | null> {
     try {
       await connectDB();
 
-      const offRoadVehicle = await OffRoadVehicle.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof OffRoadVehicle> = { publicId };
+      if (options?.status !== null) {
+        query.status =
+          options?.status ?? ("active" as OffRoadVehicleStatus);
+      }
+
+      const offRoadVehicle = await OffRoadVehicle.findOne(query).populate(
+        "user"
+      );
 
       if (!offRoadVehicle) {
         return null;

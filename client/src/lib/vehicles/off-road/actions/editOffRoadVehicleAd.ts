@@ -78,8 +78,11 @@ export async function editOffRoadVehicleAd(
       uploadResult = await uploadFiles("vehicles/off-road", user.id, uploadFormData);
     }
 
-    // Get existing off-road vehicle using repository
-    const offRoadVehicle = await offRoadVehicleRepository.getByPublicId(context.offRoadVehiclePublicId);
+    // Get existing off-road vehicle using repository (any status for edit)
+    const offRoadVehicle = await offRoadVehicleRepository.getByPublicId(
+      context.offRoadVehiclePublicId,
+      { status: null }
+    );
     if (!offRoadVehicle) {
       return result.reply({
         formErrors: ["Объявление не найдено"],
