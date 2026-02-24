@@ -90,6 +90,7 @@ export async function editProfessionalServiceAd(
 
     const service = await professionalServiceRepository.getByPublicId(
       context.servicePublicId,
+      { status: null },
     );
     if (!service) {
       return result.reply({

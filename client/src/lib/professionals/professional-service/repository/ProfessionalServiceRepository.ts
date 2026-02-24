@@ -1,4 +1,7 @@
-import { ProfessionalService } from "../models/ProfessionalService";
+import {
+  ProfessionalService,
+  ProfessionalServiceStatus,
+} from "../models/ProfessionalService";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerilizeProfessionalService } from "../types/professional-service.scema";
 import { FilterQuery } from "mongoose";
@@ -10,6 +13,8 @@ export interface ProfessionalServiceSearchFilters {
   subCategoryId?: string[];
   district?: string[];
   city?: string[];
+  /** Filter by status. Omit or undefined = "active". Pass null to skip status filter (all statuses). */
+  status?: ProfessionalServiceStatus | null;
 }
 
 type SortField = "date";
@@ -112,13 +117,19 @@ class ProfessionalServiceRepository {
         subCategoryId: sanitize(searchFilters.subCategoryId),
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
+        status: searchFilters.status,
         // description: sanitize(searchFilters.description),
       };
 
       // Build search filter using MongoDB text index and structured filters
-      const searchFilter: FilterQuery<typeof ProfessionalService> = {
-        status: "active",
-      };
+      const searchFilter: FilterQuery<typeof ProfessionalService> = {};
+      // Status: undefined = default "active"; null = no filter (all statuses); value = filter by that status
+      if (sanitizedFilters.status === null) {
+        // No status filter
+      } else {
+        searchFilter.status =
+          sanitizedFilters.status ?? ("active" as ProfessionalServiceStatus);
+      }
 
       // Add text search using MongoDB text index (fast and efficient)
       // if (sanitizedFilters.textSearch?.trim()) {
@@ -208,18 +219,22 @@ class ProfessionalServiceRepository {
   /**
    * Get a professional service by publicId
    * @param publicId - The public ID of the professional service
+   * @param options.status - Filter by status. Omit or undefined = "active". Pass null to skip status filter (e.g. for edit page).
    * @returns Promise<SerilizeProfessionalService | null> - The professional service or null if not found
    */
   async getByPublicId(
-    publicId: string
+    publicId: string,
+    options?: { status?: ProfessionalServiceStatus | null }
   ): Promise<SerilizeProfessionalService | null> {
     try {
       await connectDB();
 
-      const professionalService = await ProfessionalService.findOne({
-        publicId,
-        status: "active",
-      })
+      const query: FilterQuery<typeof ProfessionalService> = { publicId };
+      if (options?.status !== null) {
+        query.status = options?.status ?? ("active" as ProfessionalServiceStatus);
+      }
+
+      const professionalService = await ProfessionalService.findOne(query)
         .populate("category")
         .populate("subCategory")
         .populate("user");
