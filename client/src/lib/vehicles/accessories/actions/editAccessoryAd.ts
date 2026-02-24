@@ -85,10 +85,11 @@ export async function editAccessoryAd(
       );
     }
 
-    // Get existing accessory using repository
+    // Get existing accessory using repository (any status for edit)
     const accessory =
       await accessoryRepository.getByPublicId(
-        context.accessoryPublicId
+        context.accessoryPublicId,
+        { status: null }
       );
     if (!accessory) {
       return result.reply({
