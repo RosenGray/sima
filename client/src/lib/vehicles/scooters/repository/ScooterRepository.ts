@@ -1,4 +1,4 @@
-import { Scooter, IScooter } from "../models/Scooter";
+import { Scooter, IScooter, ScooterStatus } from "../models/Scooter";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedScooter } from "../types/scooter.types";
 import type { FilterQuery } from "mongoose";
@@ -14,6 +14,8 @@ export interface ScooterSearchFilters {
   city?: string[];
   priceFrom?: number;
   priceTo?: number;
+  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
+  status?: ScooterStatus | null;
 }
 
 interface PaginatedResponse {
@@ -52,10 +54,19 @@ class ScooterRepository {
         city: sanitize(searchFilters.city),
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
+        status: searchFilters.status,
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Scooter> = {};
+
+      // Add status filter: null = any status, undefined = default "active"
+      if (sanitizedFilters.status === null) {
+        // No status filter
+      } else {
+        searchFilter.status =
+          sanitizedFilters.status ?? ("active" as ScooterStatus);
+      }
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -171,15 +182,22 @@ class ScooterRepository {
   /**
    * Get a scooter by publicId
    * @param publicId - The public ID of the scooter
+   * @param options - Optional: status filter (undefined = active only, null = any status)
    * @returns Promise<SerializedScooter | null> - The scooter or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedScooter | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: ScooterStatus | null }
+  ): Promise<SerializedScooter | null> {
     try {
       await connectDB();
 
-      const scooter = await Scooter.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof Scooter> = { publicId };
+      if (options?.status !== null) {
+        query.status = options?.status ?? ("active" as ScooterStatus);
+      }
+
+      const scooter = await Scooter.findOne(query).populate("user");
 
       if (!scooter) {
         return null;

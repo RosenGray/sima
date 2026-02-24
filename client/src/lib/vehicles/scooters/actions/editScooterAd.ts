@@ -78,8 +78,11 @@ export async function editScooterAd(
       uploadResult = await uploadFiles("vehicles/scooters", user.id, uploadFormData);
     }
 
-    // Get existing scooter using repository
-    const scooter = await scooterRepository.getByPublicId(context.scooterPublicId);
+    // Get existing scooter using repository (any status for edit)
+    const scooter = await scooterRepository.getByPublicId(
+      context.scooterPublicId,
+      { status: null }
+    );
     if (!scooter) {
       return result.reply({
         formErrors: ["Объявление не найдено"],
