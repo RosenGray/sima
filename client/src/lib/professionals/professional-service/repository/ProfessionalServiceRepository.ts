@@ -14,7 +14,7 @@ export interface ProfessionalServiceSearchFilters {
   district?: string[];
   city?: string[];
   /** Filter by status. Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: ProfessionalServiceStatus | null;
+  status?: ProfessionalServiceStatus;
 }
 
 type SortField = "date";
@@ -62,7 +62,9 @@ function parseSortString(sort?: string): SortOptions | null {
  * Maps user-friendly field names to MongoDB field names.
  * Always includes _id as tiebreaker for deterministic pagination when primary field has ties.
  */
-function buildSortObject(sortOptions: SortOptions | null): Record<string, 1 | -1> {
+function buildSortObject(
+  sortOptions: SortOptions | null,
+): Record<string, 1 | -1> {
   // Default sort: newest first (date_desc)
   if (!sortOptions) {
     return { createdAt: -1, _id: -1 };
@@ -104,11 +106,10 @@ class ProfessionalServiceRepository {
     searchFilters: ProfessionalServiceSearchFilters = {},
     currentPage: number = 1,
     pageSize: number = 10,
-    sort?: string
+    sort?: string,
   ): Promise<PaginatedResponse> {
     try {
       await connectDB();
-  
 
       // Sanitize all incoming filters to prevent NoSQL injection
       const sanitizedFilters: ProfessionalServiceSearchFilters = {
@@ -124,12 +125,8 @@ class ProfessionalServiceRepository {
       // Build search filter using MongoDB text index and structured filters
       const searchFilter: FilterQuery<typeof ProfessionalService> = {};
       // Status: undefined = default "active"; null = no filter (all statuses); value = filter by that status
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status =
-          sanitizedFilters.status ?? ("active" as ProfessionalServiceStatus);
-      }
+
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       // Add text search using MongoDB text index (fast and efficient)
       // if (sanitizedFilters.textSearch?.trim()) {
@@ -139,7 +136,9 @@ class ProfessionalServiceRepository {
       // Add category filter
       if (sanitizedFilters.categoryId) {
         // Validate ObjectId format before adding to filter
-        const isValidObjectId = sanitizedFilters.categoryId.every((id) => mongoose.Types.ObjectId.isValid(id));
+        const isValidObjectId = sanitizedFilters.categoryId.every((id) =>
+          mongoose.Types.ObjectId.isValid(id),
+        );
         if (isValidObjectId) {
           searchFilter.category = { $in: sanitizedFilters.categoryId }; // sanitizedFilters.categoryId;
         } else {
@@ -151,7 +150,9 @@ class ProfessionalServiceRepository {
       // Add subcategory filter
       if (sanitizedFilters.subCategoryId) {
         // Validate ObjectId format before adding to filter
-        const isValidObjectId = sanitizedFilters.subCategoryId.every((id) => mongoose.Types.ObjectId.isValid(id));
+        const isValidObjectId = sanitizedFilters.subCategoryId.every((id) =>
+          mongoose.Types.ObjectId.isValid(id),
+        );
         if (isValidObjectId) {
           searchFilter.subCategory = { $in: sanitizedFilters.subCategoryId };
         } else {
@@ -159,7 +160,7 @@ class ProfessionalServiceRepository {
           searchFilter._id = new mongoose.Types.ObjectId();
         }
       }
-      
+
       // Add district filter
       if (sanitizedFilters.district) {
         searchFilter.district = { $in: sanitizedFilters.district };
@@ -199,7 +200,7 @@ class ProfessionalServiceRepository {
 
       // Serialize to remove MongoDB ObjectIds and other non-serializable types
       const serializedServices = JSON.parse(
-        JSON.stringify(professionalServices)
+        JSON.stringify(professionalServices),
       );
 
       return {
@@ -224,15 +225,14 @@ class ProfessionalServiceRepository {
    */
   async getByPublicId(
     publicId: string,
-    options?: { status?: ProfessionalServiceStatus | null }
+    options?: { status?: ProfessionalServiceStatus },
   ): Promise<SerilizeProfessionalService | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof ProfessionalService> = { publicId };
-      if (options?.status !== null) {
-        query.status = options?.status ?? ("active" as ProfessionalServiceStatus);
-      }
+
+      query.status = options?.status ?? "active";
 
       const professionalService = await ProfessionalService.findOne(query)
         .populate("category")

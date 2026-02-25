@@ -35,7 +35,6 @@ const ProfessionalServiceContent: FC<ProfessionalServiceContentProps> = async ({
     10,
     sort
   );
-
   return (
     <>
       <ProfessionalServiceHeaderClient
