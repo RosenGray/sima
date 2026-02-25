@@ -3,6 +3,7 @@ import {
   normalizeAnimalId,
 } from "@/lib/pets/animals/animalIds";
 import { PetAccessory, IPetAccessory } from "../models/PetAccessory";
+import type { PetAccessoryStatus } from "../models/PetAccessory";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedPetAccessory } from "../types/petAccessory.types";
 import { FilterQuery } from "mongoose";
@@ -17,6 +18,8 @@ export interface PetAccessorySearchFilters {
   priceFrom?: number;
   priceTo?: number;
   textSearch?: string; // Free text search from description and title
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: PetAccessoryStatus;
 }
 
 export type SortField = "date" | "price";
@@ -120,10 +123,12 @@ class PetAccessoryRepository {
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
         textSearch: sanitize(searchFilters.textSearch),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof PetAccessory> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       // Add animal filter (expand to include legacy IDs for backward compatibility)
       if (sanitizedFilters.animal) {
@@ -230,17 +235,20 @@ class PetAccessoryRepository {
   /**
    * Get a pet accessory by publicId
    * @param publicId - The public ID of the accessory
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedPetAccessory | null> - The accessory or null if not found
    */
   async getByPublicId(
-    publicId: string
+    publicId: string,
+    options?: { status?: PetAccessoryStatus }
   ): Promise<SerializedPetAccessory | null> {
     try {
       await connectDB();
 
-      const accessory = await PetAccessory.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof PetAccessory> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const accessory = await PetAccessory.findOne(query).populate("user");
 
       if (!accessory) {
         return null;

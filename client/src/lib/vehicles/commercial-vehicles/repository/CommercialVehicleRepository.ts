@@ -20,8 +20,8 @@ export interface CommercialVehicleSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   color?: string;
-  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: CommercialVehicleStatus | null;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: CommercialVehicleStatus;
 }
 
 interface PaginatedResponse {
@@ -69,12 +69,8 @@ class CommercialVehicleRepository {
       const searchFilter: FilterQuery<typeof CommercialVehicle> = {};
 
       // Add status filter: null = any status, undefined = default "active"
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status =
-          sanitizedFilters.status ?? ("active" as CommercialVehicleStatus);
-      }
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as CommercialVehicleStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -208,16 +204,13 @@ class CommercialVehicleRepository {
    */
   async getByPublicId(
     publicId: string,
-    options?: { status?: CommercialVehicleStatus | null }
+    options?: { status?: CommercialVehicleStatus },
   ): Promise<SerializedCommercialVehicle | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof CommercialVehicle> = { publicId };
-      if (options?.status !== null) {
-        query.status =
-          options?.status ?? ("active" as CommercialVehicleStatus);
-      }
+      query.status = options?.status ?? ("active" as CommercialVehicleStatus);
 
       const commercialVehicle = await CommercialVehicle.findOne(query).populate(
         "user"

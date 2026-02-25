@@ -89,7 +89,6 @@ export async function editSpecialVehicleAd(
     const specialVehicle =
       await specialVehicleRepository.getByPublicId(
         context.specialVehiclePublicId,
-        { status: null }
       );
     if (!specialVehicle) {
       return result.reply({

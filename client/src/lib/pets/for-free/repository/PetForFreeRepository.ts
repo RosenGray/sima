@@ -3,6 +3,7 @@ import {
   normalizeAnimalId,
 } from "@/lib/pets/animals/animalIds";
 import { PetForFree, IPetForFree } from "../models/PetForFree";
+import type { PetForFreeStatus } from "../models/PetForFree";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedPetForFree } from "../types/petForFree.types";
 import { FilterQuery } from "mongoose";
@@ -16,6 +17,8 @@ export interface PetForFreeSearchFilters {
   city?: string[];
   textSearch?: string;
   adjustments?: string[];
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: PetForFreeStatus;
 }
 
 export type SortField = "date" | "age";
@@ -103,9 +106,11 @@ class PetForFreeRepository {
         city: sanitize(searchFilters.city),
         textSearch: sanitize(searchFilters.textSearch),
         adjustments: sanitize(searchFilters.adjustments),
+        status: sanitize(searchFilters.status),
       };
 
       const searchFilter: FilterQuery<typeof PetForFree> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       if (sanitizedFilters.animal) {
         searchFilter.animal = {
@@ -176,12 +181,16 @@ class PetForFreeRepository {
   }
 
   async getByPublicId(
-    publicId: string
+    publicId: string,
+    options?: { status?: PetForFreeStatus }
   ): Promise<SerializedPetForFree | null> {
     try {
       await connectDB();
 
-      const pet = await PetForFree.findOne({ publicId }).populate("user");
+      const query: FilterQuery<typeof PetForFree> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const pet = await PetForFree.findOne(query).populate("user");
 
       if (!pet) {
         return null;

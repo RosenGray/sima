@@ -89,7 +89,6 @@ export async function editAccessoryAd(
     const accessory =
       await accessoryRepository.getByPublicId(
         context.accessoryPublicId,
-        { status: null }
       );
     if (!accessory) {
       return result.reply({

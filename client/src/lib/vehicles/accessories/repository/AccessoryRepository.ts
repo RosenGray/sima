@@ -11,8 +11,8 @@ export interface AccessorySearchFilters {
   priceTo?: number;
   district?: string[];
   city?: string[];
-  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: AccessoryStatus | null;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: AccessoryStatus;
 }
 
 interface PaginatedResponse {
@@ -48,11 +48,7 @@ class AccessoryRepository {
       const searchFilter: FilterQuery<typeof Accessory> = {};
 
       // Add status filter: null = any status, undefined = default "active"
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status = sanitizedFilters.status ?? ("active" as AccessoryStatus);
-      }
+      searchFilter.status = sanitizedFilters.status ?? ("active" as AccessoryStatus);
 
       // Add category filter
       if (sanitizedFilters.category) {
@@ -132,15 +128,13 @@ class AccessoryRepository {
 
   async getByPublicId(
     publicId: string,
-    options?: { status?: AccessoryStatus | null }
+    options?: { status?: AccessoryStatus },
   ): Promise<SerializedAccessory | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof Accessory> = { publicId };
-      if (options?.status !== null) {
-        query.status = options?.status ?? ("active" as AccessoryStatus);
-      }
+      query.status = options?.status ?? ("active" as AccessoryStatus);
 
       const accessory = await Accessory.findOne(query).populate("user");
 

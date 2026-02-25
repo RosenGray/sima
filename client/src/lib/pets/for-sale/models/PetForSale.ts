@@ -4,10 +4,21 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const PET_FOR_SALE_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type PetForSaleStatus = (typeof PET_FOR_SALE_STATUSES)[number];
+
 export interface IPetForSale {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: PetForSaleStatus;
   animal: string;
   kind: string;
   price: number;
@@ -74,6 +85,13 @@ const petForSaleSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: PET_FOR_SALE_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

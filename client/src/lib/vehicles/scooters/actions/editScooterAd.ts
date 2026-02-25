@@ -81,7 +81,6 @@ export async function editScooterAd(
     // Get existing scooter using repository (any status for edit)
     const scooter = await scooterRepository.getByPublicId(
       context.scooterPublicId,
-      { status: null }
     );
     if (!scooter) {
       return result.reply({

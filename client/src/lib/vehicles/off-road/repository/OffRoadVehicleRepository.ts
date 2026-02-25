@@ -20,8 +20,8 @@ export interface OffRoadVehicleSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   color?: string;
-  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: OffRoadVehicleStatus | null;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: OffRoadVehicleStatus;
 }
 
 interface PaginatedResponse {
@@ -69,12 +69,8 @@ class OffRoadVehicleRepository {
       const searchFilter: FilterQuery<typeof OffRoadVehicle> = {};
 
       // Add status filter: null = any status, undefined = default "active"
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status =
-          sanitizedFilters.status ?? ("active" as OffRoadVehicleStatus);
-      }
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as OffRoadVehicleStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -208,16 +204,13 @@ class OffRoadVehicleRepository {
    */
   async getByPublicId(
     publicId: string,
-    options?: { status?: OffRoadVehicleStatus | null }
+    options?: { status?: OffRoadVehicleStatus },
   ): Promise<SerializedOffRoadVehicle | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof OffRoadVehicle> = { publicId };
-      if (options?.status !== null) {
-        query.status =
-          options?.status ?? ("active" as OffRoadVehicleStatus);
-      }
+      query.status = options?.status ?? ("active" as OffRoadVehicleStatus);
 
       const offRoadVehicle = await OffRoadVehicle.findOne(query).populate(
         "user"

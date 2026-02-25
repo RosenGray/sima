@@ -16,8 +16,8 @@ export interface MotorcycleSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   mileage?: string;
-  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: MotorcycleStatus | null;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: MotorcycleStatus;
 }
 
 interface PaginatedResponse {
@@ -65,12 +65,8 @@ class MotorcycleRepository {
       const searchFilter: FilterQuery<typeof Motorcycle> = {};
 
       // Add status filter: null = any status, undefined = default "active"
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status =
-          sanitizedFilters.status ?? ("active" as MotorcycleStatus);
-      }
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as MotorcycleStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -210,16 +206,13 @@ class MotorcycleRepository {
    */
   async getByPublicId(
     publicId: string,
-    options?: { status?: MotorcycleStatus | null }
+    options?: { status?: MotorcycleStatus },
   ): Promise<SerializedMotorcycle | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof Motorcycle> = { publicId };
-      if (options?.status !== null) {
-        query.status =
-          options?.status ?? ("active" as MotorcycleStatus);
-      }
+      query.status = options?.status ?? ("active" as MotorcycleStatus);
 
       const motorcycle = await Motorcycle.findOne(query).populate("user");
 

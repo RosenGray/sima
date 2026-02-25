@@ -15,8 +15,8 @@ export interface SpecialVehicleSearchFilters {
   priceTo?: number;
   district?: string[];
   city?: string[];
-  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: SpecialVehicleStatus | null;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: SpecialVehicleStatus;
 }
 
 interface PaginatedResponse {
@@ -52,12 +52,8 @@ class SpecialVehicleRepository {
       const searchFilter: FilterQuery<typeof SpecialVehicle> = {};
 
       // Add status filter: null = any status, undefined = default "active"
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status =
-          sanitizedFilters.status ?? ("active" as SpecialVehicleStatus);
-      }
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as SpecialVehicleStatus);
 
       // Add category filter
       if (sanitizedFilters.category) {
@@ -137,16 +133,13 @@ class SpecialVehicleRepository {
 
   async getByPublicId(
     publicId: string,
-    options?: { status?: SpecialVehicleStatus | null }
+    options?: { status?: SpecialVehicleStatus },
   ): Promise<SerializedSpecialVehicle | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof SpecialVehicle> = { publicId };
-      if (options?.status !== null) {
-        query.status =
-          options?.status ?? ("active" as SpecialVehicleStatus);
-      }
+      query.status = options?.status ?? ("active" as SpecialVehicleStatus);
 
       const specialVehicle = await SpecialVehicle.findOne(query).populate(
         "user"

@@ -18,8 +18,8 @@ export interface CarSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   color?: string;
-  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: CarStatus | null;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: CarStatus;
 }
 
 export type SortField = 'date' | 'year' | 'price' | 'mileage';
@@ -133,12 +133,8 @@ class CarRepository {
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Car> = {};
 
-      // Add status filter: null = any status, undefined = default "active"
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status = sanitizedFilters.status ?? ("active" as CarStatus);
-      }
+      // Status: always filter; default "active"
+      searchFilter.status = sanitizedFilters.status ?? ("active" as CarStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -281,15 +277,13 @@ class CarRepository {
    */
   async getByPublicId(
     publicId: string,
-    options?: { status?: CarStatus | null }
+    options?: { status?: CarStatus },
   ): Promise<SerializedCar | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof Car> = { publicId };
-      if (options?.status !== null) {
-        query.status = options?.status ?? ("active" as CarStatus);
-      }
+      query.status = options?.status ?? ("active" as CarStatus);
 
       const car = await Car.findOne(query).populate("user");
 

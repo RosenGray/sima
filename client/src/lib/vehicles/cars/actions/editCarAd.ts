@@ -79,9 +79,7 @@ export async function editCarAd(
     }
 
     // Get existing car using repository (any status for edit)
-    const car = await carRepository.getByPublicId(context.carPublicId, {
-      status: null,
-    });
+    const car = await carRepository.getByPublicId(context.carPublicId);
     if (!car) {
       return result.reply({
         formErrors: ["Объявление не найдено"],

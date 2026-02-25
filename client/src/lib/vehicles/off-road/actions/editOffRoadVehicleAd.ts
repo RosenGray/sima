@@ -81,7 +81,6 @@ export async function editOffRoadVehicleAd(
     // Get existing off-road vehicle using repository (any status for edit)
     const offRoadVehicle = await offRoadVehicleRepository.getByPublicId(
       context.offRoadVehiclePublicId,
-      { status: null }
     );
     if (!offRoadVehicle) {
       return result.reply({

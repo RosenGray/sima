@@ -14,8 +14,8 @@ export interface ScooterSearchFilters {
   city?: string[];
   priceFrom?: number;
   priceTo?: number;
-  /** Omit or undefined = "active". Pass null to skip status filter (all statuses). */
-  status?: ScooterStatus | null;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: ScooterStatus;
 }
 
 interface PaginatedResponse {
@@ -61,12 +61,8 @@ class ScooterRepository {
       const searchFilter: FilterQuery<typeof Scooter> = {};
 
       // Add status filter: null = any status, undefined = default "active"
-      if (sanitizedFilters.status === null) {
-        // No status filter
-      } else {
-        searchFilter.status =
-          sanitizedFilters.status ?? ("active" as ScooterStatus);
-      }
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as ScooterStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -187,15 +183,13 @@ class ScooterRepository {
    */
   async getByPublicId(
     publicId: string,
-    options?: { status?: ScooterStatus | null }
+    options?: { status?: ScooterStatus },
   ): Promise<SerializedScooter | null> {
     try {
       await connectDB();
 
       const query: FilterQuery<typeof Scooter> = { publicId };
-      if (options?.status !== null) {
-        query.status = options?.status ?? ("active" as ScooterStatus);
-      }
+      query.status = options?.status ?? ("active" as ScooterStatus);
 
       const scooter = await Scooter.findOne(query).populate("user");
 

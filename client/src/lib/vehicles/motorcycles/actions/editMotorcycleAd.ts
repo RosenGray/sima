@@ -88,7 +88,6 @@ export async function editMotorcycleAd(
     // Get existing motorcycle using repository (any status for edit)
     const motorcycle = await motorcycleRepository.getByPublicId(
       context.motorcyclePublicId,
-      { status: null }
     );
     if (!motorcycle) {
       return result.reply({

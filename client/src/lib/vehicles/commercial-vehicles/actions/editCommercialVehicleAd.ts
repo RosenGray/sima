@@ -82,7 +82,6 @@ export async function editCommercialVehicleAd(
     const commercialVehicle =
       await commercialVehicleRepository.getByPublicId(
         context.commercialVehiclePublicId,
-        { status: null }
       );
     if (!commercialVehicle) {
       return result.reply({

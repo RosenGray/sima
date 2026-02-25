@@ -3,6 +3,7 @@ import {
   normalizeAnimalId,
 } from "@/lib/pets/animals/animalIds";
 import { PetForSale, IPetForSale } from "../models/PetForSale";
+import type { PetForSaleStatus } from "../models/PetForSale";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedPetForSale } from "../types/petForSale.types";
 import { FilterQuery } from "mongoose";
@@ -18,6 +19,8 @@ export interface PetForSaleSearchFilters {
   city?: string[];
   textSearch?: string; // Free text search like Yad2
   adjustments?: string[]; // PetAdjustments enum values (1-9)
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: PetForSaleStatus;
 }
 
 export type SortField = "date" | "price" | "age";
@@ -125,10 +128,12 @@ class PetForSaleRepository {
         city: sanitize(searchFilters.city),
         textSearch: sanitize(searchFilters.textSearch),
         adjustments: sanitize(searchFilters.adjustments),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof PetForSale> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       // Add animal filter (expand to include legacy IDs for backward compatibility)
       if (sanitizedFilters.animal) {
@@ -245,17 +250,20 @@ class PetForSaleRepository {
   /**
    * Get a pet for sale by publicId
    * @param publicId - The public ID of the pet
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedPetForSale | null> - The pet or null if not found
    */
   async getByPublicId(
-    publicId: string
+    publicId: string,
+    options?: { status?: PetForSaleStatus }
   ): Promise<SerializedPetForSale | null> {
     try {
       await connectDB();
 
-      const pet = await PetForSale.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof PetForSale> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const pet = await PetForSale.findOne(query).populate("user");
 
       if (!pet) {
         return null;
