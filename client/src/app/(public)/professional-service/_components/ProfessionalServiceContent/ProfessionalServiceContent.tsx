@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { professionalServiceRepository, ProfessionalServiceSearchFilters } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
 import { ProfessionalServiceCards } from "../ProfessionalServiceCards/ProfessionalServiceCards";
+import { ProfessionalServiceList } from "../ProfessionalServiceList/ProfessionalServiceList";
 import Pagination from "@/components/Pagination/Pagination";
 import {
   ProfessionalsServicesGrid,
@@ -8,11 +9,13 @@ import {
 } from "../../page.styles";
 import { SortOption } from "@/components/SortFilters/SortFilters";
 import ProfessionalServiceHeaderClient from "../ProfessionalServiceHeaderClient/ProfessionalServiceHeaderClient";
+import { Box } from "@radix-ui/themes";
 
 interface ProfessionalServiceContentProps {
   filters: ProfessionalServiceSearchFilters;
   currentPage: number;
   sort?: string;
+  view: "list" | "grid";
 }
 
 const professionalServiceSortOptions: SortOption[] = [
@@ -28,6 +31,7 @@ const ProfessionalServiceContent: FC<ProfessionalServiceContentProps> = async ({
   filters,
   currentPage,
   sort,
+  view,
 }) => {
   const professionalServices = await professionalServiceRepository.getAll(
     filters,
@@ -43,21 +47,26 @@ const ProfessionalServiceContent: FC<ProfessionalServiceContentProps> = async ({
         sortOptions={professionalServiceSortOptions}
       />
 
-      <ProfessionalsServicesGrid
-        mt="25px"
-        gap="3"
-        columns={{
-          initial: "1",
-          xs: "2",
-          // sm: "2",
-          md: "3",
-        }}
-        width="auto"
-      >
-        <ProfessionalServiceCards
-          professionalServices={professionalServices.data}
-        />
-      </ProfessionalsServicesGrid>
+      {view === "list" ? (
+        <Box mt="25px" width="100%">
+          <ProfessionalServiceList professionalServices={professionalServices.data} />
+        </Box>
+      ) : (
+        <ProfessionalsServicesGrid
+          mt="25px"
+          gap="3"
+          columns={{
+            initial: "1",
+            xs: "2",
+            md: "3",
+          }}
+          width="auto"
+        >
+          <ProfessionalServiceCards
+            professionalServices={professionalServices.data}
+          />
+        </ProfessionalsServicesGrid>
+      )}
       <StickyPaginationWrapper>
         <Pagination totalPages={professionalServices.totalPages} />
       </StickyPaginationWrapper>
