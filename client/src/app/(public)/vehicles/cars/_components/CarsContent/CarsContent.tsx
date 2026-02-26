@@ -1,10 +1,12 @@
 import { FC } from "react";
 import { carRepository, CarSearchFilters } from "@/lib/vehicles/cars/repository/CarRepository";
 import { CarCards } from "../CarCards/CarCards";
+import { CarList } from "../CarList/CarList";
 import {
   CarsGrid,
   StickyPaginationWrapper,
 } from "../../page.styles";
+import { Box } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
 import { SortOption } from "@/components/SortFilters/SortFilters";
 import CarsHeaderClient from "../CarsHeaderClient/CarsHeaderClient";
@@ -13,6 +15,7 @@ interface CarsContentProps {
   filters: CarSearchFilters;
   currentPage: number;
   sort?: string;
+  view: "list" | "grid";
 }
 
 const carSortOptions: SortOption[] = [
@@ -46,6 +49,7 @@ const CarsContent: FC<CarsContentProps> = async ({
   filters,
   currentPage,
   sort,
+  view,
 }) => {
   const carsResponse = await carRepository.getAll(filters, currentPage, 10, sort);
 
@@ -57,18 +61,24 @@ const CarsContent: FC<CarsContentProps> = async ({
         sortOptions={carSortOptions}
       />
 
-      <CarsGrid
-        mt="25px"
-        gap="3"
-        columns={{
-          initial: "1",
-          xs: "2",
-          md: "3",
-        }}
-        width="auto"
-      >
-        <CarCards cars={carsResponse.data} />
-      </CarsGrid>
+      {view === "list" ? (
+        <Box mt="25px" width="100%">
+          <CarList cars={carsResponse.data} />
+        </Box>
+      ) : (
+        <CarsGrid
+          mt="25px"
+          gap="3"
+          columns={{
+            initial: "1",
+            xs: "2",
+            md: "3",
+          }}
+          width="auto"
+        >
+          <CarCards cars={carsResponse.data} />
+        </CarsGrid>
+      )}
       <StickyPaginationWrapper>
         <Pagination totalPages={carsResponse.totalPages} />
       </StickyPaginationWrapper>

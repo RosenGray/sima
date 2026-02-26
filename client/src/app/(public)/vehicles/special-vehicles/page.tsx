@@ -17,12 +17,14 @@ interface SpecialVehiclesPageProps {
     district?: string | string[];
     city?: string | string[];
     page?: string;
+    view?: string;
   }>;
 }
 
 const SpecialVehiclesPage: FC<SpecialVehiclesPageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
+  const view = searchParams?.view === "list" ? "list" : "grid";
 
   // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);
@@ -70,7 +72,7 @@ const SpecialVehiclesPage: FC<SpecialVehiclesPageProps> = async (props) => {
         </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <SpecialVehicleContent filters={filters} currentPage={currentPage} />
+        <SpecialVehicleContent filters={filters} currentPage={currentPage} view={view} />
       </Suspense>
     </PageContainer>
   );

@@ -4,22 +4,25 @@ import {
   SpecialVehicleSearchFilters,
 } from "@/lib/vehicles/special-vehicles/repository/SpecialVehicleRepository";
 import { SpecialVehicleCards } from "../SpecialVehicleCards/SpecialVehicleCards";
+import { SpecialVehicleList } from "../SpecialVehicleList/SpecialVehicleList";
 import {
   SpecialVehicleGrid,
   StickyPaginationWrapper,
-  Title,
 } from "../../page.styles";
-import { Text } from "@radix-ui/themes";
+import { Box } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
+import SpecialVehicleHeaderClient from "../SpecialVehicleHeaderClient/SpecialVehicleHeaderClient";
 
 interface SpecialVehicleContentProps {
   filters: SpecialVehicleSearchFilters;
   currentPage: number;
+  view: "list" | "grid";
 }
 
 const SpecialVehicleContent: FC<SpecialVehicleContentProps> = async ({
   filters,
   currentPage,
+  view,
 }) => {
   const specialVehiclesResponse = await specialVehicleRepository.getAll(
     filters,
@@ -29,26 +32,28 @@ const SpecialVehicleContent: FC<SpecialVehicleContentProps> = async ({
 
   return (
     <>
-      <Title size="5">Специальные транспортные средства</Title>
+      <SpecialVehicleHeaderClient totalCount={specialVehiclesResponse.totalCount} />
 
-      <Text as="p" size="2" color="gray">
-        {specialVehiclesResponse.totalCount} результатов найдено
-      </Text>
-
-      <SpecialVehicleGrid
-        mt="25px"
-        gap="3"
-        columns={{
-          initial: "1",
-          xs: "2",
-          md: "3",
-        }}
-        width="auto"
-      >
-        <SpecialVehicleCards
-          specialVehicles={specialVehiclesResponse.data}
-        />
-      </SpecialVehicleGrid>
+      {view === "list" ? (
+        <Box mt="25px" width="100%">
+          <SpecialVehicleList specialVehicles={specialVehiclesResponse.data} />
+        </Box>
+      ) : (
+        <SpecialVehicleGrid
+          mt="25px"
+          gap="3"
+          columns={{
+            initial: "1",
+            xs: "2",
+            md: "3",
+          }}
+          width="auto"
+        >
+          <SpecialVehicleCards
+            specialVehicles={specialVehiclesResponse.data}
+          />
+        </SpecialVehicleGrid>
+      )}
       <StickyPaginationWrapper>
         <Pagination totalPages={specialVehiclesResponse.totalPages} />
       </StickyPaginationWrapper>
