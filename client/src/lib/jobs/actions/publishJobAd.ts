@@ -44,6 +44,7 @@ export async function publishJobAd(
       ...result.value,
       user: user.id,
       publicId: nanoid(10),
+      status: "active",
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,
     });
