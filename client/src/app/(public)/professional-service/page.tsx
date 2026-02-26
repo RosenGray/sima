@@ -39,7 +39,7 @@ const ProfessionalsPage: FC<ProfessionalsPageProps> = async (props) => {
   // Sorting (URL-driven)
   const sort = typeof searchParams?.sort === "string" ? searchParams.sort : undefined;
 
-  const view = searchParams?.view === "grid" ? "grid" : "list";
+  const view = searchParams?.view === "list" ? "list" : "grid";
 
   // Create a unique key based on search params to force re-render on filter change
   const contentKey = JSON.stringify({ ...filters, page: currentPage, sort });

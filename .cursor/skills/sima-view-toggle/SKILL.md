@@ -1,14 +1,14 @@
 ---
 name: sima-view-toggle
-description: List/grid view toggle for listing pages. URL-driven view state, header toggle UI, list layout (horizontal row per item with image + details), grid fallback. Use when adding "list view" and "grid view" switch to any section (e.g. pets/for-free, vehicles/cars).
+description: List/grid view toggle for listing pages. URL-driven view state, header toggle UI, grid default, list alternative (horizontal row per item with image + details). Use when adding "list view" and "grid view" switch to any section (e.g. pets/for-free, professional-service).
 ---
 
 # List / Grid View Toggle
 
 ## When to Use This Skill
 
-- Adding a toggle so users can switch between **list view** (one horizontal row per item: image + details) and **grid view** (existing cards).
-- Default should be list view; grid view is the alternative.
+- Adding a toggle so users can switch between **grid view** (existing cards, default) and **list view** (one horizontal row per item: image + details).
+- Default should be **grid view** when no `view` param; list view is the alternative (`?view=list`).
 - View preference must be **shareable** (URL) so links open in the correct view.
 
 Use this skill when implementing the same pattern on another section (e.g. cars, pets/for-sale, professional-service). The reference implementation is **pets/for-free**.
@@ -34,11 +34,11 @@ flowchart LR
   GridView --> EntityCards
 ```
 
-- **Page:** Reads `view` from `searchParams`; default `list` when param missing. Passes `view` to Content.
+- **Page:** Reads `view` from `searchParams`; **default `grid`** when param missing or not `list`. Passes `view` to Content.
 - **Content (server):** Accepts `view: "list" | "grid"`. Renders either list wrapper + list items or existing grid + cards.
 - **Header (client):** Renders view toggle (list icon / grid icon). Derives current view from URL; on click updates URL with `view` and `page=1`, preserving other params.
+- **Grid view (default):** Unchanged existing cards grid.
 - **List view:** New list container + list item component; same data as cards, different layout (one row per item: image section + details section).
-- **Grid view:** Unchanged existing cards grid.
 
 ## Implementation Steps
 
@@ -47,9 +47,9 @@ flowchart LR
 **File:** `app/(public)/{category}/{entity}/page.tsx`
 
 1. Add `view?: string` to the `searchParams` type in the page props interface.
-2. Compute view with default list:
+2. Compute view with **default grid** (list only when `?view=list`):
    ```ts
-   const view = searchParams?.view === "grid" ? "grid" : "list";
+   const view = searchParams?.view === "list" ? "list" : "grid";
    ```
 3. Pass `view` to the Content component:
    ```ts
@@ -89,8 +89,8 @@ flowchart LR
 
 **File:** `app/(public)/{category}/{entity}/_components/{Entity}HeaderClient/{Entity}HeaderClient.tsx`
 
-1. **Current view from URL:**  
-   `const currentView = searchParams.get("view") === "grid" ? "grid" : "list";`
+1. **Current view from URL** (default grid):  
+   `const currentView = searchParams.get("view") === "list" ? "list" : "grid";`
 2. **View change handler:**  
    Create a function that builds new URL params from current `searchParams`, sets `view` to `"list"` or `"grid"`, sets `page` to `"1"`, then calls `router.replace(\`${pathname}?${params.toString()}\`)`. Preserve all other params (filters, sort).
    ```ts
@@ -159,10 +159,10 @@ flowchart LR
 
 ## Section-specific choices
 
-| Choice | Description | Pets/for-free |
-|--------|-------------|----------------|
+| Choice | Description | Pets/for-free / professional-service |
+|--------|-------------|--------------------------------------|
 | Image position | Image left vs image right in list row | Left |
-| Default view | When no `view` param | List |
+| Default view | When no `view` param | **Grid** |
 | List image | First image only vs carousel | First only |
 | Overlay on image | e.g. “Price reduced” badge | None |
 
@@ -180,7 +180,7 @@ When reusing in another section (e.g. cars), decide image left vs right and any 
 
 ## Checklist (reuse in new section)
 
-- [ ] Page: `view` in searchParams type; compute `view` (default list); pass to Content.
+- [ ] Page: `view` in searchParams type; compute `view` (default **grid**); pass to Content.
 - [ ] Content: `view` prop; conditionally render list wrapper or grid + cards.
 - [ ] Header client: `currentView` from URL; `handleViewChange` updates URL with `view` and `page=1`, preserves other params; two IconButtons (list + grid) with active state and aria attributes.
 - [ ] List container: vertical Flex, map entities to Link + list item.

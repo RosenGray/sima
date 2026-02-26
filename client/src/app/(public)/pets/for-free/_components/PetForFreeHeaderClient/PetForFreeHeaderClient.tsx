@@ -42,7 +42,7 @@ const PetForFreeHeaderClient: FC<PetForFreeHeaderClientProps> = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const currentView = searchParams.get("view") === "grid" ? "grid" : "list";
+  const currentView = searchParams.get("view") === "list" ? "list" : "grid";
 
   const [sort, setSort] = useState(initialSort ?? "date_desc");
 

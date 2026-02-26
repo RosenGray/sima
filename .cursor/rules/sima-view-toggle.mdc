@@ -8,20 +8,20 @@ alwaysApply: true
 
 ## Overview
 
-Listing pages can offer two view modes: **list** (one horizontal row per item: image + details) and **grid** (cards). View is **URL-driven** (`?view=list` | `?view=grid`); default when param is missing is **list**. Use the **sima-view-toggle** skill for full step-by-step implementation; this rule summarizes required conventions.
+Listing pages can offer two view modes: **grid** (cards, default) and **list** (one horizontal row per item: image + details). View is **URL-driven** (`?view=grid` | `?view=list`); default when param is missing is **grid**. Use the **sima-view-toggle** skill for full step-by-step implementation; this rule summarizes required conventions.
 
 ## Conventions
 
 ### URL and state
 
 - **Param name:** `view`. Allowed values: `list`, `grid`.
-- **Default:** No `view` or any value other than `grid` → treat as `list`.
+- **Default:** No `view` or any value other than `list` → treat as `grid`.
 - **Persistence:** URL only (no localStorage). When view changes, set `page=1` and preserve all other search params (filters, sort).
 
 ### Page
 
 - Add `view?: string` to page `searchParams` type.
-- Compute `view = searchParams?.view === "grid" ? "grid" : "list"` and pass `view` to the Content component.
+- Compute `view = searchParams?.view === "list" ? "list" : "grid"` and pass `view` to the Content component.
 
 ### Content (server)
 
@@ -32,7 +32,7 @@ Listing pages can offer two view modes: **list** (one horizontal row per item: i
 
 ### Header client (client)
 
-- Derive current view from URL: `currentView = searchParams.get("view") === "grid" ? "grid" : "list"`.
+- Derive current view from URL: `currentView = searchParams.get("view") === "list" ? "list" : "grid"`.
 - **Toggle UI:** Two icon buttons in the same header row as sort (or other controls):
   - List: `ListBulletIcon` or `ViewHorizontalIcon`; `aria-label="Список"`; active state `variant="soft"` and `color="accent"`.
   - Grid: `ViewGridIcon`; `aria-label="Сетка"`; same active state pattern.
@@ -62,5 +62,5 @@ Listing pages can offer two view modes: **list** (one horizontal row per item: i
 ## When adding view toggle to another section
 
 1. Follow the skill **sima-view-toggle** for the complete implementation.
-2. Keep URL param `view`, default list, and header toggle behavior identical.
+2. Keep URL param `view`, default grid, and header toggle behavior identical.
 3. Adapt list item content and image position (left/right) to the section; keep list container and header toggle pattern the same.

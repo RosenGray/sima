@@ -26,7 +26,7 @@ const PetForFreePage: FC<PetForFreePageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
   const sort = searchParams?.sort || "date_desc";
-  const view = searchParams?.view === "grid" ? "grid" : "list";
+  const view = searchParams?.view === "list" ? "list" : "grid";
 
   const arrayFilters = searchParamsToFilters(searchParams);
 
