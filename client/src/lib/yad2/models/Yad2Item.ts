@@ -3,10 +3,21 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const YAD2_ITEM_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type Yad2ItemStatus = (typeof YAD2_ITEM_STATUSES)[number];
+
 export interface IYad2Item {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: Yad2ItemStatus;
   category: string;
   subCategory: string;
   productTitle: string;
@@ -71,6 +82,13 @@ const yad2ItemSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: YAD2_ITEM_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

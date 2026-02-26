@@ -1,4 +1,5 @@
 import { RealEstateForRent, IRealEstateForRent } from "../models/RealEstateForRent";
+import type { RealEstateForRentStatus } from "../models/RealEstateForRent";
 import connectDB from "@/lib/mongo/mongodb";
 import {
   PropertyKind,
@@ -27,6 +28,8 @@ export interface RealEstateForRentSearchFilters {
   month?: string[];
   day?: string[];
   textSearch?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: RealEstateForRentStatus;
 }
 
 interface PaginatedResponse {
@@ -74,10 +77,12 @@ class RealEstateForRentRepository {
         month: sanitize(searchFilters.month),
         day: sanitize(searchFilters.day),
         textSearch: sanitize(searchFilters.textSearch),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof RealEstateForRent> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       // Add propertyKind filter
       if (sanitizedFilters.propertyKind) {
@@ -310,17 +315,20 @@ class RealEstateForRentRepository {
   /**
    * Get a real estate for rent by publicId
    * @param publicId - The public ID of the real estate
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedRealEstateForRent | null> - The real estate or null if not found
    */
   async getByPublicId(
-    publicId: string
+    publicId: string,
+    options?: { status?: RealEstateForRentStatus }
   ): Promise<SerializedRealEstateForRent | null> {
     try {
       await connectDB();
 
-      const realEstate = await RealEstateForRent.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof RealEstateForRent> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const realEstate = await RealEstateForRent.findOne(query).populate("user");
 
       if (!realEstate) {
         return null;

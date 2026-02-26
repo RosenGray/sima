@@ -11,10 +11,22 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const REAL_ESTATE_FOR_SALE_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type RealEstateForSaleStatus =
+  (typeof REAL_ESTATE_FOR_SALE_STATUSES)[number];
+
 export interface IRealEstateForSale {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: RealEstateForSaleStatus;
   propertyKind: PropertyKind;
   district: string;
   city: string;
@@ -93,6 +105,13 @@ const realEstateForSaleSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: REAL_ESTATE_FOR_SALE_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },
