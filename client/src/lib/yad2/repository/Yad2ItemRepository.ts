@@ -1,4 +1,5 @@
 import { Yad2Item, IYad2Item } from "../models/Yad2Item";
+import type { Yad2ItemStatus } from "../models/Yad2Item";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedYad2Item } from "../types/yad2.types";
 import { FilterQuery } from "mongoose";
@@ -12,6 +13,8 @@ export interface Yad2ItemSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   textSearch?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: Yad2ItemStatus;
 }
 
 interface PaginatedResponse {
@@ -48,10 +51,12 @@ class Yad2ItemRepository {
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
         textSearch: sanitize(searchFilters.textSearch),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Yad2Item> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       // Add category filter
       if (sanitizedFilters.category) {
@@ -145,13 +150,20 @@ class Yad2ItemRepository {
   /**
    * Get a yad2 item by publicId
    * @param publicId - Public ID of the item
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedYad2Item | null> - Serialized item or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedYad2Item | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: Yad2ItemStatus }
+  ): Promise<SerializedYad2Item | null> {
     try {
       await connectDB();
 
-      const item = await Yad2Item.findOne({ publicId }).populate("user");
+      const query: FilterQuery<typeof Yad2Item> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const item = await Yad2Item.findOne(query).populate("user");
 
       if (!item) {
         return null;

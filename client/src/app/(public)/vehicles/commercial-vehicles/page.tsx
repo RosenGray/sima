@@ -22,12 +22,14 @@ interface CommercialVehiclesPageProps {
     priceTo?: string;
     color?: string;
     page?: string;
+    view?: string;
   }>;
 }
 
 const CommercialVehiclesPage: FC<CommercialVehiclesPageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
+  const view = searchParams?.view === "list" ? "list" : "grid";
 
   // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);
@@ -97,7 +99,7 @@ const CommercialVehiclesPage: FC<CommercialVehiclesPageProps> = async (props) =>
         </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <CommercialVehiclesContent filters={filters} currentPage={currentPage} />
+        <CommercialVehiclesContent filters={filters} currentPage={currentPage} view={view} />
       </Suspense>
     </CommercialVehiclesPageContainer>
   );

@@ -51,6 +51,7 @@ export async function publishRealEstateForSaleAd(
       ...realEstateData,
       user: user.id as unknown as mongoose.Types.ObjectId,
       publicId: nanoid(10),
+      status: "active",
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,
     });

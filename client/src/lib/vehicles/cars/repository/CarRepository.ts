@@ -1,4 +1,4 @@
-import { Car, ICar } from "../models/Car";
+import { Car, CarStatus, ICar } from "../models/Car";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedCar } from "../types/cars.types";
 import { FilterQuery } from "mongoose";
@@ -18,6 +18,8 @@ export interface CarSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   color?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: CarStatus;
 }
 
 export type SortField = 'date' | 'year' | 'price' | 'mileage';
@@ -125,10 +127,14 @@ class CarRepository {
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
         color: sanitize(searchFilters.color),
+        status: searchFilters.status,
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Car> = {};
+
+      // Status: always filter; default "active"
+      searchFilter.status = sanitizedFilters.status ?? ("active" as CarStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -266,15 +272,20 @@ class CarRepository {
   /**
    * Get a car by publicId
    * @param publicId - The public ID of the car
+   * @param options - Optional: status filter (undefined = active only, null = any status)
    * @returns Promise<SerializedCar | null> - The car or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedCar | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: CarStatus },
+  ): Promise<SerializedCar | null> {
     try {
       await connectDB();
 
-      const car = await Car.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof Car> = { publicId };
+      query.status = options?.status ?? ("active" as CarStatus);
+
+      const car = await Car.findOne(query).populate("user");
 
       if (!car) {
         return null;

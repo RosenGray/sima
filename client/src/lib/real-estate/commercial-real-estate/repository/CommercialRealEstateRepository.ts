@@ -2,6 +2,7 @@ import {
   CommercialRealEstate,
   ICommercialRealEstate,
 } from "../models/CommercialRealEstate";
+import type { CommercialRealEstateStatus } from "../models/CommercialRealEstate";
 import connectDB from "@/lib/mongo/mongodb";
 import {
   SerializedCommercialRealEstate,
@@ -23,6 +24,8 @@ export interface CommercialRealEstateSearchFilters {
   squaremeterTo?: number;
   additionalFeatures?: string[];
   textSearch?: string; // searches streetname + description
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: CommercialRealEstateStatus;
 }
 
 interface PaginatedResponse {
@@ -62,10 +65,12 @@ class CommercialRealEstateRepository {
         squaremeterTo: sanitize(searchFilters.squaremeterTo),
         additionalFeatures: sanitize(searchFilters.additionalFeatures),
         textSearch: sanitize(searchFilters.textSearch),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof CommercialRealEstate> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       const validCommercialPropertyKindValues = Object.values(
         CommercialPropertyKind
@@ -229,17 +234,22 @@ class CommercialRealEstateRepository {
   /**
    * Get a commercial real estate by publicId
    * @param publicId - The public ID of the commercial real estate
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedCommercialRealEstate | null> - The commercial real estate or null if not found
    */
   async getByPublicId(
-    publicId: string
+    publicId: string,
+    options?: { status?: CommercialRealEstateStatus }
   ): Promise<SerializedCommercialRealEstate | null> {
     try {
       await connectDB();
 
-      const commercialRealEstate = await CommercialRealEstate.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof CommercialRealEstate> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const commercialRealEstate = await CommercialRealEstate.findOne(
+        query
+      ).populate("user");
 
       if (!commercialRealEstate) {
         return null;

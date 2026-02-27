@@ -1,5 +1,5 @@
 import { Job } from "../models/Job";
-import { IJob } from "../types/job.types";
+import { IJob, JobStatus } from "../types/job.types";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedJob } from "../types/job.types";
 import { FilterQuery } from "mongoose";
@@ -9,6 +9,8 @@ export interface JobSearchFilters {
   district?: string[];
   city?: string[];
   textSearch?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: JobStatus;
 }
 
 export type SortField = "date";
@@ -112,10 +114,12 @@ class JobRepository {
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
         textSearch: sanitize(searchFilters.textSearch),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Job> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       // Add district filter
       if (sanitizedFilters.district) {
@@ -172,13 +176,20 @@ class JobRepository {
   /**
    * Get a job by publicId
    * @param publicId - The public ID of the job
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedJob | null> - The job or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedJob | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: JobStatus }
+  ): Promise<SerializedJob | null> {
     try {
       await connectDB();
 
-      const job = await Job.findOne({ publicId }).populate("user");
+      const query: FilterQuery<typeof Job> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const job = await Job.findOne(query).populate("user");
 
       if (!job) {
         return null;

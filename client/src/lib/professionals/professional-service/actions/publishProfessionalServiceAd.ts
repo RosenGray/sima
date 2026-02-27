@@ -31,7 +31,7 @@ export async function publishProfessionalServiceAd(
   const { allowed } = await checkRateLimit({
     key: user.id,
     action: "publish-professional-service",
-    limit: 10,
+    limit: 2,
     windowSeconds: 3600,
   });
   if (!allowed) {
@@ -63,6 +63,7 @@ export async function publishProfessionalServiceAd(
       ...result.value,
       user: user.id,
       publicId: nanoid(10),
+      status: "active",
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,
     });

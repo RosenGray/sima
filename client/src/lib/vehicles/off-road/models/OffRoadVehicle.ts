@@ -4,10 +4,21 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const OFF_ROAD_VEHICLE_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type OffRoadVehicleStatus = (typeof OFF_ROAD_VEHICLE_STATUSES)[number];
+
 export interface IOffRoadVehicle {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: OffRoadVehicleStatus;
   manufacturer: string;
   model: string;
   yearOfManufacture: number;
@@ -77,6 +88,13 @@ const offRoadVehicleSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: OFF_ROAD_VEHICLE_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

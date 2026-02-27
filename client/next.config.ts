@@ -4,7 +4,10 @@ import { execSync } from "child_process";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: "standalone",
+
   experimental: {
+    inlineCss: true,
     serverActions: {
       bodySizeLimit: "50mb", // Increased for multiple file uploads
       // Required behind nginx ingress: Next.js compares Origin to Host and can return 403

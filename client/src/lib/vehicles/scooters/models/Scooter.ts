@@ -3,10 +3,21 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const SCOOTER_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type ScooterStatus = (typeof SCOOTER_STATUSES)[number];
+
 export interface IScooter {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: ScooterStatus;
   manufacturer: string;
   model: string;
   yearOfManufacture: number;
@@ -74,6 +85,13 @@ const scooterSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: SCOOTER_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

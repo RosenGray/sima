@@ -3,10 +3,21 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const ACCESSORY_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type AccessoryStatus = (typeof ACCESSORY_STATUSES)[number];
+
 export interface IAccessory {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: AccessoryStatus;
   category: string;
   kind: string;
   title: string;
@@ -71,6 +82,13 @@ const accessorySchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: ACCESSORY_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

@@ -1,4 +1,8 @@
-import { SpecialVehicle, ISpecialVehicle } from "../models/SpecialVehicle";
+import {
+  SpecialVehicle,
+  ISpecialVehicle,
+  SpecialVehicleStatus,
+} from "../models/SpecialVehicle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedSpecialVehicle } from "../types/specialVehicle.types";
 import { FilterQuery } from "mongoose";
@@ -11,6 +15,8 @@ export interface SpecialVehicleSearchFilters {
   priceTo?: number;
   district?: string[];
   city?: string[];
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: SpecialVehicleStatus;
 }
 
 interface PaginatedResponse {
@@ -39,10 +45,15 @@ class SpecialVehicleRepository {
         priceTo: sanitize(searchFilters.priceTo),
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
+        status: searchFilters.status,
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof SpecialVehicle> = {};
+
+      // Add status filter: null = any status, undefined = default "active"
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as SpecialVehicleStatus);
 
       // Add category filter
       if (sanitizedFilters.category) {
@@ -120,13 +131,19 @@ class SpecialVehicleRepository {
     }
   }
 
-  async getByPublicId(publicId: string): Promise<SerializedSpecialVehicle | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: SpecialVehicleStatus },
+  ): Promise<SerializedSpecialVehicle | null> {
     try {
       await connectDB();
 
-      const specialVehicle = await SpecialVehicle.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof SpecialVehicle> = { publicId };
+      query.status = options?.status ?? ("active" as SpecialVehicleStatus);
+
+      const specialVehicle = await SpecialVehicle.findOne(query).populate(
+        "user"
+      );
 
       if (!specialVehicle) {
         return null;

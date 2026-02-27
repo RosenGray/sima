@@ -1,5 +1,5 @@
 import { Others } from "../models/Others";
-import { IOthers } from "../types/others.types";
+import { IOthers, OthersStatus } from "../types/others.types";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedOthers } from "../types/others.types";
 import { FilterQuery } from "mongoose";
@@ -9,6 +9,8 @@ export interface OthersSearchFilters {
   district?: string[];
   city?: string[];
   textSearch?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: OthersStatus;
 }
 
 interface PaginatedResponse {
@@ -41,10 +43,12 @@ class OthersRepository {
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
         textSearch: sanitize(searchFilters.textSearch),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Others> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       // Add district filter
       if (sanitizedFilters.district) {
@@ -97,13 +101,20 @@ class OthersRepository {
   /**
    * Get an other by publicId
    * @param publicId - The public ID of the other
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedOthers | null> - The other or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedOthers | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: OthersStatus }
+  ): Promise<SerializedOthers | null> {
     try {
       await connectDB();
 
-      const other = await Others.findOne({ publicId }).populate("user");
+      const query: FilterQuery<typeof Others> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const other = await Others.findOne(query).populate("user");
 
       if (!other) {
         return null;

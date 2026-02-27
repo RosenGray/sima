@@ -17,12 +17,14 @@ interface AccessoriesPageProps {
     district?: string | string[];
     city?: string | string[];
     page?: string;
+    view?: string;
   }>;
 }
 
 const AccessoriesPage: FC<AccessoriesPageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
+  const view = searchParams?.view === "list" ? "list" : "grid";
 
   // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);
@@ -70,7 +72,7 @@ const AccessoriesPage: FC<AccessoriesPageProps> = async (props) => {
         </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <AccessoryContent filters={filters} currentPage={currentPage} />
+        <AccessoryContent filters={filters} currentPage={currentPage} view={view} />
       </Suspense>
     </PageContainer>
   );

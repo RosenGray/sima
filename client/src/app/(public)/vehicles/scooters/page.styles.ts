@@ -8,6 +8,15 @@ export const ScootersPageContainer = styled(Container)`
 
 export const Title = styled(Heading)``;
 
+export const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1em;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+`;
+
 export const ScootersGrid = styled(Grid)``;
 
 export const StickyPaginationWrapper = styled(Box)`

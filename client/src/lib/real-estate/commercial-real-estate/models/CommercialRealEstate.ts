@@ -8,10 +8,22 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const COMMERCIAL_REAL_ESTATE_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type CommercialRealEstateStatus =
+  (typeof COMMERCIAL_REAL_ESTATE_STATUSES)[number];
+
 export interface ICommercialRealEstate {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: CommercialRealEstateStatus;
   dealKind: DealKind;
   propertyKind: CommercialPropertyKind;
   district: string;
@@ -78,6 +90,13 @@ const commercialRealEstateSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: COMMERCIAL_REAL_ESTATE_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

@@ -1,4 +1,8 @@
-import { CommercialVehicle, ICommercialVehicle } from "../models/CommercialVehicle";
+import {
+  CommercialVehicle,
+  CommercialVehicleStatus,
+  ICommercialVehicle,
+} from "../models/CommercialVehicle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedCommercialVehicle } from "../types/commercialVehicle.types";
 import type { FilterQuery } from "mongoose";
@@ -16,6 +20,8 @@ export interface CommercialVehicleSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   color?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: CommercialVehicleStatus;
 }
 
 interface PaginatedResponse {
@@ -56,10 +62,15 @@ class CommercialVehicleRepository {
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
         color: sanitize(searchFilters.color),
+        status: searchFilters.status,
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof CommercialVehicle> = {};
+
+      // Add status filter: null = any status, undefined = default "active"
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as CommercialVehicleStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -188,15 +199,22 @@ class CommercialVehicleRepository {
   /**
    * Get a commercial vehicle by publicId
    * @param publicId - The public ID of the commercial vehicle
+   * @param options - Optional: status filter (undefined = active only, null = any status)
    * @returns Promise<SerializedCommercialVehicle | null> - The commercial vehicle or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedCommercialVehicle | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: CommercialVehicleStatus },
+  ): Promise<SerializedCommercialVehicle | null> {
     try {
       await connectDB();
 
-      const commercialVehicle = await CommercialVehicle.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof CommercialVehicle> = { publicId };
+      query.status = options?.status ?? ("active" as CommercialVehicleStatus);
+
+      const commercialVehicle = await CommercialVehicle.findOne(query).populate(
+        "user"
+      );
 
       if (!commercialVehicle) {
         return null;

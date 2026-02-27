@@ -21,12 +21,14 @@ interface MotorcyclesPageProps {
     priceFrom?: string;
     priceTo?: string;
     page?: string;
+    view?: string;
   }>;
 }
 
 const MotorcyclesPage: FC<MotorcyclesPageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
+  const view = searchParams?.view === "list" ? "list" : "grid";
 
   // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);
@@ -89,7 +91,7 @@ const MotorcyclesPage: FC<MotorcyclesPageProps> = async (props) => {
         </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <MotorcyclesContent filters={filters} currentPage={currentPage} />
+        <MotorcyclesContent filters={filters} currentPage={currentPage} view={view} />
       </Suspense>
     </MotorcyclesPageContainer>
   );

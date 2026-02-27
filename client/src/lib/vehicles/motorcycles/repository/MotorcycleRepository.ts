@@ -1,4 +1,4 @@
-import { Motorcycle, IMotorcycle } from "../models/Motorcycle";
+import { Motorcycle, IMotorcycle, MotorcycleStatus } from "../models/Motorcycle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedMotorcycle } from "../types/motorcycle.types";
 import type { FilterQuery } from "mongoose";
@@ -16,6 +16,8 @@ export interface MotorcycleSearchFilters {
   priceFrom?: number;
   priceTo?: number;
   mileage?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: MotorcycleStatus;
 }
 
 interface PaginatedResponse {
@@ -56,10 +58,15 @@ class MotorcycleRepository {
         priceFrom: sanitize(searchFilters.priceFrom),
         priceTo: sanitize(searchFilters.priceTo),
         mileage: sanitize(searchFilters.mileage),
+        status: searchFilters.status,
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Motorcycle> = {};
+
+      // Add status filter: null = any status, undefined = default "active"
+      searchFilter.status =
+        sanitizedFilters.status ?? ("active" as MotorcycleStatus);
 
       // Add manufacturer filter
       if (sanitizedFilters.manufacturer) {
@@ -194,15 +201,20 @@ class MotorcycleRepository {
   /**
    * Get a motorcycle by publicId
    * @param publicId - The public ID of the motorcycle
+   * @param options - Optional: status filter (undefined = active only, null = any status)
    * @returns Promise<SerializedMotorcycle | null> - The motorcycle or null if not found
    */
-  async getByPublicId(publicId: string): Promise<SerializedMotorcycle | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: MotorcycleStatus },
+  ): Promise<SerializedMotorcycle | null> {
     try {
       await connectDB();
 
-      const motorcycle = await Motorcycle.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof Motorcycle> = { publicId };
+      query.status = options?.status ?? ("active" as MotorcycleStatus);
+
+      const motorcycle = await Motorcycle.findOne(query).populate("user");
 
       if (!motorcycle) {
         return null;

@@ -1,4 +1,4 @@
-import { Accessory, IAccessory } from "../models/Accessory";
+import { Accessory, AccessoryStatus, IAccessory } from "../models/Accessory";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedAccessory } from "../types/accessory.types";
 import { FilterQuery } from "mongoose";
@@ -11,6 +11,8 @@ export interface AccessorySearchFilters {
   priceTo?: number;
   district?: string[];
   city?: string[];
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: AccessoryStatus;
 }
 
 interface PaginatedResponse {
@@ -39,10 +41,14 @@ class AccessoryRepository {
         priceTo: sanitize(searchFilters.priceTo),
         district: sanitize(searchFilters.district),
         city: sanitize(searchFilters.city),
+        status: searchFilters.status,
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof Accessory> = {};
+
+      // Add status filter: null = any status, undefined = default "active"
+      searchFilter.status = sanitizedFilters.status ?? ("active" as AccessoryStatus);
 
       // Add category filter
       if (sanitizedFilters.category) {
@@ -120,13 +126,17 @@ class AccessoryRepository {
     }
   }
 
-  async getByPublicId(publicId: string): Promise<SerializedAccessory | null> {
+  async getByPublicId(
+    publicId: string,
+    options?: { status?: AccessoryStatus },
+  ): Promise<SerializedAccessory | null> {
     try {
       await connectDB();
 
-      const accessory = await Accessory.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof Accessory> = { publicId };
+      query.status = options?.status ?? ("active" as AccessoryStatus);
+
+      const accessory = await Accessory.findOne(query).populate("user");
 
       if (!accessory) {
         return null;

@@ -8,10 +8,21 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User.ts";
 
+export const PET_FOR_FREE_STATUSES = [
+  "active",
+  "expired",
+  "archived",
+  "deleted",
+  "pending",
+] as const;
+
+export type PetForFreeStatus = (typeof PET_FOR_FREE_STATUSES)[number];
+
 export interface IPetForFree {
   id: string;
   publicId: string;
   user: mongoose.Types.ObjectId;
+  status: PetForFreeStatus;
   animal: string;
   kind: string;
   gender: PetGender;
@@ -79,6 +90,13 @@ const petForFreeSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: PET_FOR_FREE_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

@@ -1,4 +1,5 @@
 import { RealEstateForSale, IRealEstateForSale } from "../models/RealEstateForSale";
+import type { RealEstateForSaleStatus } from "../models/RealEstateForSale";
 import connectDB from "@/lib/mongo/mongodb";
 import { PropertyKind, SerializedRealEstateForSale } from "../types/realEstateForSale.types";
 import { FilterQuery } from "mongoose";
@@ -24,6 +25,8 @@ export interface RealEstateForSaleSearchFilters {
   month?: string[];
   day?: string[];
   textSearch?: string;
+  /** Omit or undefined = "active". Pass a specific status to filter by that status. */
+  status?: RealEstateForSaleStatus;
 }
 
 interface PaginatedResponse {
@@ -71,10 +74,12 @@ class RealEstateForSaleRepository {
         month: sanitize(searchFilters.month),
         day: sanitize(searchFilters.day),
         textSearch: sanitize(searchFilters.textSearch),
+        status: sanitize(searchFilters.status),
       };
 
       // Build search filter using MongoDB query
       const searchFilter: FilterQuery<typeof RealEstateForSale> = {};
+      searchFilter.status = sanitizedFilters.status ?? "active";
 
       const validPropertyKindValues = Object.values(PropertyKind).filter(
         (v): v is PropertyKind => typeof v === "number"
@@ -308,17 +313,20 @@ class RealEstateForSaleRepository {
   /**
    * Get a real estate for sale by publicId
    * @param publicId - The public ID of the real estate
+   * @param options - Optional status filter (default "active")
    * @returns Promise<SerializedRealEstateForSale | null> - The real estate or null if not found
    */
   async getByPublicId(
-    publicId: string
+    publicId: string,
+    options?: { status?: RealEstateForSaleStatus }
   ): Promise<SerializedRealEstateForSale | null> {
     try {
       await connectDB();
 
-      const realEstate = await RealEstateForSale.findOne({
-        publicId,
-      }).populate("user");
+      const query: FilterQuery<typeof RealEstateForSale> = { publicId };
+      query.status = options?.status ?? "active";
+
+      const realEstate = await RealEstateForSale.findOne(query).populate("user");
 
       if (!realEstate) {
         return null;

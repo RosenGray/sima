@@ -4,22 +4,25 @@ import {
   MotorcycleSearchFilters,
 } from "@/lib/vehicles/motorcycles/repository/MotorcycleRepository";
 import { MotorcycleCards } from "../MotorcycleCards/MotorcycleCards";
+import { MotorcycleList } from "../MotorcycleList/MotorcycleList";
 import {
   MotorcycleGrid,
   StickyPaginationWrapper,
-  Title,
 } from "../../page.styles";
-import { Text } from "@radix-ui/themes";
+import { Box } from "@radix-ui/themes";
 import Pagination from "@/components/Pagination/Pagination";
+import MotorcyclesHeaderClient from "../MotorcyclesHeaderClient/MotorcyclesHeaderClient";
 
 interface MotorcyclesContentProps {
   filters: MotorcycleSearchFilters;
   currentPage: number;
+  view: "list" | "grid";
 }
 
 const MotorcyclesContent: FC<MotorcyclesContentProps> = async ({
   filters,
   currentPage,
+  view,
 }) => {
   const motorcyclesResponse = await motorcycleRepository.getAll(
     filters,
@@ -29,24 +32,26 @@ const MotorcyclesContent: FC<MotorcyclesContentProps> = async ({
 
   return (
     <>
-      <Title size="5">Мотоциклы</Title>
+      <MotorcyclesHeaderClient totalCount={motorcyclesResponse.totalCount} />
 
-      <Text as="p" size="2" color="gray">
-        {motorcyclesResponse.totalCount} результатов найдено
-      </Text>
-
-      <MotorcycleGrid
-        mt="25px"
-        gap="3"
-        columns={{
-          initial: "1",
-          xs: "2",
-          md: "3",
-        }}
-        width="auto"
-      >
-        <MotorcycleCards motorcycles={motorcyclesResponse.data} />
-      </MotorcycleGrid>
+      {view === "list" ? (
+        <Box mt="25px" width="100%">
+          <MotorcycleList motorcycles={motorcyclesResponse.data} />
+        </Box>
+      ) : (
+        <MotorcycleGrid
+          mt="25px"
+          gap="3"
+          columns={{
+            initial: "1",
+            xs: "2",
+            md: "3",
+          }}
+          width="auto"
+        >
+          <MotorcycleCards motorcycles={motorcyclesResponse.data} />
+        </MotorcycleGrid>
+      )}
       <StickyPaginationWrapper>
         <Pagination totalPages={motorcyclesResponse.totalPages} />
       </StickyPaginationWrapper>

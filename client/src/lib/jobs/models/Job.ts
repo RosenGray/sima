@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 // Import referenced models to ensure they are registered before this model
 import "@/lib/auth/models/User";
-import { IJob } from "../types/job.types";
+import { IJob, JOB_STATUSES } from "../types/job.types";
 
 const imageSchema = new mongoose.Schema(
   {
@@ -51,6 +51,13 @@ const jobSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: JOB_STATUSES,
+      default: "active",
       required: true,
       index: true,
     },

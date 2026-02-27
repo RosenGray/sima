@@ -24,6 +24,7 @@ interface CarsPageProps {
     color?: string;
     sort?: string;
     page?: string;
+    view?: string;
   }>;
 }
 
@@ -31,6 +32,7 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
   const searchParams = (await props.searchParams) || {};
   const currentPage = Number(searchParams?.page) || 1;
   const sort = searchParams?.sort || "date_desc"; // Default to newest first
+  const view = searchParams?.view === "list" ? "list" : "grid";
 
   // Extract array filters using utility
   const arrayFilters = searchParamsToFilters(searchParams);
@@ -101,7 +103,7 @@ const CarsPage: FC<CarsPageProps> = async (props) => {
         </FiltersProvider>
       </Suspense>
       <Suspense key={contentKey} fallback={<Loading />}>
-        <CarsContent filters={filters} currentPage={currentPage} sort={sort} />
+        <CarsContent filters={filters} currentPage={currentPage} sort={sort} view={view} />
       </Suspense>
     </CarsPageContainer>
   );

@@ -78,7 +78,7 @@ export async function editCarAd(
       uploadResult = await uploadFiles("vehicles/cars", user.id, uploadFormData);
     }
 
-    // Get existing car using repository
+    // Get existing car using repository (any status for edit)
     const car = await carRepository.getByPublicId(context.carPublicId);
     if (!car) {
       return result.reply({
