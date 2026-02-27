@@ -42,7 +42,7 @@ const SpecialVehicleHeaderClient: FC<SpecialVehicleHeaderClientProps> = ({
         <IconButton
           size="2"
           variant={currentView === "list" ? "soft" : "ghost"}
-          color={currentView === "list" ? "accent" : "gray"}
+          color={currentView === "list" ? "blue" : "gray"}
           onClick={() => handleViewChange("list")}
           aria-label="Список"
           aria-pressed={currentView === "list"}
@@ -52,7 +52,7 @@ const SpecialVehicleHeaderClient: FC<SpecialVehicleHeaderClientProps> = ({
         <IconButton
           size="2"
           variant={currentView === "grid" ? "soft" : "ghost"}
-          color={currentView === "grid" ? "accent" : "gray"}
+          color={currentView === "grid" ? "blue" : "gray"}
           onClick={() => handleViewChange("grid")}
           aria-label="Сетка"
           aria-pressed={currentView === "grid"}
