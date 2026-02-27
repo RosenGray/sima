@@ -56,7 +56,13 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
         <ServiceCardImages>
           {images.length === 1 ? (
             <ServiceCardImageContainer>
-              <Image src={images[0].url} alt={images[0].originalName} fill />
+              <Image
+                src={images[0].url}
+                alt={images[0].originalName}
+                fill
+                style={{ objectFit: "cover" }}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
+              />
             </ServiceCardImageContainer>
           ) : (
             <ServiceCardSwiper

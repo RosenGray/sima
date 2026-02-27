@@ -222,6 +222,7 @@ const ProfessionalServiceDetailClient: React.FC<
               alt={images[0].originalName}
               fill
               style={{ objectFit: "cover" }}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 45vw"
             />
           ) : (
             <ImageCarouselContainer>
