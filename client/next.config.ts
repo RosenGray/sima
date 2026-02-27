@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
 
   experimental: {
-    inlineCss: true,
+    // inlineCss: true, // Disabled: Known to cause controller[kState].transformAlgorithm errors
     serverActions: {
       bodySizeLimit: "50mb", // Increased for multiple file uploads
       // Required behind nginx ingress: Next.js compares Origin to Host and can return 403

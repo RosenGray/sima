@@ -56,5 +56,10 @@
     "mongo-sanitize": "^1.1.0",
     "tsx": "^4.20.6",
     "typescript": "^5"
+  },
+  "overrides": {
+    "web-streams-polyfill": {
+      "web-streams-polyfill": false
+    }
   }
 }
