@@ -3,7 +3,8 @@
     "allow": [
       "Bash(find /Users/vladislaviokhim/Desktop/archive/sima/client/src/app/api -name \"route.ts\" -exec grep -l \"runtime\" {} ;)",
       "Bash(npm run build)",
-      "Bash(kubectl exec -it client-depl-6f87ccd6cc-f5zpb -- /bin/sh)"
+      "Bash(kubectl exec -it client-depl-6f87ccd6cc-f5zpb -- /bin/sh)",
+      "Bash(kubectl logs client-depl-64ffc45bf9-kjnqk --tail=100)"
     ],
     "deny": [],
     "ask": []

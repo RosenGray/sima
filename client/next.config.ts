@@ -49,15 +49,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.amazonaws.com",
+        hostname: "*.amazonaws.com",
       },
       {
         protocol: "https",
-        hostname: "**.cloudfront.net",
+        hostname: "*.cloudfront.net",
       },
       {
         protocol: "https",
-        hostname: "**.backblazeb2.com",
+        hostname: "*.backblazeb2.com",
       },
     ],
   },
