@@ -4,10 +4,15 @@ import { execSync } from "child_process";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: "standalone",
-
+  // output: "standalone", // Temporarily disabled - causing middleware.js.nft.json issues in Next.js 16
+  
+  // Fix turbopack workspace root warning
+  turbopack: {
+    root: __dirname,
+  },
+  
   experimental: {
-    inlineCss: true,
+    // inlineCss: true, // Disabled: Known to cause controller[kState].transformAlgorithm errors
     serverActions: {
       bodySizeLimit: "50mb", // Increased for multiple file uploads
       // Required behind nginx ingress: Next.js compares Origin to Host and can return 403
@@ -19,15 +24,19 @@ const nextConfig: NextConfig = {
       ],
     },
   },
+  
+  // Moved from experimental to top-level for Next.js 16
+  serverExternalPackages: [],
   compiler: {
     styledComponents: true,
   },
   generateBuildId: async () => {
     // Use git commit hash for deterministic builds
     try {
-      return execSync("git rev-parse HEAD").toString().trim();
+      return execSync("git rev-parse HEAD", { stdio: 'pipe' }).toString().trim();
     } catch {
-      return process.env.BUILD_ID || Date.now().toString();
+      // Fallback to environment variable or timestamp when git is not available
+      return process.env.BUILD_ID || process.env.GITHUB_SHA || Date.now().toString();
     }
   },
   // Increase timeout for API routes
@@ -40,15 +49,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.amazonaws.com",
+        hostname: "*.amazonaws.com",
       },
       {
         protocol: "https",
-        hostname: "**.cloudfront.net",
+        hostname: "*.cloudfront.net",
       },
       {
         protocol: "https",
-        hostname: "**.backblazeb2.com",
+        hostname: "*.backblazeb2.com",
       },
     ],
   },
