@@ -20,7 +20,6 @@ import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
 // import { GoogleTagManager } from "@next/third-parties/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import ServerActionErrorHandler from "@/errors/ServerActionErrorHandler/ServerActionErrorHandler";
-;
 
 // Mark as dynamic because we use cookies in getCurrentUser
 export const dynamic = "force-dynamic";
