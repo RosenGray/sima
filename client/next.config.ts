@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
   },
   // Increase timeout for API routes
   // Image optimization configuration
+  // Use *.hostname for one subdomain level; pathname allows all paths under /file/
   images: {
     remotePatterns: [
       {
@@ -48,7 +49,13 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "*.backblazeb2.com",
+        pathname: "/file/**",
+      },
+      {
+        protocol: "https",
         hostname: "**.backblazeb2.com",
+        pathname: "/file/**",
       },
     ],
   },
