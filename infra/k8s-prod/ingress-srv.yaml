@@ -5,10 +5,10 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    # Rate limiting
-    nginx.ingress.kubernetes.io/limit-rps: "30"
-    nginx.ingress.kubernetes.io/limit-connections: "20"
-    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
+    # Rate limiting: enough headroom for page loads (HTML + chunks + fonts) and multiple tabs; still caps abuse
+    nginx.ingress.kubernetes.io/limit-rps: "200"
+    nginx.ingress.kubernetes.io/limit-connections: "200"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "15"
     nginx.ingress.kubernetes.io/limit-whitelist: "127.0.0.1"
     # Host and X-Forwarded-* headers are set by the ingress controller by default
 spec:
