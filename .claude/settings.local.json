@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(find /Users/vladislaviokhim/Desktop/archive/sima/client/src/app/api -name \"route.ts\" -exec grep -l \"runtime\" {} ;)",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "Bash(kubectl exec -it client-depl-6f87ccd6cc-f5zpb -- /bin/sh)"
     ],
     "deny": [],
     "ask": []

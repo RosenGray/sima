@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "upgrade":"next upgrade",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -56,10 +57,5 @@
     "mongo-sanitize": "^1.1.0",
     "tsx": "^4.20.6",
     "typescript": "^5"
-  },
-  "overrides": {
-    "web-streams-polyfill": {
-      "web-streams-polyfill": false
-    }
   }
 }
