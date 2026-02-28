@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find /Users/vladislaviokhim/Desktop/archive/sima/client/src/app/api -name \"route.ts\" -exec grep -l \"runtime\" {} ;)"
+      "Bash(find /Users/vladislaviokhim/Desktop/archive/sima/client/src/app/api -name \"route.ts\" -exec grep -l \"runtime\" {} ;)",
+      "Bash(npm run build)"
     ],
     "deny": [],
     "ask": []

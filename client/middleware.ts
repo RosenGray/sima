@@ -1,5 +1,7 @@
-// Re-export the proxy function as the default middleware
-export { proxy as middleware } from './src/proxy';
+import { proxy } from './src/proxy';
+
+// Export the middleware function
+export const middleware = proxy;
 
 // Config must be directly exported in middleware.ts, not re-exported
 export const config = {
