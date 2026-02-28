@@ -4,7 +4,7 @@ import { execSync } from "child_process";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // output: "standalone", // Temporarily disabled - causing middleware.js.nft.json issues in Next.js 16
+  output: "standalone",
   
   // Fix turbopack workspace root warning
   turbopack: {
