@@ -42,6 +42,24 @@ const nextConfig: NextConfig = {
   // Increase timeout for API routes
   // Image optimization configuration
   // Use *.hostname for one subdomain level; pathname allows all paths under /file/
+  // Prevent HTML document caching so first load always gets current chunk URLs (avoids stale chunk 404s after deploy)
+  async headers() {
+    return [
+      {
+        source: "/",
+        headers: [
+          { key: "Cache-Control", value: "no-store, must-revalidate" },
+        ],
+      },
+      {
+        // All page routes except _next (static/chunks) and api
+        source: "/:path((?!_next|api).*)",
+        headers: [
+          { key: "Cache-Control", value: "no-store, must-revalidate" },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
