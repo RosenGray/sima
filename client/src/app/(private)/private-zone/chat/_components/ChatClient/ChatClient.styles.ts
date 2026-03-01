@@ -9,9 +9,14 @@ export const ChatPageContainer = styled(Box)`
   max-width: 1400px;
   margin: 0 auto;
   height: 100%;
+  padding: 0;
+  border: 10px solid green;
+  width: 95%;
+  max-height: 95%;
+  margin:  auto;
 
   @media (min-width: ${breakpoints.md}px) {
-    padding: var(--space-6);
+    /* padding: var(--space-6); */
   }
 `;
 
@@ -24,6 +29,7 @@ export const ChatLayoutCard = styled(Card)`
   overflow: hidden;
   border-radius: var(--radius-4);
   box-shadow: var(--shadow-4);
+  padding:0;
 
 
   @media (max-width: ${breakpoints.md - 1}px) {

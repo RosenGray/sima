@@ -11,7 +11,7 @@ export const PrivateZoneLayoutSection = styled.section`
   &:before {
     content: "";
     display: block;
-    height: var(--header-height);
+    height: var(--simple-header-height);
     flex-shrink: 0;
   }
 `;
@@ -42,4 +42,7 @@ export const PrivateZoneSidebar = styled.aside`
 export const PrivateZoneMain = styled.main`
   flex: 1;
   min-width: 0;
+  border: 1px solid blue;
+  display: flex;
+
 `;
