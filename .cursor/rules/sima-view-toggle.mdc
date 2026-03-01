@@ -36,6 +36,7 @@ Listing pages can offer two view modes: **grid** (cards, default) and **list** (
 - **Toggle UI:** Two icon buttons in the same header row as sort (or other controls):
   - List: `ListBulletIcon` or `ViewHorizontalIcon`; `aria-label="Список"`; active state `variant="soft"` and `color="blue"`.
   - Grid: `ViewGridIcon`; `aria-label="Сетка"`; same active state pattern.
+  - Add `style={{ cursor: "pointer" }}` to both IconButtons for clear clickability.
   - **Note:** Radix UI `IconButton` does not accept `color="accent"`; use `"blue"` (or another valid theme color) for the active view.
 - **Handler:** `handleViewChange(nextView)` builds `URLSearchParams` from current `searchParams`, sets `view` and `page` to `"1"`, then `router.replace(pathname + "?" + params.toString())`.
 

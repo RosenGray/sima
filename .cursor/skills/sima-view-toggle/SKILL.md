@@ -103,8 +103,8 @@ flowchart LR
    ```
 3. **Toggle UI:**  
    In the same header row as the existing controls (e.g. sort), add two icon buttons:
-   - **List:** Use `ListBulletIcon` or `ViewHorizontalIcon` from `@radix-ui/react-icons`. `aria-label="Список"`, `aria-pressed={currentView === "list"}`. When active: `variant="soft"`, `color="blue"`. When inactive: `variant="ghost"`, `color="gray"`.
-   - **Grid:** Use `ViewGridIcon`. `aria-label="Сетка"`, `aria-pressed={currentView === "grid"}`. Same variant/color logic for active vs inactive.
+   - **List:** Use `ListBulletIcon` or `ViewHorizontalIcon` from `@radix-ui/react-icons`. `aria-label="Список"`, `aria-pressed={currentView === "list"}`. When active: `variant="soft"`, `color="blue"`. When inactive: `variant="ghost"`, `color="gray"`. Add `style={{ cursor: "pointer" }}` for clear clickability.
+   - **Grid:** Use `ViewGridIcon`. `aria-label="Сетка"`, `aria-pressed={currentView === "grid"}`. Same variant/color logic for active vs inactive; add `style={{ cursor: "pointer" }}`.
    - **Note:** Radix UI `IconButton` does not accept `color="accent"`; use a valid theme color such as `"blue"` for the active state (e.g. `color={currentView === "list" ? "blue" : "gray"}`).
 4. Wrap the two view buttons in a `Flex` (e.g. `gap="1"`) and place them next to the sort control (e.g. inside a parent `Flex gap="2" wrap="wrap"`).
 
@@ -183,7 +183,7 @@ When reusing in another section (e.g. cars), decide image left vs right and any 
 
 - [ ] Page: `view` in searchParams type; compute `view` (default **grid**); pass to Content.
 - [ ] Content: `view` prop; conditionally render list wrapper or grid + cards.
-- [ ] Header client: `currentView` from URL; `handleViewChange` updates URL with `view` and `page=1`, preserves other params; two IconButtons (list + grid) with active state and aria attributes.
+- [ ] Header client: `currentView` from URL; `handleViewChange` updates URL with `view` and `page=1`, preserves other params; two IconButtons (list + grid) with active state, aria attributes, and `style={{ cursor: "pointer" }}`.
 - [ ] List container: vertical Flex, map entities to Link + list item.
 - [ ] List item: image section + details section; same title/subtitle/badges/like as card; responsive row/column; LikeButton with stopPropagation.
 - [ ] List item styles: "use client"; card-like container; image and details sections; breakpoints from `@/globals`.

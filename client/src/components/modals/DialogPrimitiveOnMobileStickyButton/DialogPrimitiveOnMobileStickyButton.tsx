@@ -151,6 +151,7 @@ const DialogPrimitiveOnMobileStickyButton: FC<
             variant={buttonVariant}
             size={buttonSize}
             color={buttonColor}
+            style={{ cursor: "pointer" }}
           >
             {subtitle && <Text size="2" color="gray">{subtitle}</Text>}  <Text>{title}</Text>
           </Button>
