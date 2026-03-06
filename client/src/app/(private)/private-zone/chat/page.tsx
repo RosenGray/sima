@@ -7,6 +7,8 @@ const ChatPage: FC = async () => {
   const user = await requireAuthOrRedirectTo("/auth/login");
   const listResult = await getChatList();
 
+  console.log("listResult", listResult);
+
   const list = listResult.success ? listResult.list : [];
 
   return (

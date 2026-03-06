@@ -83,7 +83,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 - **Authenticated:** Toggle uses optimistic update: UI updates immediately, then `addLike` / `removeLike` run in background; state reverts if the server fails.
 - **Guest:** Toggle updates localStorage via `getLikedFromStorage` / `setLikedInStorage` / `removeLikedInStorage` and updates provider state; no server call.
-- **Login merge:** When a guest logs in, `LikesProvider` runs `mergeGuestLikes(entityType, guestIds)` once (guarded by ref), then clears localStorage for that entity type and refreshes state from the merge result. Do not run merge on every login—only when transitioning from guest to user.
+- **Login merge:** When a guest logs in, `LikesProvider` runs `mergeGuestLikes(entityType, guestIds)` once (guarded by ref), then clears localStorage for that entity type and refreshes state from the merge result. Do not run merge on every login—only when transitioning from guest to user. **Owned ads are not synced:** the server action excludes any guest-like for an ad whose owner is the logged-in user (via `getAdOwnerId`); those likes are never written to the DB and disappear from favorites after login.
 
 ## Storage and repository
 
@@ -102,6 +102,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 - LikeButton: `client/src/components/buttons/LikeButton/LikeButton.tsx`
 - LikesProvider: `client/src/providers/LikesProvider/LikesProvider.tsx`
 - Actions: `client/src/lib/likes/actions/likes.actions.ts`
+- Helper (merge excludes owned ads): `client/src/lib/likes/getAdOwnerId.ts`
 - Model: `client/src/lib/likes/models/AdLike.ts`
 - Repository: `client/src/lib/likes/repository/LikesRepository.ts`
 - Storage: `client/src/lib/likes/storage/likesStorage.ts`

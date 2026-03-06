@@ -71,6 +71,7 @@ If the section should support guest likes that merge on login:
 
 1. In `LikesProvider`, the guest hydration effect reads from storage using `getLikedFromStorage(entityType)` when `user` is null; ensure the same entity type constant from `@/lib/constants/entityTypes` is used when calling `setLikedInStorage` / `removeLikedInStorage` in the toggle path for guests.
 2. The login-merge effect runs for entity types listed in `ENTITY_TYPES_WITH_GUEST_MERGE` (using constants from `@/lib/constants/entityTypes`) and merges `getLikedFromStorage(entityType)` for each. To support multiple entity types, extend that list and the merge logic to iterate over all known entity types (e.g. call `mergeGuestLikes` for each type that has guest likes in storage), then clear storage for each and update `likedIdsByEntity` from the merge results.
+3. **Owned ads are not synced:** The server action `mergeGuestLikes` uses `getAdOwnerId` to exclude guest likes for ads the logged-in user owns; those likes are never written to the DB. When adding a new entity type to guest merge, add a case for it in `client/src/lib/likes/getAdOwnerId.ts` (switch on entity type and call the section’s repository `getByPublicId`), so owned ads are correctly skipped.
 
 If you only add one new section and the product does not require guest merge for that section yet, you can defer this step; authenticated likes will still work.
 
@@ -92,7 +93,7 @@ If you only add one new section and the product does not require guest merge for
 - [ ] If section appears in home/lobby carousel: carousel item data includes `ownerId`; `ListingCardCarousel` passes `isOwner={thisUserIsOwner(item.ownerId)}` to `ListingCard` (already done in shared component).
 - [ ] Same `entityType` and `publicId` used in card, list item (if any), and detail.
 - [ ] Layout wraps app with LikesProvider and passes initialLikedIds (already done if likes exist for another section).
-- [ ] If guest merge is required for the new section, extend merge effect in LikesProvider for the new entity type.
+- [ ] If guest merge is required for the new section, extend merge effect in LikesProvider for the new entity type and add a case in `getAdOwnerId.ts` for the new entity type (so owned ads are not synced on login).
 
 ## Pitfalls
 
@@ -105,6 +106,7 @@ If you only add one new section and the product does not require guest merge for
 - Rule: `.cursor/rules/sima-likes.mdc`
 - LikeButton: `client/src/components/buttons/LikeButton/LikeButton.tsx`
 - LikesProvider: `client/src/providers/LikesProvider/LikesProvider.tsx`
+- Merge (excludes owned ads): `client/src/lib/likes/actions/likes.actions.ts` (`mergeGuestLikes`), `client/src/lib/likes/getAdOwnerId.ts`
 - Professional-service (owner check): `ProfessionalServiceCard.tsx`, `ProfessionalServiceDetailClient.tsx`
 - Carousel (owner check): `ListingCard.tsx` (isOwner prop), `ListingCardCarousel.tsx` (computes isOwner per item), `lobbyCarouselMappers.ts` (ownerId in item)
 - Cars card: `client/src/app/(public)/vehicles/cars/_components/CarCards/CarCard.tsx` and `CarCard.styles.ts`

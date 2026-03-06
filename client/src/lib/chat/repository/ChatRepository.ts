@@ -97,6 +97,7 @@ export class ChatRepository {
           price: adSnapshot.price,
           adLink: adSnapshot.adLink,
           adRemoved: adSnapshot.adRemoved ?? false,
+          status: adSnapshot.status ?? "active",
         },
         deletedByUserIds: [],
       });
@@ -150,7 +151,10 @@ export class ChatRepository {
       list.push({
         publicId: c.publicId,
         otherParticipant: serializedUser,
-        adSnapshot: c.adSnapshot as AdSnapshot,
+        adSnapshot: {
+          ...c.adSnapshot,
+          status: c.adSnapshot?.status ?? "active",
+        },
         lastMessageSnippet: lastMessage
           ? String(lastMessage.body).slice(0, 80)
           : undefined,
@@ -212,7 +216,10 @@ export class ChatRepository {
     return {
       publicId: conv.publicId,
       otherParticipant: serializedUser,
-      adSnapshot: conv.adSnapshot as AdSnapshot,
+      adSnapshot: {
+        ...conv.adSnapshot,
+        status: conv.adSnapshot?.status ?? "active",
+      } as AdSnapshot,
       messages: serializedMessages,
     };
   }
