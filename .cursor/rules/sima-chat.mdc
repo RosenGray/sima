@@ -424,10 +424,10 @@ useEffect(() => {
 **Purpose**: Display active conversation with messages and input
 
 **Key Features**:
-- Header with participant info and context menu
-- Ad snapshot sub-header
-- Scrollable message list
-- Message input with Enter key support
+- Header with participant info and context menu (delete chat always shown and enabled)
+- Ad snapshot sub-header driven by `adSnapshot.status` (see "ActiveChat: ad status display" below)
+- Scrollable message list (grayed when ghost/deleted)
+- Message input shown only when status is active; hidden for archived/expired/pending/deleted
 - Different styling for own vs other messages
 
 **Message Input Pattern**:
@@ -511,6 +511,22 @@ const handleKeyDown = useCallback(
 - For deleted: hide thumbnail; show title and `ChatListItemStatusMessage` with "Объявление удалено владельцем"
 - Show last message snippet only when not deleted; always show timestamp when present
 - Highlight active conversation via `$active={isActive}`
+
+### ActiveChat (chat detail): ad status display
+
+On the chat detail view (`/private-zone/chat/[id]`), drive UI from `chat.adSnapshot.status` using the same `getDisplayMode(status)` as the list (active | ghost | deleted; ghost = archived, expired, pending).
+
+| Status group | Ad strip | Messages | Input bar | Delete chat |
+|--------------|----------|----------|-----------|--------------|
+| **active** | Thumbnail + title + price + "К объявлению" | Normal | Shown | Shown |
+| **ghost** | Grayed strip; no "К объявлению" | Grayed | Hidden | Shown |
+| **deleted** | No thumbnail; "Объявление удалено владельцем" + grayed title; no link | Grayed | Hidden | Shown |
+
+- Header and delete-chat menu: always visible and enabled.
+- Ad strip: deleted → `AdSubHeaderDeleted`; ghost → `ArchivedContentWrap` + ad strip without "К объявлению"; active → full strip with link.
+- Messages: wrap in `ArchivedContentWrap` when ghost or deleted.
+- `InputStripe`: render only when `displayMode === "active"`.
+- Styles: `ArchivedContentWrap`, `AdSubHeaderDeleted`, `AdSubHeaderDeletedStatus`, `AdSubHeaderDeletedTitle`.
 
 ## Styling Guidelines
 

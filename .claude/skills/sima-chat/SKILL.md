@@ -440,8 +440,9 @@ Handles the active conversation view:
 **Key Features**:
 - Message bubbles: Different styling for own vs other messages
 - Enter key: Send message on Enter (without Shift)
-- Context menu: Delete chat option
-- Ad snapshot: Shows ad details with link (if not removed)
+- Context menu: Delete chat option (always shown and enabled; see "Chat detail: ad status display" below)
+- Ad snapshot: Drive from `adSnapshot.status`—active shows full strip + "К объявлению"; ghost shows grayed strip without link; deleted shows status text + grayed title only, no thumbnail
+- Input bar: Shown only when status is active; hidden for ghost/deleted
 - Empty state: Shows when no messages exist
 
 ```typescript
@@ -518,6 +519,22 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
   );
 };
 ```
+
+### Chat detail (ActiveChat): ad status display
+
+On the **chat detail view** (`/private-zone/chat/[id]`, `ActiveChat`), drive UI from `chat.adSnapshot.status` using the same grouping as the list: `getDisplayMode(status)` → `"active" | "ghost" | "deleted"` (ghost = archived, expired, pending).
+
+| Status group | Ad strip | Messages | Input bar | Delete chat |
+|--------------|----------|----------|-----------|--------------|
+| **active** | Thumbnail + title + price + "К объявлению" | Normal | Shown | Shown |
+| **ghost** (archived/expired/pending) | Grayed (thumbnail + title + price); no "К объявлению" | Grayed (`ArchivedContentWrap`) | Hidden | Shown |
+| **deleted** | No thumbnail; "Объявление удалено владельцем" + grayed title; no "К объявлению" | Grayed | Hidden | Shown |
+
+- **Header:** Unchanged for all statuses; delete-chat context menu always visible and enabled.
+- **Ad strip:** Deleted → `AdSubHeaderDeleted` with status text + grayed title only. Ghost → same layout as active but wrapped in `ArchivedContentWrap` and no "К объявлению" link. Active → full ad strip with link.
+- **Messages:** When ghost or deleted, wrap the message list (and empty state) in `ArchivedContentWrap` (grayscale + opacity). Header is not wrapped.
+- **Input bar (`InputStripe`):** Render only when `displayMode === "active"` (`canSendMessages`).
+- **Styled components:** `ArchivedContentWrap`, `AdSubHeaderDeleted`, `AdSubHeaderDeletedStatus`, `AdSubHeaderDeletedTitle` in `ActiveChat.styles.ts`. Reuse `STATUS_REMOVED_BY_OWNER = "Объявление удалено владельцем"` and the same `GHOST_STATUSES` / `getDisplayMode` as in `ChatListItem`.
 
 ## Styling Patterns
 

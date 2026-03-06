@@ -5,12 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Box, Text, Button, TextField } from "@radix-ui/themes";
-import {
-  DotsHorizontalIcon,
-  TrashIcon,
-  Link2Icon,
-} from "@radix-ui/react-icons";
+import { DotsHorizontalIcon, TrashIcon } from "@radix-ui/react-icons";
 import type {
+  AdSnapshotStatus,
   SerializedConversationWithMessages,
   SerializedMessage,
 } from "@/lib/chat/types/chat.types";
@@ -26,11 +23,25 @@ import {
   AdSubHeader,
   AdSubHeaderThumb,
   AdSubHeaderContent,
+  AdSubHeaderDeleted,
+  AdSubHeaderDeletedStatus,
+  AdSubHeaderDeletedTitle,
+  ArchivedContentWrap,
   ChatBody,
   MessageList,
   MessageBubble,
   InputStripe,
 } from "./ActiveChat.styles";
+
+const GHOST_STATUSES: AdSnapshotStatus[] = ["archived", "expired", "pending"];
+const STATUS_REMOVED_BY_OWNER = "Объявление удалено владельцем";
+
+function getDisplayMode(status: AdSnapshotStatus | undefined): "active" | "ghost" | "deleted" {
+  const s = status ?? "active";
+  if (s === "deleted") return "deleted";
+  if (GHOST_STATUSES.includes(s)) return "ghost";
+  return "active";
+}
 
 interface ActiveChatProps {
   chat: SerializedConversationWithMessages;
@@ -76,6 +87,11 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
       .filter(Boolean)
       .join(" ") || "Пользователь";
   const lastSeenFormatted = formatLastSeen(chat.otherParticipant.lastSeenAt);
+
+  const displayMode = getDisplayMode(chat.adSnapshot?.status);
+  const canSendMessages = displayMode === "active";
+  const isDeleted = displayMode === "deleted";
+  const isGhost = displayMode === "ghost";
 
   const handleSend = useCallback(async () => {
     const body = inputValue.trim();
@@ -171,36 +187,84 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
         </ChatContextMenuTrigger>
       </ActiveChatHeader>
 
-      <AdSubHeader>
-        <AdSubHeaderThumb>
-          <Image
-            src={chat.adSnapshot.thumbnailUrl || "/placeholder.png"}
-            alt=""
-            fill
-            style={{ objectFit: "cover" }}
-            sizes="48px"
-            unoptimized={chat.adSnapshot.thumbnailUrl?.startsWith("http")}
-          />
-        </AdSubHeaderThumb>
-        <AdSubHeaderContent>
-          <Text size="2" weight="medium" truncate>
+      {isDeleted ? (
+        <AdSubHeaderDeleted>
+          <AdSubHeaderDeletedStatus as="p">
+            {STATUS_REMOVED_BY_OWNER}
+          </AdSubHeaderDeletedStatus>
+          <AdSubHeaderDeletedTitle as="p">
             {chat.adSnapshot.title}
-          </Text>
-          {chat.adSnapshot.price != null && (
-            <Text size="2" color="gray">
-              {formatPrice(chat.adSnapshot.price)}
+          </AdSubHeaderDeletedTitle>
+        </AdSubHeaderDeleted>
+      ) : isGhost ? (
+        <ArchivedContentWrap asChild>
+          <AdSubHeader>
+            <AdSubHeaderThumb>
+              <Image
+                src={chat.adSnapshot.thumbnailUrl || "/placeholder.png"}
+                alt=""
+                fill
+                style={{ objectFit: "cover" }}
+                sizes="48px"
+                unoptimized={chat.adSnapshot.thumbnailUrl?.startsWith("http")}
+              />
+            </AdSubHeaderThumb>
+            <AdSubHeaderContent>
+              <Text size="2" weight="medium" truncate>
+                {chat.adSnapshot.title}
+              </Text>
+              {chat.adSnapshot.price != null && (
+                <Text size="2" color="gray">
+                  {formatPrice(chat.adSnapshot.price)}
+                </Text>
+              )}
+            </AdSubHeaderContent>
+          </AdSubHeader>
+        </ArchivedContentWrap>
+      ) : (
+        <AdSubHeader>
+          <AdSubHeaderThumb>
+            <Image
+              src={chat.adSnapshot.thumbnailUrl || "/placeholder.png"}
+              alt=""
+              fill
+              style={{ objectFit: "cover" }}
+              sizes="48px"
+              unoptimized={chat.adSnapshot.thumbnailUrl?.startsWith("http")}
+            />
+          </AdSubHeaderThumb>
+          <AdSubHeaderContent>
+            <Text size="2" weight="medium" truncate>
+              {chat.adSnapshot.title}
             </Text>
-          )}
-        </AdSubHeaderContent>
-        {chat.adSnapshot.status !== "deleted" && (
+            {chat.adSnapshot.price != null && (
+              <Text size="2" color="gray">
+                {formatPrice(chat.adSnapshot.price)}
+              </Text>
+            )}
+          </AdSubHeaderContent>
           <Button size="2" variant="soft" asChild>
             <Link href={chat.adSnapshot.adLink}>К объявлению</Link>
           </Button>
-        )}
-      </AdSubHeader>
+        </AdSubHeader>
+      )}
 
       <ChatBody>
-        {messages.length === 0 ? (
+        {(isGhost || isDeleted) ? (
+          <ArchivedContentWrap style={{ height: "100%", minHeight: 0, overflow: "auto" }}>
+            {messages.length === 0 ? (
+              <EmptyStateNoMessages />
+            ) : (
+              <MessageList>
+                {messages.map((msg) => (
+                  <MessageBubble key={msg.id} $isOwn={msg.senderId === currentUserId}>
+                    <Text size="2">{msg.body}</Text>
+                  </MessageBubble>
+                ))}
+              </MessageList>
+            )}
+          </ArchivedContentWrap>
+        ) : messages.length === 0 ? (
           <EmptyStateNoMessages />
         ) : (
           <MessageList>
@@ -213,22 +277,22 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
         )}
       </ChatBody>
 
-      <InputStripe>
-        <Box style={{ flexShrink: 0 }}>
-          {/* <Link2Icon width={20} height={20} style={{ opacity: 0.5 }} /> */}
-        </Box>
-        <TextField.Root
-          placeholder="Написать сообщение"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={sending}
-          style={{ flex: 1, minWidth: 0 }}
-        />
-        <Button size="2" onClick={handleSend} disabled={sending || !inputValue.trim()}>
-          Отправить
-        </Button>
-      </InputStripe>
+      {canSendMessages && (
+        <InputStripe>
+          <Box style={{ flexShrink: 0 }} />
+          <TextField.Root
+            placeholder="Написать сообщение"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={sending}
+            style={{ flex: 1, minWidth: 0 }}
+          />
+          <Button size="2" onClick={handleSend} disabled={sending || !inputValue.trim()}>
+            Отправить
+          </Button>
+        </InputStripe>
+      )}
     </>
   );
 };
