@@ -36,7 +36,6 @@ export interface IAdSnapshot {
   thumbnailUrl: string;      // Ad thumbnail image
   price?: number;            // Optional price
   adLink: string;            // Link to ad detail page
-  adRemoved: boolean;        // Legacy; prefer status for list UI
   status: AdSnapshotStatus; // active | expired | archived | deleted | pending — drives list ghost/tombstone
 }
 
@@ -495,7 +494,7 @@ const handleKeyDown = useCallback(
 </>
 ```
 
-**ChatListItem**: Individual conversation item. Drive display from `adSnapshot.status` only (do not use `adRemoved` for this UI).
+**ChatListItem**: Individual conversation item. Drive display from `adSnapshot.status` only.
 
 **Display by status** (row always remains a Link to open the chat):
 
@@ -721,7 +720,7 @@ export async function getOrCreateChat(
     thumbnailUrl,
     price: entity.price,
     adLink,
-    adRemoved: false,
+    status: entityStatus(entity),
   };
 
   try {

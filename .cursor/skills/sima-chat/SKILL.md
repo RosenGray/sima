@@ -96,7 +96,6 @@ interface IAdSnapshot {
   thumbnailUrl: string; // Ad thumbnail image
   price?: number; // Ad price (optional)
   adLink: string; // Link to the ad detail page
-  adRemoved: boolean; // Legacy: whether the ad was removed (prefer status for UI)
   status: AdSnapshotStatus; // active | expired | archived | deleted | pending — drives list ghost/tombstone UI
 }
 ```
@@ -250,7 +249,7 @@ export async function getOrCreateChat(
     thumbnailUrl,
     price: entity.price,
     adLink,
-    adRemoved: false,
+    status: entityStatus(entity),
   };
 
   try {
@@ -522,7 +521,7 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
 
 ### Chat list: ad status display (ghost / tombstone)
 
-On the **conversation list** (`/chat` only; not the active chat view), each row shows the ad snapshot. Drive display from `adSnapshot.status` only (do not use `adRemoved` for this UI).
+On the **conversation list** (`/chat` only; not the active chat view), each row shows the ad snapshot. Drive display from `adSnapshot.status` only.
 
 | Status | Thumbnail | Copy | Row clickable |
 |--------|-----------|------|----------------|

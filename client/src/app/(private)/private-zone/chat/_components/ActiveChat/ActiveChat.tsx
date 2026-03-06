@@ -192,7 +192,7 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
             </Text>
           )}
         </AdSubHeaderContent>
-        {!chat.adSnapshot.adRemoved && (
+        {chat.adSnapshot.status !== "deleted" && (
           <Button size="2" variant="soft" asChild>
             <Link href={chat.adSnapshot.adLink}>К объявлению</Link>
           </Button>

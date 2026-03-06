@@ -80,7 +80,6 @@ export async function getOrCreateChat(
       thumbnailUrl: pet.images?.[0]?.url ?? "",
       price: pet.price,
       adLink: `/pets/for-sale/${pet.publicId}`,
-      adRemoved: false,
       status: entityStatus(pet),
     };
   } else if (adEntityType === ENTITY_TYPE_PETS_FOR_FREE) {
@@ -102,7 +101,6 @@ export async function getOrCreateChat(
       title: titleForFree,
       thumbnailUrl: petForFree.images?.[0]?.url ?? "",
       adLink: `/pets/for-free/${petForFree.publicId}`,
-      adRemoved: false,
       status: entityStatus(petForFree),
     };
   } else if (adEntityType === ENTITY_TYPE_PETS_ACCESSORIES) {
@@ -125,7 +123,6 @@ export async function getOrCreateChat(
       thumbnailUrl: accessory.images?.[0]?.url ?? "",
       price: accessory.price,
       adLink: `/pets/accessories/${accessory.publicId}`,
-      adRemoved: false,
       status: entityStatus(accessory),
     };
   } else if (adEntityType === ENTITY_TYPE_PROFESSIONAL_SERVICE) {
@@ -149,7 +146,6 @@ export async function getOrCreateChat(
       title,
       thumbnailUrl: service.images?.[0]?.url ?? "",
       adLink: `/professional-service/${service.publicId}`,
-      adRemoved: false,
       status: entityStatus(service),
     };
   } else if (adEntityType === ENTITY_TYPE_JOBS) {
@@ -171,7 +167,6 @@ export async function getOrCreateChat(
       title: jobTitle,
       thumbnailUrl: job.images?.[0]?.url ?? "",
       adLink: `/jobs/${job.publicId}`,
-      adRemoved: false,
       status: entityStatus(job),
     };
   } else if (adEntityType === ENTITY_TYPE_CARS) {
@@ -195,7 +190,6 @@ export async function getOrCreateChat(
       thumbnailUrl: car.images?.[0]?.url ?? "",
       price: car.price,
       adLink: `/vehicles/cars/${car.publicId}`,
-      adRemoved: false,
       status: entityStatus(car),
     };
   } else if (adEntityType === ENTITY_TYPE_OFF_ROAD) {
@@ -219,7 +213,6 @@ export async function getOrCreateChat(
       thumbnailUrl: offRoadVehicle.images?.[0]?.url ?? "",
       price: offRoadVehicle.price,
       adLink: `/vehicles/off-road/${offRoadVehicle.publicId}`,
-      adRemoved: false,
       status: entityStatus(offRoadVehicle),
     };
   } else if (adEntityType === ENTITY_TYPE_COMMERCIAL_VEHICLES) {
@@ -243,7 +236,6 @@ export async function getOrCreateChat(
       thumbnailUrl: commercialVehicle.images?.[0]?.url ?? "",
       price: commercialVehicle.price,
       adLink: `/vehicles/commercial-vehicles/${commercialVehicle.publicId}`,
-      adRemoved: false,
       status: entityStatus(commercialVehicle),
     };
   } else {

@@ -19,7 +19,6 @@ export interface AdSnapshot {
   thumbnailUrl: string;
   price?: number;
   adLink: string;
-  adRemoved: boolean;
   /** Status of the ad when the conversation was created (always present in API; normalized from DB). */
   status: AdSnapshotStatus;
 }

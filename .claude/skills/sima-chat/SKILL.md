@@ -96,7 +96,7 @@ interface IAdSnapshot {
   thumbnailUrl: string; // Ad thumbnail image
   price?: number; // Ad price (optional)
   adLink: string; // Link to the ad detail page
-  adRemoved: boolean; // Whether the ad has been deleted
+  status: AdSnapshotStatus; // active | expired | archived | deleted | pending
 }
 ```
 
@@ -249,7 +249,7 @@ export async function getOrCreateChat(
     thumbnailUrl,
     price: entity.price,
     adLink,
-    adRemoved: false,
+    status: entityStatus(entity),
   };
 
   try {
