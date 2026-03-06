@@ -8,6 +8,7 @@ import LobbyCarouselSection from "@/components/LobbyCarouselSection/LobbyCarouse
 import { HomeLobby } from "./page.styles";
 import Footer from "@/components/Footer/Footer";
 
+
 export default async function Home() {
   const bannerItems = getHomeBannerItems();
   const categorySvgItems = getCategorySvgLinkItems({

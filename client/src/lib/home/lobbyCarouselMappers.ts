@@ -100,6 +100,7 @@ function formatPrice(price?: number | null): string {
 
 export function mapCar(car: SerializedCar): LobbyCarouselItemWithDate {
   return {
+    ownerId: car.user.id,
     imageUrl: firstImage(car.images),
     title: getVehicleManufacturerById(car.manufacturer)?.russianName || "",
     subtitle: getVehicleModelById(car.model, car.manufacturer)?.russianName || "",
@@ -120,6 +121,7 @@ export function mapMotorcycle(
   m: SerializedMotorcycle,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: m.user.id,
     imageUrl: firstImage(m.images),
     title: getMotorcycleManufacturerById(m.manufacturer)?.russianName || "",
     subtitle:
@@ -139,6 +141,7 @@ export function mapMotorcycle(
 
 export function mapScooter(s: SerializedScooter): LobbyCarouselItemWithDate {
   return {
+    ownerId: s.user.id,
     imageUrl: firstImage(s.images),
     title:
       getScooterManufacturerById(s.manufacturer as ScooterManufacturerId)
@@ -165,6 +168,7 @@ export function mapCommercialVehicle(
   cv: SerializedCommercialVehicle,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: cv.user.id,
     imageUrl: firstImage(cv.images),
     title:
       getCommercialVehicleManufacturerById(cv.manufacturer)?.russianName || "",
@@ -186,6 +190,7 @@ export function mapOffRoadVehicle(
   orv: SerializedOffRoadVehicle,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: orv.user.id,
     imageUrl: firstImage(orv.images),
     title: getOffRoadVehicleManufacturerById(orv.manufacturer)?.russianName || "",
     subtitle: getOffRoadVehicleModelById(orv.model, orv.manufacturer)?.russianName || "",
@@ -206,6 +211,7 @@ export function mapSpecialVehicle(
   sv: SerializedSpecialVehicle,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: sv.user.id,
     imageUrl: firstImage(sv.images),
     title: sv.title || "",
     subtitle: getSpecialVehicleCategoryById(sv.category)?.russianName || "",
@@ -226,6 +232,7 @@ export function mapVehicleAccessory(
   a: SerializedAccessory,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: a.user.id,
     imageUrl: firstImage(a.images),
     title: a.title || "",
     subtitle: getAccessoryCategoryById(a.category)?.russianName || "",
@@ -250,6 +257,7 @@ export function mapPetForSale(
   p: SerializedPetForSale,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: p.user.id,
     imageUrl: firstImage(p.images),
     title: getAnimalByIdForSale(p.animal)?.russianName || "",
     subtitle:
@@ -271,6 +279,7 @@ export function mapPetForFree(
   p: SerializedPetForFree,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: p.user.id,
     imageUrl: firstImage(p.images),
     title: getAnimalByIdForFree(p.animal)?.russianName || "",
     subtitle: getAnimalKindByIdForFree(p.kind, p.animal)?.russianName || "",
@@ -291,6 +300,7 @@ export function mapPetAccessory(
   pa: SerializedPetAccessory,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: pa.user.id,
     imageUrl: firstImage(pa.images),
     title: pa.title || "",
     subtitle: getAnimalByIdAccessory(pa.animal)?.russianName || "",
@@ -316,6 +326,7 @@ export function mapRealEstateForSale(
 ): LobbyCarouselItemWithDate {
   const kindLabel = formatPropertyKindForSale(re.propertyKind);
   return {
+    ownerId: re.user.id,
     imageUrl: firstImage(re.images),
     title: kindLabel ? `${kindLabel}, ${re.streetname}` : re.streetname || "",
     subtitle: `${re.numberOfRooms} комн., ${re.squaremeter} м²`,
@@ -337,6 +348,7 @@ export function mapRealEstateForRent(
 ): LobbyCarouselItemWithDate {
   const kindLabel = formatPropertyKindForRent(re.propertyKind);
   return {
+    ownerId: re.user.id,
     imageUrl: firstImage(re.images),
     title: kindLabel ? `${kindLabel}, ${re.streetname}` : re.streetname || "",
     subtitle: `${re.numberOfRooms} комн., ${re.squaremeter} м²`,
@@ -359,6 +371,7 @@ export function mapCommercialRealEstate(
   const dealLabel = formatDealKind(cre.dealKind);
   const propLabel = formatCommercialPropertyKind(cre.propertyKind);
   return {
+    ownerId: cre.user.id,
     imageUrl: firstImage(cre.images),
     title: `${dealLabel} — ${propLabel}`,
     subtitle: `${cre.squaremeter} м²`,
@@ -383,6 +396,7 @@ export function mapProfessionalService(
   ps: SerilizeProfessionalService,
 ): LobbyCarouselItemWithDate {
   return {
+    ownerId: ps.user.id,
     imageUrl: firstImage(ps.images),
     title: ps.category?.russianDisplayName || "",
     subtitle: ps.subCategory?.russianDisplayName || "",
@@ -404,7 +418,8 @@ export function mapProfessionalService(
 // ---------------------------------------------------------------------------
 
 export function mapYad2Item(y: SerializedYad2Item): LobbyCarouselItemWithDate {
-  return {
+  return {  
+    ownerId: y.user.id,
     imageUrl: firstImage(y.images),
     title: y.productTitle || "",
     subtitle: getYad2CategoryById(y.category)?.russianName || "",
@@ -427,6 +442,7 @@ export function mapYad2Item(y: SerializedYad2Item): LobbyCarouselItemWithDate {
 
 export function mapJob(j: SerializedJob): LobbyCarouselItemWithDate {
   return {
+    ownerId: j.user.id,
     imageUrl: firstImage(j.images),
     title: j.title || "",
     subtitle: "",
@@ -449,6 +465,7 @@ export function mapJob(j: SerializedJob): LobbyCarouselItemWithDate {
 
 export function mapOther(o: SerializedOthers): LobbyCarouselItemWithDate {
   return {
+    ownerId: o.user.id,
     imageUrl: firstImage(o.images),
     title: o.title || "",
     subtitle: "",

@@ -49,7 +49,7 @@ export interface UserNavLinkItem {
 /** User nav links (Home, Chat, Liked Ads, etc.) - placeholder hrefs where feature does not exist yet */
 const USER_NAV_LINKS: UserNavLinkItem[] = [
   { label: "Главная", href: "/", icon: HomeIcon },
-  { label: "Чат", href: "/chat", icon: ChatBubbleIcon },
+  { label: "Чат", href: "/private-zone/chat", icon: ChatBubbleIcon },
   {
     label: "Понравившиеся",
     href: "/private-area#liked",

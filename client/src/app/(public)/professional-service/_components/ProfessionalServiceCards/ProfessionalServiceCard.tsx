@@ -19,6 +19,7 @@ import { getCityById } from "@/lib/cities";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/lib/constants/entityTypes";
 import { Districts } from "@/lib/cities/types/cities.schema";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 interface ProfessionalServiceCardProps {
   service: SerilizeProfessionalService;
@@ -28,18 +29,21 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
   service,
 }) => {
   const { images, publicId, district, city, description } = service;
-
+  const { thisUserIsOwner } = useAuth();
+  const isOwner = thisUserIsOwner(service.user.id);
   return (
     <ServiceCardBox id={publicId}>
       <ServiceCard variant="surface">
-        <LikeButtonWrapper>
-          <LikeButton
-            entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
-            publicId={publicId}
-            size={18}
-            stopPropagation
-          />
-        </LikeButtonWrapper>
+        {!isOwner && (
+          <LikeButtonWrapper>
+            <LikeButton
+              entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
+              publicId={publicId}
+              size={18}
+              stopPropagation
+            />
+          </LikeButtonWrapper>
+        )}
         <ServiceCardHeader>
           <Badge size="2" color="blue" variant="soft">
             {getCityById(city, district as Districts)?.nameRussian}
@@ -51,7 +55,6 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
           <Badge size="2" color="green" variant="soft">
             {service.subCategory.russianDisplayName}
           </Badge>
-
         </ServiceCardHeader>
         <ServiceCardImages>
           {images.length === 1 ? (
@@ -70,8 +73,8 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
               autoplay={true}
               spaceBetween={0}
               slidesPerView={1}
-            // onSlideChange={() => console.log("slide change")}
-            // onSwiper={(swiper) => console.log(swiper)}
+              // onSlideChange={() => console.log("slide change")}
+              // onSwiper={(swiper) => console.log(swiper)}
             >
               {images.map((image) => (
                 <ServiceCardSwiperSlide key={image.uniqueName}>
@@ -94,7 +97,6 @@ const ProfessionalServiceCard: React.FC<ProfessionalServiceCardProps> = ({
             style={{ display: "block", height: "100%" }}
             as="p"
             color="gray"
-
           >
             {description}
           </Text>

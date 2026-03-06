@@ -43,7 +43,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, isActive }) => {
       .join(" ") || "User";
 
   return (
-    <Link href={`/chat/${item.publicId}`} style={{ textDecoration: "none" }}>
+    <Link href={`/private-zone/chat/${item.publicId}`} style={{ textDecoration: "none" }}>
       <ChatListItemBox $active={isActive}>
         <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "flex-start" }}>
           <ChatListItemThumbnailWrap>

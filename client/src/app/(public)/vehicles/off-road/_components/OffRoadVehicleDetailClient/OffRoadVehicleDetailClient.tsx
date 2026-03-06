@@ -144,7 +144,7 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
     const result = await getOrCreateChat(ENTITY_TYPE_OFF_ROAD, offRoadVehicle.publicId);
 
     if (result.success && result.chatId) {
-      router.push(`/chat/${result.chatId}`);
+      router.push(`/private-zone/chat/${result.chatId}`);
     } else if (!result.success && result.error) {
       setChatError(result.error);
       setChatLoading(false);

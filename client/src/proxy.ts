@@ -10,7 +10,6 @@ const protectedRoutes = [
   "/admin",
   "/api/protected",
   "/publish-ad",
-  "/chat",
   "/private-zone",
   "/professional/edit/:id",
 ];

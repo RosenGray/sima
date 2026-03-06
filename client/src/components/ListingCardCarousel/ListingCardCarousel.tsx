@@ -18,6 +18,7 @@ import {
 } from "./ListingCardCarousel.styles";
 import { getCityById, getDistrictById } from "@/lib/cities";
 import { Districts } from "@/lib/cities/types/cities.schema";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 const DEFAULT_ARIA_LABEL = "Карточки объявлений";
 
@@ -30,6 +31,7 @@ export function ListingCardCarousel({
   const swiperRef = useRef<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(items.length <= 1);
+  const { thisUserIsOwner } = useAuth();
 
   if (items.length === 0) return null;
 
@@ -81,6 +83,7 @@ export function ListingCardCarousel({
         {items.map((item: ListingCardCarouselItem, index: number) => {
           const city = getCityById(item.city, item.district as Districts);
           const district = getDistrictById(item.district as Districts);
+          const isOwner = thisUserIsOwner(item.ownerId);
           return (
             <SwiperSlide
               key={`${item.href}-${index}`}
@@ -95,6 +98,7 @@ export function ListingCardCarousel({
                   price={item.price}
                   district={district?.name || ""}
                   description={item.description}
+                  isOwner={isOwner}
                   likeButton={{
                     entityType: item.likeButton?.entityType,
                     publicId: item.likeButton?.publicId,

@@ -94,3 +94,7 @@ export const thisUserIsOwner = async ( ownerId: string) => {
   if (!user) return false;
   return user.id === ownerId;
 }
+
+export const thisUserIsOwnerNotAsync = (userId: string, ownerId: string) => {
+  return userId === ownerId;
+}

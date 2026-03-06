@@ -10,7 +10,6 @@ export const ChatPageContainer = styled(Box)`
   margin: 0 auto;
   height: 100%;
   padding: 0;
-  border: 10px solid green;
   width: 95%;
   max-height: 95%;
   margin:  auto;

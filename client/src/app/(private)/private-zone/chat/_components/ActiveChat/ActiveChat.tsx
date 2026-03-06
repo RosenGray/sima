@@ -107,7 +107,7 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
     setDeleting(false);
     setMenuOpen(false);
     if (result.success) {
-      router.push("/chat");
+      router.push("/private-zone/chat");
     }
   }, [chat.publicId, deleting, router]);
 
