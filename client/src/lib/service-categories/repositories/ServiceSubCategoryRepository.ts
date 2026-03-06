@@ -3,8 +3,12 @@ import { ServiceCategory } from "../models/ServiceCategory";
 import serviceSubCategoriesData from "./professionals.servicesubcategories.json";
 import serviceCategoriesData from "./professionals.servicecategories.json";
 import connectDB from "@/lib/mongo/mongodb";
-import { unstable_cache } from "next/cache";
 import { SerializeServiceSubCategory } from "../types/service-categories.types";
+
+// Module-level in-memory cache — replaces unstable_cache which uses TransformStream
+// internally and causes controller[kState].transformAlgorithm errors on Node 20 + Next 16.
+let _cache: { data: SerializeServiceSubCategory[]; expiresAt: number } | null = null;
+const CACHE_TTL_MS = 3600 * 1000; // 1 hour
 
 // Internal function that performs the actual database operations
 async function _getAllSubCategories(): Promise<SerializeServiceSubCategory[]> {
@@ -113,22 +117,19 @@ async function _getAllSubCategories(): Promise<SerializeServiceSubCategory[]> {
 }
 
 export class ServiceSubCategoryRepository {
-  // Cached version of getAll - caches for 1 hour (3600 seconds)
   async getAll(): Promise<SerializeServiceSubCategory[]> {
-    // In development, skip cache to always get fresh data
     if (process.env.NODE_ENV === "development") {
       return _getAllSubCategories();
     }
 
-    const cachedGetAll = unstable_cache(
-      _getAllSubCategories,
-      ["service-subcategories"], // cache key
-      {
-        revalidate: 3600, // 1 hour in production
-        tags: ["service-subcategories"],
-      }
-    );
-    return cachedGetAll();
+    const now = Date.now();
+    if (_cache && now < _cache.expiresAt) {
+      return _cache.data;
+    }
+
+    const data = await _getAllSubCategories();
+    _cache = { data, expiresAt: now + CACHE_TTL_MS };
+    return data;
   }
 }
 
