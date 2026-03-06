@@ -990,6 +990,7 @@ Use this checklist when implementing a new category within a section:
   - Verify user authentication and ownership
   - Delete images from storage
   - Delete entity via repository
+  - **If the section has chat:** After deleting the entity, call `chatRepository.markAdSnapshotStatus(ENTITY_TYPE_XXX, entityPublicId, "deleted")` so linked conversations show "Объявление удалено владельцем" in chat list/detail (see sima-chat skill: markAdSnapshotStatus)
   - Create version with redirect
 
 - [ ] **3.4** Create actions index (`lib/{section}/{category}/actions/index.ts`)
