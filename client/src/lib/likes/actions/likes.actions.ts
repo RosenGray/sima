@@ -5,6 +5,7 @@ import connectDB from "@/lib/mongo/mongodb";
 import { AdLike } from "../models/AdLike";
 import mongoose from "mongoose";
 import { EntityType } from "@/lib/constants/entityTypes";
+import { getAdOwnerId } from "../getAdOwnerId";
 
 export type LikeActionResult =
   | { success: true; liked: boolean }
@@ -83,9 +84,17 @@ export async function mergeGuestLikes(
       return { success: true, likedIds: [] };
     }
 
+    const publicIdsToMerge: string[] = [];
+    for (const publicId of publicIds) {
+      const ownerId = await getAdOwnerId(entityType, publicId);
+      if (ownerId !== null && ownerId !== user.id) {
+        publicIdsToMerge.push(publicId);
+      }
+    }
+
     await connectDB();
     const userId = new mongoose.Types.ObjectId(user.id);
-    const bulkOps = publicIds.map((entityPublicId) => ({
+    const bulkOps = publicIdsToMerge.map((entityPublicId) => ({
       updateOne: {
         filter: { user: userId, entityType, entityPublicId },
         update: { $setOnInsert: { user: userId, entityType, entityPublicId } },
