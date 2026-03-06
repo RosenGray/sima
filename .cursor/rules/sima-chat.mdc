@@ -286,6 +286,12 @@ async deleteConversationForUser(
 }
 ```
 
+#### markAdSnapshotStatus (entity delete action)
+
+**Purpose**: Update `adSnapshot.status` for all conversations linked to an ad. Call from the **entity's delete action** (e.g. `deleteProfessionalServiceAd`, `deleteCarAd`) after deleting the entity so chat list/detail show "Объявление удалено владельцем".
+
+**Rule**: For every entity type that has chat, the delete action must call `chatRepository.markAdSnapshotStatus(ENTITY_TYPE_XXX, entityPublicId, "deleted")` after the entity record is removed. See `lib/professionals/professional-service/actions/deleteProfessionalServiceAd.ts` and sima-chat skill (markAdSnapshotStatus).
+
 ## Frontend Implementation
 
 ### Page Structure

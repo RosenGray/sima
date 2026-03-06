@@ -30,7 +30,7 @@ The chat system consists of:
    - `Message`: Stores individual messages within conversations
 
 2. **Repository Layer**:
-   - `ChatRepository`: Handles all database operations for conversations and messages
+   - `ChatRepository`: Handles all database operations for conversations and messages, including `markAdSnapshotStatus` for updating ad snapshot status when an entity is deleted (or archived/expired)
 
 3. **Server Actions**:
    - `getOrCreateChat`: Creates or retrieves a conversation for an ad
@@ -752,6 +752,36 @@ async createMessage(
   };
 }
 ```
+
+### markAdSnapshotStatus
+
+Updates `adSnapshot.status` for all conversations linked to a given ad. Call this from the **entity's delete action** (and optionally from archive/expire flows) so the chat list and active chat show the correct status (e.g. "Объявление удалено владельцем" when status is `"deleted"`).
+
+```typescript
+async markAdSnapshotStatus(
+  entityType: EntityType,
+  entityPublicId: string,
+  status: AdSnapshotStatus  // "active" | "expired" | "archived" | "deleted" | "pending"
+): Promise<number>
+```
+
+**When to use:** In every entity type that has chat support, the delete action (e.g. `deleteProfessionalServiceAd`, `deleteCarAd`) must call this **after** deleting the entity record (and optionally after deleting images), so that any existing conversations about that ad show the deleted state in the chat UI.
+
+**Example (in delete action):**
+
+```typescript
+import { chatRepository } from "@/lib/chat/repository/ChatRepository";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/lib/constants/entityTypes";
+
+// After deleting the entity from DB (and images from storage):
+await chatRepository.markAdSnapshotStatus(
+  ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  professionalServicePublicId,
+  "deleted"
+);
+```
+
+**Checklist for adding chat to an entity:** When adding chat to a new or existing entity type, also ensure the entity's **delete action** calls `chatRepository.markAdSnapshotStatus(ENTITY_TYPE_XXX, entityPublicId, "deleted")` after the entity is removed, so chat conversations tied to that ad display the deleted state correctly.
 
 ## Best Practices
 
