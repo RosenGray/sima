@@ -2,6 +2,7 @@
 
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { chatRepository } from "../repository/ChatRepository";
+import { notifyRecipientByEmail } from "./notifyRecipient";
 import type { SerializedMessage } from "../types/chat.types";
 
 export type SendMessageResult =
@@ -22,5 +23,6 @@ export async function sendMessage(
     return { success: false, error: "Не удалось отправить сообщение" };
   }
 
+  notifyRecipientByEmail(chatId, user.id, body).catch(console.error);
   return { success: true, message };
 }

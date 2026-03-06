@@ -5,7 +5,8 @@
       "Bash(kubectl get:*)",
       "Bash(kubectl exec:*)",
       "Bash(kubectl logs:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ]
   }
 }

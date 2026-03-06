@@ -10,6 +10,10 @@ import { getPasswordResetEmailHtml } from "@/lib/common/email/templates/password
 import { getPasswordResetSuccessEmailHtml } from "@/lib/common/email/templates/passwordResetSuccess";
 import { getDeletionWarningEmailHtml } from "@/lib/common/email/templates/deletionWarning";
 import { getAccountDeletionEmailHtml } from "@/lib/common/email/templates/accountDeletion";
+import {
+  getNewMessageEmailHtml,
+  type NewMessageEmailParams,
+} from "@/lib/common/email/templates/newMessage";
 
 // Email sending result type
 export interface EmailSendResult {
@@ -346,6 +350,42 @@ export class EmailService {
       }
     } catch (error) {
       console.error("Error sending account deletion email:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send new private message notification email
+   */
+  static async sendNewMessageNotificationEmail(
+    params: NewMessageEmailParams & { recipientEmail: string },
+    retries: number = 1
+  ): Promise<boolean> {
+    try {
+      const { recipientEmail, senderName, conversationUrl, ...rest } = params;
+      const sender = EmailService.getSender();
+      const recipient = EmailService.getRecipient(recipientEmail);
+      const html = getNewMessageEmailHtml({ senderName, conversationUrl, ...rest });
+      const text = `${senderName} написал(а) вам сообщение. Откройте переписку: ${conversationUrl}`;
+
+      const emailParams = new EmailParams()
+        .setFrom(sender)
+        .setTo([recipient])
+        .setReplyTo(sender)
+        .setSubject(`Новое сообщение от ${senderName} - Sima`)
+        .setHtml(html)
+        .setText(text);
+
+      const result = await EmailService.sendEmailWithRetry(emailParams, retries);
+
+      if (result.success) {
+        console.log("New message notification email sent:", result.messageId);
+        return true;
+      } else {
+        throw new Error(result.error || "Failed to send new message notification email");
+      }
+    } catch (error) {
+      console.error("Error sending new message notification email:", error);
       throw error;
     }
   }

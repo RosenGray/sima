@@ -320,6 +320,55 @@ export class ChatRepository {
     return true;
   }
 
+  async getNotificationContext(
+    conversationPublicId: string,
+    senderId: string
+  ): Promise<{
+    recipientEmail: string;
+    recipientFirstName: string;
+    senderFirstName: string;
+    senderLastName: string;
+    adTitle: string;
+    conversationPublicId: string;
+  } | null> {
+    await connectDB();
+
+    const conv = (await Conversation.findOne({
+      publicId: sanitize(conversationPublicId),
+    }).lean()) as unknown as LeanConversation | null;
+
+    if (!conv) return null;
+
+    const recipientId = conv.participants.find(
+      (p) => p.toString() !== senderId
+    );
+    if (!recipientId) return null;
+
+    const users = await User.find({
+      _id: { $in: [toObjectId(sanitize(senderId)), recipientId] },
+    }).lean();
+
+    const senderDoc = users.find((u) => (u._id as mongoose.Types.ObjectId).toString() === senderId);
+    const recipientDoc = users.find((u) => (u._id as mongoose.Types.ObjectId).toString() === recipientId.toString());
+
+    if (!senderDoc || !recipientDoc) return null;
+
+    const sender = senderDoc as Record<string, unknown>;
+    const recipient = recipientDoc as Record<string, unknown>;
+
+    const recipientEmail = recipient.email as string | undefined;
+    if (!recipientEmail) return null;
+
+    return {
+      recipientEmail,
+      recipientFirstName: (recipient.firstName as string) ?? "",
+      senderFirstName: (sender.firstName as string) ?? "",
+      senderLastName: (sender.lastName as string) ?? "",
+      adTitle: conv.adSnapshot.title,
+      conversationPublicId: conv.publicId,
+    };
+  }
+
   /**
    * Updates adSnapshot.status for all conversations linked to the given ad.
    * Use when an ad is deleted (or status changes) so chat UI can show the correct status.
