@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import connectDB from "@/lib/mongo/mongodb";
 
 const RATE_LIMITS_COLLECTION = "rate_limits";
-const TTL_CLEANUP_SECONDS = 60 * 60 * 24 * 7; // 7 days - just garbage collection 
+const TTL_CLEANUP_SECONDS = 60 * 60 * 24 * 7; // 7 days - just garbage collection
 let indexEnsured = false;
 
 export interface RateLimitOptions {
@@ -23,14 +23,9 @@ export async function checkRateLimit({
   limit,
   windowSeconds,
 }: RateLimitOptions): Promise<RateLimitResult> {
-  console.log("[checkRateLimit] START", { action, limit, windowSeconds });
-
-  console.log("[checkRateLimit] calling connectDB...");
   await connectDB();
-  console.log("[checkRateLimit] connectDB done");
 
   const collection = mongoose.connection.collection(RATE_LIMITS_COLLECTION);
-  console.log("[checkRateLimit] got collection");
 
   if (!indexEnsured) {
     try {
@@ -42,7 +37,6 @@ export async function checkRateLimit({
       const mongoError = e as { code?: number };
       if (mongoError?.code === 85) {
         // IndexOptionsConflict — TTL value changed in code, drop and recreate
-        console.warn("[checkRateLimit] TTL mismatch, dropping and recreating index...");
         await collection.dropIndex("windowStart_1");
         await collection.createIndex(
           { windowStart: 1 },
@@ -53,25 +47,20 @@ export async function checkRateLimit({
       }
     }
     indexEnsured = true;
-    console.log("[checkRateLimit] ✓ TTL index ensured");
   }
 
   const windowStart = new Date(Date.now() - windowSeconds * 1000);
-  console.log("[checkRateLimit] checking existing record...");
 
   const existing = await collection.findOne({
     key,
     action,
     windowStart: { $gte: windowStart },
   });
-  console.log("[checkRateLimit] existing record:", existing ? { count: existing.count } : null);
 
   if (existing && existing.count >= limit) {
-    console.log("[checkRateLimit] rate limit exceeded, returning not allowed");
     return { allowed: false, remaining: 0 };
   }
 
-  console.log("[checkRateLimit] calling findOneAndUpdate...");
   const result = await collection.findOneAndUpdate(
     {
       key,
@@ -90,10 +79,8 @@ export async function checkRateLimit({
       returnDocument: "after",
     },
   );
-  console.log("[checkRateLimit] findOneAndUpdate done, result count:", result?.count);
 
   const count = result?.count ?? 1;
 
-  console.log("[checkRateLimit] END, returning allowed:", true, "remaining:", limit - count);
   return { allowed: true, remaining: limit - count };
 }
