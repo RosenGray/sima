@@ -3,6 +3,7 @@ import type { ListingCardProps } from "@/components/ListingCard/ListingCard.type
 /** Card data + href for carousel slide (each card is a link). */
 export type ListingCardCarouselItem = ListingCardProps & {
   href: string;
+  ownerId: string;
 };
 
 export interface ListingCardCarouselProps {

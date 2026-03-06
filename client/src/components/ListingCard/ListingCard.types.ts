@@ -13,5 +13,6 @@ export interface ListingCardProps {
   city: string;
   district: string;
   price?: string;
+  isOwner?: boolean;
   likeButton: ListingCardLikeButton;
 }

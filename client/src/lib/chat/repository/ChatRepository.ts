@@ -7,6 +7,7 @@ import { Message } from "../models/Message";
 import { User } from "@/lib/auth/models/User";
 import type {
   AdSnapshot,
+  AdSnapshotStatus,
   SerializedConversationListItem,
   SerializedConversationWithMessages,
   SerializedMessage,
@@ -96,7 +97,7 @@ export class ChatRepository {
           thumbnailUrl: adSnapshot.thumbnailUrl,
           price: adSnapshot.price,
           adLink: adSnapshot.adLink,
-          adRemoved: adSnapshot.adRemoved ?? false,
+          status: adSnapshot.status ?? "active",
         },
         deletedByUserIds: [],
       });
@@ -150,7 +151,15 @@ export class ChatRepository {
       list.push({
         publicId: c.publicId,
         otherParticipant: serializedUser,
-        adSnapshot: c.adSnapshot as AdSnapshot,
+        adSnapshot: {
+          entityType: c.adSnapshot.entityType,
+          entityPublicId: c.adSnapshot.entityPublicId,
+          title: c.adSnapshot.title,
+          thumbnailUrl: c.adSnapshot.thumbnailUrl,
+          price: c.adSnapshot.price,
+          adLink: c.adSnapshot.adLink,
+          status: c.adSnapshot?.status ?? "active",
+        },
         lastMessageSnippet: lastMessage
           ? String(lastMessage.body).slice(0, 80)
           : undefined,
@@ -212,7 +221,15 @@ export class ChatRepository {
     return {
       publicId: conv.publicId,
       otherParticipant: serializedUser,
-      adSnapshot: conv.adSnapshot as AdSnapshot,
+      adSnapshot: {
+        entityType: conv.adSnapshot.entityType,
+        entityPublicId: conv.adSnapshot.entityPublicId,
+        title: conv.adSnapshot.title,
+        thumbnailUrl: conv.adSnapshot.thumbnailUrl,
+        price: conv.adSnapshot.price,
+        adLink: conv.adSnapshot.adLink,
+        status: conv.adSnapshot?.status ?? "active",
+      } as AdSnapshot,
       messages: serializedMessages,
     };
   }
@@ -301,6 +318,28 @@ export class ChatRepository {
     await Message.deleteMany({ conversation: conv._id });
     await Conversation.deleteOne({ _id: conv._id });
     return true;
+  }
+
+  /**
+   * Updates adSnapshot.status for all conversations linked to the given ad.
+   * Use when an ad is deleted (or status changes) so chat UI can show the correct status.
+   */
+  async markAdSnapshotStatus(
+    entityType: EntityType,
+    entityPublicId: string,
+    status: AdSnapshotStatus
+  ): Promise<number> {
+    await connectDB();
+
+    const result = await Conversation.updateMany(
+      {
+        "adSnapshot.entityType": sanitize(entityType),
+        "adSnapshot.entityPublicId": sanitize(entityPublicId),
+      },
+      { $set: { "adSnapshot.status": status } }
+    );
+
+    return result.modifiedCount;
   }
 }
 

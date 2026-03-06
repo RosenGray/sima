@@ -74,7 +74,7 @@ const ChatClient: React.FC<ChatClientProps> = ({
             <>
               <ChatBackBar align="center" gap="2">
                 <Button size="1" variant="ghost" asChild>
-                  <Link href="/chat">
+                  <Link href="/private-zone/chat">
                     <ArrowLeftIcon />
                     К списку чатов
                   </Link>

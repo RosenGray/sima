@@ -114,3 +114,31 @@ export const InputStripe = styled(Flex)`
   gap: var(--space-3);
   background: var(--color-background);
 `;
+
+/** Wraps ad strip or message area when status is ghost/deleted (grayed-out). */
+export const ArchivedContentWrap = styled(Box)`
+  filter: grayscale(1);
+  opacity: 0.85;
+`;
+
+/** Deleted ad strip: no thumbnail, status text + grayed title. */
+export const AdSubHeaderDeleted = styled(Flex)`
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--gray-6);
+  flex-shrink: 0;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: var(--gray-2);
+  flex-direction: column;
+`;
+
+export const AdSubHeaderDeletedStatus = styled(Box)`
+  font-size: 11px;
+  color: var(--gray-11);
+  line-height: 1.2;
+`;
+
+export const AdSubHeaderDeletedTitle = styled(Box)`
+  color: var(--gray-11);
+  font-size: var(--font-size-2);
+`;

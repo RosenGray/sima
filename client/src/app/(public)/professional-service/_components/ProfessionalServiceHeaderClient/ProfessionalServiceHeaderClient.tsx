@@ -33,11 +33,9 @@ const getSortTitle = (sort: string | undefined, sortOptions: SortOption[]) => {
   return option.label;
 };
 
-const ProfessionalServiceHeaderClient: FC<ProfessionalServiceHeaderClientProps> = ({
-  totalCount,
-  initialSort,
-  sortOptions,
-}) => {
+const ProfessionalServiceHeaderClient: FC<
+  ProfessionalServiceHeaderClientProps
+> = ({ totalCount, initialSort, sortOptions }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -49,7 +47,7 @@ const ProfessionalServiceHeaderClient: FC<ProfessionalServiceHeaderClientProps> 
   // Keep title derived from local state for instant UI updates inside the dialog.
   const sortTitle = useMemo(
     () => getSortTitle(sort, sortOptions),
-    [sort, sortOptions]
+    [sort, sortOptions],
   );
 
   const handleSortChange = useCallback(
@@ -60,7 +58,7 @@ const ProfessionalServiceHeaderClient: FC<ProfessionalServiceHeaderClientProps> 
       params.set("page", "1");
       router.replace(`${pathname}?${params.toString()}`);
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   const handleViewChange = useCallback(
@@ -70,7 +68,7 @@ const ProfessionalServiceHeaderClient: FC<ProfessionalServiceHeaderClientProps> 
       params.set("page", "1");
       router.replace(`${pathname}?${params.toString()}`);
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   return (
@@ -82,8 +80,12 @@ const ProfessionalServiceHeaderClient: FC<ProfessionalServiceHeaderClientProps> 
         </Text>
       </Box>
 
-      <Flex gap="2" align="center" wrap="wrap">
-        <Flex gap="1" align="center">
+      <Flex
+        gap="2"
+        align="center"
+        wrap="wrap"
+      >
+        <Flex gap="3" align="center">
           <IconButton
             size="2"
             variant={currentView === "list" ? "soft" : "ghost"}
@@ -91,6 +93,7 @@ const ProfessionalServiceHeaderClient: FC<ProfessionalServiceHeaderClientProps> 
             onClick={() => handleViewChange("list")}
             aria-label="Список"
             aria-pressed={currentView === "list"}
+            style={{ cursor: "pointer" }}
           >
             <ListBulletIcon width={18} height={18} />
           </IconButton>
@@ -101,24 +104,25 @@ const ProfessionalServiceHeaderClient: FC<ProfessionalServiceHeaderClientProps> 
             onClick={() => handleViewChange("grid")}
             aria-label="Сетка"
             aria-pressed={currentView === "grid"}
+            style={{ cursor: "pointer" }}
           >
             <ViewGridIcon width={18} height={18} />
           </IconButton>
         </Flex>
         <DialogPrimitiveOnMobileStickyButton
-        buttonVariant="ghost"
-        titleIsVisible={true}
-        title={sortTitle}
-        subtitle="Сортировка по"
-        subtitleIsVisible={true}
-        showOverlay={false}
-      >
-        <SortFilters
-          currentSort={sort}
-          sortOptions={sortOptions}
-          onSortChange={handleSortChange}
-        />
-      </DialogPrimitiveOnMobileStickyButton>
+          buttonVariant="ghost"
+          titleIsVisible={true}
+          title={sortTitle}
+          subtitle="Сортировка по"
+          subtitleIsVisible={true}
+          showOverlay={false}
+        >
+          <SortFilters
+            currentSort={sort}
+            sortOptions={sortOptions}
+            onSortChange={handleSortChange}
+          />
+        </DialogPrimitiveOnMobileStickyButton>
       </Flex>
     </Header>
   );

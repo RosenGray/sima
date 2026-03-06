@@ -22,35 +22,48 @@ The existing likes infrastructure (LikeButton, LikesProvider, AdLike model, serv
 
 Entity type constants and the `EntityType` type live in `client/src/lib/constants/entityTypes.ts`. For a new section, add the constant there (e.g. `ENTITY_TYPE_CARS = "vehicles-cars"`), then use it in `LikeButton`, storage helpers, and server actions. Server actions and the `AdLike` model use `EntityType`; no separate code change is needed when adding a new constant. If your section already has a constant (e.g. `ENTITY_TYPE_PETS_FOR_SALE`), import it from `@/lib/constants/entityTypes` and use it everywhere for that section.
 
-## Step 2: Add LikeButton to listing cards
+## Step 2: Add LikeButton to listing cards (grid view)
 
 1. Open the card component for the section (e.g. `PetForSaleCard.tsx`, or `CarCard.tsx`).
-2. Import `LikeButton` and the entity type constant:
+2. Import `LikeButton`, the entity type constant, and `useAuth`:
    ```ts
    import LikeButton from "@/components/buttons/LikeButton/LikeButton";
    import { ENTITY_TYPE_XXX } from "@/lib/constants/entityTypes";
+   import { useAuth } from "@/providers/AuthProvider/AuthProvider";
    ```
-3. In the card JSX, render `LikeButton` with **`stopPropagation={true}`** (or omit; default is true) so clicking the heart does not trigger the parent `Link`.
-4. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 18).
-5. In the card styles file, add a wrapper for positioning (e.g. `LikeButtonWrapper`):
+3. **Hide for owners:** In the card, compute `const { thisUserIsOwner } = useAuth(); const isOwner = thisUserIsOwner(entity.user.id);`. Render the LikeButton (and its wrapper) only when `!isOwner`, e.g. `{!isOwner && (<LikeButtonWrapper>...</LikeButtonWrapper>)}`.
+4. In the card JSX, render `LikeButton` with **`stopPropagation={true}`** (or omit; default is true) so clicking the heart does not trigger the parent `Link`.
+5. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 18).
+6. In the card styles file, add a wrapper for positioning (e.g. `LikeButtonWrapper`):
    - Position absolute, top-right (e.g. `top: var(--space-2); right: var(--space-2);`), `z-index: 1`. Give the main Card styled component `position: relative` so the wrapper positions correctly.
    - LikeButton applies `cursor: pointer` by default for clear clickability on both cards and detail pages.
-6. Place the wrapper as a **direct child of the styled Card** (e.g. first child, same level as the card header), so the button appears in the header area above the image—**not** inside the image section or overlaid on the image. See `CarCard.tsx` / `CarCard.styles.ts` for the pattern.
+7. Place the wrapper as a **direct child of the styled Card** (e.g. first child, same level as the card header), so the button appears in the header area above the image—**not** inside the image section or overlaid on the image. See `CarCard.tsx` / `CarCard.styles.ts` for the pattern.
 
 **Important:** The parent Cards component should wrap each card with `Link`; the card itself must not contain a `Link` around the whole content. The like button lives inside the card and stops propagation so only the button click is handled.
 
-Reference: `client/src/app/(public)/vehicles/cars/_components/CarCards/CarCard.tsx` and `CarCard.styles.ts` (LikeButtonWrapper as first child of card, Card with position: relative).
+Reference: `client/src/app/(public)/professional-service/_components/ProfessionalServiceCards/ProfessionalServiceCard.tsx` (owner check + LikeButton); `client/src/app/(public)/vehicles/cars/_components/CarCards/CarCard.tsx` and `CarCard.styles.ts` (LikeButtonWrapper as first child of card, Card with position: relative).
 
 ## Step 3: Add LikeButton to detail page
 
 1. Open the detail client component for the section (e.g. `PetForSaleDetailClient.tsx`, or `CarDetailClient.tsx`).
-2. Import `LikeButton`, `Flex`, and the entity type constant from `@/lib/constants/entityTypes` (same as step 2).
-3. In the header section, place the **title and LikeButton as siblings** inside a `Flex` with `align="center"` and `gap="3"` (and e.g. `style={{ flex: 1, minWidth: 0 }}`) so the button is vertically aligned and has clear spacing from the title. **Do not** nest LikeButton inside the PageTitle/Heading.
-4. Render `LikeButton` with **`stopPropagation={false}`** so normal button behavior applies (no Link).
-5. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 20).
-6. LikeButton applies `cursor: pointer` by default for clear clickability.
+2. Import `LikeButton`, `Flex`, and the entity type constant from `@/lib/constants/entityTypes` (same as step 2). The detail component should already use `useAuth()` and compute `isOwner = thisUserIsOwner(entity.user.id)` for edit/delete.
+3. **Hide for owners:** Render LikeButton only when `!isOwner`, e.g. `{!isOwner && (<LikeButton ... />)}` next to the title. Do not show the like button to the ad owner.
+4. In the header section, place the **title and LikeButton as siblings** inside a `Flex` with `align="center"` and `gap="3"` (and e.g. `style={{ flex: 1, minWidth: 0 }}`) so the button is vertically aligned and has clear spacing from the title. **Do not** nest LikeButton inside the PageTitle/Heading.
+5. Render `LikeButton` with **`stopPropagation={false}`** so normal button behavior applies (no Link).
+6. Pass `entityType={ENTITY_TYPE_XXX}`, `publicId={entity.publicId}`, and optional `size` (e.g. 20).
+7. LikeButton applies `cursor: pointer` by default for clear clickability.
 
-Reference: `client/src/app/(public)/vehicles/cars/_components/CarDetailClient/CarDetailClient.tsx` (Flex with PageTitle + LikeButton in HeaderSection).
+Reference: `client/src/app/(public)/professional-service/_components/ProfessionalServiceDetailClient/ProfessionalServiceDetailClient.tsx` (owner check + LikeButton in header); `client/src/app/(public)/vehicles/cars/_components/CarDetailClient/CarDetailClient.tsx` (Flex with PageTitle + LikeButton in HeaderSection).
+
+## Step 3a: Add LikeButton to list item (if section has list view)
+
+If the section has a list view (view toggle), the list item component (e.g. `CarListItem.tsx`, `ProfessionalServiceListItem.tsx`) also shows a LikeButton. Apply the same owner check: `const { thisUserIsOwner } = useAuth(); const isOwner = thisUserIsOwner(entity.user.id);` and render LikeButton only when `!isOwner` (e.g. `{!isOwner && (<LikeButtonWrapper><LikeButton ... stopPropagation /></LikeButtonWrapper>)}`). Use the same entity type and `publicId` as on the card; keep `stopPropagation` true so clicking like does not navigate.
+
+Reference: `client/src/app/(public)/professional-service/_components/ProfessionalServiceList/ProfessionalServiceListItem.tsx` (if it has owner check); otherwise follow the same pattern as the card.
+
+## Step 3b: Carousel cards (home/lobby)
+
+When the section’s entities appear in the home/lobby carousel, the shared `ListingCard` is used. It already hides LikeButton when `isOwner` is true (it receives `isOwner` as a prop). The carousel component `ListingCardCarousel` must pass `isOwner` per item: compute it as `thisUserIsOwner(item.ownerId)` (see `ListingCardCarousel.tsx`). Carousel item data must include `ownerId` (e.g. `entity.user.id`) in the mapper (see `client/src/lib/home/lobbyCarouselMappers.ts`). No change is needed in `ListingCard` or `ListingCardCarousel` for the owner-hide behavior; ensure new section mappers add `ownerId` and that the carousel passes `isOwner` (already implemented in `ListingCardCarousel`).
 
 ## Step 4: Guest merge for the new entity type (optional)
 
@@ -58,6 +71,7 @@ If the section should support guest likes that merge on login:
 
 1. In `LikesProvider`, the guest hydration effect reads from storage using `getLikedFromStorage(entityType)` when `user` is null; ensure the same entity type constant from `@/lib/constants/entityTypes` is used when calling `setLikedInStorage` / `removeLikedInStorage` in the toggle path for guests.
 2. The login-merge effect runs for entity types listed in `ENTITY_TYPES_WITH_GUEST_MERGE` (using constants from `@/lib/constants/entityTypes`) and merges `getLikedFromStorage(entityType)` for each. To support multiple entity types, extend that list and the merge logic to iterate over all known entity types (e.g. call `mergeGuestLikes` for each type that has guest likes in storage), then clear storage for each and update `likedIdsByEntity` from the merge results.
+3. **Owned ads are not synced:** The server action `mergeGuestLikes` uses `getAdOwnerId` to exclude guest likes for ads the logged-in user owns; those likes are never written to the DB. When adding a new entity type to guest merge, add a case for it in `client/src/lib/likes/getAdOwnerId.ts` (switch on entity type and call the section’s repository `getByPublicId`), so owned ads are correctly skipped.
 
 If you only add one new section and the product does not require guest merge for that section yet, you can defer this step; authenticated likes will still work.
 
@@ -73,11 +87,13 @@ If you only add one new section and the product does not require guest merge for
 ## Checklist
 
 - [ ] Entity type constant from `@/lib/constants/entityTypes` used for this section (add there if new).
-- [ ] LikeButton on listing card with `stopPropagation` true and wrapper for position (e.g. top-right). LikeButton uses `cursor: pointer` by default.
-- [ ] LikeButton on detail page with `stopPropagation` false. LikeButton uses `cursor: pointer` by default.
-- [ ] Same `entityType` and `publicId` used in both places.
+- [ ] LikeButton on listing card with `stopPropagation` true and wrapper for position (e.g. top-right); **shown only when `!isOwner`** (use `thisUserIsOwner(entity.user.id)` from `useAuth()`).
+- [ ] LikeButton on detail page with `stopPropagation` false; **shown only when `!isOwner`**.
+- [ ] If section has list view: LikeButton on list item with `stopPropagation` true; **shown only when `!isOwner`**.
+- [ ] If section appears in home/lobby carousel: carousel item data includes `ownerId`; `ListingCardCarousel` passes `isOwner={thisUserIsOwner(item.ownerId)}` to `ListingCard` (already done in shared component).
+- [ ] Same `entityType` and `publicId` used in card, list item (if any), and detail.
 - [ ] Layout wraps app with LikesProvider and passes initialLikedIds (already done if likes exist for another section).
-- [ ] If guest merge is required for the new section, extend merge effect in LikesProvider for the new entity type.
+- [ ] If guest merge is required for the new section, extend merge effect in LikesProvider for the new entity type and add a case in `getAdOwnerId.ts` for the new entity type (so owned ads are not synced on login).
 
 ## Pitfalls
 
@@ -90,7 +106,10 @@ If you only add one new section and the product does not require guest merge for
 - Rule: `.cursor/rules/sima-likes.mdc`
 - LikeButton: `client/src/components/buttons/LikeButton/LikeButton.tsx`
 - LikesProvider: `client/src/providers/LikesProvider/LikesProvider.tsx`
-- Cars card (header-area LikeButton): `client/src/app/(public)/vehicles/cars/_components/CarCards/CarCard.tsx` and `CarCard.styles.ts`
-- Cars detail (Flex + title + LikeButton): `client/src/app/(public)/vehicles/cars/_components/CarDetailClient/CarDetailClient.tsx`
+- Merge (excludes owned ads): `client/src/lib/likes/actions/likes.actions.ts` (`mergeGuestLikes`), `client/src/lib/likes/getAdOwnerId.ts`
+- Professional-service (owner check): `ProfessionalServiceCard.tsx`, `ProfessionalServiceDetailClient.tsx`
+- Carousel (owner check): `ListingCard.tsx` (isOwner prop), `ListingCardCarousel.tsx` (computes isOwner per item), `lobbyCarouselMappers.ts` (ownerId in item)
+- Cars card: `client/src/app/(public)/vehicles/cars/_components/CarCards/CarCard.tsx` and `CarCard.styles.ts`
+- Cars detail: `client/src/app/(public)/vehicles/cars/_components/CarDetailClient/CarDetailClient.tsx`
 - Pets for sale card: `client/src/app/(public)/pets/for-sale/_components/PetForSaleCards/PetForSaleCard.tsx` and `PetForSaleCard.styles.ts`
 - Layout: `client/src/app/layout.tsx`

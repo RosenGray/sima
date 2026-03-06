@@ -10,7 +10,13 @@ import { jobRepository } from "@/lib/jobs/repository/JobRepository";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import { offRoadVehicleRepository } from "@/lib/vehicles/off-road/repository/OffRoadVehicleRepository";
 import { commercialVehicleRepository } from "@/lib/vehicles/commercial-vehicles/repository/CommercialVehicleRepository";
-import type { AdSnapshot } from "../types/chat.types";
+import type { AdSnapshot, AdSnapshotStatus } from "../types/chat.types";
+
+/** Entity from getByPublicId may have status when the section uses ad-status; default to "active". */
+function entityStatus(entity: unknown): AdSnapshotStatus {
+  const s = (entity as { status?: AdSnapshotStatus }).status;
+  return s && ["active", "expired", "archived", "deleted", "pending"].includes(s) ? s : "active";
+}
 import {
   ENTITY_TYPE_CARS,
   ENTITY_TYPE_COMMERCIAL_VEHICLES,
@@ -74,7 +80,7 @@ export async function getOrCreateChat(
       thumbnailUrl: pet.images?.[0]?.url ?? "",
       price: pet.price,
       adLink: `/pets/for-sale/${pet.publicId}`,
-      adRemoved: false,
+      status: entityStatus(pet),
     };
   } else if (adEntityType === ENTITY_TYPE_PETS_FOR_FREE) {
     const petForFree = await petForFreeRepository.getByPublicId(adPublicId);
@@ -95,7 +101,7 @@ export async function getOrCreateChat(
       title: titleForFree,
       thumbnailUrl: petForFree.images?.[0]?.url ?? "",
       adLink: `/pets/for-free/${petForFree.publicId}`,
-      adRemoved: false,
+      status: entityStatus(petForFree),
     };
   } else if (adEntityType === ENTITY_TYPE_PETS_ACCESSORIES) {
     const accessory = await petAccessoryRepository.getByPublicId(adPublicId);
@@ -117,7 +123,7 @@ export async function getOrCreateChat(
       thumbnailUrl: accessory.images?.[0]?.url ?? "",
       price: accessory.price,
       adLink: `/pets/accessories/${accessory.publicId}`,
-      adRemoved: false,
+      status: entityStatus(accessory),
     };
   } else if (adEntityType === ENTITY_TYPE_PROFESSIONAL_SERVICE) {
     const service = await professionalServiceRepository.getByPublicId(adPublicId);
@@ -140,7 +146,7 @@ export async function getOrCreateChat(
       title,
       thumbnailUrl: service.images?.[0]?.url ?? "",
       adLink: `/professional-service/${service.publicId}`,
-      adRemoved: false,
+      status: entityStatus(service),
     };
   } else if (adEntityType === ENTITY_TYPE_JOBS) {
     const job = await jobRepository.getByPublicId(adPublicId);
@@ -161,7 +167,7 @@ export async function getOrCreateChat(
       title: jobTitle,
       thumbnailUrl: job.images?.[0]?.url ?? "",
       adLink: `/jobs/${job.publicId}`,
-      adRemoved: false,
+      status: entityStatus(job),
     };
   } else if (adEntityType === ENTITY_TYPE_CARS) {
     const car = await carRepository.getByPublicId(adPublicId);
@@ -184,7 +190,7 @@ export async function getOrCreateChat(
       thumbnailUrl: car.images?.[0]?.url ?? "",
       price: car.price,
       adLink: `/vehicles/cars/${car.publicId}`,
-      adRemoved: false,
+      status: entityStatus(car),
     };
   } else if (adEntityType === ENTITY_TYPE_OFF_ROAD) {
     const offRoadVehicle = await offRoadVehicleRepository.getByPublicId(adPublicId);
@@ -207,7 +213,7 @@ export async function getOrCreateChat(
       thumbnailUrl: offRoadVehicle.images?.[0]?.url ?? "",
       price: offRoadVehicle.price,
       adLink: `/vehicles/off-road/${offRoadVehicle.publicId}`,
-      adRemoved: false,
+      status: entityStatus(offRoadVehicle),
     };
   } else if (adEntityType === ENTITY_TYPE_COMMERCIAL_VEHICLES) {
     const commercialVehicle = await commercialVehicleRepository.getByPublicId(adPublicId);
@@ -230,7 +236,7 @@ export async function getOrCreateChat(
       thumbnailUrl: commercialVehicle.images?.[0]?.url ?? "",
       price: commercialVehicle.price,
       adLink: `/vehicles/commercial-vehicles/${commercialVehicle.publicId}`,
-      adRemoved: false,
+      status: entityStatus(commercialVehicle),
     };
   } else {
     return { success: false, error: "Этот тип объявления не поддерживается" };

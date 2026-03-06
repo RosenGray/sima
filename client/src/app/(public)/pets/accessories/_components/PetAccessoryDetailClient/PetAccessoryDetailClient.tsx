@@ -95,7 +95,7 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
     setChatError(null);
     const result = await getOrCreateChat("pets-accessories", accessory.publicId);
     if (result.success) {
-      router.push(`/chat/${result.chatId}`);
+      router.push(`/private-zone/chat/${result.chatId}`);
     } else {
       setChatError(result.error ?? null);
       setErrorModalOpen(true);

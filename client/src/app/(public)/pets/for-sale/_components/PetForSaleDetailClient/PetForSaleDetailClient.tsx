@@ -134,7 +134,7 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
     const result = await getOrCreateChat("pets-for-sale", pet.publicId);
  
     if (result.success && result.chatId) {
-      router.push(`/chat/${result.chatId}`);
+      router.push(`/private-zone/chat/${result.chatId}`);
     } else if (!result.success && result.error) {
       setChatError(result.error);
       setChatLoading(false);

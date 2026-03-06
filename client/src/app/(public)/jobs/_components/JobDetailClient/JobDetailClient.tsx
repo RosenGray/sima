@@ -80,7 +80,7 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
     const result = await getOrCreateChat("jobs", job.publicId);
 
     if (result.success && result.chatId) {
-      router.push(`/chat/${result.chatId}`);
+      router.push(`/private-zone/chat/${result.chatId}`);
     } else if (!result.success && result.error) {
       setChatError(result.error);
       setErrorModalOpen(true);

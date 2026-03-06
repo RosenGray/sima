@@ -118,7 +118,7 @@ const PetForFreeDetailClient: React.FC<PetForFreeDetailClientProps> = ({
     try {
       const result = await getOrCreateChat(ENTITY_TYPE_PETS_FOR_FREE, pet.publicId);
       if (result.success && result.chatId) {
-        router.push(`/chat/${result.chatId}`);
+        router.push(`/private-zone/chat/${result.chatId}`);
       } else if (!result.success && result.error) {
         setChatError(result.error);
         setErrorModalOpen(true);

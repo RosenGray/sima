@@ -36,7 +36,7 @@ export interface IAdSnapshot {
   thumbnailUrl: string;      // Ad thumbnail image
   price?: number;            // Optional price
   adLink: string;            // Link to ad detail page
-  adRemoved: boolean;        // Whether ad was deleted
+  status: AdSnapshotStatus; // active | expired | archived | deleted | pending — drives list ghost/tombstone
 }
 
 export interface IConversation {
@@ -286,6 +286,12 @@ async deleteConversationForUser(
 }
 ```
 
+#### markAdSnapshotStatus (entity delete action)
+
+**Purpose**: Update `adSnapshot.status` for all conversations linked to an ad. Call from the **entity's delete action** (e.g. `deleteProfessionalServiceAd`, `deleteCarAd`) after deleting the entity so chat list/detail show "Объявление удалено владельцем".
+
+**Rule**: For every entity type that has chat, the delete action must call `chatRepository.markAdSnapshotStatus(ENTITY_TYPE_XXX, entityPublicId, "deleted")` after the entity record is removed. See `lib/professionals/professional-service/actions/deleteProfessionalServiceAd.ts` and sima-chat skill (markAdSnapshotStatus).
+
 ## Frontend Implementation
 
 ### Page Structure
@@ -424,10 +430,10 @@ useEffect(() => {
 **Purpose**: Display active conversation with messages and input
 
 **Key Features**:
-- Header with participant info and context menu
-- Ad snapshot sub-header
-- Scrollable message list
-- Message input with Enter key support
+- Header with participant info and context menu (delete chat always shown and enabled)
+- Ad snapshot sub-header driven by `adSnapshot.status` (see "ActiveChat: ad status display" below)
+- Scrollable message list (grayed when ghost/deleted)
+- Message input shown only when status is active; hidden for archived/expired/pending/deleted
 - Different styling for own vs other messages
 
 **Message Input Pattern**:
@@ -494,53 +500,39 @@ const handleKeyDown = useCallback(
 </>
 ```
 
-**ChatListItem**: Individual conversation item
+**ChatListItem**: Individual conversation item. Drive display from `adSnapshot.status` only.
+
+**Display by status** (row always remains a Link to open the chat):
+
+| Status | Thumbnail | Copy |
+|--------|-----------|------|
+| `active` | Shown, normal | Title + name + price + last message snippet |
+| `archived`, `expired`, `pending` | Shown, ghost (grayed via `$ghost`) | Title + "Объявление больше недоступно" |
+| `deleted` | Not shown | Title + "Объявление удалено владельцем" |
 
 **Key Points**:
-- Wrap entire item with Link (no Link inside)
-- Show ad thumbnail, title, participant name, price
-- Display last message snippet
-- Show timestamp
-- Highlight active conversation
+- Wrap entire item with Link to `/private-zone/chat/${item.publicId}` (no Link inside)
+- Derive display mode from `item.adSnapshot.status ?? "active"`: active, ghost (archived/expired/pending), or deleted
+- For ghost: use `ChatListItemThumbnailWrap $ghost={true}` (grayscale + opacity); show `ChatListItemStatusMessage` with "Объявление больше недоступно"
+- For deleted: hide thumbnail; show title and `ChatListItemStatusMessage` with "Объявление удалено владельцем"
+- Show last message snippet only when not deleted; always show timestamp when present
+- Highlight active conversation via `$active={isActive}`
 
-```typescript
-<Link href={`/chat/${item.publicId}`} style={{ textDecoration: "none" }}>
-  <ChatListItemBox $active={isActive}>
-    <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "flex-start" }}>
-      <ChatListItemThumbnailWrap>
-        <Image
-          src={item.adSnapshot.thumbnailUrl || "/placeholder.png"}
-          alt=""
-          fill
-          style={{ objectFit: "cover" }}
-          sizes="48px"
-        />
-        {item.adSnapshot.adRemoved && (
-          <ChatListItemRemovedBadge>Снято</ChatListItemRemovedBadge>
-        )}
-      </ChatListItemThumbnailWrap>
-      <ChatListItemContent>
-        <Text size="2" weight="bold" truncate>
-          {item.adSnapshot.title}
-        </Text>
-        <Text size="1" color="gray">
-          {name} {formatPrice(item.adSnapshot.price)}
-        </Text>
-        {item.lastMessageSnippet && (
-          <Text size="1" color="gray" truncate>
-            {item.lastMessageSnippet}
-          </Text>
-        )}
-      </ChatListItemContent>
-      {item.lastMessageAt && (
-        <Text size="1" color="gray" style={{ flexShrink: 0 }}>
-          {formatDate(item.lastMessageAt)}
-        </Text>
-      )}
-    </div>
-  </ChatListItemBox>
-</Link>
-```
+### ActiveChat (chat detail): ad status display
+
+On the chat detail view (`/private-zone/chat/[id]`), drive UI from `chat.adSnapshot.status` using the same `getDisplayMode(status)` as the list (active | ghost | deleted; ghost = archived, expired, pending).
+
+| Status group | Ad strip | Messages | Input bar | Delete chat |
+|--------------|----------|----------|-----------|--------------|
+| **active** | Thumbnail + title + price + "К объявлению" | Normal | Shown | Shown |
+| **ghost** | Grayed strip; no "К объявлению" | Grayed | Hidden | Shown |
+| **deleted** | No thumbnail; "Объявление удалено владельцем" + grayed title; no link | Grayed | Hidden | Shown |
+
+- Header and delete-chat menu: always visible and enabled.
+- Ad strip: deleted → `AdSubHeaderDeleted`; ghost → `ArchivedContentWrap` + ad strip without "К объявлению"; active → full strip with link.
+- Messages: wrap in `ArchivedContentWrap` when ghost or deleted.
+- `InputStripe`: render only when `displayMode === "active"`.
+- Styles: `ArchivedContentWrap`, `AdSubHeaderDeleted`, `AdSubHeaderDeletedStatus`, `AdSubHeaderDeletedTitle`.
 
 ## Styling Guidelines
 
@@ -750,7 +742,7 @@ export async function getOrCreateChat(
     thumbnailUrl,
     price: entity.price,
     adLink,
-    adRemoved: false,
+    status: entityStatus(entity),
   };
 
   try {

@@ -36,6 +36,7 @@ Listing pages can offer two view modes: **grid** (cards, default) and **list** (
 - **Toggle UI:** Two icon buttons in the same header row as sort (or other controls):
   - List: `ListBulletIcon` or `ViewHorizontalIcon`; `aria-label="Список"`; active state `variant="soft"` and `color="blue"`.
   - Grid: `ViewGridIcon`; `aria-label="Сетка"`; same active state pattern.
+  - Add `style={{ cursor: "pointer" }}` to both IconButtons for clear clickability.
   - **Note:** Radix UI `IconButton` does not accept `color="accent"`; use `"blue"` (or another valid theme color) for the active view.
 - **Handler:** `handleViewChange(nextView)` builds `URLSearchParams` from current `searchParams`, sets `view` and `page` to `"1"`, then `router.replace(pathname + "?" + params.toString())`.
 
@@ -46,7 +47,7 @@ Listing pages can offer two view modes: **grid** (cards, default) and **list** (
 ### List item
 
 - **Layout:** One row per item: image section (left or right, section-specific) + details section. On small screens: stack (image on top, details below) using `direction={{ initial: "column", sm: "row" }}` or media queries in styled-components.
-- **Content:** Same as card: LikeButton (with `stopPropagation`), title, subtitle, price/status, badges. Reuse the same formatting helpers and entity type constant as the card.
+- **Content:** Same as card: LikeButton (with `stopPropagation`), title, subtitle, price/status, badges. Reuse the same formatting helpers and entity type constant as the card. **Hide LikeButton for owners:** show LikeButton only when `!isOwner` (e.g. `const isOwner = thisUserIsOwner(entity.user.id)` from `useAuth()`, then `{!isOwner && (<LikeButton ... />)}`). See sima-likes rule.
 - **Image:** First image only for list; container with fixed height and `position: relative` for Next.js `Image` with `fill` and `objectFit: "cover"`.
 - **Styles:** Styled components extending Radix `Box`/`Card`/`Flex`; use `var(--radius-*)`, `var(--space-*)`, `var(--gray-*)`; `"use client"` in `.styles.ts` files.
 

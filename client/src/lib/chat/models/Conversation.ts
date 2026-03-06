@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import "@/lib/auth/models/User";
 import { EntityType } from "@/lib/constants/entityTypes";
+import { AD_SNAPSHOT_STATUSES, type AdSnapshotStatus } from "../types/chat.types";
 
 export interface IAdSnapshot {
   entityType: EntityType;
@@ -10,7 +11,8 @@ export interface IAdSnapshot {
   thumbnailUrl: string;
   price?: number;
   adLink: string;
-  adRemoved: boolean;
+  /** Status of the ad when the conversation was created. */
+  status?: AdSnapshotStatus;
 }
 
 export interface IConversation {
@@ -33,7 +35,12 @@ const adSnapshotSchema = new mongoose.Schema<IAdSnapshot>(
     thumbnailUrl: { type: String, required: true },
     price: { type: Number, required: false },
     adLink: { type: String, required: true },
-    adRemoved: { type: Boolean, required: true, default: false },
+    status: {
+      type: String,
+      enum: AD_SNAPSHOT_STATUSES,
+      default: "active",
+      required: false,
+    },
   },
   { _id: false }
 );

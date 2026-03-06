@@ -84,7 +84,7 @@ const ProfessionalServiceDetailClient: React.FC<
     const result = await getOrCreateChat("professional-service", service.publicId);
 
     if (result.success && result.chatId) {
-      router.push(`/chat/${result.chatId}`);
+      router.push(`/private-zone/chat/${result.chatId}`);
     } else if (!result.success && result.error) {
       setChatError(result.error);
       setChatLoading(false);
@@ -160,12 +160,14 @@ const ProfessionalServiceDetailClient: React.FC<
           <PageTitle size="8" weight="bold">
             {subCategory.russianDisplayName}
           </PageTitle>
-          <LikeButton
-            entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
-            publicId={publicId}
-            size={20}
-            stopPropagation={false}
-          />
+          {!isOwner && (
+            <LikeButton
+              entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
+              publicId={publicId}
+              size={20}
+              stopPropagation={false}
+            />
+          )}
           {renderChatButton()}
         </Flex>
         {isOwner && (

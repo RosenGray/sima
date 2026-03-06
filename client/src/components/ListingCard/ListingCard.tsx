@@ -20,6 +20,7 @@ import {
 } from "./ListingCard.styles";
 
 const ListingCard: React.FC<ListingCardProps> = ({
+  isOwner,
   imageUrl,
   title,
   subtitle,
@@ -29,10 +30,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
   price,
   likeButton,
 }) => {
+
   return (
     <ListingCardBox>
       <ListingCardStyled variant="surface">
         <ListingCardImageBlock>
+          {!isOwner && (
             <LikeButtonWrapper>
               <LikeButton
                 entityType={likeButton.entityType}
@@ -41,7 +44,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 stopPropagation
               />
             </LikeButtonWrapper>
-
+          )}
           <ListingCardImageContainer>
             <Image
               src={imageUrl}

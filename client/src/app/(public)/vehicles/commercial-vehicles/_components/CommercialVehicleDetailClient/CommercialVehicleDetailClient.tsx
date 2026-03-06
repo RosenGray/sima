@@ -104,7 +104,7 @@ const CommercialVehicleDetailClient: React.FC<CommercialVehicleDetailClientProps
     const result = await getOrCreateChat(ENTITY_TYPE_COMMERCIAL_VEHICLES, commercialVehicle.publicId);
 
     if (result.success && result.chatId) {
-      router.push(`/chat/${result.chatId}`);
+      router.push(`/private-zone/chat/${result.chatId}`);
     } else if (!result.success && result.error) {
       setChatError(result.error);
       setChatLoading(false);
