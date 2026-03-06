@@ -1,15 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find /Users/vladislaviokhim/Desktop/archive/sima/client/src/app/api -name \"route.ts\" -exec grep -l \"runtime\" {} ;)",
-      "Bash(npm run build)",
-      "Bash(kubectl exec -it client-depl-6f87ccd6cc-f5zpb -- /bin/sh)",
-      "Bash(kubectl logs client-depl-64ffc45bf9-kjnqk --tail=100)",
-      "Bash(kubectl exec client-depl-54cf94fb98-slkwd -- ls -la /app/.next/BUILD_ID)",
-      "Bash(kubectl exec client-depl-54cf94fb98-slkwd -- find /app/.next -name \"*build*\" -o -name \"*BUILD*\" -type f)",
-      "Bash(kubectl exec client-depl-54cf94fb98-slkwd -- cat /app/.next/BUILD_ID)"
-    ],
-    "deny": [],
-    "ask": []
+      "Bash(python3:*)",
+      "Bash(kubectl get:*)",
+      "Bash(kubectl exec:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(grep:*)"
+    ]
   }
 }

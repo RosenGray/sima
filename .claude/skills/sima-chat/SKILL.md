@@ -30,7 +30,7 @@ The chat system consists of:
    - `Message`: Stores individual messages within conversations
 
 2. **Repository Layer**:
-   - `ChatRepository`: Handles all database operations for conversations and messages
+   - `ChatRepository`: Handles all database operations for conversations and messages, including `markAdSnapshotStatus` for updating ad snapshot status when an entity is deleted (or archived/expired)
 
 3. **Server Actions**:
    - `getOrCreateChat`: Creates or retrieves a conversation for an ad
@@ -96,7 +96,7 @@ interface IAdSnapshot {
   thumbnailUrl: string; // Ad thumbnail image
   price?: number; // Ad price (optional)
   adLink: string; // Link to the ad detail page
-  status: AdSnapshotStatus; // active | expired | archived | deleted | pending
+  status: AdSnapshotStatus; // active | expired | archived | deleted | pending — drives list ghost/tombstone UI
 }
 ```
 
@@ -520,6 +520,23 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
 };
 ```
 
+### Chat list: ad status display (ghost / tombstone)
+
+On the **conversation list** (`/chat` only; not the active chat view), each row shows the ad snapshot. Drive display from `adSnapshot.status` only.
+
+| Status | Thumbnail | Copy | Row clickable |
+|--------|-----------|------|----------------|
+| `active` | Shown, normal | Title + name + price | Yes (to open chat) |
+| `archived`, `expired`, `pending` | Shown, ghost (grayed) | "Объявление больше недоступно" | Yes |
+| `deleted` | Not shown | Title + "Объявление удалено владельцем" | Yes |
+
+- **Active:** Normal layout (thumbnail, title, participant name, price, last message snippet, date).
+- **Ghost (archived/expired/pending):** Same layout; thumbnail uses ghost styling (e.g. `filter: grayscale(1); opacity: 0.7` via `ChatListItemThumbnailWrap` with `$ghost`). Show status message "Объявление больше недоступно" instead of name/price line.
+- **Deleted:** Hide thumbnail. Show only title and "Объявление удалено владельцем"; optionally keep last message date on the right.
+- The row always remains a single `Link` to `/private-zone/chat/${item.publicId}` so the user can still open the conversation.
+
+Use Russian copy to match the rest of the app. Styled components: `ChatListItemThumbnailWrap` with `$ghost?: boolean`; optional `ChatListItemStatusMessage` for the status text.
+
 ### Chat detail (ActiveChat): ad status display
 
 On the **chat detail view** (`/private-zone/chat/[id]`, `ActiveChat`), drive UI from `chat.adSnapshot.status` using the same grouping as the list: `getDisplayMode(status)` → `"active" | "ghost" | "deleted"` (ghost = archived, expired, pending).
@@ -735,6 +752,36 @@ async createMessage(
   };
 }
 ```
+
+### markAdSnapshotStatus
+
+Updates `adSnapshot.status` for all conversations linked to a given ad. Call this from the **entity's delete action** (and optionally from archive/expire flows) so the chat list and active chat show the correct status (e.g. "Объявление удалено владельцем" when status is `"deleted"`).
+
+```typescript
+async markAdSnapshotStatus(
+  entityType: EntityType,
+  entityPublicId: string,
+  status: AdSnapshotStatus  // "active" | "expired" | "archived" | "deleted" | "pending"
+): Promise<number>
+```
+
+**When to use:** In every entity type that has chat support, the delete action (e.g. `deleteProfessionalServiceAd`, `deleteCarAd`) must call this **after** deleting the entity record (and optionally after deleting images), so that any existing conversations about that ad show the deleted state in the chat UI.
+
+**Example (in delete action):**
+
+```typescript
+import { chatRepository } from "@/lib/chat/repository/ChatRepository";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/lib/constants/entityTypes";
+
+// After deleting the entity from DB (and images from storage):
+await chatRepository.markAdSnapshotStatus(
+  ENTITY_TYPE_PROFESSIONAL_SERVICE,
+  professionalServicePublicId,
+  "deleted"
+);
+```
+
+**Checklist for adding chat to an entity:** When adding chat to a new or existing entity type, also ensure the entity's **delete action** calls `chatRepository.markAdSnapshotStatus(ENTITY_TYPE_XXX, entityPublicId, "deleted")` after the entity is removed, so chat conversations tied to that ad display the deleted state correctly.
 
 ## Best Practices
 
