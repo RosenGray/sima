@@ -7,6 +7,7 @@ import { Message } from "../models/Message";
 import { User } from "@/lib/auth/models/User";
 import type {
   AdSnapshot,
+  AdSnapshotStatus,
   SerializedConversationListItem,
   SerializedConversationWithMessages,
   SerializedMessage,
@@ -317,6 +318,28 @@ export class ChatRepository {
     await Message.deleteMany({ conversation: conv._id });
     await Conversation.deleteOne({ _id: conv._id });
     return true;
+  }
+
+  /**
+   * Updates adSnapshot.status for all conversations linked to the given ad.
+   * Use when an ad is deleted (or status changes) so chat UI can show the correct status.
+   */
+  async markAdSnapshotStatus(
+    entityType: EntityType,
+    entityPublicId: string,
+    status: AdSnapshotStatus
+  ): Promise<number> {
+    await connectDB();
+
+    const result = await Conversation.updateMany(
+      {
+        "adSnapshot.entityType": sanitize(entityType),
+        "adSnapshot.entityPublicId": sanitize(entityPublicId),
+      },
+      { $set: { "adSnapshot.status": status } }
+    );
+
+    return result.modifiedCount;
   }
 }
 

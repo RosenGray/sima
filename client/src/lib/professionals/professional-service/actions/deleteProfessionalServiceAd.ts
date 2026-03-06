@@ -9,6 +9,8 @@ import connectDB from "@/lib/mongo/mongodb";
 import { redirect } from "next/navigation";
 import { getFileManager } from "@/lib/common/actions/getFileManager";
 import { revalidatePath } from "next/cache";
+import { chatRepository } from "@/lib/chat/repository/ChatRepository";
+import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/lib/constants/entityTypes";
 
 export async function deleteProfessionalServiceAd(
   professionalServicePublicId: string
@@ -66,6 +68,13 @@ export async function deleteProfessionalServiceAd(
     await ProfessionalService.findOneAndDelete({
       publicId: professionalServicePublicId,
     });
+
+    // Mark linked chat ad snapshots as deleted so ChatClient shows correct status
+    await chatRepository.markAdSnapshotStatus(
+      ENTITY_TYPE_PROFESSIONAL_SERVICE,
+      professionalServicePublicId,
+      "deleted"
+    );
 
     return {
       success: true,
