@@ -33,15 +33,27 @@ export async function checkRateLimit({
   console.log("[checkRateLimit] got collection");
 
   if (!indexEnsured) {
-    console.log("[checkRateLimit] creating TTL index...");
-    await collection.createIndex(
-      { windowStart: 1 },
-      { expireAfterSeconds: TTL_CLEANUP_SECONDS, background: true },
-    );
+    try {
+      await collection.createIndex(
+        { windowStart: 1 },
+        { expireAfterSeconds: TTL_CLEANUP_SECONDS, background: true },
+      );
+    } catch (e: unknown) {
+      const mongoError = e as { code?: number };
+      if (mongoError?.code === 85) {
+        // IndexOptionsConflict — TTL value changed in code, drop and recreate
+        console.warn("[checkRateLimit] TTL mismatch, dropping and recreating index...");
+        await collection.dropIndex("windowStart_1");
+        await collection.createIndex(
+          { windowStart: 1 },
+          { expireAfterSeconds: TTL_CLEANUP_SECONDS, background: true },
+        );
+      } else {
+        throw e;
+      }
+    }
     indexEnsured = true;
-    console.log("[checkRateLimit] ✓ TTL index created");
-  } else {
-    console.log("[checkRateLimit] ✓ TTL index already ensured");
+    console.log("[checkRateLimit] ✓ TTL index ensured");
   }
 
   const windowStart = new Date(Date.now() - windowSeconds * 1000);
