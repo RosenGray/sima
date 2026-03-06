@@ -22,9 +22,23 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 - **Context:** Must be used inside `LikesProvider` (uses `useLikes()`).
 - **Styling:** LikeButton renders with `cursor: pointer` for clear clickability on both cards and detail pages.
 
+## Hide LikeButton for owners
+
+**Rule:** Show the Like button only to non-owners. Owners of an ad must not see or use the like button on their own listing. Apply this in **every** place where LikeButton is rendered.
+
+**Places to address (all four):**
+
+1. **Listing card (grid view)** — In the section’s card component (e.g. `CarCard.tsx`, `ProfessionalServiceCard.tsx`): use `useAuth().thisUserIsOwner(entity.user.id)` to get `isOwner`, then render LikeButton only when `!isOwner` (e.g. `{!isOwner && (<LikeButtonWrapper>...</LikeButtonWrapper>)}`).
+2. **List item (list view)** — In the section’s list item component (e.g. `CarListItem.tsx`, `ProfessionalServiceListItem.tsx`): same as card — `isOwner = thisUserIsOwner(entity.user.id)`, render LikeButton only when `!isOwner`.
+3. **Detail page** — In the detail client component header: you already have `isOwner = thisUserIsOwner(entity.user.id)` for edit/delete. Render LikeButton only when `!isOwner` (e.g. `{!isOwner && (<LikeButton ... />)}` next to the title).
+4. **Carousel card (home/lobby)** — The shared `ListingCard` accepts an `isOwner` prop and hides LikeButton when `isOwner` is true. The carousel that uses it (`ListingCardCarousel`) must pass `isOwner` per item: compute it as `thisUserIsOwner(item.ownerId)`. Carousel items must therefore include `ownerId` (e.g. `entity.user.id`) in the data shape (see `lobbyCarouselMappers.ts` and `ListingCardCarousel.tsx`).
+
+**Reference implementation (owner check already applied):** professional-service card and detail (`ProfessionalServiceCard.tsx`, `ProfessionalServiceDetailClient.tsx`), and shared carousel path (`ListingCard.tsx`, `ListingCardCarousel.tsx`).
+
 ### On listing cards (inside Link)
 
 - Wrap the card with `Link` in the parent Cards component; do **not** put `Link` inside the card.
+- **Hide for owners:** Render LikeButton only when `!isOwner` (e.g. `const isOwner = thisUserIsOwner(entity.user.id)` from `useAuth()`, then `{!isOwner && ( <LikeButtonWrapper>...</LikeButtonWrapper> )}`).
 - Render `LikeButton` inside the card with **`stopPropagation={true}`** (default) so clicking the heart does not navigate.
 - Position the button with a styled wrapper (e.g. absolute top-right, z-index above image). Use a wrapper like `LikeButtonWrapper` in the card styles file. **Place the wrapper as a direct child of the styled Card** (e.g. first child, same level as the card header), so the button appears in the header area above the image—**not** inside the image section or overlaid on the image. The card styled component should have `position: relative` so the absolute wrapper positions correctly.
 
@@ -41,6 +55,7 @@ Ads can be "liked" (favorites) from listing cards and detail pages. Likes are st
 
 ### On detail page (not inside Link)
 
+- **Hide for owners:** Render LikeButton only when `!isOwner` (e.g. `{!isOwner && (<LikeButton ... />)}`). Use the same `isOwner` as for edit/delete (e.g. `thisUserIsOwner(entity.user.id)` from `useAuth()`).
 - Render `LikeButton` in the header next to the title. Place the **title and LikeButton as siblings** inside a `Flex` with `align="center"` and `gap="3"` (or similar) so the button is vertically aligned and has clear spacing from the title. **Do not** nest `LikeButton` inside the `PageTitle`/`Heading`—that causes misalignment and no gap.
 - Use **`stopPropagation={false}`** so normal button behavior applies (no Link involved).
 

@@ -582,6 +582,7 @@ const {Entity}Card: React.FC<{Entity}CardProps> = ({ entity }) => {
 - **NO Link component** - Link is handled by parent Cards component
 - Card structure: Box → Card → Header/Images/Content/Footer
 - Always use Next.js `Image` component with `fill` prop and proper `sizes` attribute
+- **LikeButton (when present):** Show only when `!isOwner`. In the card component use `useAuth().thisUserIsOwner(entity.user.id)` to get `isOwner`, then render the LikeButton (and its wrapper) inside `{!isOwner && (...)}`. See sima-likes rule for all four places (card, list item, detail, carousel).
 
 ### Card Structure Patterns
 
@@ -771,10 +772,11 @@ export const {Entity}CardSwiperSlide = styled(SwiperSlide)``;
 ### Common Mistakes to Avoid
 
 1. **Link Placement**: ❌ Don't put Link inside Card component. ✅ Put Link in Cards component wrapping Card
-2. **ImageContainer Height**: ❌ Don't forget `height: 100%` and `position: relative` for Next.js Image `fill`
-3. **Flex Images**: ❌ Don't use `min-height: 0` on flex images unless parent has explicit height
-4. **Fixed vs Flexible**: ❌ Don't mix fixed height Box with flex: 1 Images without proper constraints
-5. **Title Placement**: ❌ Don't put title in Footer. ✅ Put title in Content section for cards with titles
+2. **LikeButton for owners**: ❌ Don't show LikeButton to the ad owner. ✅ Render LikeButton only when `!isOwner` (card, list item, detail, carousel). See sima-likes rule.
+3. **ImageContainer Height**: ❌ Don't forget `height: 100%` and `position: relative` for Next.js Image `fill`
+4. **Flex Images**: ❌ Don't use `min-height: 0` on flex images unless parent has explicit height
+5. **Fixed vs Flexible**: ❌ Don't mix fixed height Box with flex: 1 Images without proper constraints
+6. **Title Placement**: ❌ Don't put title in Footer. ✅ Put title in Content section for cards with titles
 
 ### References
 

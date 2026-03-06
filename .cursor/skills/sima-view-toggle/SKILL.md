@@ -132,7 +132,7 @@ flowchart LR
    - Single image (e.g. first image only) for list view. Use Next.js `Image` with `fill`, `style={{ objectFit: "cover" }}`, and a container with fixed height (e.g. 180px mobile, 200px desktop). Use `position: relative` on the container.
    - Optional: section-specific overlay badges on the image (e.g. “Price reduced”); not required for pets.
 5. **Details section:**
-   - **LikeButton** in the top-right of the details area with `stopPropagation` so clicking it doesn’t navigate. Use the same entity type and `publicId` as on the card. Position via a styled wrapper (e.g. absolute top-right, z-index above content).
+   - **LikeButton** in the top-right of the details area with `stopPropagation` so clicking it doesn’t navigate. Use the same entity type and `publicId` as on the card. **Hide for owners:** show LikeButton only when `!isOwner` (e.g. `const { thisUserIsOwner } = useAuth(); const isOwner = thisUserIsOwner(entity.user.id);` then `{!isOwner && (<LikeButton ... />)}`). Position via a styled wrapper (e.g. absolute top-right, z-index above content). See sima-likes rule.
    - **Title** (e.g. animal + kind, or car make + model): same as card, `Heading` size 4 or 5.
    - **Subtitle** (e.g. gender • age, or specs): same as card, `Text` size 2, color gray.
    - **Price or status** (e.g. “Бесплатно” or “₪ 40,000”): prominent, bold.
@@ -185,7 +185,7 @@ When reusing in another section (e.g. cars), decide image left vs right and any 
 - [ ] Content: `view` prop; conditionally render list wrapper or grid + cards.
 - [ ] Header client: `currentView` from URL; `handleViewChange` updates URL with `view` and `page=1`, preserves other params; two IconButtons (list + grid) with active state, aria attributes, and `style={{ cursor: "pointer" }}`.
 - [ ] List container: vertical Flex, map entities to Link + list item.
-- [ ] List item: image section + details section; same title/subtitle/badges/like as card; responsive row/column; LikeButton with stopPropagation.
+- [ ] List item: image section + details section; same title/subtitle/badges/like as card; responsive row/column; LikeButton with stopPropagation and **only when !isOwner** (see sima-likes).
 - [ ] List item styles: "use client"; card-like container; image and details sections; breakpoints from `@/globals`.
 
 ## References

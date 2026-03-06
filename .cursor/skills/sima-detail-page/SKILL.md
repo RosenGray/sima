@@ -152,12 +152,14 @@ return (
         <PageTitle size="8" weight="bold">
           {/* Entity title - always visible */}
         </PageTitle>
-        <LikeButton
-          entityType={ENTITY_TYPE_ENTITY}
-          publicId={publicId}
-          size={20}
-          stopPropagation={false}
-        />
+        {!isOwner && (
+          <LikeButton
+            entityType={ENTITY_TYPE_ENTITY}
+            publicId={publicId}
+            size={20}
+            stopPropagation={false}
+          />
+        )}
       </Flex>
       {isOwner && (
         <ButtonGroup>
@@ -392,12 +394,14 @@ const handleImageClick = (index: number) => {
     <PageTitle size="8" weight="bold">
       {entityTitle}
     </PageTitle>
-    <LikeButton
-      entityType={ENTITY_TYPE_ENTITY}
-      publicId={publicId}
-      size={20}
-      stopPropagation={false}
-    />
+    {!isOwner && (
+      <LikeButton
+        entityType={ENTITY_TYPE_ENTITY}
+        publicId={publicId}
+        size={20}
+        stopPropagation={false}
+      />
+    )}
   </Flex>
   {isOwner && (
     <ButtonGroup>
@@ -428,7 +432,8 @@ const handleImageClick = (index: number) => {
 ```
 
 **Key Points:**
-- Title and LikeButton are siblings inside a Flex with `align="center"` and `gap="3"` for proper alignment and spacing; do not nest LikeButton inside PageTitle.
+- Title and LikeButton are siblings inside a Flex with `align="center"` and `gap="3"` for proper alignment and spacing; do not nest LikeButton inside PageTitle. Show LikeButton only when `!isOwner`.
+- **LikeButton only for non-owners:** Render LikeButton only when `!isOwner` (e.g. `{!isOwner && (<LikeButton ... />)}`). See sima-likes rule.
 - Title is always visible (not just for owners)
 - Edit and Delete buttons only show for owners
 - Disable buttons during pending state
