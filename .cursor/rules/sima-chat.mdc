@@ -36,7 +36,8 @@ export interface IAdSnapshot {
   thumbnailUrl: string;      // Ad thumbnail image
   price?: number;            // Optional price
   adLink: string;            // Link to ad detail page
-  adRemoved: boolean;        // Whether ad was deleted
+  adRemoved: boolean;        // Legacy; prefer status for list UI
+  status: AdSnapshotStatus; // active | expired | archived | deleted | pending — drives list ghost/tombstone
 }
 
 export interface IConversation {
@@ -494,53 +495,23 @@ const handleKeyDown = useCallback(
 </>
 ```
 
-**ChatListItem**: Individual conversation item
+**ChatListItem**: Individual conversation item. Drive display from `adSnapshot.status` only (do not use `adRemoved` for this UI).
+
+**Display by status** (row always remains a Link to open the chat):
+
+| Status | Thumbnail | Copy |
+|--------|-----------|------|
+| `active` | Shown, normal | Title + name + price + last message snippet |
+| `archived`, `expired`, `pending` | Shown, ghost (grayed via `$ghost`) | Title + "Объявление больше недоступно" |
+| `deleted` | Not shown | Title + "Объявление удалено владельцем" |
 
 **Key Points**:
-- Wrap entire item with Link (no Link inside)
-- Show ad thumbnail, title, participant name, price
-- Display last message snippet
-- Show timestamp
-- Highlight active conversation
-
-```typescript
-<Link href={`/chat/${item.publicId}`} style={{ textDecoration: "none" }}>
-  <ChatListItemBox $active={isActive}>
-    <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "flex-start" }}>
-      <ChatListItemThumbnailWrap>
-        <Image
-          src={item.adSnapshot.thumbnailUrl || "/placeholder.png"}
-          alt=""
-          fill
-          style={{ objectFit: "cover" }}
-          sizes="48px"
-        />
-        {item.adSnapshot.adRemoved && (
-          <ChatListItemRemovedBadge>Снято</ChatListItemRemovedBadge>
-        )}
-      </ChatListItemThumbnailWrap>
-      <ChatListItemContent>
-        <Text size="2" weight="bold" truncate>
-          {item.adSnapshot.title}
-        </Text>
-        <Text size="1" color="gray">
-          {name} {formatPrice(item.adSnapshot.price)}
-        </Text>
-        {item.lastMessageSnippet && (
-          <Text size="1" color="gray" truncate>
-            {item.lastMessageSnippet}
-          </Text>
-        )}
-      </ChatListItemContent>
-      {item.lastMessageAt && (
-        <Text size="1" color="gray" style={{ flexShrink: 0 }}>
-          {formatDate(item.lastMessageAt)}
-        </Text>
-      )}
-    </div>
-  </ChatListItemBox>
-</Link>
-```
+- Wrap entire item with Link to `/private-zone/chat/${item.publicId}` (no Link inside)
+- Derive display mode from `item.adSnapshot.status ?? "active"`: active, ghost (archived/expired/pending), or deleted
+- For ghost: use `ChatListItemThumbnailWrap $ghost={true}` (grayscale + opacity); show `ChatListItemStatusMessage` with "Объявление больше недоступно"
+- For deleted: hide thumbnail; show title and `ChatListItemStatusMessage` with "Объявление удалено владельцем"
+- Show last message snippet only when not deleted; always show timestamp when present
+- Highlight active conversation via `$active={isActive}`
 
 ## Styling Guidelines
 

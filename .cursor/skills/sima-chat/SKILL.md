@@ -96,7 +96,8 @@ interface IAdSnapshot {
   thumbnailUrl: string; // Ad thumbnail image
   price?: number; // Ad price (optional)
   adLink: string; // Link to the ad detail page
-  adRemoved: boolean; // Whether the ad has been deleted
+  adRemoved: boolean; // Legacy: whether the ad was removed (prefer status for UI)
+  status: AdSnapshotStatus; // active | expired | archived | deleted | pending — drives list ghost/tombstone UI
 }
 ```
 
@@ -518,6 +519,23 @@ const ActiveChat: React.FC<ActiveChatProps> = ({
   );
 };
 ```
+
+### Chat list: ad status display (ghost / tombstone)
+
+On the **conversation list** (`/chat` only; not the active chat view), each row shows the ad snapshot. Drive display from `adSnapshot.status` only (do not use `adRemoved` for this UI).
+
+| Status | Thumbnail | Copy | Row clickable |
+|--------|-----------|------|----------------|
+| `active` | Shown, normal | Title + name + price | Yes (to open chat) |
+| `archived`, `expired`, `pending` | Shown, ghost (grayed) | "Объявление больше недоступно" | Yes |
+| `deleted` | Not shown | Title + "Объявление удалено владельцем" | Yes |
+
+- **Active:** Normal layout (thumbnail, title, participant name, price, last message snippet, date).
+- **Ghost (archived/expired/pending):** Same layout; thumbnail uses ghost styling (e.g. `filter: grayscale(1); opacity: 0.7` via `ChatListItemThumbnailWrap` with `$ghost`). Show status message "Объявление больше недоступно" instead of name/price line.
+- **Deleted:** Hide thumbnail. Show only title and "Объявление удалено владельцем"; optionally keep last message date on the right.
+- The row always remains a single `Link` to `/private-zone/chat/${item.publicId}` so the user can still open the conversation.
+
+Use Russian copy to match the rest of the app. Styled components: `ChatListItemThumbnailWrap` with `$ghost?: boolean`; optional `ChatListItemStatusMessage` for the status text.
 
 ## Styling Patterns
 

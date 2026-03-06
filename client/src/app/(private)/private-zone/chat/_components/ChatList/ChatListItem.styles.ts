@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { Box, Flex } from "@radix-ui/themes";
+import { Box, Flex, Text } from "@radix-ui/themes";
 
 export const ChatListItemBox = styled(Box)<{ $active?: boolean }>`
   padding: var(--space-3);
@@ -15,7 +15,7 @@ export const ChatListItemBox = styled(Box)<{ $active?: boolean }>`
   }
 `;
 
-export const ChatListItemThumbnailWrap = styled(Box)`
+export const ChatListItemThumbnailWrap = styled(Box)<{ $ghost?: boolean }>`
   position: relative;
   width: 48px;
   height: 48px;
@@ -23,17 +23,13 @@ export const ChatListItemThumbnailWrap = styled(Box)`
   border-radius: var(--radius-full);
   overflow: hidden;
   background: var(--gray-4);
-`;
 
-export const ChatListItemRemovedBadge = styled(Flex)`
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: var(--red-9);
-  color: white;
-  font-size: 10px;
-  padding: 2px 4px;
-  border-radius: var(--radius-1);
+  ${({ $ghost }) =>
+    $ghost &&
+    `
+    filter: grayscale(1);
+    opacity: 0.7;
+  `}
 `;
 
 export const ChatListItemContent = styled(Flex)`
@@ -42,3 +38,10 @@ export const ChatListItemContent = styled(Flex)`
   flex-direction: column;
   gap: var(--space-1);
 `;
+
+export const ChatListItemStatusMessage = styled(Text)`
+  font-size: 11px;
+  color: var(--gray-11);
+  line-height: 1.2;
+`;
+
