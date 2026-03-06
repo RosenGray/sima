@@ -7,17 +7,17 @@ export async function notifyRecipientByEmail(
   senderId: string,
   messageBody: string
 ): Promise<void> {
+  const ctx = await chatRepository.getNotificationContext(conversationPublicId, senderId);
+  if (!ctx) return;
+
   const { allowed } = await checkRateLimit({
-    key: `conv_${conversationPublicId}`,
+    key: `conv_${conversationPublicId}_${ctx.recipientEmail}`,
     action: "message_notification",
     limit: 1,
     windowSeconds: 900,
   });
 
   if (!allowed) return;
-
-  const ctx = await chatRepository.getNotificationContext(conversationPublicId, senderId);
-  if (!ctx) return;
 
   const conversationUrl =
     process.env.NEXT_PUBLIC_CLIENT_URL + "/private-zone/chat/" + conversationPublicId;
