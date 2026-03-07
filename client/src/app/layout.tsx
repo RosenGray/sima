@@ -15,9 +15,9 @@ import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry"
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
 import { PortalProvider } from "@/providers/PortalProvider/PortalProvider";
-// import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
-// import Accessibilik from "accessibility-react-widget";
-// import { GoogleTagManager } from "@next/third-parties/google";
+import AccessibilikComponent from "@/components/Accessibilik/Accessibilik";
+import Accessibilik from "accessibility-react-widget";
+import { GoogleTagManager } from "@next/third-parties/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import ServerActionErrorHandler from "@/errors/ServerActionErrorHandler/ServerActionErrorHandler";
 
@@ -43,8 +43,8 @@ export default async function RootLayout({
 
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
-      {/* <GoogleTagManager gtmId="G-X15DR6QH3X" /> */}
-      {/* <GoogleAnalytics gaId="G-X15DR6QH3X" /> */}
+      <GoogleTagManager gtmId="G-X15DR6QH3X" />
+      <GoogleAnalytics gaId="G-X15DR6QH3X" />
       <body>
       <ServerActionErrorHandler>
       <StyledComponentsRegistry>
@@ -67,7 +67,7 @@ export default async function RootLayout({
                     )}
 
                     <PortalProvider>
-                      {/* <Accessibilik /> */}
+                      <Accessibilik />
                       <div className="SimaApp">
                         {children}
                   
