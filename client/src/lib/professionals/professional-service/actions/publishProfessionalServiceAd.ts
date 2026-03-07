@@ -11,6 +11,8 @@ import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
 import { ProfessionalPage } from "@/lib/professionals/professional-page/models/ProfessionalPage";
 import { checkRateLimit } from "@/lib/rateLimit/rateLimit";
+import { ServiceCategory } from "@/lib/service-categories/models/ServiceCategory";
+import { EmailService } from "@/lib/common/services/EmailService";
 
 export async function publishProfessionalServiceAd(
   initialState: unknown,
@@ -42,6 +44,7 @@ export async function publishProfessionalServiceAd(
   }
 
   const { images } = result.value;
+  let createdPublicId: string | undefined;
 
   try {
     const uploadFormData = new FormData();
@@ -57,10 +60,11 @@ export async function publishProfessionalServiceAd(
 
     await connectDB();
 
+    createdPublicId = nanoid(10);
     const professionalService = new ProfessionalService({
       ...result.value,
       user: user.id,
-      publicId: nanoid(10),
+      publicId: createdPublicId,
       status: "active",
       acceptTerms: result.value.acceptTerms === "on",
       images: uploadResult.files,
@@ -104,5 +108,21 @@ export async function publishProfessionalServiceAd(
   }
 
   revalidatePath("/professional-service", "layout");
+
+  // Non-blocking — never delays or fails the ad creation
+  if (createdPublicId) (async () => {
+    try {
+      const category = await ServiceCategory.findById(result.value.category).lean();
+      const adLink = `${process.env.NEXT_PUBLIC_CLIENT_URL}/professional-service/${createdPublicId}`;
+      await EmailService.sendAdPublishedEmail({
+        recipientEmail: result.value.email,
+        categoryName: (category as { russianDisplayName?: string } | null)?.russianDisplayName ?? "Профессиональные услуги",
+        adLink,
+      });
+    } catch (emailError) {
+      console.error("Error sending ad published email:", emailError);
+    }
+  })();
+
   redirect("/professional-service");
 }

@@ -14,6 +14,10 @@ import {
   getNewMessageEmailHtml,
   type NewMessageEmailParams,
 } from "@/lib/common/email/templates/newMessage";
+import {
+  getAdPublishedEmailHtml,
+  getAdPublishedEmailText,
+} from "@/lib/common/email/templates/adPublished";
 
 // Email sending result type
 export interface EmailSendResult {
@@ -386,6 +390,42 @@ export class EmailService {
       }
     } catch (error) {
       console.error("Error sending new message notification email:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send ad published confirmation email to the ad creator
+   */
+  static async sendAdPublishedEmail(
+    params: { recipientEmail: string; categoryName: string; adLink: string },
+    retries: number = 1
+  ): Promise<boolean> {
+    try {
+      const { recipientEmail, categoryName, adLink } = params;
+      const sender = EmailService.getSender();
+      const recipient = EmailService.getRecipient(recipientEmail);
+      const html = getAdPublishedEmailHtml({ categoryName, adLink });
+      const text = getAdPublishedEmailText({ categoryName, adLink });
+
+      const emailParams = new EmailParams()
+        .setFrom(sender)
+        .setTo([recipient])
+        .setReplyTo(sender)
+        .setSubject("Ваше объявление опубликовано - Sima")
+        .setHtml(html)
+        .setText(text);
+
+      const result = await EmailService.sendEmailWithRetry(emailParams, retries);
+
+      if (result.success) {
+        console.log("Ad published email sent:", result.messageId);
+        return true;
+      } else {
+        throw new Error(result.error || "Failed to send ad published email");
+      }
+    } catch (error) {
+      console.error("Error sending ad published email:", error);
       throw error;
     }
   }

@@ -3,6 +3,7 @@ import { ProfessionalServiceLayoutSection } from "./layout.styles";
 import { generateBackblazeUrl } from "@/utils/common";
 import Header from "@/components/Header/Header/Header";
 import SectionStripe from "@/components/SectionStripe/SectionStripe";
+import Footer from "@/components/Footer/Footer";
 
 export const metadata: Metadata = {
   title: "Профессиональные услуги",
@@ -25,6 +26,7 @@ export default function RootLayout({
         objectPosition="0 10%"
       />
       <main>{children}</main>
+      <Footer />
     </ProfessionalServiceLayoutSection>
   );
 }
