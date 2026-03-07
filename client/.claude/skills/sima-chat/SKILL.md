@@ -185,15 +185,25 @@ const handleContactSeller = async () => {
 
 ### Step 3: Update getOrCreateChat Server Action
 
-Add support for your entity type in `lib/chat/actions/getOrCreateChat.ts`. Import `ENTITY_TYPE_*` and `EntityType` from `@/lib/constants/entityTypes`; use the whitelist of constants from that file for validation:
+Add support for your entity type in `lib/chat/actions/getOrCreateChat.ts`. Import `ENTITY_TYPE_*` and `EntityType` from `@/lib/constants/entityTypes`; use the whitelist of constants from that file for validation.
+
+**Ad snapshot title and city display:** The chat list and active chat show `adSnapshot.title`. Never use the raw city code (e.g. `entity.city` like `"c44"`) in the title. Always resolve city to a human-readable name using `getCityById(city, district as Districts)?.nameRussian` from `@/lib/cities` (and `Districts` from `@/lib/cities/types/cities.schema`). The file already defines a helper `cityDisplay(city, district)` that returns the Russian city name or `""`; use it when building the title for any entity that has `city` and `district` (e.g. `[entity.manufacturer, entity.model, cityDisplay(entity.city, entity.district)].filter(Boolean).join(" • ")`). This matches how badges and cards display location elsewhere in the app.
 
 ```typescript
+import { getCityById } from "@/lib/cities";
+import { Districts } from "@/lib/cities/types/cities.schema";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import {
   ENTITY_TYPE_PETS_FOR_SALE,
   ENTITY_TYPE_CARS,
   type EntityType,
 } from "@/lib/constants/entityTypes";
+
+/** Resolve city code to display name for ad snapshot titles (chat list, badges). */
+function cityDisplay(city: string | undefined, district: string | undefined): string {
+  if (!city || !district) return "";
+  return getCityById(city, district as Districts)?.nameRussian ?? "";
+}
 
 const SUPPORTED_ENTITY_TYPES = [ENTITY_TYPE_PETS_FOR_SALE, ENTITY_TYPE_CARS] as const;
 
@@ -206,21 +216,19 @@ export async function getOrCreateChat(
     return { success: false, error: "Войдите в аккаунт" };
   }
 
-  // Validate entity type using whitelist from @/lib/constants/entityTypes
   if (!SUPPORTED_ENTITY_TYPES.includes(adEntityType)) {
     return { success: false, error: "Этот тип объявления не поддерживается" };
   }
 
-  // Fetch entity based on type
   let entity: any;
   let adOwnerId: string;
-  
+
   if (adEntityType === ENTITY_TYPE_CARS) {
     entity = await carRepository.getByPublicId(adPublicId);
   } else if (adEntityType === ENTITY_TYPE_PETS_FOR_SALE) {
     entity = await petForSaleRepository.getByPublicId(adPublicId);
   }
-  
+
   if (!entity) {
     return { success: false, error: "Объявление не найдено" };
   }
@@ -230,16 +238,15 @@ export async function getOrCreateChat(
     return { success: false, error: "Нельзя начать чат с самим собой" };
   }
 
-  // Create ad snapshot based on entity type
   const thumbnailUrl = entity.images?.[0]?.url ?? "";
   let title: string;
-  
+
   if (adEntityType === ENTITY_TYPE_CARS) {
-    title = [entity.manufacturer, entity.model, entity.city].filter(Boolean).join(" • ");
+    title = [entity.manufacturer, entity.model, cityDisplay(entity.city, entity.district)].filter(Boolean).join(" • ");
   } else {
-    title = [entity.animal, entity.kind, entity.city].filter(Boolean).join(" • ");
+    title = [entity.animal, entity.kind, cityDisplay(entity.city, entity.district)].filter(Boolean).join(" • ");
   }
-  
+
   const adLink = `/${adEntityType.replace("-", "/")}/${entity.publicId}`;
 
   const adSnapshot = {

@@ -11,12 +11,8 @@ import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
 import { offRoadVehicleRepository } from "@/lib/vehicles/off-road/repository/OffRoadVehicleRepository";
 import { commercialVehicleRepository } from "@/lib/vehicles/commercial-vehicles/repository/CommercialVehicleRepository";
 import type { AdSnapshot, AdSnapshotStatus } from "../types/chat.types";
-
-/** Entity from getByPublicId may have status when the section uses ad-status; default to "active". */
-function entityStatus(entity: unknown): AdSnapshotStatus {
-  const s = (entity as { status?: AdSnapshotStatus }).status;
-  return s && ["active", "expired", "archived", "deleted", "pending"].includes(s) ? s : "active";
-}
+import { getCityById } from "@/lib/cities";
+import { Districts } from "@/lib/cities/types/cities.schema";
 import {
   ENTITY_TYPE_CARS,
   ENTITY_TYPE_COMMERCIAL_VEHICLES,
@@ -28,6 +24,18 @@ import {
   ENTITY_TYPE_PROFESSIONAL_SERVICE,
   type EntityType,
 } from "@/lib/constants/entityTypes";
+
+/** Entity from getByPublicId may have status when the section uses ad-status; default to "active". */
+function entityStatus(entity: unknown): AdSnapshotStatus {
+  const s = (entity as { status?: AdSnapshotStatus }).status;
+  return s && ["active", "expired", "archived", "deleted", "pending"].includes(s) ? s : "active";
+}
+
+/** Resolve city code to display name for ad snapshot titles (badges, chat list). */
+function cityDisplay(city: string | undefined, district: string | undefined): string {
+  if (!city || !district) return "";
+  return getCityById(city, district as Districts)?.nameRussian ?? "";
+}
 
 const SUPPORTED_ENTITY_TYPES = [
   ENTITY_TYPE_PETS_FOR_SALE,
@@ -72,7 +80,7 @@ export async function getOrCreateChat(
     }
 
     const title =
-      [pet.animal, pet.kind, pet.city].filter(Boolean).join(" • ") || "Pet";
+      [pet.animal, pet.kind, cityDisplay(pet.city, pet.district)].filter(Boolean).join(" • ") || "Pet";
     adSnapshot = {
       entityType: ENTITY_TYPE_PETS_FOR_SALE,
       entityPublicId: pet.publicId,
@@ -94,7 +102,7 @@ export async function getOrCreateChat(
     }
 
     const titleForFree =
-      [petForFree.animal, petForFree.kind, petForFree.city].filter(Boolean).join(" • ") || "Питомец";
+      [petForFree.animal, petForFree.kind, cityDisplay(petForFree.city, petForFree.district)].filter(Boolean).join(" • ") || "Питомец";
     adSnapshot = {
       entityType: ENTITY_TYPE_PETS_FOR_FREE,
       entityPublicId: petForFree.publicId,
@@ -115,7 +123,7 @@ export async function getOrCreateChat(
     }
 
     const titleAccessory =
-      [accessory.title, accessory.city].filter(Boolean).join(" • ") || "Аксессуар";
+      [accessory.title, cityDisplay(accessory.city, accessory.district)].filter(Boolean).join(" • ") || "Аксессуар";
     adSnapshot = {
       entityType: ENTITY_TYPE_PETS_ACCESSORIES,
       entityPublicId: accessory.publicId,
@@ -137,7 +145,7 @@ export async function getOrCreateChat(
     }
 
     const title =
-      [service.subCategory?.russianDisplayName, service.city]
+      [service.subCategory?.russianDisplayName, cityDisplay(service.city, service.district)]
         .filter(Boolean)
         .join(" • ") || "Professional Service";
     adSnapshot = {
@@ -160,7 +168,7 @@ export async function getOrCreateChat(
     }
 
     const jobTitle =
-      [job.title, job.city].filter(Boolean).join(" • ") || "Вакансия";
+      [job.title, cityDisplay(job.city, job.district)].filter(Boolean).join(" • ") || "Вакансия";
     adSnapshot = {
       entityType: ENTITY_TYPE_JOBS,
       entityPublicId: job.publicId,
@@ -181,7 +189,7 @@ export async function getOrCreateChat(
     }
 
     const carTitle =
-      [car.manufacturer, car.model, car.city].filter(Boolean).join(" • ") ||
+      [car.manufacturer, car.model, cityDisplay(car.city, car.district)].filter(Boolean).join(" • ") ||
       "Автомобиль";
     adSnapshot = {
       entityType: ENTITY_TYPE_CARS,
@@ -204,7 +212,7 @@ export async function getOrCreateChat(
     }
 
     const offRoadTitle =
-      [offRoadVehicle.manufacturer, offRoadVehicle.model, offRoadVehicle.city].filter(Boolean).join(" • ") ||
+      [offRoadVehicle.manufacturer, offRoadVehicle.model, cityDisplay(offRoadVehicle.city, offRoadVehicle.district)].filter(Boolean).join(" • ") ||
       "Внедорожник";
     adSnapshot = {
       entityType: ENTITY_TYPE_OFF_ROAD,
@@ -227,7 +235,7 @@ export async function getOrCreateChat(
     }
 
     const commercialTitle =
-      [commercialVehicle.manufacturer, commercialVehicle.model, commercialVehicle.city].filter(Boolean).join(" • ") ||
+      [commercialVehicle.manufacturer, commercialVehicle.model, cityDisplay(commercialVehicle.city, commercialVehicle.district)].filter(Boolean).join(" • ") ||
       "Коммерческий транспорт";
     adSnapshot = {
       entityType: ENTITY_TYPE_COMMERCIAL_VEHICLES,
