@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
 import { accessoryRepository } from "../repository/AccessoryRepository";
 import mongoose from "mongoose";
-import { checkRateLimit } from "@/lib/rateLimit/rateLimit";
+import { checkRateLimits } from "@/lib/rateLimit/rateLimit";
 import {
   RATE_LIMIT_ACTION_PUBLISH_HOUR,
   RATE_LIMIT_ACTION_PUBLISH_DAY,
@@ -34,21 +34,11 @@ export async function publishAccessoryAd(
     });
   }
 
-  const [hourly, daily] = await Promise.all([
-    checkRateLimit({
-      key: user.id,
-      action: RATE_LIMIT_ACTION_PUBLISH_HOUR,
-      limit: PUBLISH_LIMITS.free.hour,
-      windowSeconds: 3600,
-    }),
-    checkRateLimit({
-      key: user.id,
-      action: RATE_LIMIT_ACTION_PUBLISH_DAY,
-      limit: PUBLISH_LIMITS.free.day,
-      windowSeconds: 86400,
-    }),
+  const rateLimit = await checkRateLimits([
+    { key: user.id, action: RATE_LIMIT_ACTION_PUBLISH_HOUR, limit: PUBLISH_LIMITS.free.hour, windowSeconds: 3600 },
+    { key: user.id, action: RATE_LIMIT_ACTION_PUBLISH_DAY, limit: PUBLISH_LIMITS.free.day, windowSeconds: 86400 },
   ]);
-  if (!hourly.allowed || !daily.allowed) {
+  if (!rateLimit.allowed) {
     return result.reply({
       formErrors: ["Превышен лимит публикаций. Попробуйте позже через час"],
     });

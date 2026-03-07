@@ -85,3 +85,17 @@ export async function checkRateLimit({
 
   return { allowed: true, remaining: limit - count };
 }
+
+/**
+ * Checks multiple rate limits sequentially. Stops at the first blocked limit
+ * so that a failed check never increments subsequent counters.
+ */
+export async function checkRateLimits(
+  limits: RateLimitOptions[],
+): Promise<RateLimitResult> {
+  for (const options of limits) {
+    const result = await checkRateLimit(options);
+    if (!result.allowed) return result;
+  }
+  return { allowed: true, remaining: 0 };
+}
