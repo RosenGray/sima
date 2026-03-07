@@ -34,8 +34,8 @@ export async function publishProfessionalServiceAd(
   const { allowed } = await checkRateLimit({
     key: user.id,
     action: "publish-professional-service",
-    limit: 2,
-    windowSeconds: 3600,
+    limit: 10,
+    windowSeconds: 3600, // 1 hour
   });
   if (!allowed) {
     return result.reply({
