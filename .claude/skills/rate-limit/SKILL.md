@@ -17,19 +17,40 @@ Use the existing `checkRateLimit` helper from `@/lib/rateLimit/rateLimit`. No ne
 
 ```typescript
 import { checkRateLimit } from "@/lib/rateLimit/rateLimit";
+import { RATE_LIMIT_ACTION_PUBLISH_HOUR, RateLimitAction } from "@/lib/constants/rateLimitActions";
 
 const { allowed, remaining } = await checkRateLimit({
-  key: string,        // e.g. user.id or `conv_${id}_${email}`
-  action: string,     // unique name per use case, e.g. "publish-professional-service"
-  limit: number,      // max count in the window
+  key: string,              // e.g. user.id or `conv_${id}_${email}`
+  action: RateLimitAction,  // must be a typed constant from rateLimitActions.ts
+  limit: number,            // max count in the window
   windowSeconds: number,
 });
 ```
 
 - **key**: Identifies the bucket (user, conversation+recipient, IP, etc.).
-- **action**: Names the action type; each (key, action) has its own counter.
+- **action**: Must be a `RateLimitAction` constant from `@/lib/constants/rateLimitActions`. Never use a raw string.
 - **limit** / **windowSeconds**: Max `limit` occurrences in the last `windowSeconds` seconds.
 - **Return**: `allowed` (boolean), `remaining` (number). If `!allowed`, do not perform the action and return a user-facing error.
+
+## Action constants
+
+All valid action strings live in `client/src/lib/constants/rateLimitActions.ts`:
+
+```typescript
+RATE_LIMIT_ACTION_PUBLISH_HOUR        // "publish-ad-hour"   — shared hourly publish budget
+RATE_LIMIT_ACTION_PUBLISH_DAY         // "publish-ad-day"    — shared daily publish budget
+RATE_LIMIT_ACTION_MESSAGE_NOTIFICATION // "message-notification"
+```
+
+Limits for the free tier are centralised in `PUBLISH_LIMITS`:
+
+```typescript
+import { PUBLISH_LIMITS } from "@/lib/constants/rateLimitActions";
+// PUBLISH_LIMITS.free.hour  → 5
+// PUBLISH_LIMITS.free.day   → 15
+```
+
+To add a new action, add a constant + union member in `rateLimitActions.ts` — never pass a raw string to `checkRateLimit`.
 
 ## Placement in server actions
 
@@ -40,25 +61,39 @@ const { allowed, remaining } = await checkRateLimit({
 
 ## Key and action naming
 
-- **Per-user limits**: `key: user.id`, `action: "publish-professional-service"`, `"publish-car"`, etc.
-- **Per-conversation/recipient**: `key: \`conv_${conversationPublicId}_${recipientEmail}\``, `action: "message_notification"`.
-- Use kebab-case, unique action names per use case so limits don’t clash.
+- **Per-user publish limits**: `key: user.id`, action is one of the two shared constants (`RATE_LIMIT_ACTION_PUBLISH_HOUR` / `RATE_LIMIT_ACTION_PUBLISH_DAY`). All entity types share the same hourly and daily budgets — do not create per-entity action strings.
+- **Per-conversation/recipient**: `key: \`conv_${conversationPublicId}_${recipientEmail}\``, `action: RATE_LIMIT_ACTION_MESSAGE_NOTIFICATION`.
 
 ## Examples
 
-**Publish action (per user, 10 per hour):**
+**Publish action (dual-window: 5/hr + 15/day, shared across all entity types):**
 
 ```typescript
+import { checkRateLimit } from "@/lib/rateLimit/rateLimit";
+import {
+  RATE_LIMIT_ACTION_PUBLISH_HOUR,
+  RATE_LIMIT_ACTION_PUBLISH_DAY,
+  PUBLISH_LIMITS,
+} from "@/lib/constants/rateLimitActions";
+
 const user = await getCurrentUser();
 if (!user) return result.reply({ formErrors: ["…"] });
 
-const { allowed } = await checkRateLimit({
-  key: user.id,
-  action: "publish-professional-service",
-  limit: 10,
-  windowSeconds: 3600,
-});
-if (!allowed) {
+const [hourly, daily] = await Promise.all([
+  checkRateLimit({
+    key: user.id,
+    action: RATE_LIMIT_ACTION_PUBLISH_HOUR,
+    limit: PUBLISH_LIMITS.free.hour,
+    windowSeconds: 3600,
+  }),
+  checkRateLimit({
+    key: user.id,
+    action: RATE_LIMIT_ACTION_PUBLISH_DAY,
+    limit: PUBLISH_LIMITS.free.day,
+    windowSeconds: 86400,
+  }),
+]);
+if (!hourly.allowed || !daily.allowed) {
   return result.reply({
     formErrors: ["Превышен лимит публикаций. Попробуйте позже через час"],
   });
@@ -69,9 +104,11 @@ if (!allowed) {
 **Notification (per conversation+recipient, 1 per 15 min):**
 
 ```typescript
+import { RATE_LIMIT_ACTION_MESSAGE_NOTIFICATION } from "@/lib/constants/rateLimitActions";
+
 const { allowed } = await checkRateLimit({
   key: `conv_${conversationPublicId}_${recipientEmail}`,
-  action: "message_notification",
+  action: RATE_LIMIT_ACTION_MESSAGE_NOTIFICATION,
   limit: 1,
   windowSeconds: 900,
 });
@@ -87,7 +124,9 @@ if (!allowed) return;
 
 ## Adding a new rate-limited action
 
-1. Choose a **key** (who/resource to limit) and **action** (unique string).
-2. Choose **limit** and **windowSeconds**.
-3. In the server action: after auth/validation, call `checkRateLimit`; if `!allowed`, return a clear error and stop.
+1. Add a new constant and union member to `client/src/lib/constants/rateLimitActions.ts`.
+2. Choose a **key** (who/resource to limit), **limit**, and **windowSeconds**.
+3. In the server action: after auth/validation, call `checkRateLimit` with the typed constant; if `!allowed`, return a clear error and stop.
 4. Reuse the same (key, action) for all code paths that should share the same limit.
+
+**For new publish flows**: do NOT create a new action constant. Use the existing `RATE_LIMIT_ACTION_PUBLISH_HOUR` + `RATE_LIMIT_ACTION_PUBLISH_DAY` pair with `PUBLISH_LIMITS.free.*` — the budget is shared across all entity types by design.

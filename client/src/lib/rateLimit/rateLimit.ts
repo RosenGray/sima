@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import connectDB from "@/lib/mongo/mongodb";
+import { RateLimitAction } from "@/lib/constants/rateLimitActions";
 
 const RATE_LIMITS_COLLECTION = "rate_limits";
 const TTL_CLEANUP_SECONDS = 60 * 60 * 24 * 7; // 7 days - just garbage collection
@@ -7,7 +8,7 @@ let indexEnsured = false;
 
 export interface RateLimitOptions {
   key: string;
-  action: string;
+  action: RateLimitAction;
   limit: number;
   windowSeconds: number;
 }

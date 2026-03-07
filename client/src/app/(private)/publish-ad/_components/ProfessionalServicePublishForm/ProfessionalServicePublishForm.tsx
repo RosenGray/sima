@@ -194,8 +194,6 @@ const ProfessionalServicePublishForm: FC<
     acceptTerms,
     images,
   } = fields;
-  console.log("slugPrefix", slugPrefix.value);
-  console.log("slug", slug.value);
 
   const categoriesOptions = useMemo(
     () => mapServiceCategoriesToSelectOptions(mappedCategories),
@@ -484,7 +482,7 @@ const ProfessionalServicePublishForm: FC<
                     name="acceptPersonalPage"
                     value={acceptPersonalPage ? "on" : "off"}
                   />
-                  {slugPreview  && (
+                  {slugPreview && (
                     <Text size="2" color="gray">
                       Это будет адрес вашей новой страницы:
                       <br />

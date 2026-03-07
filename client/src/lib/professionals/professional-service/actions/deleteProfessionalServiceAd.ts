@@ -56,7 +56,7 @@ export async function deleteProfessionalServiceAd(
 
       await fileManager.deleteFiles(
         user.id,
-        "professionals",
+        "professionals-service",
         professionalService.images.map((image) => ({
           fileName: image.uniqueName,
           versionId: image.versionId,
