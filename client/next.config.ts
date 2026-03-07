@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withBetterStack } from "@logtail/next";
 import { execSync } from "child_process";
 
 const nextConfig: NextConfig = {
@@ -88,4 +87,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBetterStack(nextConfig);
+export default nextConfig;
