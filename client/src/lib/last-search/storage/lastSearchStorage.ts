@@ -30,6 +30,7 @@ export function addLastSearchToStorage(search: StoredSearch): void {
     );
     const next = [search, ...existing].slice(0, 5);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    window.dispatchEvent(new CustomEvent("sima-search-added", { detail: { count: next.length } }));
   } catch {
     // ignore
   }
