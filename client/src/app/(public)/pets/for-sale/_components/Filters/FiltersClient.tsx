@@ -42,8 +42,16 @@ import {
   ButtonsSection,
 } from "./Filters.styles";
 import { useFiltersModal } from "@/components/filters/FiltersContext";
+import { saveLastSearch } from "@/lib/last-search/actions/lastSearch.actions";
+import { addLastSearchToStorage } from "@/lib/last-search/storage/lastSearchStorage";
+import { normalizeSearchParams } from "@/lib/last-search/utils/normalizeSearchParams";
+import { generateSearchTitle } from "@/lib/last-search/utils/generateSearchTitle";
+import { getSearchThumbnail } from "@/lib/last-search/utils/getSearchThumbnail";
+import { ENTITY_TYPE_PETS_FOR_SALE } from "@/lib/constants/entityTypes";
 
 enableMapSet();
+
+const ENTITY_TYPE = ENTITY_TYPE_PETS_FOR_SALE;
 
 const FiltersClient: FC = () => {
   const { closeModal } = useFiltersModal();
@@ -145,6 +153,18 @@ const FiltersClient: FC = () => {
       _searchParams.append("adjustments", v);
     });
 
+    const currentUrl = `${pathname}?${_searchParams.toString()}`;
+    saveLastSearch(ENTITY_TYPE, currentUrl, Object.fromEntries(_searchParams.entries()));
+    const _hash = normalizeSearchParams(_searchParams);
+    if (_hash) {
+      addLastSearchToStorage({
+        entityType: ENTITY_TYPE,
+        title: generateSearchTitle(ENTITY_TYPE, _searchParams),
+        url: currentUrl,
+        thumbnail: getSearchThumbnail(ENTITY_TYPE),
+        searchParamsHash: _hash,
+      });
+    }
     router.replace(`${pathname}?${_searchParams.toString()}`);
   }, [moreFilters, searchParams, allSelectedFilterOptions, router, pathname]);
 

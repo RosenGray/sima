@@ -37,8 +37,16 @@ import {
   IconButton,
 } from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { saveLastSearch } from "@/lib/last-search/actions/lastSearch.actions";
+import { addLastSearchToStorage } from "@/lib/last-search/storage/lastSearchStorage";
+import { normalizeSearchParams } from "@/lib/last-search/utils/normalizeSearchParams";
+import { generateSearchTitle } from "@/lib/last-search/utils/generateSearchTitle";
+import { getSearchThumbnail } from "@/lib/last-search/utils/getSearchThumbnail";
+import { ENTITY_TYPE_JOBS } from "@/lib/constants/entityTypes";
 
 enableMapSet();
+
+const ENTITY_TYPE = ENTITY_TYPE_JOBS;
 
 const FiltersClient: FC = () => {
   const { isModalOpen, openModal, closeModal } = useFiltersModal();

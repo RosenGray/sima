@@ -572,7 +572,7 @@ const PetForSalePublishForm: FC<PetForSalePublishFormProps> = ({
       <ErrorModal
         open={errorModalOpen}
         onOpenChange={handleModalClose}
-        errorMessage={form.errors}
+        errorMessage={formState?.error?.[""] ?? form.errors}
       />
     </>
   );

@@ -1,4 +1,5 @@
 import { checkRateLimit } from "@/lib/rateLimit/rateLimit";
+import { RATE_LIMIT_ACTION_MESSAGE_NOTIFICATION } from "@/lib/constants/rateLimitActions";
 import { chatRepository } from "../repository/ChatRepository";
 import { EmailService } from "@/lib/common/services/EmailService";
 
@@ -12,7 +13,7 @@ export async function notifyRecipientByEmail(
 
   const { allowed } = await checkRateLimit({
     key: `conv_${conversationPublicId}_${ctx.recipientEmail}`,
-    action: "message_notification",
+    action: RATE_LIMIT_ACTION_MESSAGE_NOTIFICATION,
     limit: 1,
     windowSeconds: 900,
   });
