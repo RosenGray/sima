@@ -268,6 +268,42 @@ class PetAccessoryRepository {
   }
 
   /**
+   * Get all pet accessories by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: PetAccessoryStatus | null }
+  ): Promise<SerializedPetAccessory[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof PetAccessory> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await PetAccessory.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      const serialized = JSON.parse(JSON.stringify(results)) as SerializedPetAccessory[];
+      serialized.forEach((p) => {
+        p.animal = normalizeAnimalId(p.animal);
+      });
+      return serialized;
+    } catch (error) {
+      console.error("Error fetching pet accessories by user:", error);
+      return [];
+    }
+  }
+
+  /**
    * Get a pet accessory by MongoDB _id
    * @param id - The MongoDB _id of the accessory
    * @returns Promise<SerializedPetAccessory | null> - The accessory or null if not found

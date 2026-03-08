@@ -5,6 +5,7 @@ import {
 } from "../models/SpecialVehicle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedSpecialVehicle } from "../types/specialVehicle.types";
+import mongoose from "mongoose";
 import { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
@@ -156,6 +157,38 @@ class SpecialVehicleRepository {
     } catch (error) {
       console.error("Error fetching special vehicle:", error);
       throw new Error("Failed to fetch special vehicle");
+    }
+  }
+
+  /**
+   * Get all special vehicles by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: SpecialVehicleStatus | null }
+  ): Promise<SerializedSpecialVehicle[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof SpecialVehicle> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active" as SpecialVehicleStatus;
+      }
+
+      const results = await SpecialVehicle.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching special vehicles by user:", error);
+      return [];
     }
   }
 

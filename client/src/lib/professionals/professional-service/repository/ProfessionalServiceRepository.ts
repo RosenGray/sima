@@ -252,6 +252,40 @@ class ProfessionalServiceRepository {
       throw new Error("Failed to fetch professional service");
     }
   }
+
+  /**
+   * Get all professional services by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: ProfessionalServiceStatus | null }
+  ): Promise<SerilizeProfessionalService[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof ProfessionalService> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await ProfessionalService.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("category")
+        .populate("subCategory")
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching professional services by user:", error);
+      return [];
+    }
+  }
 }
 
 export const professionalServiceRepository =

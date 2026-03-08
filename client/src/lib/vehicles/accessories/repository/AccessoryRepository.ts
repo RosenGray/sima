@@ -1,6 +1,7 @@
 import { Accessory, AccessoryStatus, IAccessory } from "../models/Accessory";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedAccessory } from "../types/accessory.types";
+import mongoose from "mongoose";
 import { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
@@ -149,6 +150,38 @@ class AccessoryRepository {
     } catch (error) {
       console.error("Error fetching accessory:", error);
       throw new Error("Failed to fetch accessory");
+    }
+  }
+
+  /**
+   * Get all accessories by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: AccessoryStatus | null }
+  ): Promise<SerializedAccessory[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof Accessory> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active" as AccessoryStatus;
+      }
+
+      const results = await Accessory.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching accessories by user:", error);
+      return [];
     }
   }
 

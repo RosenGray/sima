@@ -2,6 +2,7 @@ import { Yad2Item, IYad2Item } from "../models/Yad2Item";
 import type { Yad2ItemStatus } from "../models/Yad2Item";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedYad2Item } from "../types/yad2.types";
+import mongoose from "mongoose";
 import { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
@@ -173,6 +174,38 @@ class Yad2ItemRepository {
     } catch (error) {
       console.error("Error fetching yad2 item by publicId:", error);
       throw new Error("Failed to fetch yad2 item");
+    }
+  }
+
+  /**
+   * Get all yad2 items by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: Yad2ItemStatus | null }
+  ): Promise<SerializedYad2Item[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof Yad2Item> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await Yad2Item.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching yad2 items by user:", error);
+      return [];
     }
   }
 
