@@ -7,6 +7,7 @@ import LayoutBackground from "@/components/LayoutBackground/LayoutBackground";
 import { RADIX_THEME_APP_ID, RADIX_THEME_PORTAL_ID } from "@/config/client";
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { getLikedAdIdsByUser } from "@/lib/likes/repository/LikesRepository";
+import { getLastSearchCount } from "@/lib/last-search/actions/lastSearch.actions";
 import { serviceCategoryRepository } from "@/lib/service-categories/repositories";
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
@@ -40,7 +41,10 @@ export default async function RootLayout({
     getCurrentUser(),
     serviceCategoryRepository.getAll(),
   ]);
-  const initialLikedIds = user ? await getLikedAdIdsByUser(user.id) : {};
+  const [initialLikedIds, initialSearchCount] = await Promise.all([
+    user ? getLikedAdIdsByUser(user.id) : Promise.resolve({}),
+    user ? getLastSearchCount() : Promise.resolve(0),
+  ]);
 
   return (
     <html className={RubikFont.className} lang="ru" suppressHydrationWarning>
@@ -51,7 +55,7 @@ export default async function RootLayout({
       <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <LikesProvider initialLikedIds={initialLikedIds}>
-              <LastSearchProvider>
+              <LastSearchProvider initialSearchCount={initialSearchCount}>
               <ThemeProvider
                 attribute="class"
                 enableSystem

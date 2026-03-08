@@ -35,6 +35,7 @@ import { NavigationItems, renderLinkOrDropdown } from "../Header.utils";
 import { navItems } from "./navItems";
 import { DropdownMenu as DropdownMenuComponent } from "@/components/DropdownMenu";
 import { logoutUser } from "@/lib/auth/actions/logout";
+import HeaderLastSearchBadge from "../HeaderLastSearchBadge/HeaderLastSearchBadge";
 
 export default function Header() {
   const { serviceCategories } = useHomePage();
@@ -141,6 +142,12 @@ export default function Header() {
                   label: "Личный кабинет",
                   href: "/private-zone",
                   icon: <IdCardIcon width="18" height="18" />,
+                },
+                {
+                  type: "link",
+                  label: "Последние поиски",
+                  href: "/private-zone/last-searches",
+                  icon: <HeaderLastSearchBadge size={18} />,
                 },
                 { type: "separator" },
                 {
