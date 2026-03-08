@@ -16,6 +16,8 @@ export interface RateLimitOptions {
 export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
+  resetAt?: Date;
+  windowSeconds?: number;
 }
 
 export async function checkRateLimit({
@@ -23,7 +25,8 @@ export async function checkRateLimit({
   action,
   limit,
   windowSeconds,
-}: RateLimitOptions): Promise<RateLimitResult> {
+  dryRun = false,
+}: RateLimitOptions & { dryRun?: boolean }): Promise<RateLimitResult> {
   await connectDB();
 
   const collection = mongoose.connection.collection(RATE_LIMITS_COLLECTION);
@@ -59,7 +62,14 @@ export async function checkRateLimit({
   });
 
   if (existing && existing.count >= limit) {
-    return { allowed: false, remaining: 0 };
+    const resetAt = new Date(
+      existing.windowStart.getTime() + existing.windowSeconds * 1000
+    );
+    return { allowed: false, remaining: 0, resetAt, windowSeconds };
+  }
+
+  if (dryRun) {
+    return { allowed: true, remaining: limit - (existing?.count ?? 0) };
   }
 
   const result = await collection.findOneAndUpdate(
@@ -86,16 +96,53 @@ export async function checkRateLimit({
   return { allowed: true, remaining: limit - count };
 }
 
+export function formatRateLimitError(result: RateLimitResult): string {
+  const isDaily = (result.windowSeconds ?? 0) >= 86400;
+  const prefix = isDaily
+    ? "Превышен дневной лимит публикаций"
+    : "Превышен часовой лимит публикаций";
+
+  if (!result.resetAt) return `${prefix}. Попробуйте позже`;
+  const msLeft = result.resetAt.getTime() - Date.now();
+  if (msLeft <= 0) return `${prefix}. Попробуйте позже`;
+  const totalMinutes = Math.ceil(msLeft / 60000);
+  if (totalMinutes < 60) {
+    return `${prefix}. Попробуйте через ${totalMinutes} мин.`;
+  }
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const timeStr = minutes > 0 ? `${hours} ч. ${minutes} мин.` : `${hours} ч.`;
+  return `${prefix}. Попробуйте через ${timeStr}`;
+}
+
 /**
- * Checks multiple rate limits sequentially. Stops at the first blocked limit
- * so that a failed check never increments subsequent counters.
+ * Checks multiple rate limits. First does a dry-run pass to find the most
+ * restrictive blocked limit (latest resetAt) without incrementing any counters.
+ * Only increments if all limits are currently passing.
  */
 export async function checkRateLimits(
   limits: RateLimitOptions[],
 ): Promise<RateLimitResult> {
+  let mostRestrictive: RateLimitResult | null = null;
+
   for (const options of limits) {
-    const result = await checkRateLimit(options);
-    if (!result.allowed) return result;
+    const result = await checkRateLimit({ ...options, dryRun: true });
+    if (!result.allowed) {
+      if (
+        !mostRestrictive ||
+        (result.resetAt &&
+          mostRestrictive.resetAt &&
+          result.resetAt > mostRestrictive.resetAt)
+      ) {
+        mostRestrictive = result;
+      }
+    }
+  }
+
+  if (mostRestrictive) return mostRestrictive;
+
+  for (const options of limits) {
+    await checkRateLimit(options);
   }
   return { allowed: true, remaining: 0 };
 }

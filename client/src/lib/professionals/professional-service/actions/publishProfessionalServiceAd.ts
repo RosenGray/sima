@@ -10,7 +10,7 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
 import { ProfessionalPage } from "@/lib/professionals/professional-page/models/ProfessionalPage";
-import { checkRateLimits } from "@/lib/rateLimit/rateLimit";
+import { checkRateLimits, formatRateLimitError } from "@/lib/rateLimit/rateLimit";
 import {
   RATE_LIMIT_ACTION_PUBLISH_HOUR,
   RATE_LIMIT_ACTION_PUBLISH_DAY,
@@ -42,7 +42,7 @@ export async function publishProfessionalServiceAd(
   ]);
   if (!rateLimit.allowed) {
     return result.reply({
-      formErrors: ["Превышен лимит публикаций. Попробуйте позже через час"],
+      formErrors: [formatRateLimitError(rateLimit)],
     });
   }
 

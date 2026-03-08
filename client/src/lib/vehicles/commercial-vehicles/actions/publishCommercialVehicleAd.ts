@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { uploadFiles } from "@/lib/files/uploadFiles";
 import { commercialVehicleRepository } from "../repository/CommercialVehicleRepository";
 import mongoose from "mongoose";
-import { checkRateLimits } from "@/lib/rateLimit/rateLimit";
+import { checkRateLimits, formatRateLimitError } from "@/lib/rateLimit/rateLimit";
 import {
   RATE_LIMIT_ACTION_PUBLISH_HOUR,
   RATE_LIMIT_ACTION_PUBLISH_DAY,
@@ -34,7 +34,7 @@ export async function publishCommercialVehicleAd(initialState: unknown, formData
   ]);
   if (!rateLimit.allowed) {
     return result.reply({
-      formErrors: ["Превышен лимит публикаций. Попробуйте позже через час"],
+      formErrors: [formatRateLimitError(rateLimit)],
     });
   }
 
