@@ -28,6 +28,11 @@ export function LastSearchProvider({
   const mergeDoneRef = useRef(false);
   const [lastSearchCount, setLastSearchCount] = useState(initialSearchCount);
 
+  // Sync count when layout re-fetches after e.g. delete (router.refresh())
+  useEffect(() => {
+    setLastSearchCount(initialSearchCount);
+  }, [initialSearchCount]);
+
   // Hydrate count from localStorage for guests
   useEffect(() => {
     if (user) return;

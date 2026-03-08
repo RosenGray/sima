@@ -21,7 +21,16 @@ export const SearchList = styled(Flex)`
   gap: var(--space-3);
 `;
 
+export const SearchCardRow = styled(Flex)`
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-3);
+  padding: 0;
+`;
+
 export const SearchCardLink = styled(Link)`
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: var(--space-3);

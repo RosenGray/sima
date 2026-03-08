@@ -54,7 +54,10 @@ class LastSearchRepository {
       .sort({ updatedAt: -1 })
       .limit(5)
       .lean();
-    return JSON.parse(JSON.stringify(docs)) as ILastSearch[];
+    const serialized = JSON.parse(
+      JSON.stringify(docs)
+    ) as Array<Record<string, unknown> & { _id: string }>;
+    return serialized.map(({ _id, ...rest }) => ({ ...rest, id: _id })) as ILastSearch[];
   }
 
   async countByUser(userId: string): Promise<number> {
@@ -85,6 +88,15 @@ class LastSearchRepository {
     await this.enforceCap(user);
 
     return this.getByUser(userId);
+  }
+
+  async deleteById(userId: string, id: string): Promise<boolean> {
+    if (!mongoose.Types.ObjectId.isValid(id)) return false;
+    await connectDB();
+    const user = new mongoose.Types.ObjectId(userId);
+    const _id = new mongoose.Types.ObjectId(id);
+    const result = await LastSearch.findOneAndDelete({ _id, user });
+    return result !== null;
   }
 }
 

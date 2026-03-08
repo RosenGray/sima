@@ -104,3 +104,22 @@ export async function mergeGuestSearches(
     return { success: false, error: "Не удалось синхронизировать поиски" };
   }
 }
+
+export async function deleteLastSearch(
+  id: string
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { success: false, error: "Необходимо войти в систему" };
+    }
+    const deleted = await lastSearchRepository.deleteById(user.id, id);
+    if (!deleted) {
+      return { success: false, error: "Не удалось удалить поиск" };
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting last search:", error);
+    return { success: false, error: "Не удалось удалить поиск" };
+  }
+}
