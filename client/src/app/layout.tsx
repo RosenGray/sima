@@ -11,6 +11,7 @@ import { serviceCategoryRepository } from "@/lib/service-categories/repositories
 import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import HomePageProvider from "@/providers/HomePageProvider/HomePageProvider";
 import { LikesProvider } from "@/providers/LikesProvider/LikesProvider";
+import { LastSearchProvider } from "@/providers/LastSearchProvider/LastSearchProvider";
 import StyledComponentsRegistry from "@/providers/StyledRegistry/StyledRegistry";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner/EmailVerificationBanner";
 import { RubikFont } from "@/fonts/fonts";
@@ -50,6 +51,7 @@ export default async function RootLayout({
       <StyledComponentsRegistry>
           <AuthProvider initialUser={user}>
             <LikesProvider initialLikedIds={initialLikedIds}>
+              <LastSearchProvider>
               <ThemeProvider
                 attribute="class"
                 enableSystem
@@ -78,6 +80,7 @@ export default async function RootLayout({
                   </RadixTheme>
                 </HomePageProvider>
               </ThemeProvider>
+              </LastSearchProvider>
             </LikesProvider>
           </AuthProvider>
         </StyledComponentsRegistry>
