@@ -14,6 +14,11 @@ import type { UserNavLinkItem } from "@/components/Header/MobileMenu";
 //add my chats link
 export const PRIVATE_ZONE_NAV_LINKS: UserNavLinkItem[] = [
   { label: "Мои объявления", href: "/private-zone/my-ads", icon: IdCardIcon },
+  {
+    label: "Мои последние поиски",
+    href: "/private-zone/last-searches",
+    icon: MagnifyingGlassIcon,
+  },
   { label: "Мои сообщения", href: "/private-zone/chat", icon: ChatBubbleIcon },
   {
     label: "Обновить данные",
@@ -26,11 +31,6 @@ export const PRIVATE_ZONE_NAV_LINKS: UserNavLinkItem[] = [
     href: "/private-zone/liked-ads",
     icon: HeartIcon,
     badge: 6,
-  },
-  {
-    label: "Недавние поиски",
-    href: "/private-zone/recent-searches",
-    icon: MagnifyingGlassIcon,
   },
   {
     label: "Советы и информация",
