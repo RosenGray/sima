@@ -22,6 +22,7 @@ export const PrivateZoneContentRow = styled(Box)`
   flex: 1;
   flex-direction: row;
   min-height: 0;
+  overflow: hidden;
 `;
 
 export const PrivateZoneSidebar = styled.aside<{ $collapsed?: boolean }>`
@@ -30,7 +31,9 @@ export const PrivateZoneSidebar = styled.aside<{ $collapsed?: boolean }>`
   background: var(--accent-1);
   display: none;
   overflow: hidden;
-  transition: width 0.2s ease, min-width 0.2s ease;
+  transition:
+    width 0.2s ease,
+    min-width 0.2s ease;
 
   @media (min-width: ${breakpoints.sm}px) {
     display: flex;
@@ -61,5 +64,5 @@ export const PrivateZoneMain = styled.main`
   flex: 1;
   min-width: 0;
   display: flex;
-
+  overflow-y: auto;
 `;
