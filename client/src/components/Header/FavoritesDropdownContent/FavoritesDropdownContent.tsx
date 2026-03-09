@@ -35,8 +35,9 @@ export default function FavoritesDropdownContent() {
   useEffect(() => {
     let cancelled = false;
     getLikedAdSummaries().then((data) => {
+      console.log('data', data);
       if (!cancelled) {
-        setSummaries(data);
+        setSummaries([]);
         setLoading(false);
       }
     });
