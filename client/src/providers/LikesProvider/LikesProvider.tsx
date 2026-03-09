@@ -67,6 +67,7 @@ type LikesContextType = {
   isLiked: (entityType: EntityType, publicId: string) => boolean;
   toggle: (entityType: EntityType, publicId: string) => Promise<void>;
   totalLikedCount: number;
+  refreshKey: number;
 };
 
 const LikesContext = createContext<LikesContextType | undefined>(undefined);
@@ -89,6 +90,7 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
   const [likedIdsByEntity, setLikedIdsByEntity] = useState<LikedIdsByEntity>(
     () => recordFromArrays(initialLikedIds)
   );
+  const [refreshKey, setRefreshKey] = useState(0);
   const previousUserRef = useRef<typeof user>(null);
   const mergeDoneRef = useRef(false);
 
@@ -189,6 +191,8 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
             }
             return { ...prev, [entityType]: set };
           });
+        } else {
+          setRefreshKey((k) => k + 1);
         }
       } else {
         if (currentlyLiked) {
@@ -199,12 +203,13 @@ export function LikesProvider({ children, initialLikedIds }: LikesProviderProps)
             setLikedInStorage(entityType, [...arr, publicId]);
           }
         }
+        setRefreshKey((k) => k + 1);
       }
     },
     [user, likedIdsByEntity]
   );
 
-  const value: LikesContextType = { isLiked, toggle, totalLikedCount };
+  const value: LikesContextType = { isLiked, toggle, totalLikedCount, refreshKey };
 
   return (
     <LikesContext.Provider value={value}>{children}</LikesContext.Provider>

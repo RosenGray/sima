@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Separator, Text } from "@radix-ui/themes";
+import { Separator } from "@radix-ui/themes";
 import { getLikedAdSummaries } from "@/lib/likes/actions/getLikedAdSummaries";
-import type { LikedAdSummary } from "@/lib/likes/entityTypeToPath";
+import type { MyAdSummary } from "@/lib/likes/entityTypeToPath";
+import { useLikes } from "@/providers/LikesProvider/LikesProvider";
 import {
   FavoritesDropdownPanel,
   FavoritesDropdownList,
@@ -12,39 +13,31 @@ import {
   FavoritesDropdownThumb,
   FavoritesDropdownText,
   FavoritesDropdownTitle,
-  FavoritesDropdownDescription,
-  FavoritesDropdownPrice,
+  FavoritesDropdownSectionLabel,
   FavoritesDropdownFooter,
   FavoritesDropdownButton,
 } from "./FavoritesDropdownContent.styles";
+import { Text } from "@radix-ui/themes";
 
-const NO_PRICE_LABEL = "Цена не указана";
-const MY_FAVORITES_LABEL = "Мои избранные";
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("il-IL", {
-    style: "currency",
-    currency: "ILS",
-  }).format(price);
-}
+const MY_FAVORITES_LABEL = "Все мои избранные";
 
 export default function FavoritesDropdownContent() {
-  const [summaries, setSummaries] = useState<LikedAdSummary[]>([]);
+  const { refreshKey } = useLikes();
+  const [summaries, setSummaries] = useState<MyAdSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     getLikedAdSummaries().then((data) => {
-      console.log('data', data);
       if (!cancelled) {
-        setSummaries([]);
+        setSummaries(data.slice(0, 3));
         setLoading(false);
       }
     });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [refreshKey]);
 
   if (loading) {
     return (
@@ -74,10 +67,7 @@ export default function FavoritesDropdownContent() {
             </FavoritesDropdownThumb>
             <FavoritesDropdownText>
               <FavoritesDropdownTitle>{s.title || "\u00A0"}</FavoritesDropdownTitle>
-              <FavoritesDropdownDescription>{s.description || "\u00A0"}</FavoritesDropdownDescription>
-              <FavoritesDropdownPrice>
-                {s.price != null ? formatPrice(s.price) : NO_PRICE_LABEL}
-              </FavoritesDropdownPrice>
+              <FavoritesDropdownSectionLabel>{s.sectionLabel}</FavoritesDropdownSectionLabel>
             </FavoritesDropdownText>
           </FavoritesDropdownRowLink>
         ))}

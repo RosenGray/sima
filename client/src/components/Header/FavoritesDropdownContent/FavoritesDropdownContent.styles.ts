@@ -58,20 +58,12 @@ export const FavoritesDropdownTitle = styled.span`
   text-overflow: ellipsis;
 `;
 
-export const FavoritesDropdownDescription = styled.span`
+export const FavoritesDropdownSectionLabel = styled.span`
   font-size: var(--font-size-1);
-  color: var(--gray-11);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  color: var(--gray-10);
+  white-space: nowrap;
   overflow: hidden;
-  line-height: 1.3;
-`;
-
-export const FavoritesDropdownPrice = styled.span`
-  font-size: var(--font-size-2);
-  font-weight: 600;
-  color: var(--gray-12);
+  text-overflow: ellipsis;
 `;
 
 export const FavoritesDropdownFooter = styled(Flex)`
