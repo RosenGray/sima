@@ -6,6 +6,7 @@ import { Avatar, Flex } from "@radix-ui/themes";
 import { ExitIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import { useLikes } from "@/providers/LikesProvider/LikesProvider";
 import { logoutUser } from "@/lib/auth/actions/logout";
 import { PRIVATE_ZONE_NAV_LINKS } from "../../constants/privateZoneNavLinks";
 import {
@@ -22,6 +23,7 @@ import {
 
 export default function PrivateZoneSidebarContent() {
   const { user } = useAuth();
+  const { totalLikedCount } = useLikes();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -64,7 +66,7 @@ export default function PrivateZoneSidebarContent() {
               <SidebarNavLink>
                 <Icon width="18" height="18" />
                 <SidebarNavLinkLabel>{item.label}</SidebarNavLinkLabel>
-                {typeof item.badge === "number" && (
+                {item.href === "/private-zone/liked-ads" && totalLikedCount > 0 && (
                   <Flex
                     ml="auto"
                     align="center"
@@ -80,7 +82,7 @@ export default function PrivateZoneSidebarContent() {
                       padding: "0 6px",
                     }}
                   >
-                    {item.badge}
+                    {totalLikedCount}
                   </Flex>
                 )}
               </SidebarNavLink>
