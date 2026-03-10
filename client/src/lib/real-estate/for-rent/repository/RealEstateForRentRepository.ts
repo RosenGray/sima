@@ -345,6 +345,38 @@ class RealEstateForRentRepository {
   }
 
   /**
+   * Get all real estates for rent by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: RealEstateForRentStatus | null }
+  ): Promise<SerializedRealEstateForRent[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof RealEstateForRent> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await RealEstateForRent.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching real estates for rent by user:", error);
+      return [];
+    }
+  }
+
+  /**
    * Get a real estate for rent by MongoDB _id
    * @param id - The MongoDB _id of the real estate
    * @returns Promise<SerializedRealEstateForRent | null> - The real estate or null if not found

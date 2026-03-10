@@ -6,7 +6,6 @@ import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
-  MobileIcon,
   CalendarIcon,
   ReaderIcon,
   IdCardIcon,
@@ -44,6 +43,7 @@ import {
 } from "./ProfessionalServiceDetailClient.styles";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_PROFESSIONAL_SERVICE } from "@/lib/constants/entityTypes";
 import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/professional-service/actions/deleteProfessionalServiceAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
@@ -313,21 +313,11 @@ const ProfessionalServiceDetailClient: React.FC<
                   )}
             </ContactItem>
 
-            {isAuthenticated ? (
-              <ContactItem>
-                <MobileIcon width="18" height="18" />
-                <Text size="3" weight="bold">
-                  {phoneNumber}
-                </Text>
-              </ContactItem>
-            ) : (
-              <ContactItem>
-                <MobileIcon width="18" height="18" />
-                <Text size="2" color="gray">
-                  Войдите, чтобы увидеть номер телефона
-                </Text>
-              </ContactItem>
-            )}
+            <RevealPhoneButton
+              primaryPhone={phoneNumber}
+              isAuthenticated={isAuthenticated}
+              isOwner={isOwner}
+            />
           </ContactSection>
 
           {/* Meta Information */}

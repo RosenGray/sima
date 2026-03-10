@@ -2,6 +2,7 @@ import { Job } from "../models/Job";
 import { IJob, JobStatus } from "../types/job.types";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedJob } from "../types/job.types";
+import mongoose from "mongoose";
 import { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
@@ -202,6 +203,38 @@ class JobRepository {
     } catch (error) {
       console.error("Error fetching job by publicId:", error);
       throw new Error("Failed to fetch job");
+    }
+  }
+
+  /**
+   * Get all jobs by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: JobStatus | null }
+  ): Promise<SerializedJob[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof Job> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await Job.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching jobs by user:", error);
+      return [];
     }
   }
 

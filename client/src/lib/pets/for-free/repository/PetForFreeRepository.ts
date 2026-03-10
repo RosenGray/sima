@@ -205,6 +205,42 @@ class PetForFreeRepository {
     }
   }
 
+  /**
+   * Get all pets for free by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: PetForFreeStatus | null }
+  ): Promise<SerializedPetForFree[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof PetForFree> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await PetForFree.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      const serialized = JSON.parse(JSON.stringify(results)) as SerializedPetForFree[];
+      serialized.forEach((p) => {
+        p.animal = normalizeAnimalId(p.animal);
+      });
+      return serialized;
+    } catch (error) {
+      console.error("Error fetching pets for free by user:", error);
+      return [];
+    }
+  }
+
   async getById(id: string): Promise<SerializedPetForFree | null> {
     try {
       await connectDB();

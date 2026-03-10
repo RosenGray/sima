@@ -23,9 +23,11 @@ export const SearchList = styled(Flex)`
 
 export const SearchCardRow = styled(Flex)`
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   border-radius: var(--radius-3);
-  padding: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--gray-6);
+  background: var(--color-surface);
 `;
 
 export const SearchCardLink = styled(Link)`
@@ -34,14 +36,11 @@ export const SearchCardLink = styled(Link)`
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  border-radius: var(--radius-3);
-  padding: var(--space-3);
   text-decoration: none;
   color: inherit;
-  transition: background 0.15s ease;
 
   &:hover {
-    background: var(--gray-a3);
+    text-decoration: underline;
   }
 `;
 

@@ -268,6 +268,38 @@ class CommercialRealEstateRepository {
   }
 
   /**
+   * Get all commercial real estates by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: CommercialRealEstateStatus | null }
+  ): Promise<SerializedCommercialRealEstate[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof CommercialRealEstate> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await CommercialRealEstate.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching commercial real estates by user:", error);
+      return [];
+    }
+  }
+
+  /**
    * Get a commercial real estate by MongoDB _id
    * @param id - The MongoDB _id of the commercial real estate
    * @returns Promise<SerializedCommercialRealEstate | null> - The commercial real estate or null if not found

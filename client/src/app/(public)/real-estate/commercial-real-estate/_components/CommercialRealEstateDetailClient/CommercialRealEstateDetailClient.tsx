@@ -5,7 +5,6 @@ import { Badge, Text, Button, Link, Spinner, Flex } from "@radix-ui/themes";
 import {
   PersonIcon,
   EnvelopeClosedIcon,
-  MobileIcon,
   CalendarIcon,
   ReaderIcon,
   IdCardIcon,
@@ -54,6 +53,7 @@ import {
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
+import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_COMMERCIAL_REAL_ESTATE } from "@/lib/constants/entityTypes";
 
 interface CommercialRealEstateDetailClientProps {
@@ -342,31 +342,12 @@ const CommercialRealEstateDetailClient: React.FC<
               <Text size="3">*** ***********</Text>
             </ContactItem>
 
-            {isAuthenticated ? (
-              <>
-                <ContactItem>
-                  <MobileIcon width="18" height="18" />
-                  <Text size="3" weight="bold">
-                    {contactPrimaryPhone}
-                  </Text>
-                </ContactItem>
-                {contactSecondaryPhone && (
-                  <ContactItem>
-                    <MobileIcon width="18" height="18" />
-                    <Text size="3" weight="bold">
-                      {contactSecondaryPhone}
-                    </Text>
-                  </ContactItem>
-                )}
-              </>
-            ) : (
-              <ContactItem>
-                <MobileIcon width="18" height="18" />
-                <Text size="2" color="gray">
-                  Войдите, чтобы увидеть номер телефона
-                </Text>
-              </ContactItem>
-            )}
+            <RevealPhoneButton
+              primaryPhone={contactPrimaryPhone}
+              secondaryPhone={contactSecondaryPhone}
+              isAuthenticated={isAuthenticated}
+              isOwner={isOwner}
+            />
           </ContactSection>
 
           {/* Meta Information */}

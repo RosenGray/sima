@@ -281,6 +281,42 @@ class PetForSaleRepository {
   }
 
   /**
+   * Get all pets for sale by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: PetForSaleStatus | null }
+  ): Promise<SerializedPetForSale[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof PetForSale> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await PetForSale.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      const serialized = JSON.parse(JSON.stringify(results)) as SerializedPetForSale[];
+      serialized.forEach((p) => {
+        p.animal = normalizeAnimalId(p.animal);
+      });
+      return serialized;
+    } catch (error) {
+      console.error("Error fetching pets for sale by user:", error);
+      return [];
+    }
+  }
+
+  /**
    * Get a pet for sale by MongoDB _id
    * @param id - The MongoDB _id of the pet
    * @returns Promise<SerializedPetForSale | null> - The pet or null if not found

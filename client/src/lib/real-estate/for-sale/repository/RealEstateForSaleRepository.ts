@@ -343,6 +343,38 @@ class RealEstateForSaleRepository {
   }
 
   /**
+   * Get all real estates for sale by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: RealEstateForSaleStatus | null }
+  ): Promise<SerializedRealEstateForSale[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof RealEstateForSale> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await RealEstateForSale.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching real estates for sale by user:", error);
+      return [];
+    }
+  }
+
+  /**
    * Get a real estate for sale by MongoDB _id
    * @param id - The MongoDB _id of the real estate
    * @returns Promise<SerializedRealEstateForSale | null> - The real estate or null if not found

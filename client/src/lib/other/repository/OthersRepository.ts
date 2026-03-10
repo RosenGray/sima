@@ -2,6 +2,7 @@ import { Others } from "../models/Others";
 import { IOthers, OthersStatus } from "../types/others.types";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedOthers } from "../types/others.types";
+import mongoose from "mongoose";
 import { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
@@ -127,6 +128,38 @@ class OthersRepository {
     } catch (error) {
       console.error("Error fetching other by publicId:", error);
       throw new Error("Failed to fetch other");
+    }
+  }
+
+  /**
+   * Get all others by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: OthersStatus | null }
+  ): Promise<SerializedOthers[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof Others> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active";
+      }
+
+      const results = await Others.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching others by user:", error);
+      return [];
     }
   }
 

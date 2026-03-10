@@ -2,177 +2,143 @@
 
 import { getCurrentUser } from "@/lib/auth/utils/auth.utils";
 import { getLikedAdIdsByUser } from "@/lib/likes/repository/LikesRepository";
-import {
-  buildHref,
-  type LikedAdSummary,
-} from "@/lib/likes/entityTypeToPath";
+import type { MyAdSummary } from "@/lib/likes/entityTypeToPath";
 import { carRepository } from "@/lib/vehicles/cars/repository/CarRepository";
-import { jobRepository } from "@/lib/jobs/repository/JobRepository";
-import { petForSaleRepository } from "@/lib/pets/for-sale/repository/PetForSaleRepository";
-import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
-import { petAccessoryRepository } from "@/lib/pets/accessories/repository/PetAccessoryRepository";
-import { petForFreeRepository } from "@/lib/pets/for-free/repository/PetForFreeRepository";
 import { offRoadVehicleRepository } from "@/lib/vehicles/off-road/repository/OffRoadVehicleRepository";
 import { commercialVehicleRepository } from "@/lib/vehicles/commercial-vehicles/repository/CommercialVehicleRepository";
 import { motorcycleRepository } from "@/lib/vehicles/motorcycles/repository/MotorcycleRepository";
 import { scooterRepository } from "@/lib/vehicles/scooters/repository/ScooterRepository";
 import { specialVehicleRepository } from "@/lib/vehicles/special-vehicles/repository/SpecialVehicleRepository";
 import { accessoryRepository } from "@/lib/vehicles/accessories/repository/AccessoryRepository";
-import { EntityType } from "@/lib/constants/entityTypes";
+import { jobRepository } from "@/lib/jobs/repository/JobRepository";
+import { professionalServiceRepository } from "@/lib/professionals/professional-service/repository/ProfessionalServiceRepository";
+import { petForSaleRepository } from "@/lib/pets/for-sale/repository/PetForSaleRepository";
+import { petForFreeRepository } from "@/lib/pets/for-free/repository/PetForFreeRepository";
+import { petAccessoryRepository } from "@/lib/pets/accessories/repository/PetAccessoryRepository";
+import { realEstateForSaleRepository } from "@/lib/real-estate/for-sale/repository/RealEstateForSaleRepository";
+import { realEstateForRentRepository } from "@/lib/real-estate/for-rent/repository/RealEstateForRentRepository";
+import { commercialRealEstateRepository } from "@/lib/real-estate/commercial-real-estate/repository/CommercialRealEstateRepository";
+import { yad2ItemRepository } from "@/lib/yad2/repository/Yad2ItemRepository";
+import { othersRepository } from "@/lib/other/repository/OthersRepository";
+import {
+  carToMyAdSummary,
+  offRoadVehicleToMyAdSummary,
+  commercialVehicleToMyAdSummary,
+  motorcycleToMyAdSummary,
+  scooterToMyAdSummary,
+  specialVehicleToMyAdSummary,
+  vehicleAccessoryToMyAdSummary,
+  jobToMyAdSummary,
+  professionalServiceToMyAdSummary,
+  petForSaleToMyAdSummary,
+  petForFreeToMyAdSummary,
+  petAccessoryToMyAdSummary,
+  realEstateForSaleToMyAdSummary,
+  realEstateForRentToMyAdSummary,
+  commercialRealEstateToMyAdSummary,
+  yad2ItemToMyAdSummary,
+  otherToMyAdSummary,
+} from "@/lib/my-ads/entityToMyAdSummary";
 
+type Fetcher = (publicId: string) => Promise<MyAdSummary | null>;
 
-function thumbnailUrl(images: { url: string }[] | undefined): string | null {
-  if (images?.length && images[0]?.url) return images[0].url;
-  return null;
-}
-
-function toSummary(
-  entityType: EntityType,
-  publicId: string,
-  entity: {
-    images?: { url: string }[];
-    description?: string;
-    [key: string]: unknown;
+const fetchers: Record<string, Fetcher> = {
+  "vehicles-cars": async (publicId) => {
+    const entity = await carRepository.getByPublicId(publicId);
+    return entity ? carToMyAdSummary(entity) : null;
   },
-  title: string,
-  price: number | null
-): LikedAdSummary {
-  return {
-    entityType,
-    publicId,
-    href: buildHref(entityType, publicId),
-    thumbnailUrl: thumbnailUrl(entity.images),
-    title: title ?? "",
-    description: entity.description ?? "",
-    price,
-  };
-}
+  "vehicles-off-road": async (publicId) => {
+    const entity = await offRoadVehicleRepository.getByPublicId(publicId);
+    return entity ? offRoadVehicleToMyAdSummary(entity) : null;
+  },
+  "vehicles-commercial": async (publicId) => {
+    const entity = await commercialVehicleRepository.getByPublicId(publicId);
+    return entity ? commercialVehicleToMyAdSummary(entity) : null;
+  },
+  "vehicles-motorcycles": async (publicId) => {
+    const entity = await motorcycleRepository.getByPublicId(publicId);
+    return entity ? motorcycleToMyAdSummary(entity) : null;
+  },
+  "vehicles-scooters": async (publicId) => {
+    const entity = await scooterRepository.getByPublicId(publicId);
+    return entity ? scooterToMyAdSummary(entity) : null;
+  },
+  "vehicles-special-vehicles": async (publicId) => {
+    const entity = await specialVehicleRepository.getByPublicId(publicId);
+    return entity ? specialVehicleToMyAdSummary(entity) : null;
+  },
+  "vehicles-accessories": async (publicId) => {
+    const entity = await accessoryRepository.getByPublicId(publicId);
+    return entity ? vehicleAccessoryToMyAdSummary(entity) : null;
+  },
+  jobs: async (publicId) => {
+    const entity = await jobRepository.getByPublicId(publicId);
+    return entity ? jobToMyAdSummary(entity) : null;
+  },
+  "professional-service": async (publicId) => {
+    const entity = await professionalServiceRepository.getByPublicId(publicId);
+    return entity ? professionalServiceToMyAdSummary(entity) : null;
+  },
+  "pets-for-sale": async (publicId) => {
+    const entity = await petForSaleRepository.getByPublicId(publicId);
+    return entity ? petForSaleToMyAdSummary(entity) : null;
+  },
+  "pets-for-free": async (publicId) => {
+    const entity = await petForFreeRepository.getByPublicId(publicId);
+    return entity ? petForFreeToMyAdSummary(entity) : null;
+  },
+  "pets-accessories": async (publicId) => {
+    const entity = await petAccessoryRepository.getByPublicId(publicId);
+    return entity ? petAccessoryToMyAdSummary(entity) : null;
+  },
+  "real-estate-for-sale": async (publicId) => {
+    const entity = await realEstateForSaleRepository.getByPublicId(publicId);
+    return entity ? realEstateForSaleToMyAdSummary(entity) : null;
+  },
+  "real-estate-for-rent": async (publicId) => {
+    const entity = await realEstateForRentRepository.getByPublicId(publicId);
+    return entity ? realEstateForRentToMyAdSummary(entity) : null;
+  },
+  "real-estate-commercial-real-estate": async (publicId) => {
+    const entity = await commercialRealEstateRepository.getByPublicId(publicId);
+    return entity ? commercialRealEstateToMyAdSummary(entity) : null;
+  },
+  yad2: async (publicId) => {
+    const entity = await yad2ItemRepository.getByPublicId(publicId);
+    return entity ? yad2ItemToMyAdSummary(entity) : null;
+  },
+  other: async (publicId) => {
+    const entity = await othersRepository.getByPublicId(publicId);
+    return entity ? otherToMyAdSummary(entity) : null;
+  },
+};
 
-export async function getLikedAdSummaries(): Promise<LikedAdSummary[]> {
+export async function getLikedAdSummaries(): Promise<MyAdSummary[]> {
   const user = await getCurrentUser();
   if (!user) return [];
 
-  // const likedByType = await getLikedAdIdsByUser(user.id);
-  // const results: LikedAdSummary[] = [];
+  const likedByType = await getLikedAdIdsByUser(user.id);
 
-  // for (const [entityType, publicIds] of Object.entries(likedByType)) {
-  //   if (!publicIds?.length) continue;
+  const allPromises = Object.entries(likedByType).flatMap(
+    ([entityType, publicIds]) => {
+      const fetcher = fetchers[entityType];
+      if (!fetcher || !publicIds?.length) return [];
+      return publicIds.map((publicId) =>
+        fetcher(publicId).catch((err) => {
+          console.error(
+            `getLikedAdSummaries: failed for ${entityType}/${publicId}`,
+            err
+          );
+          return null;
+        })
+      );
+    }
+  );
 
-  //   for (const publicId of publicIds) {
-  //     try {
-  //       switch (entityType) {
-  //         case "vehicles-cars": {
-  //           const entity = await carRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         case "jobs": {
-  //           const entity = await jobRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           results.push(toSummary(entityType, publicId, entity, entity.title ?? "", null));
-  //           break;
-  //         }
-  //         case "pets-for-sale": {
-  //           const entity = await petForSaleRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const animal = getAnimalById(entity.animal as Parameters<typeof getAnimalById>[0]);
-  //           const kind = getAnimalKindById(
-  //             entity.kind as Parameters<typeof getAnimalKindById>[0],
-  //             entity.animal as Parameters<typeof getAnimalKindById>[1]
-  //           );
-  //           const title = [animal?.russianName, kind?.russianName].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         case "professional-service": {
-  //           const entity = await professionalServiceRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title =
-  //             (entity.subCategory as { russianDisplayName?: string })?.russianDisplayName ??
-  //             (entity.category as { russianDisplayName?: string })?.russianDisplayName ??
-  //             "";
-  //           results.push(toSummary(entityType, publicId, entity, title, null));
-  //           break;
-  //         }
-  //         case "pets-accessories": {
-  //           const entity = await petAccessoryRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           results.push(toSummary(entityType, publicId, entity, entity.title ?? "", entity.price ?? null));
-  //           break;
-  //         }
-  //         case "pets-for-free": {
-  //           const entity = await petForFreeRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const animal = getAnimalById(entity.animal as Parameters<typeof getAnimalById>[0]);
-  //           const kind = getAnimalKindById(
-  //             entity.kind as Parameters<typeof getAnimalKindById>[0],
-  //             entity.animal as Parameters<typeof getAnimalKindById>[1]
-  //           );
-  //           const title = [animal?.russianName, kind?.russianName].filter(Boolean).join(" ");
-  //           const price = entity.price != null ? entity.price : null;
-  //           results.push(toSummary(entityType, publicId, entity, title, price));
-  //           break;
-  //         }
-  //         case "vehicles-off-road": {
-  //           const entity = await offRoadVehicleRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         case "vehicles-commercial": {
-  //           const entity = await commercialVehicleRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         case "vehicles-motorcycles": {
-  //           const entity = await motorcycleRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         case "vehicles-scooters": {
-  //           const entity = await scooterRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title = [entity.manufacturer, entity.model].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         case "vehicles-special-vehicles": {
-  //           const entity = await specialVehicleRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title = entity.title ?? [entity.category, entity.kind].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         case "vehicles-accessories": {
-  //           const entity = await accessoryRepository.getByPublicId(publicId);
-  //           if (!entity) continue;
-  //           const title = entity.title ?? [entity.category, entity.kind].filter(Boolean).join(" ");
-  //           results.push(toSummary(entityType, publicId, entity, title, entity.price ?? null));
-  //           break;
-  //         }
-  //         default:
-  //           results.push({
-  //             entityType,
-  //             publicId,
-  //             href: buildHref(entityType, publicId),
-  //             thumbnailUrl: null,
-  //             title: "",
-  //             description: "",
-  //             price: null,
-  //           });
-  //       }
-  //     } catch (err) {
-  //       console.error(`getLikedAdSummaries: failed for ${entityType}/${publicId}`, err);
-  //     }
-  //   }
-  // }
+  const results = await Promise.all(allPromises);
 
-  return [];
+  return (results.filter(Boolean) as MyAdSummary[]).sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 }

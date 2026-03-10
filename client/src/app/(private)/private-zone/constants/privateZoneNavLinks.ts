@@ -30,7 +30,6 @@ export const PRIVATE_ZONE_NAV_LINKS: UserNavLinkItem[] = [
     label: "Избранные объявления",
     href: "/private-zone/liked-ads",
     icon: HeartIcon,
-    badge: 6,
   },
   {
     label: "Советы и информация",

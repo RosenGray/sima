@@ -1,6 +1,7 @@
 import { Motorcycle, IMotorcycle, MotorcycleStatus } from "../models/Motorcycle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedMotorcycle } from "../types/motorcycle.types";
+import mongoose from "mongoose";
 import type { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
@@ -227,6 +228,38 @@ class MotorcycleRepository {
     } catch (error) {
       console.error("Error fetching motorcycle:", error);
       throw new Error("Failed to fetch motorcycle");
+    }
+  }
+
+  /**
+   * Get all motorcycles by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: MotorcycleStatus | null }
+  ): Promise<SerializedMotorcycle[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof Motorcycle> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active" as MotorcycleStatus;
+      }
+
+      const results = await Motorcycle.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching motorcycles by user:", error);
+      return [];
     }
   }
 

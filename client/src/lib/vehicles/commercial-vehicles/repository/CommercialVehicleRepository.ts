@@ -5,6 +5,7 @@ import {
 } from "../models/CommercialVehicle";
 import connectDB from "@/lib/mongo/mongodb";
 import { SerializedCommercialVehicle } from "../types/commercialVehicle.types";
+import mongoose from "mongoose";
 import type { FilterQuery } from "mongoose";
 import sanitize from "mongo-sanitize";
 
@@ -227,6 +228,38 @@ class CommercialVehicleRepository {
     } catch (error) {
       console.error("Error fetching commercial vehicle:", error);
       throw new Error("Failed to fetch commercial vehicle");
+    }
+  }
+
+  /**
+   * Get all commercial vehicles by user id (for My Ads).
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: CommercialVehicleStatus | null }
+  ): Promise<SerializedCommercialVehicle[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof CommercialVehicle> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status;
+      } else if (options?.status === undefined) {
+        query.status = "active" as CommercialVehicleStatus;
+      }
+
+      const results = await CommercialVehicle.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(results));
+    } catch (error) {
+      console.error("Error fetching commercial vehicles by user:", error);
+      return [];
     }
   }
 

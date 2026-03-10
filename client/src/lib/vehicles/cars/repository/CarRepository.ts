@@ -302,6 +302,41 @@ class CarRepository {
   }
 
   /**
+   * Get all cars by user id (for My Ads).
+   * @param userId - The user's MongoDB _id
+   * @param options - Optional: status filter (undefined = active only, null = any status)
+   * @returns Promise<SerializedCar[]>
+   */
+  async getByUserId(
+    userId: string,
+    options?: { status?: CarStatus | null }
+  ): Promise<SerializedCar[]> {
+    try {
+      await connectDB();
+      if (!mongoose.Types.ObjectId.isValid(userId)) return [];
+
+      const query: FilterQuery<typeof Car> = {
+        user: new mongoose.Types.ObjectId(sanitize(userId)),
+      };
+      if (options?.status !== undefined && options?.status !== null) {
+        query.status = options.status as CarStatus;
+      } else if (options?.status === undefined) {
+        query.status = "active" as CarStatus;
+      }
+
+      const cars = await Car.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .populate("user")
+        .lean();
+
+      return JSON.parse(JSON.stringify(cars));
+    } catch (error) {
+      console.error("Error fetching cars by user:", error);
+      return [];
+    }
+  }
+
+  /**
    * Get a car by MongoDB _id
    * @param id - The MongoDB _id of the car
    * @returns Promise<SerializedCar | null> - The car or null if not found
