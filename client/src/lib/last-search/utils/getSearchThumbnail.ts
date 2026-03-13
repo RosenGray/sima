@@ -19,6 +19,7 @@ const THUMBNAIL_MAP: Record<EntityType, string> = {
   other: "other.png",
   yad2: "yad2.png",
   "professional-service": "professional-service.png",
+  "professional-page": "professional-service.png",
 };
 
 export function getSearchThumbnail(entityType: EntityType): string {
