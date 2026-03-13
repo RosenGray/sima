@@ -15,6 +15,7 @@ export const ENTITY_TYPE_REAL_ESTATE_FOR_RENT = "real-estate-for-rent";
 export const ENTITY_TYPE_REAL_ESTATE_FOR_SALE = "real-estate-for-sale";
 export const ENTITY_TYPE_YAD2 = "yad2";
 export const ENTITY_TYPE_OTHER = "other";
+export const ENTITY_TYPE_PROFESSIONAL_PAGE = "professional-page";
 
 export type EntityType =
   | typeof ENTITY_TYPE_PETS_FOR_SALE
@@ -33,4 +34,5 @@ export type EntityType =
   | typeof ENTITY_TYPE_REAL_ESTATE_FOR_RENT
   | typeof ENTITY_TYPE_REAL_ESTATE_FOR_SALE
   | typeof ENTITY_TYPE_YAD2
-  | typeof ENTITY_TYPE_OTHER;
+  | typeof ENTITY_TYPE_OTHER
+  | typeof ENTITY_TYPE_PROFESSIONAL_PAGE;

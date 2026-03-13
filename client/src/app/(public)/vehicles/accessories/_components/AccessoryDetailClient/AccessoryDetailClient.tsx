@@ -52,9 +52,11 @@ import {
   getAccessoryKindById,
 } from "@/lib/vehicles/accessories/accessoryKinds";
 import { AccessoryCategoryId } from "@/lib/vehicles/accessories/accessoryCategories/types/accessoryCategory.schema";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface AccessoryDetailClientProps {
   accessory: SerializedAccessory;
+  viewCount?: number | null;
 }
 
 // Helper function to format price
@@ -67,6 +69,7 @@ const formatPrice = (price: number): string => {
 
 const AccessoryDetailClient: React.FC<AccessoryDetailClientProps> = ({
   accessory,
+  viewCount,
 }) => {
   const deleteAccessoryAdByPublicId = deleteAccessoryAdWithRedirect.bind(
     null,
@@ -319,6 +322,9 @@ const AccessoryDetailClient: React.FC<AccessoryDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

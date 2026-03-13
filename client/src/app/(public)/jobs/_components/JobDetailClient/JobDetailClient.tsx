@@ -48,12 +48,14 @@ import { deleteJobAdWithRedirect } from "@/lib/jobs/actions/deleteJobAd";
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface JobDetailClientProps {
   job: SerializedJob;
+  viewCount?: number | null;
 }
 
-const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
+const JobDetailClient: React.FC<JobDetailClientProps> = ({ job, viewCount }) => {
   const deleteJobAdByPublicId = deleteJobAdWithRedirect.bind(null, job.publicId);
 
   const [formState, formAction, isPending] = useActionState(
@@ -345,6 +347,9 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job }) => {
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

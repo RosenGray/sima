@@ -50,9 +50,11 @@ import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteC
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_OFF_ROAD } from "@/lib/constants/entityTypes";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface OffRoadVehicleDetailClientProps {
   offRoadVehicle: SerializedOffRoadVehicle;
+  viewCount?: number | null;
 }
 
 // Helper function to format transmission type
@@ -76,7 +78,7 @@ const formatPrice = (price: number): string => {
   return new Intl.NumberFormat("il-IL", { style: "currency", currency: "ILS" }).format(price);
 };
 
-const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({ offRoadVehicle }) => {
+const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({ offRoadVehicle, viewCount }) => {
   const router = useRouter();
   const deleteOffRoadVehicleAdByPublicId = deleteOffRoadVehicleAdWithRedirect.bind(null, offRoadVehicle.publicId);
 
@@ -397,6 +399,9 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

@@ -50,9 +50,11 @@ import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_PETS_FOR_FREE } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface PetForFreeDetailClientProps {
   pet: SerializedPetForFree;
+  viewCount?: number | null;
 }
 
 const formatGender = (gender: PetGender): string => {
@@ -88,6 +90,7 @@ const ADJUSTMENT_LABELS: Record<number, string> = {
 
 const PetForFreeDetailClient: React.FC<PetForFreeDetailClientProps> = ({
   pet,
+  viewCount,
 }) => {
   const deletePetAdByPublicId = deletePetForFreeAdWithRedirect.bind(
     null,
@@ -369,6 +372,9 @@ const PetForFreeDetailClient: React.FC<PetForFreeDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

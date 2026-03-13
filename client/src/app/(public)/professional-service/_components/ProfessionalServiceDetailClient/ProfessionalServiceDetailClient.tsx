@@ -49,14 +49,16 @@ import { deleteProfessionalServiceAdWithRedirect } from "@/lib/professionals/pro
 import ErrorModal from "@/components/modals/ErrorModal/ErrorModal";
 import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteConfirmationModalWithServerAction/DeleteConfirmationModalWithServerAction";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface ProfessionalServiceDetailClientProps {
   service: SerilizeProfessionalService;
+  viewCount?: number | null;
 }
 
 const ProfessionalServiceDetailClient: React.FC<
   ProfessionalServiceDetailClientProps
-> = ({ service }) => {
+> = ({ service, viewCount }) => {
   const deleteProfessionalServiceAdByPublicId =
     deleteProfessionalServiceAdWithRedirect.bind(null, service.publicId);
 
@@ -326,6 +328,9 @@ const ProfessionalServiceDetailClient: React.FC<
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

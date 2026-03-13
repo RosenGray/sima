@@ -56,9 +56,11 @@ import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_PETS_FOR_SALE } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface PetForSaleDetailClientProps {
   pet: SerializedPetForSale;
+  viewCount?: number | null;
 }
 
 // Helper function to format gender
@@ -104,6 +106,7 @@ const ADJUSTMENT_LABELS: Record<number, string> = {
 
 const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
   pet,
+  viewCount,
 }) => {
   const deletePetAdByPublicId = deletePetForSaleAdWithRedirect.bind(
     null,
@@ -403,6 +406,9 @@ const PetForSaleDetailClient: React.FC<PetForSaleDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

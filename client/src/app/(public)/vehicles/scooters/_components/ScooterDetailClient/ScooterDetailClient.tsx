@@ -47,9 +47,11 @@ import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteC
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_SCOOTERS } from "@/lib/constants/entityTypes";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface ScooterDetailClientProps {
   scooter: SerializedScooter;
+  viewCount?: number | null;
 }
 
 // Helper function to format price
@@ -57,7 +59,7 @@ const formatPrice = (price: number): string => {
   return new Intl.NumberFormat("il-IL", { style: "currency", currency: "ILS" }).format(price);
 };
 
-const ScooterDetailClient: React.FC<ScooterDetailClientProps> = ({ scooter }) => {
+const ScooterDetailClient: React.FC<ScooterDetailClientProps> = ({ scooter, viewCount }) => {
   const deleteScooterAdByPublicId = deleteScooterAdWithRedirect.bind(null, scooter.publicId);
 
   const [formState, formAction, isPending] = useActionState(
@@ -323,6 +325,9 @@ const ScooterDetailClient: React.FC<ScooterDetailClientProps> = ({ scooter }) =>
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>
