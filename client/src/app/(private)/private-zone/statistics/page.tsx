@@ -25,7 +25,8 @@ const StatisticsPage: FC = async () => {
     phoneRevealsRepository.getTotalCountForAds(adPairs),
     user ? chatRepository.getConversationCountForUser(user.id) : Promise.resolve(0),
   ]);
-  
+
+  const activeCount = allAds.filter(ad => ad.status === "active").length;
 
   return (
     <PageWrapper>
@@ -35,7 +36,7 @@ const StatisticsPage: FC = async () => {
           <ChatNotificationCard count={chatCount} />
         </LeftColumn>
         <RightColumn>
-          <StatsSummary />
+          <StatsSummary activeCount={activeCount} />
           <GeneralDataSection views={views} likes={likes} phoneClicks={phoneClicks} />
         </RightColumn>
       </TwoColumnLayout>

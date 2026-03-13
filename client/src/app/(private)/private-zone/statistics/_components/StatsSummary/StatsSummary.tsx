@@ -2,14 +2,17 @@ import { FC } from "react";
 import { Heading, Text, Separator } from "@radix-ui/themes";
 import { SummaryCard, StatsGrid, MetricCell, MetricDivider } from "./StatsSummary.styles";
 
-const METRICS = [
-  { value: "0", label: "Активные объявления" },
-  { value: "0", label: "Неактивные объявления" },
-  { value: "0", label: "Истёкшие объявления" },
-  { value: "0", label: "Опубликовано сегодня" },
-];
+interface StatsSummaryProps {
+  activeCount: number;
+}
 
-const StatsSummary: FC = () => {
+const StatsSummary: FC<StatsSummaryProps> = ({ activeCount }) => {
+  const METRICS = [
+    { value: String(activeCount), label: "Активные объявления" },
+    // { value: "0", label: "Неактивные объявления" },
+    // { value: "0", label: "Истёкшие объявления" },
+    // { value: "0", label: "Опубликовано сегодня" },
+  ];
   return (
     <SummaryCard variant="surface">
       <StatsGrid>
