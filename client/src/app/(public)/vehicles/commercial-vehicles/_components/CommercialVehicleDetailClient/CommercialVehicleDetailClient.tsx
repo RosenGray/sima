@@ -374,6 +374,8 @@ const CommercialVehicleDetailClient: React.FC<CommercialVehicleDetailClientProps
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_COMMERCIAL_VEHICLES}
+              entityPublicId={publicId}
             />
 
             {isAuthenticated && !isOwner && (

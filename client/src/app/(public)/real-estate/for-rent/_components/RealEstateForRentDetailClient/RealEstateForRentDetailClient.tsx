@@ -631,6 +631,8 @@ const RealEstateForRentDetailClient: React.FC<RealEstateForRentDetailClientProps
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_REAL_ESTATE_FOR_RENT}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

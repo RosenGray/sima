@@ -19,22 +19,22 @@ export const PRIVATE_ZONE_NAV_LINKS: UserNavLinkItem[] = [
     href: "/private-zone/last-searches",
     icon: MagnifyingGlassIcon,
   },
-  { label: "Мои сообщения", href: "/private-zone/chat", icon: ChatBubbleIcon },
-  {
-    label: "Обновить данные",
-    href: "/private-zone/update-details",
-    icon: Pencil1Icon,
-  },
+  { label: "Мои сообщения - чаты", href: "/private-zone/chat", icon: ChatBubbleIcon },
+  // {
+  //   label: "Обновить данные",
+  //   href: "/private-zone/update-details",
+  //   icon: Pencil1Icon,
+  // },
   { label: "Статистика", href: "/private-zone/statistics", icon: BarChartIcon },
   {
     label: "Избранные объявления",
     href: "/private-zone/liked-ads",
     icon: HeartIcon,
   },
-  {
-    label: "Советы и информация",
-    href: "/private-zone/tips-info",
-    icon: InfoCircledIcon,
-  },
-  { label: "Настройки", href: "/private-zone/settings", icon: GearIcon },
+  // {
+  //   label: "Советы и информация",
+  //   href: "/private-zone/tips-info",
+  //   icon: InfoCircledIcon,
+  // },
+  // { label: "Настройки", href: "/private-zone/settings", icon: GearIcon },
 ];

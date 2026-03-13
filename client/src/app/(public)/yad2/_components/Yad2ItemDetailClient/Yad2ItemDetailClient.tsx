@@ -353,6 +353,8 @@ const Yad2ItemDetailClient: React.FC<Yad2ItemDetailClientProps> = ({
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_YAD2}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

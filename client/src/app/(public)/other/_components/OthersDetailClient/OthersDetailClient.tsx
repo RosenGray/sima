@@ -285,6 +285,8 @@ const OthersDetailClient: React.FC<OthersDetailClientProps> = ({ others, viewCou
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_OTHER}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

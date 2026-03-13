@@ -369,6 +369,15 @@ export class ChatRepository {
     };
   }
 
+  async getConversationCountForUser(userId: string): Promise<number> {
+    await connectDB();
+    const uid = toObjectId(sanitize(userId));
+    return Conversation.countDocuments({
+      participants: uid,
+      deletedByUserIds: { $ne: uid },
+    });
+  }
+
   /**
    * Updates adSnapshot.status for all conversations linked to the given ad.
    * Use when an ad is deleted (or status changes) so chat UI can show the correct status.

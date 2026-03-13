@@ -429,6 +429,8 @@ const CarDetailClient: React.FC<CarDetailClientProps> = ({ car, viewCount }) => 
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_CARS}
+              entityPublicId={publicId}
             />
 
             {isAuthenticated && !isOwner && (

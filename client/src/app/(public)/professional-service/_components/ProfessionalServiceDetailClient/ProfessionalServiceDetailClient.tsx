@@ -319,6 +319,8 @@ const ProfessionalServiceDetailClient: React.FC<
               primaryPhone={phoneNumber}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_PROFESSIONAL_SERVICE}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

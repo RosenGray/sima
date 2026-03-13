@@ -343,6 +343,8 @@ const MotorcycleDetailClient: React.FC<MotorcycleDetailClientProps> = ({
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_MOTORCYCLES}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

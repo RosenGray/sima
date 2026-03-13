@@ -338,6 +338,8 @@ const JobDetailClient: React.FC<JobDetailClientProps> = ({ job, viewCount }) => 
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_JOBS}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

@@ -316,6 +316,8 @@ const ScooterDetailClient: React.FC<ScooterDetailClientProps> = ({ scooter, view
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_SCOOTERS}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

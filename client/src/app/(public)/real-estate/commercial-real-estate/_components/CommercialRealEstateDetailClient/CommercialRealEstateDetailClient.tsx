@@ -349,6 +349,8 @@ const CommercialRealEstateDetailClient: React.FC<
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_COMMERCIAL_REAL_ESTATE}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

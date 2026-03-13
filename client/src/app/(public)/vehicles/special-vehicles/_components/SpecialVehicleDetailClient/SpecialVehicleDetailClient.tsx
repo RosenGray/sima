@@ -313,6 +313,8 @@ const SpecialVehicleDetailClient: React.FC<SpecialVehicleDetailClientProps> = ({
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_SPECIAL_VEHICLES}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

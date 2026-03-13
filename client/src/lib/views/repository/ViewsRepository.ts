@@ -45,6 +45,14 @@ class ViewsRepository {
     await connectDB();
     return AdView.countDocuments({ entityType, entityPublicId });
   }
+
+  async getTotalCountForAds(
+    ads: { entityType: EntityType; entityPublicId: string }[]
+  ): Promise<number> {
+    if (ads.length === 0) return 0;
+    await connectDB();
+    return AdView.countDocuments({ $or: ads });
+  }
 }
 
 export const viewsRepository = new ViewsRepository();
