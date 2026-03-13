@@ -52,9 +52,11 @@ import {
   getSpecialVehicleKindById,
 } from "@/lib/vehicles/special-vehicles/specialVehicleKinds";
 import { SpecialVehicleCategoryId } from "@/lib/vehicles/special-vehicles/specialVehicleCategories/types/specialVehicleCategory.schema";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface SpecialVehicleDetailClientProps {
   specialVehicle: SerializedSpecialVehicle;
+  viewCount?: number | null;
 }
 
 // Helper function to format price
@@ -67,6 +69,7 @@ const formatPrice = (price: number): string => {
 
 const SpecialVehicleDetailClient: React.FC<SpecialVehicleDetailClientProps> = ({
   specialVehicle,
+  viewCount,
 }) => {
   const deleteSpecialVehicleAdByPublicId = deleteSpecialVehicleAdWithRedirect.bind(
     null,
@@ -319,6 +322,9 @@ const SpecialVehicleDetailClient: React.FC<SpecialVehicleDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

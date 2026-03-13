@@ -59,9 +59,11 @@ import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteC
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_REAL_ESTATE_FOR_RENT } from "@/lib/constants/entityTypes";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface RealEstateForRentDetailClientProps {
   realEstate: SerializedRealEstateForRent;
+  viewCount?: number | null;
 }
 
 // Helper functions to format enum values
@@ -153,6 +155,7 @@ const formatDate = (year: number, month: number, day: number): string => {
 
 const RealEstateForRentDetailClient: React.FC<RealEstateForRentDetailClientProps> = ({
   realEstate,
+  viewCount,
 }) => {
   const deleteRealEstateAdByPublicId = deleteRealEstateForRentAdWithRedirect.bind(
     null,
@@ -637,6 +640,9 @@ const RealEstateForRentDetailClient: React.FC<RealEstateForRentDetailClientProps
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatCreatedDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

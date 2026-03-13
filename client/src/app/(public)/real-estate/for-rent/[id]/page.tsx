@@ -2,6 +2,9 @@ import { FC } from "react";
 import { realEstateForRentRepository } from "@/lib/real-estate/for-rent/repository/RealEstateForRentRepository";
 import { notFound } from "next/navigation";
 import RealEstateForRentDetailClient from "../_components/RealEstateForRentDetailClient/RealEstateForRentDetailClient";
+import { thisUserIsOwner } from "@/lib/auth/utils/auth.utils";
+import { getAdViewCount, recordAdView } from "@/lib/views/actions/views.actions";
+import { ENTITY_TYPE_REAL_ESTATE_FOR_RENT } from "@/lib/constants/entityTypes";
 
 interface RealEstateForRentPageProps {
   params: Promise<{ id: string }>;
@@ -15,7 +18,14 @@ const RealEstateForRentPage: FC<RealEstateForRentPageProps> = async ({
   if (!realEstate) {
     return notFound();
   }
-  return <RealEstateForRentDetailClient realEstate={realEstate} />;
+  const isOwner = await thisUserIsOwner(realEstate.user.id);
+  const viewCount = isOwner
+    ? await getAdViewCount(ENTITY_TYPE_REAL_ESTATE_FOR_RENT, realEstate.publicId)
+    : null;
+  if (!isOwner) {
+    await recordAdView(ENTITY_TYPE_REAL_ESTATE_FOR_RENT, realEstate.publicId);
+  }
+  return <RealEstateForRentDetailClient realEstate={realEstate} viewCount={viewCount} />;
 };
 
 export default RealEstateForRentPage;

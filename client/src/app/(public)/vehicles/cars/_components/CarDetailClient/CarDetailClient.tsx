@@ -52,9 +52,11 @@ import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_CARS } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface CarDetailClientProps {
   car: SerializedCar;
+  viewCount?: number | null;
 }
 
 // Helper function to format transmission type
@@ -96,7 +98,7 @@ const formatPrice = (price: number): string => {
   return new Intl.NumberFormat("il-IL", { style: "currency", currency: "ILS" }).format(price);
 };
 
-const CarDetailClient: React.FC<CarDetailClientProps> = ({ car }) => {
+const CarDetailClient: React.FC<CarDetailClientProps> = ({ car, viewCount }) => {
   const deleteCarAdByPublicId = deleteCarAdWithRedirect.bind(null, car.publicId);
 
   const [formState, formAction, isPending] = useActionState(
@@ -459,6 +461,9 @@ const CarDetailClient: React.FC<CarDetailClientProps> = ({ car }) => {
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

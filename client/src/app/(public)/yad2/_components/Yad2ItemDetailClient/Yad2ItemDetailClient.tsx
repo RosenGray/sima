@@ -56,9 +56,11 @@ import {
 import {
   Yad2CategoryId,
 } from "@/lib/yad2/yad2Categories/types/yad2Category.schema";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface Yad2ItemDetailClientProps {
   yad2Item: SerializedYad2Item;
+  viewCount?: number | null;
 }
 
 // Helper function to format price
@@ -71,6 +73,7 @@ const formatPrice = (price: number): string => {
 
 const Yad2ItemDetailClient: React.FC<Yad2ItemDetailClientProps> = ({
   yad2Item,
+  viewCount,
 }) => {
   const deleteYad2ItemAdByPublicId = deleteYad2ItemAdWithRedirect.bind(
     null,
@@ -359,6 +362,9 @@ const Yad2ItemDetailClient: React.FC<Yad2ItemDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

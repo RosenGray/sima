@@ -13,6 +13,7 @@ import {
   HomeIcon,
   DrawingPinIcon,
 } from "@radix-ui/react-icons";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 import { SerializedProfessionalPage } from "@/lib/professionals/professional-page/types/professional-page.types";
 import ImageModal from "@/components/modals/ImageModal/ImageModal";
 import {
@@ -44,12 +45,14 @@ interface ProfessionalPageViewProps {
   page: SerializedProfessionalPage;
   isOwner?: boolean;
   editHref?: string;
+  viewCount?: number | null;
 }
 
 const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
   page,
   isOwner = false,
   editHref = "",
+  viewCount,
 }) => {
   const {
     displayName,
@@ -124,6 +127,9 @@ const ProfessionalPageView: React.FC<ProfessionalPageViewProps> = ({
             Это сообщение видно только вам. Если хотите отредактировать
             страницу, вы можете сделать это <Link href={editHref}>здесь</Link>.
           </Text>
+          {viewCount !== null && viewCount !== undefined && (
+            <AdViewCount count={viewCount} />
+          )}
         </OwnerBanner>
       )}
 

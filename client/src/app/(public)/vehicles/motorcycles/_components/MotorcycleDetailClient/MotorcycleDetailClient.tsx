@@ -48,9 +48,11 @@ import DeleteConfirmationModalWithServerAction from "@/components/modals/DeleteC
 import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_MOTORCYCLES } from "@/lib/constants/entityTypes";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface MotorcycleDetailClientProps {
   motorcycle: SerializedMotorcycle;
+  viewCount?: number | null;
 }
 
 // Helper function to format kind type
@@ -79,6 +81,7 @@ const formatPrice = (price: number): string => {
 
 const MotorcycleDetailClient: React.FC<MotorcycleDetailClientProps> = ({
   motorcycle,
+  viewCount,
 }) => {
   const deleteMotorcycleAdByPublicId = deleteMotorcycleAdWithRedirect.bind(
     null,
@@ -349,6 +352,9 @@ const MotorcycleDetailClient: React.FC<MotorcycleDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>

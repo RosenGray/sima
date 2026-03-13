@@ -51,9 +51,11 @@ import LikeButton from "@/components/buttons/LikeButton/LikeButton";
 import RevealPhoneButton from "@/components/buttons/RevealPhoneButton/RevealPhoneButton";
 import { ENTITY_TYPE_PETS_ACCESSORIES } from "@/lib/constants/entityTypes";
 import { getOrCreateChat } from "@/lib/chat/actions/getOrCreateChat";
+import AdViewCount from "@/components/AdViewCount/AdViewCount";
 
 interface PetAccessoryDetailClientProps {
   accessory: SerializedPetAccessory;
+  viewCount?: number | null;
 }
 
 // Helper function to format price
@@ -66,6 +68,7 @@ const formatPrice = (price: number): string => {
 
 const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
   accessory,
+  viewCount,
 }) => {
   const router = useRouter();
   const deleteAccessoryAdByPublicId = deletePetAccessoryAdWithRedirect.bind(
@@ -349,6 +352,9 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
               <CalendarIcon width="16" height="16" />
               <Text size="2">Опубликовано: {formatDate(createdAt)}</Text>
             </MetaItem>
+            {viewCount !== null && viewCount !== undefined && (
+              <AdViewCount count={viewCount} />
+            )}
           </MetaInfo>
         </InfoCard>
       </ContentGrid>
