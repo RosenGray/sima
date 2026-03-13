@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
-import { Button, Text, Separator } from "@radix-ui/themes";
+
+import { Text, Separator } from "@radix-ui/themes";
 import {
   SectionWrapper,
   SectionHeader,
@@ -18,10 +18,11 @@ interface GeneralDataSectionProps {
   phoneClicks: number;
 }
 
-const GeneralDataSection: FC<GeneralDataSectionProps> = ({ views, likes, phoneClicks }) => {
-  console.log("views", views);
-  console.log("likes", likes);
-  console.log("phoneClicks", phoneClicks);
+const GeneralDataSection: FC<GeneralDataSectionProps> = ({
+  views,
+  likes,
+  phoneClicks,
+}) => {
   return (
     <SectionWrapper>
       <SectionHeader>
@@ -40,7 +41,9 @@ const GeneralDataSection: FC<GeneralDataSectionProps> = ({ views, likes, phoneCl
             <Text size="2">Просмотры объявления</Text>
           </MetricLabel>
           <MetricCount>
-            <Text size="2" weight="bold">{views}</Text>
+            <Text size="2" weight="bold">
+              {views}
+            </Text>
           </MetricCount>
         </MetricRow>
         <MetricRowSeparator>
@@ -52,7 +55,9 @@ const GeneralDataSection: FC<GeneralDataSectionProps> = ({ views, likes, phoneCl
             <Text size="2">Сохранения объявления</Text>
           </MetricLabel>
           <MetricCount>
-            <Text size="2" weight="bold">{likes}</Text>
+            <Text size="2" weight="bold">
+              {likes}
+            </Text>
           </MetricCount>
         </MetricRow>
         <MetricRowSeparator>
@@ -64,7 +69,9 @@ const GeneralDataSection: FC<GeneralDataSectionProps> = ({ views, likes, phoneCl
             <Text size="2">Клики по номеру телефона</Text>
           </MetricLabel>
           <MetricCount>
-            <Text size="2" weight="bold">{phoneClicks}</Text>
+            <Text size="2" weight="bold">
+              {phoneClicks}
+            </Text>
           </MetricCount>
         </MetricRow>
       </InnerCard>
