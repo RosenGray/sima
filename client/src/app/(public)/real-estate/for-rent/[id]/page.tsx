@@ -19,9 +19,7 @@ const RealEstateForRentPage: FC<RealEstateForRentPageProps> = async ({
     return notFound();
   }
   const isOwner = await thisUserIsOwner(realEstate.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_REAL_ESTATE_FOR_RENT, realEstate.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_REAL_ESTATE_FOR_RENT, realEstate.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_REAL_ESTATE_FOR_RENT, realEstate.publicId);
   }

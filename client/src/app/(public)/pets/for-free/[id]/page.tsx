@@ -17,9 +17,7 @@ const PetForFreePage: FC<PetForFreePageProps> = async ({ params }) => {
     return notFound();
   }
   const isOwner = await thisUserIsOwner(pet.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_PETS_FOR_FREE, pet.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_PETS_FOR_FREE, pet.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_PETS_FOR_FREE, pet.publicId);
   }

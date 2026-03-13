@@ -22,9 +22,10 @@ const ProfessionalServicePage: FC<ProfessionalServicePageProps> = async ({
     notFound();
   }
   const isOwner = await thisUserIsOwner(service.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_PROFESSIONAL_SERVICE, service.publicId)
-    : null;
+  const viewCount = await getAdViewCount(
+    ENTITY_TYPE_PROFESSIONAL_SERVICE,
+    service.publicId,
+  );
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_PROFESSIONAL_SERVICE, service.publicId);
   }

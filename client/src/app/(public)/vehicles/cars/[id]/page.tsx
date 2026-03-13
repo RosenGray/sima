@@ -17,9 +17,7 @@ const CarPage: FC<CarPageProps> = async ({ params }) => {
     return notFound();
   }
   const isOwner = await thisUserIsOwner(car.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_CARS, car.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_CARS, car.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_CARS, car.publicId);
   }

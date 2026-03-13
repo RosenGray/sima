@@ -17,9 +17,7 @@ const Yad2ItemPage: FC<Yad2ItemPageProps> = async ({ params }) => {
     notFound();
   }
   const isOwner = await thisUserIsOwner(yad2Item.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_YAD2, yad2Item.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_YAD2, yad2Item.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_YAD2, yad2Item.publicId);
   }

@@ -19,9 +19,7 @@ const CommercialRealEstatePage: FC<CommercialRealEstatePageProps> = async ({
     return notFound();
   }
   const isOwner = await thisUserIsOwner(commercialRealEstate.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_COMMERCIAL_REAL_ESTATE, commercialRealEstate.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_COMMERCIAL_REAL_ESTATE, commercialRealEstate.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_COMMERCIAL_REAL_ESTATE, commercialRealEstate.publicId);
   }

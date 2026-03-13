@@ -17,9 +17,7 @@ const JobPage: FC<JobPageProps> = async ({ params }) => {
     notFound();
   }
   const isOwner = await thisUserIsOwner(job.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_JOBS, job.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_JOBS, job.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_JOBS, job.publicId);
   }

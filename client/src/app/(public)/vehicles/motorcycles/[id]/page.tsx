@@ -17,9 +17,7 @@ const MotorcyclePage: FC<MotorcyclePageProps> = async ({ params }) => {
     return notFound();
   }
   const isOwner = await thisUserIsOwner(motorcycle.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_MOTORCYCLES, motorcycle.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_MOTORCYCLES, motorcycle.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_MOTORCYCLES, motorcycle.publicId);
   }

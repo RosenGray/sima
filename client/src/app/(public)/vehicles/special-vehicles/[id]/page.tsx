@@ -17,9 +17,7 @@ const SpecialVehiclePage: FC<SpecialVehiclePageProps> = async ({ params }) => {
     return notFound();
   }
   const isOwner = await thisUserIsOwner(specialVehicle.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_SPECIAL_VEHICLES, specialVehicle.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_SPECIAL_VEHICLES, specialVehicle.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_SPECIAL_VEHICLES, specialVehicle.publicId);
   }

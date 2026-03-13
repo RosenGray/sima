@@ -17,9 +17,7 @@ const OffRoadVehiclePage: FC<OffRoadVehiclePageProps> = async ({ params }) => {
     return notFound();
   }
   const isOwner = await thisUserIsOwner(offRoadVehicle.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_OFF_ROAD, offRoadVehicle.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_OFF_ROAD, offRoadVehicle.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_OFF_ROAD, offRoadVehicle.publicId);
   }

@@ -17,9 +17,7 @@ const OtherPage: FC<OtherPageProps> = async ({ params }) => {
     notFound();
   }
   const isOwner = await thisUserIsOwner(others.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_OTHER, others.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_OTHER, others.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_OTHER, others.publicId);
   }

@@ -17,9 +17,7 @@ const AccessoryPage: FC<AccessoryPageProps> = async ({ params }) => {
     return notFound();
   }
   const isOwner = await thisUserIsOwner(accessory.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_VEHICLES_ACCESSORIES, accessory.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_VEHICLES_ACCESSORIES, accessory.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_VEHICLES_ACCESSORIES, accessory.publicId);
   }

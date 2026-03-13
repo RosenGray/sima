@@ -17,9 +17,7 @@ const ScooterPage: FC<ScooterPageProps> = async ({ params }) => {
     return notFound();
   }
   const isOwner = await thisUserIsOwner(scooter.user.id);
-  const viewCount = isOwner
-    ? await getAdViewCount(ENTITY_TYPE_SCOOTERS, scooter.publicId)
-    : null;
+  const viewCount = await getAdViewCount(ENTITY_TYPE_SCOOTERS, scooter.publicId);
   if (!isOwner) {
     await recordAdView(ENTITY_TYPE_SCOOTERS, scooter.publicId);
   }
