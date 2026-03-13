@@ -18,6 +18,7 @@ const ENTITY_NAMES: Record<EntityType, string> = {
   other: "Разное",
   yad2: "Яд2",
   "professional-service": "Услуги",
+  "professional-page": "Страница специалиста",
 };
 
 const PRIORITY_PARAMS: Record<EntityType, string[]> = {
@@ -53,6 +54,7 @@ const PRIORITY_PARAMS: Record<EntityType, string[]> = {
   other: ["city", "district"],
   yad2: ["city", "district"],
   "professional-service": ["categoryId", "subCategoryId", "city", "district"],
+  "professional-page": ["categoryId", "subCategoryId", "city", "district"],
 };
 
 export function generateSearchTitle(
