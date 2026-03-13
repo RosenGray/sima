@@ -12,13 +12,16 @@ import {
   MetricRowSeparator,
 } from "./GeneralDataSection.styles";
 
-const METRICS = [
-  { color: "var(--purple-9)", label: "Просмотры объявления" },
-  { color: "var(--red-9)", label: "Сохранения объявления" },
-  { color: "var(--teal-9)", label: "Клики по номеру телефона" },
-];
+interface GeneralDataSectionProps {
+  views: number;
+  likes: number;
+  phoneClicks: number;
+}
 
-const GeneralDataSection: FC = () => {
+const GeneralDataSection: FC<GeneralDataSectionProps> = ({ views, likes, phoneClicks }) => {
+  console.log("views", views);
+  console.log("likes", likes);
+  console.log("phoneClicks", phoneClicks);
   return (
     <SectionWrapper>
       <SectionHeader>
@@ -31,26 +34,39 @@ const GeneralDataSection: FC = () => {
         </Text>
       </SectionHeader>
       <InnerCard variant="surface">
-        {METRICS.map((metric, index) => (
-          <div key={metric.label}>
-            {index > 0 && (
-              <MetricRowSeparator>
-                <Separator size="4" />
-              </MetricRowSeparator>
-            )}
-            <MetricRow>
-              <MetricLabel>
-                <ColorDot style={{ background: metric.color }} />
-                <Text size="2">{metric.label}</Text>
-              </MetricLabel>
-              <MetricCount>
-                <Text size="2" weight="bold">
-                  0
-                </Text>
-              </MetricCount>
-            </MetricRow>
-          </div>
-        ))}
+        <MetricRow>
+          <MetricLabel>
+            <ColorDot style={{ background: "var(--purple-9)" }} />
+            <Text size="2">Просмотры объявления</Text>
+          </MetricLabel>
+          <MetricCount>
+            <Text size="2" weight="bold">{views}</Text>
+          </MetricCount>
+        </MetricRow>
+        <MetricRowSeparator>
+          <Separator size="4" />
+        </MetricRowSeparator>
+        <MetricRow>
+          <MetricLabel>
+            <ColorDot style={{ background: "var(--red-9)" }} />
+            <Text size="2">Сохранения объявления</Text>
+          </MetricLabel>
+          <MetricCount>
+            <Text size="2" weight="bold">{likes}</Text>
+          </MetricCount>
+        </MetricRow>
+        <MetricRowSeparator>
+          <Separator size="4" />
+        </MetricRowSeparator>
+        <MetricRow>
+          <MetricLabel>
+            <ColorDot style={{ background: "var(--teal-9)" }} />
+            <Text size="2">Клики по номеру телефона</Text>
+          </MetricLabel>
+          <MetricCount>
+            <Text size="2" weight="bold">{phoneClicks}</Text>
+          </MetricCount>
+        </MetricRow>
       </InnerCard>
     </SectionWrapper>
   );

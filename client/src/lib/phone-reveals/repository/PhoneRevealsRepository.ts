@@ -37,6 +37,14 @@ class PhoneRevealsRepository {
     await connectDB();
     return AdPhoneReveal.countDocuments({ entityType, entityPublicId });
   }
+
+  async getTotalCountForAds(
+    ads: { entityType: EntityType; entityPublicId: string }[]
+  ): Promise<number> {
+    if (ads.length === 0) return 0;
+    await connectDB();
+    return AdPhoneReveal.countDocuments({ $or: ads });
+  }
 }
 
 export const phoneRevealsRepository = new PhoneRevealsRepository();
