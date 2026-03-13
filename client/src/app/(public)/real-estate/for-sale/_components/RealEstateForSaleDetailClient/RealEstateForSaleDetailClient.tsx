@@ -622,6 +622,8 @@ const RealEstateForSaleDetailClient: React.FC<RealEstateForSaleDetailClientProps
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_REAL_ESTATE_FOR_SALE}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

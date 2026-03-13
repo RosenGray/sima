@@ -373,6 +373,8 @@ const OffRoadVehicleDetailClient: React.FC<OffRoadVehicleDetailClientProps> = ({
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_OFF_ROAD}
+              entityPublicId={publicId}
             />
 
             {isAuthenticated && !isOwner && (

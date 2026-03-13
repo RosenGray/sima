@@ -2,12 +2,16 @@
 import { useState } from "react";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import { MobileIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { recordPhoneReveal } from "@/lib/phone-reveals/actions/phone-reveals.actions";
+import { EntityType } from "@/lib/constants/entityTypes";
 
 interface RevealPhoneButtonProps {
   primaryPhone: string;
   secondaryPhone?: string;
   isAuthenticated: boolean;
   isOwner: boolean;
+  entityType: EntityType;
+  entityPublicId: string;
 }
 
 const itemStyle = {
@@ -24,8 +28,16 @@ const RevealPhoneButton: React.FC<RevealPhoneButtonProps> = ({
   secondaryPhone,
   isAuthenticated,
   isOwner,
+  entityType,
+  entityPublicId,
 }) => {
   const [revealed, setRevealed] = useState(false);
+
+  const handleReveal = () => {
+    setRevealed(true);
+    console.log("Revealing phone number", entityType, entityPublicId);
+    recordPhoneReveal(entityType, entityPublicId);
+  };
 
   if (!isAuthenticated) {
     return (
@@ -43,7 +55,7 @@ const RevealPhoneButton: React.FC<RevealPhoneButtonProps> = ({
       <Button
         variant="soft"
         size="3"
-        onClick={() => setRevealed(true)}
+        onClick={handleReveal}
         style={{ width: "100%" }}
       >
         <EyeOpenIcon width="18" height="18" />

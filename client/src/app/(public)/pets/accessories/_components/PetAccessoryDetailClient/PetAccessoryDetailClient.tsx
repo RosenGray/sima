@@ -343,6 +343,8 @@ const PetAccessoryDetailClient: React.FC<PetAccessoryDetailClientProps> = ({
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_PETS_ACCESSORIES}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

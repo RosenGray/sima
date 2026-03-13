@@ -313,6 +313,8 @@ const AccessoryDetailClient: React.FC<AccessoryDetailClientProps> = ({
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_VEHICLES_ACCESSORIES}
+              entityPublicId={publicId}
             />
           </ContactSection>
 

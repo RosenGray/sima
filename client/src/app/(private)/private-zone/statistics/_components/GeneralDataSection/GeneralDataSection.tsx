@@ -22,10 +22,10 @@ const GeneralDataSection: FC = () => {
   return (
     <SectionWrapper>
       <SectionHeader>
-        <Button variant="outline" size="2">
+        {/* <Button variant="outline" size="2">
           Последние 7 дней
           <ChevronDownIcon />
-        </Button>
+        </Button> */}
         <Text weight="bold" size="3">
           Общие данные
         </Text>

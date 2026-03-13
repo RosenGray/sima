@@ -364,6 +364,8 @@ const PetForFreeDetailClient: React.FC<PetForFreeDetailClientProps> = ({
               secondaryPhone={contactSecondaryPhone}
               isAuthenticated={isAuthenticated}
               isOwner={isOwner}
+              entityType={ENTITY_TYPE_PETS_FOR_FREE}
+              entityPublicId={publicId}
             />
           </ContactSection>
 
