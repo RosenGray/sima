@@ -1,6 +1,6 @@
 "use client";
 import styled from "styled-components";
-import { Box, Card, Flex } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { breakpoints } from "@/globals";
 
 export const FooterContainer = styled.footer`
@@ -10,6 +10,7 @@ export const FooterContainer = styled.footer`
   border-top: 1px solid var(--gray-6);
   display: flex;
   align-items: stretch;
+  border:1px solid red;
 `;
 
 export const FooterInner = styled(Flex)`
@@ -39,18 +40,4 @@ export const FooterLeft = styled(Box)`
 export const FooterRight = styled(Box)`
   flex: 1;
   min-width: 0;
-`;
-
-export const ContactCard = styled(Card)`
-  padding: var(--space-5);
-  background: var(--accent-1);
-  border: 1px solid var(--gray-6);
-  border-radius: var(--radius-4);
-  box-shadow: var(--shadow-2);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    border-color: var(--gray-7);
-    box-shadow: var(--shadow-3);
-  }
 `;

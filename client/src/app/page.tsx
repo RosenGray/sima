@@ -7,6 +7,7 @@ import { fetchAllLobbySections } from "@/lib/home/lobbyCarouselData";
 import LobbyCarouselSection from "@/components/LobbyCarouselSection/LobbyCarouselSection";
 import { HomeLobby } from "./page.styles";
 import Footer from "@/components/Footer/Footer";
+import WhatElseSection from "@/components/WhatElseSection/WhatElseSection";
 
 
 export default async function Home() {
@@ -26,8 +27,8 @@ export default async function Home() {
         {lobbySections.map((section) => (
           <LobbyCarouselSection key={section.seeAllHref} section={section} />
         ))}
-        {/* <WhatElseSection /> */}
       </HomeLobby>
+      <WhatElseSection />
       <Footer />
     </>
   );
