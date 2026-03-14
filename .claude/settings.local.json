@@ -11,7 +11,13 @@
       "Bash(ls:*)",
       "Bash(ls -la /Users/vladislaviokhim/Desktop/archive/sima/client/src/app/\\\\\\(private\\\\\\)/publish-ad)",
       "Bash(ls /Users/vladislaviokhim/Desktop/archive/sima/client/src/app/\\\\\\(public\\\\\\)/jobs/_components/JobDetailClient/)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//Users/vladislaviokhim/Desktop/archive/sima/**)",
+      "Bash(done)",
+      "Bash(cd:*)"
     ]
   }
 }
